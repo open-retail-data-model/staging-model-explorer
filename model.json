@@ -451,6 +451,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core NRF 4-5-4 retail fiscal calendar (day grain). Conformed time dimension.",
           "layer": "silver",
           "materialized": true,
           "name": "fiscal_calendar",
@@ -550,6 +551,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core daily FX rates (from -> base). Conversion reference for single-currency normalization.",
           "layer": "silver",
           "materialized": true,
           "name": "fx_rate",
@@ -957,6 +959,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core B2B organization account (SCD2). Optional; used when customers transact on behalf of a business.",
           "layer": "silver",
           "materialized": true,
           "name": "account",
@@ -1173,6 +1176,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core customer postal addresses (SCD2).",
           "layer": "silver",
           "materialized": true,
           "name": "address",
@@ -1340,6 +1344,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core customer consent \u2014 the single source of truth for opt-ins and processing permissions.",
           "layer": "silver",
           "materialized": true,
           "name": "consent",
@@ -1489,6 +1494,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core customer contact points (email/phone), operational current-state.",
           "layer": "silver",
           "materialized": true,
           "name": "contact",
@@ -1701,6 +1707,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core individual-customer master (SCD2). Conformed identity shared by all outcome packages.",
           "layer": "silver",
           "materialized": true,
           "name": "profile",
@@ -1954,6 +1961,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core daily inventory position fact (product x store x day).",
           "layer": "silver",
           "materialized": true,
           "name": "inventory_position",
@@ -2374,6 +2382,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core origin-to-destination lane dimension (SCD2). Directed route used for shipment planning and transit-time benchmarking.",
           "layer": "silver",
           "materialized": true,
           "name": "lane",
@@ -2545,6 +2554,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core shipment/ASN transactional header. Links a purchase order to a lane and carrier.",
           "layer": "silver",
           "materialized": true,
           "name": "shipment",
@@ -2680,6 +2690,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core shipment line fact (shipment x product). Item-level detail within a shipment.",
           "layer": "silver",
           "materialized": true,
           "name": "shipment_line",
@@ -2968,6 +2979,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core carrier tracking message fact (append-only). Raw checkpoint data from carriers: scans, GPS pings, customs events, delivery confirmations.",
           "layer": "silver",
           "materialized": true,
           "name": "shipment_tracking",
@@ -3242,6 +3254,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Trade-promotion dimension (SCD2) for the Promote with Purpose outcome package.",
           "layer": "silver",
           "materialized": true,
           "name": "promotion",
@@ -3500,6 +3513,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core customer-attributed order line fact. Feeds customer lifetime value (CLV/RFM).",
           "layer": "silver",
           "materialized": true,
           "name": "customer_order_line",
@@ -3731,6 +3745,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core payment fact (sale / refund / adjustment / chargeback). Tender + settlement side of customer orders.",
           "layer": "silver",
           "materialized": true,
           "name": "payment",
@@ -4051,6 +4066,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core purchase-order line fact (order + receipt + defect + price). Feeds the supplier scorecard.",
           "layer": "silver",
           "materialized": true,
           "name": "purchase_order_line",
@@ -4385,6 +4401,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core product master (SCD2). Conformed product entity shared across outcome packages.",
           "layer": "silver",
           "materialized": true,
           "name": "product",
@@ -4525,6 +4542,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core product price history (SCD2 per product x price_type). Read price AS OF a date here; product dim carries the current snapshot.",
           "layer": "silver",
           "materialized": true,
           "name": "product_price",
@@ -4756,6 +4774,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core store/location master (SCD2). Conformed store entity shared across outcome packages.",
           "layer": "silver",
           "materialized": true,
           "name": "store",
@@ -4954,6 +4973,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core supplier/vendor master (SCD2). Conformed supplier entity shared across supply-chain outcome packages.",
           "layer": "silver",
           "materialized": true,
           "name": "supplier",
@@ -5215,6 +5235,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "ORDM canonical-core POS sales fact (product x store x day). Carries promo_sk for promotion attribution.",
           "layer": "silver",
           "materialized": true,
           "name": "sales",
@@ -5427,6 +5448,7 @@
               "type": ""
             }
           ],
+          "comment": "Per-customer lifetime value: historical realized value + a transparent forward estimate, plus RFM segmentation and value tiers. Built on the BASE dimensional model (customer_order_line + product for margin + the NRF 4-5-4 fiscal calendar) -- NOT on the in-progress C360/CDP semantic layer (none exists yet). Keyed on the customer SURROGATE; no raw PII (loyalty/household identifiers or names) is exposed -- those stay in the governed dimension.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_customer_ltv",
@@ -5726,6 +5748,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Competitor dimension (SCD2) for the Balancing Margin and Volume outcome package.",
           "layer": "silver",
           "materialized": true,
           "name": "competitor",
@@ -5870,6 +5893,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Competitor price observations fact table for elasticity modeling.",
           "layer": "silver",
           "materialized": true,
           "name": "competitor_price",
@@ -5969,6 +5993,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Product substitution and complement relationships mapping table for cross-elasticity optimization.",
           "layer": "silver",
           "materialized": true,
           "name": "product_relationship",
@@ -6014,6 +6039,7 @@
               "type": ""
             }
           ],
+          "comment": "Cross-elasticity features derived from product relationships (substitutes and complements).",
           "layer": "gold",
           "materialized": true,
           "name": "gold_affinity_features",
@@ -6022,6 +6048,7 @@
         },
         {
           "columns": [],
+          "comment": "Cross-sectional aggregations (store, category, brand level).",
           "layer": "gold",
           "materialized": true,
           "name": "gold_aggregation_features",
@@ -6103,6 +6130,7 @@
               "type": ""
             }
           ],
+          "comment": "Categorical bands and buckets for simplified segmentation.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_bucket_features",
@@ -6148,6 +6176,7 @@
               "type": ""
             }
           ],
+          "comment": "Competitive intelligence metrics and price gaps.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_competitor_analysis",
@@ -6229,6 +6258,7 @@
               "type": ""
             }
           ],
+          "comment": "External macro factors, weather, and footfall confounders.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_external_signals",
@@ -6237,6 +6267,7 @@
         },
         {
           "columns": [],
+          "comment": "Time-shifted lag features for elasticity model training. NOTE: Currently an inert passthrough; lag computations deferred.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_lagging_features",
@@ -6309,6 +6340,7 @@
               "type": ""
             }
           ],
+          "comment": "Computed ML outputs, elasticity coefficients, and recommendations.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_outcome_variables",
@@ -6399,6 +6431,7 @@
               "type": ""
             }
           ],
+          "comment": "Daily price points and margin actuals.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_price_actuals",
@@ -6471,6 +6504,7 @@
               "type": ""
             }
           ],
+          "comment": "Business constraints limiting the price optimization solver.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_pricing_constraints",
@@ -6615,6 +6649,7 @@
               "type": ""
             }
           ],
+          "comment": "Promotional events and markdown depth features.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_promotional_features",
@@ -6623,6 +6658,7 @@
         },
         {
           "columns": [],
+          "comment": "Rolling window averages and stockout rates for ML training. NOTE: Currently an inert passthrough; rolling window computations deferred.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_rolling_features",
@@ -6704,6 +6740,7 @@
               "type": ""
             }
           ],
+          "comment": "Grain-level sales and volume actuals.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_sales_actuals",
@@ -6758,6 +6795,7 @@
               "type": ""
             }
           ],
+          "comment": "Seasonal and cyclical encodings for baseline models.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_seasonality_features",
@@ -6785,6 +6823,7 @@
               "type": ""
             }
           ],
+          "comment": "Macro trends and modeled baseline feedback loops.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_trend_features",
@@ -7081,6 +7120,7 @@
               "type": ""
             }
           ],
+          "comment": "Category growth, one row per category x fiscal period (NRF 4-5-4). Phase-0 decision: INTERPRETATION A (collaborative) -- growth analysed WITH and attributed TO suppliers, integrating the promo-ROI, customer-LTV and supplier scorecards (each a MATERIALIZED VIEW, so this view reads precomputed tables, not the recomputed DAG). Upstream signals are LEFT JOINed, so the view returns rows (and NULLs those columns) if an upstream view yields nothing.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_category_growth",
@@ -7670,6 +7710,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Actionable disruption alerts with lifecycle tracking for the Early Risk Detection control tower.",
           "layer": "silver",
           "materialized": true,
           "name": "disruption_alert",
@@ -7904,6 +7945,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Append-only disruption event log for the Early Risk Detection control tower. The unifying exception table across shipment, inventory, and supplier disruptions.",
           "layer": "silver",
           "materialized": true,
           "name": "disruption_event",
@@ -8048,6 +8090,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Reference table of disruption detection rules for the Early Risk Detection outcome package.",
           "layer": "silver",
           "materialized": true,
           "name": "disruption_rule",
@@ -8120,6 +8163,7 @@
               "type": ""
             }
           ],
+          "comment": "Control tower serving view: a single pane of glass over active disruptions, shipment status, and inventory risk. Joins the disruption_alert lifecycle with shipment current state and inventory position to give the operations team everything they need for triage. Filters to open/acknowledged alerts only.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_control_tower",
@@ -8174,6 +8218,7 @@
               "type": ""
             }
           ],
+          "comment": "Per-product x store inventory risk view: days-of-supply, stockout risk score, and reorder signals. Built on the canonical inventory_position fact and a trailing sales velocity from the transaction domain.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_inventory_risk",
@@ -8327,6 +8372,7 @@
               "type": ""
             }
           ],
+          "comment": "A procurement risk register: one row per supplier (current fiscal period), with the contributing factors as columns so the register explains itself. Built on gold_supplier_scorecard (a MATERIALIZED VIEW) plus sourcing/spend from the PO-line fact.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_procurement_risk",
@@ -8453,6 +8499,7 @@
               "type": ""
             }
           ],
+          "comment": "Current-state view: one row per shipment showing its latest tracking checkpoint, carrier ETA, and transit progress. Driven from the shipment header with a LEFT JOIN to the canonical-core shipment_tracking feed, so shipments with no tracking events yet (e.g. planned, pre-first-scan) are still visible with their header status. Transit elapsed is capped at actual_arrival_date for delivered shipments.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_shipment_current_state",
@@ -8588,6 +8635,7 @@
               "type": ""
             }
           ],
+          "comment": "Per-supplier performance scorecard, one row per supplier x fiscal period (NRF 4-5-4 period from the fiscal calendar). The objective input to procurement-risk decisions.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_supplier_scorecard",
@@ -8801,6 +8849,7 @@
               "type": "TIMESTAMP"
             }
           ],
+          "comment": "Promotion product x store coverage bridge for the Promote with Purpose outcome package.",
           "layer": "silver",
           "materialized": true,
           "name": "promotion_scope",
@@ -8891,6 +8940,7 @@
               "type": ""
             }
           ],
+          "comment": "Operational \"did it sell?\" summary per promotion: scope size, promoted units/revenue, baseline units, planned trade spend, and planned vs realized lift. The financial \"did it pay off?\" view is gold_promo_roi.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_promo_performance",
@@ -9107,6 +9157,7 @@
               "type": ""
             }
           ],
+          "comment": "Did the promotion pay off? One row per completed promotion: incremental units / revenue / margin over baseline, ROI on trade spend, realized vs planned lift, and the two value-killers (cannibalization, forward buy).",
           "layer": "gold",
           "materialized": false,
           "name": "gold_promo_roi",
@@ -9115,6 +9166,7 @@
         },
         {
           "columns": [],
+          "comment": "Post-Promotion ROI at promo x category grain. gold_promo_roi rolls this up to one row per promo. Definitions: baseline_*        : from the trailing-8 non-promoted-week mean (gold_weekly_baseline), summed over the promo window (i.e. scaled to the promo's duration). incremental_units = promoted_units - baseline_units (NOT clamped; a negative value is a real \"promo lost volume\" signal). incremental_margin= promoted_margin - baseline_margin, where margin = revenue - units * product.unit_cost. trade_spend       : planned_trade_spend allocated to the category by its share of the promo's scope rows (realized actuals are not modelled \u2014 see summary). roi               = incremental_margin / NULLIF(trade_spend, 0). cannibalization   : shortfall below baseline on SUBSTITUTE SKUs (same category, NOT on this promo) in the promo's stores during the window. forward_buy       : shortfall below baseline on the PROMOTED SKUs in the N fiscal weeks after the promo (pantry loading); N = forward_buy_weeks (default 2, see params CTE; keep in sync with seeds.yaml post_promo.forward_buy_weeks). net_incremental_margin = incremental_margin - cannibalization_margin - forward_buy_margin.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_promo_roi_by_category",
@@ -9169,6 +9221,7 @@
               "type": ""
             }
           ],
+          "comment": "One row per promotion x product x store x fiscal week. Joins the trade-promotion dimension to its product/store scope and to weekly POS sales, with planned trade spend allocated evenly across the promo's scope and weeks, and a baseline of trailing non-promoted demand.",
           "layer": "gold",
           "materialized": false,
           "name": "gold_trade_promotion",
@@ -9177,6 +9230,7 @@
         },
         {
           "columns": [],
+          "comment": "Per product x store x fiscal week: actual sales and the trailing non-promoted baseline. Materialized once and reused by gold_promo_roi (for promoted SKUs, substitute SKUs and post-promo weeks alike), so the baseline definition lives in ONE place.",
           "layer": "gold",
           "materialized": true,
           "name": "gold_weekly_baseline",
