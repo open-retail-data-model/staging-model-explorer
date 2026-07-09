@@ -5457,6 +5457,60 @@
       "checks": [
         {
           "column": null,
+          "name": "bmv_outcome_variables_grain",
+          "severity": "error",
+          "table": "gold_outcome_variables"
+        },
+        {
+          "column": null,
+          "name": "bmv_competitor_price_grain_unique",
+          "severity": "error",
+          "table": "competitor_price"
+        },
+        {
+          "column": null,
+          "name": "bmv_outcome_variables_price_validity",
+          "severity": "error",
+          "table": "gold_outcome_variables"
+        },
+        {
+          "column": null,
+          "name": "bmv_bucket_features_domain_margin",
+          "severity": "error",
+          "table": "gold_bucket_features"
+        },
+        {
+          "column": null,
+          "name": "bmv_bucket_features_domain_discount",
+          "severity": "error",
+          "table": "gold_bucket_features"
+        },
+        {
+          "column": null,
+          "name": "bmv_outcome_variables_rowcount",
+          "severity": "metric",
+          "table": "gold_outcome_variables"
+        },
+        {
+          "column": null,
+          "name": "bmv_competitor_analysis_undercut_rate",
+          "severity": "metric",
+          "table": "gold_competitor_analysis"
+        },
+        {
+          "column": null,
+          "name": "bmv_pricing_constraints_logic",
+          "severity": "error",
+          "table": "gold_pricing_constraints"
+        },
+        {
+          "column": null,
+          "name": "bmv_promotional_features_markdown_depth",
+          "severity": "error",
+          "table": "gold_promotional_features"
+        },
+        {
+          "column": null,
           "name": "bmv_single_currency_check",
           "severity": "error",
           "table": "competitor_price"
@@ -5487,9 +5541,27 @@
         },
         {
           "column": null,
-          "name": "bmv_competitor_price_grain_unique",
+          "name": "bmv_competitor_scd2_current_unique",
           "severity": "error",
-          "table": "competitor_price"
+          "table": "competitor"
+        },
+        {
+          "column": null,
+          "name": "bmv_competitor_scd2_non_current_closed",
+          "severity": "error",
+          "table": "competitor"
+        },
+        {
+          "column": null,
+          "name": "bmv_competitor_scd2_date_validity",
+          "severity": "error",
+          "table": "competitor"
+        },
+        {
+          "column": null,
+          "name": "bmv_product_relationship_grain_unique",
+          "severity": "error",
+          "table": "product_relationship"
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
@@ -5771,6 +5843,15 @@
               "type": "BOOLEAN"
             },
             {
+              "comment": "Source of the observation data.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
               "comment": "Originating system (e.g. scraping vendor).",
               "enum_values": [],
               "fk": false,
@@ -5861,7 +5942,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Strength of relationship (0.0 to 1.0). Sourced/provided score, not derived/calculated locally.",
+              "comment": "Strength of relationship (0.0 to 1.0). NULL if not calculated.",
               "enum_values": [],
               "fk": false,
               "name": "affinity_coefficient",
@@ -5892,6 +5973,822 @@
           "materialized": true,
           "name": "product_relationship",
           "role": "association",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Own price divided by average substitute price.",
+              "enum_values": [],
+              "fk": false,
+              "name": "substitute_price_ratio",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Own price divided by average complement price.",
+              "enum_values": [],
+              "fk": false,
+              "name": "complement_price_ratio",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Average markdown depth of substitute products.",
+              "enum_values": [],
+              "fk": false,
+              "name": "substitute_markdown_depth_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Average markdown depth of complement products.",
+              "enum_values": [],
+              "fk": false,
+              "name": "complement_markdown_depth_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_affinity_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_aggregation_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Categorical indicator of gross margin performance (e.g., 'High', 'Healthy', 'Bleeding').",
+              "enum_values": [],
+              "fk": false,
+              "name": "margin_health_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Categorical indicator of competitor price aggression (e.g., 'Severe', 'Moderate', 'Low').",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitive_pressure_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Categorical depth of the current markdown (e.g., 'Clearance >50%', 'Shallow <10%').",
+              "enum_values": [],
+              "fk": false,
+              "name": "discount_depth_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Categorical volume tier based on the last 7 days of sales.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_bucket_7d",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Inventory health indicator categorizing stock life (e.g., '<1 Week', 'Overstock').",
+              "enum_values": [],
+              "fk": false,
+              "name": "weeks_of_cover_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Lifecycle stage of the product (e.g., 'New Arrival', 'Mature', 'End of Life').",
+              "enum_values": [],
+              "fk": false,
+              "name": "article_age_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Categorical speed of sales (e.g., 'Fast Mover', 'Slow Mover').",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_velocity_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Categorical classification of how often the item is discounted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_frequency_bucket",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_bucket_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "The tracked shelf price of the matched competitor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_regular_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The absolute difference: effective_price_lc - competitor_regular_price_lc.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_gap_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "(effective_price_lc / competitor_regular_price_lc) * 100.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_index_vs_comp",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "True if the competitor is pricing lower than our effective price.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_comp_price_below_own",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_competitor_analysis",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Index representing overall traffic volume in the specific store/location.",
+              "enum_values": [],
+              "fk": false,
+              "name": "local_footfall_index",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Maximum recorded temperature for the day at the store location.",
+              "enum_values": [],
+              "fk": false,
+              "name": "temp_max_celsius",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Total rainfall in millimeters for the day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rainfall_mm",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean flag triggered when temperatures exceed specific regional thresholds.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_heatwave",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The macroeconomic Consumer Price Index specific to the subcategory.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cpi_category_monthly_index",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Macroeconomic tracking of fuel prices, influencing discretionary spending.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fuel_price_index",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean flag for local/state election events impacting shopping behavior.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_state_election_day",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean flag for local major sporting events driving specific traffic patterns.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_major_sporting_event_local",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_external_signals",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_lagging_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "The model's suggested profit-maximizing price.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_optimal_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The forecasted volume if the recommended price is applied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "predicted_units_at_optimal_price",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The logic applied to round recommended prices (e.g., .99 endings).",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_rounding_rule_code",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The percentage change in volume for a 1% change in price (PED).",
+              "enum_values": [],
+              "fk": false,
+              "name": "point_own_price_elasticity",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The substitution effect drawn from cannibalized items.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cross_elasticity_proxy",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Lift volume generated by a markdown.",
+              "enum_values": [],
+              "fk": false,
+              "name": "predicted_incremental_units",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The additional elasticity sensitivity introduced during a promotion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_elasticity_lift_adj",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_outcome_variables",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "The regular, undiscounted shelf price in local currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The actual price paid after promotional discounts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Manufacturer suggested retail price in local currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "mrp_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "(effective_price_lc - cost_price_lc) / effective_price_lc.",
+              "enum_values": [],
+              "fk": false,
+              "name": "gross_margin_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The unit cost of goods sold.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cost_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Indicator of whether the price increased, decreased, or remained flat.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_change_direction",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The percentage change in price compared to the previous period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_change_magnitude_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Tracks the decay of consumer shock as they adapt to new prices.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_since_last_price_change",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "effective_price_lc % 1.00, measuring proximity to psychological boundaries like .99.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_barrier_proximity",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_price_actuals",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Maximum Retail Price ceiling.",
+              "enum_values": [],
+              "fk": false,
+              "name": "mrp_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Minimum acceptable profit margin percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_margin_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Maximum allowed discount depth percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_discount_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Derived minimum price bounded by cost and min margin.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Derived maximum price bounded by MRP.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_price_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Maximum allowable price index against the primary competitor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_competitor_index",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Rule applied to round recommended prices.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_rounding_rule_code",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_pricing_constraints",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Boolean indicating if any promotion is currently active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_on_promo",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if a specific markdown event is active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "markdown_event_flag",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The percentage depth of the markdown relative to base price.",
+              "enum_values": [],
+              "fk": false,
+              "name": "markdown_depth_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if a new promotion started exactly on this date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_promo_start_day",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of days elapsed since the current promotion started.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_into_promo",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of days remaining until the current promotion expires.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_to_promo_end",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if this is the final day of the promotion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_promo_last_day",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of days elapsed since the last promotion ended.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_post_promo_end",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if the product is in the immediate post-promo \"hangover\" period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_post_promo_decay_window",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of distinct promotional days in the last 30 days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_frequency_30d",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of days since the product was last on promotion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_since_last_promo",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The number of overlapping promotional mechanics currently active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "concurrent_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Promotion mechanic type (e.g., TPR, DISPLAY).",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_type",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "How the promotion is funded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "funding_type",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "The planned percentage depth of the markdown.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planned_discount_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_promotional_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_rolling_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Raw units sold at the till.",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_sold",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Total sales value before discounts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "gross_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Total sales value after discounts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "net_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Units returned by customers.",
+              "enum_values": [],
+              "fk": false,
+              "name": "returns_units",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "units_sold - returns_units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "net_units_sold",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "De-seasonalized and de-promoted normal demand.",
+              "enum_values": [],
+              "fk": false,
+              "name": "baseline_units_sold",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Extra units sold attributable specifically to a promotion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "incremental_lift_units",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Percentage of the day the product was out of stock on shelf.",
+              "enum_values": [],
+              "fk": false,
+              "name": "stockout_pct_day",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_sales_actuals",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Boolean indicating if the date falls on a weekend.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_weekend_flag",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if the date is a public holiday.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_public_holiday",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Boolean indicating if the date falls in a high-demand retail period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_peak_shopping_season",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Days remaining until the next public holiday.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_to_next_holiday",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Days elapsed since the previous public holiday.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_since_last_holiday",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_seasonality_features",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Year-over-year percentage growth in volume for the subcategory.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory_yoy_growth_pct",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Model feedback ingestion column for ARIMA/Prophet baseline.",
+              "enum_values": [],
+              "fk": false,
+              "name": "baseline_units_sold_forecast",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_trend_features",
+          "role": "gold",
           "scd2": false
         }
       ]
