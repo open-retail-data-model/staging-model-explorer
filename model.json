@@ -696,6 +696,12 @@
         },
         {
           "column": null,
+          "name": "account_primary_contact_fk_orphan",
+          "severity": "error",
+          "table": "account"
+        },
+        {
+          "column": null,
           "name": "account_primary_contact_orphan",
           "severity": "error",
           "table": "account"
@@ -739,6 +745,17 @@
             "profile_sk"
           ],
           "child_table": "consent",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "primary_contact_profile_sk"
+          ],
+          "child_table": "account",
           "declared_fk": true,
           "parent_cols": [
             "profile_sk"
@@ -828,7 +845,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Business key of the parent organization account for hierarchies; NULL for top-level.",
+              "comment": "Business key of the parent organization account for hierarchies; NULL for top-level (self-FK on the business key; profile/account are SCD2 so the business key is not unique, hence no surrogate self-FK).",
               "enum_values": [],
               "fk": false,
               "name": "parent_account_id",
@@ -837,7 +854,16 @@
               "type": "STRING"
             },
             {
-              "comment": "Business key of the individual (profile) who is the primary contact for the account.",
+              "comment": "FK to profile.profile_sk (foreign surrogate; nullable, not a PK). The primary-contact profile version resolved AS OF the effective_from_date of this account version (profile is SCD2 \u2014 the standard ORDM as-of surrogate resolution, matching how product_price/sales/inventory resolve their _sk FKs, and how address/contact/consent carry profile_sk). Declared as informational FK fk_account_profile in relationships.sql.",
+              "enum_values": [],
+              "fk": true,
+              "name": "primary_contact_profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the individual (profile) who is the primary contact for the account. Retained for lineage/current-version joins alongside primary_contact_profile_sk; under SCD2 the business key is not unique, so the declared UC FK is on the surrogate.",
               "enum_values": [],
               "fk": false,
               "name": "primary_contact_profile_id",
@@ -2064,6 +2090,12 @@
         },
         {
           "column": null,
+          "name": "shipment_line_po_line_fk_orphan",
+          "severity": "error",
+          "table": "shipment_line"
+        },
+        {
+          "column": null,
           "name": "shipment_line_rowcount",
           "severity": "metric",
           "table": "shipment_line"
@@ -2176,6 +2208,17 @@
             "product_sk"
           ],
           "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "po_line_sk"
+          ],
+          "child_table": "shipment_line",
+          "declared_fk": true,
+          "parent_cols": [
+            "po_line_sk"
+          ],
+          "parent_table": "purchase_order_line"
         },
         {
           "child_cols": [
@@ -2618,7 +2661,16 @@
               "type": "STRING"
             },
             {
-              "comment": "Purchase-order line business key this shipment line fulfills.",
+              "comment": "FK to purchase_order_line.po_line_sk (foreign surrogate; nullable, not a PK). The purchase-order line this shipment line fulfills. purchase_order_line is an append-only transactional fact (NOT SCD2), so this is a straight surrogate FK with no version ambiguity. Declared as informational FK fk_shipment_line_purchase_order_line in relationships.sql; the durable po_line_id business key is retained below.",
+              "enum_values": [],
+              "fk": true,
+              "name": "po_line_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable purchase-order line business key this shipment line fulfills. Retained alongside po_line_sk; the declared UC FK is on the surrogate.",
               "enum_values": [],
               "fk": false,
               "name": "po_line_id",
@@ -4151,6 +4203,12 @@
         },
         {
           "column": null,
+          "name": "product_price_product_sk_orphan",
+          "severity": "error",
+          "table": "product_price"
+        },
+        {
+          "column": null,
           "name": "product_price_single_reporting_currency",
           "severity": "error",
           "table": "product_price"
@@ -4160,7 +4218,19 @@
       "glossary_path": "canonical-core/product/glossary.md",
       "kind": "core",
       "name": "product",
-      "relationships": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "product_price",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        }
+      ],
       "tables": [
         {
           "columns": [
@@ -4429,7 +4499,16 @@
               "type": "STRING"
             },
             {
-              "comment": "FK to product (business key). The priced product.",
+              "comment": "FK to product.product_sk (foreign surrogate; nullable, not a PK). Resolved AS OF effective_from_date \u2014 the product SCD2 version in effect when this price applied \u2014 matching how sales/inventory/shipment resolve their _sk FKs. Declared as informational FK fk_product_price_product in relationships.sql (the durable product_id business key is retained below).",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key. The priced product. Retained alongside product_sk; the declared UC FK is on product_sk (under SCD2 the business key is not unique, so the FK must be on the surrogate).",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
