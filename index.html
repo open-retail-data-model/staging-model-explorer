@@ -4,22 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ORDM Model Explorer</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; font-family: sans-serif; }
-      #toolbar { height: 48px; background: #1b1b2f; color: #fff; display: flex; align-items: center; padding: 0 16px; flex-shrink: 0; }
-      #main { display: flex; flex: 1; overflow: hidden; }
-      #cy { flex: 1; height: 100%; }
-      #panel { width: 320px; height: 100%; overflow-y: auto; border-left: 1px solid #ddd; padding: 12px; background: #fafafa; }
-    </style>
-    <script type="module" crossorigin src="./assets/index-v2rliuNO.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BzTHiIeD.css">
+    <!-- Inline SVG favicon (gold outcome band over silver core band, mirroring the
+         layered model) so the page ships no favicon.ico 404 and stays self-contained. -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='7' rx='1.5' fill='%23c4830a'/%3E%3Crect y='9' width='16' height='7' rx='1.5' fill='%23556070'/%3E%3C/svg%3E"
+    />
+    <script type="module" crossorigin src="./assets/index-CNVA1Lpd.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CyBVHSZp.css">
   </head>
   <body>
-    <div id="toolbar"></div>
+    <!-- Toolbar: title, breadcrumbs, back, view toggle, search + filters, theme.
+         Built up by main.ts. No hard-coded background here — the theme CSS vars
+         drive it (an inline #toolbar background used to override the theme). -->
+    <header id="toolbar"></header>
+    <div id="hint" hidden></div>
     <div id="main">
-      <div id="cy" style="width:100%;height:100vh"></div>
+      <!-- #stage hosts the active view: the DOM overview / matrix, or #cy for
+           the cytoscape graph & per-unit ER. -->
+      <div id="stage">
+        <div id="overview-root"></div>
+        <div id="cy" hidden></div>
+        <div id="loading">Loading model…</div>
+      </div>
       <aside id="panel"></aside>
     </div>
+    <footer id="legend"></footer>
   </body>
 </html>

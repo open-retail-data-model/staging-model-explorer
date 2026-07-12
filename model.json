@@ -4,13 +4,88 @@
     "edges": [
       {
         "kind": "consumes",
+        "source": "actionable-customer-understanding",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
+        "target": "order"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
+        "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
+        "target": "marketing"
+      },
+      {
+        "kind": "consumes",
         "source": "balancing-margin-and-volume",
         "target": "product"
       },
       {
         "kind": "consumes",
+        "source": "balancing-margin-and-volume",
+        "target": "transaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "order"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "procurement"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "transaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "early-risk-detection",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "early-risk-detection",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
         "source": "early-risk-detection",
         "target": "logistics"
+      },
+      {
+        "kind": "consumes",
+        "source": "early-risk-detection",
+        "target": "procurement"
       },
       {
         "kind": "consumes",
@@ -29,6 +104,16 @@
       },
       {
         "kind": "consumes",
+        "source": "early-risk-detection",
+        "target": "transaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "promote-with-purpose",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
         "source": "promote-with-purpose",
         "target": "marketing"
       },
@@ -41,6 +126,11 @@
         "kind": "consumes",
         "source": "promote-with-purpose",
         "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "promote-with-purpose",
+        "target": "transaction"
       }
     ],
     "nodes": [
@@ -558,7 +648,8 @@
           "role": "reference",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -1740,7 +1831,8 @@
           "role": "master",
           "scd2": true
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -1994,7 +2086,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -3038,7 +3131,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -3313,7 +3407,8 @@
           "role": "master",
           "scd2": true
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -3572,7 +3667,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -3804,7 +3900,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -4125,7 +4222,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -4628,7 +4726,8 @@
           "role": "reference",
           "scd2": true
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -4860,7 +4959,8 @@
           "role": "master",
           "scd2": true
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -5059,7 +5159,8 @@
           "role": "master",
           "scd2": true
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -5321,7 +5422,8 @@
           "role": "transactional",
           "scd2": false
         }
-      ]
+      ],
+      "use_cases": []
     },
     {
       "checks": [
@@ -5534,25 +5636,97 @@
           "role": "gold",
           "scd2": false
         }
+      ],
+      "use_cases": [
+        {
+          "consumes": [
+            "calendar",
+            "order",
+            "product"
+          ],
+          "name": "Behavioral Segmentation",
+          "status": "planned",
+          "tables": [
+            "gold_customer_ltv"
+          ]
+        },
+        {
+          "consumes": [],
+          "name": "Product Affinity",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Market Analysis",
+          "status": "planned",
+          "tables": []
+        }
       ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/agentic-commerce.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "agentic-commerce",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Shopping Assistant",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Intent Product Discovery",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Conversational Shopping",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Agent-to-Agent Transactions",
+          "status": "planned",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/ai-assisted-store-associates.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "ai-assisted-store-associates",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Associates Best Next Actions",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Real-Time Data Access",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Digital Assistant Selling Tools",
+          "status": "planned",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [
@@ -6909,25 +7083,135 @@
           "role": "gold",
           "scd2": false
         }
+      ],
+      "use_cases": [
+        {
+          "consumes": [
+            "inventory",
+            "marketing",
+            "product",
+            "transaction"
+          ],
+          "name": "Dynamic Price Optimization",
+          "status": "in-progress",
+          "tables": [
+            "gold_price_actuals",
+            "gold_competitor_analysis",
+            "gold_pricing_constraints",
+            "gold_outcome_variables",
+            "gold_bucket_features",
+            "gold_external_signals",
+            "gold_promotional_features",
+            "gold_sales_actuals",
+            "gold_aggregation_features",
+            "gold_lagging_features",
+            "gold_rolling_features",
+            "gold_trend_features"
+          ]
+        },
+        {
+          "consumes": [],
+          "name": "Assortment Optimization",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [
+            "calendar",
+            "inventory",
+            "marketing",
+            "product",
+            "transaction"
+          ],
+          "name": "Elasticity Modeling",
+          "status": "in-progress",
+          "tables": [
+            "gold_price_actuals",
+            "gold_competitor_analysis",
+            "gold_outcome_variables",
+            "gold_affinity_features",
+            "gold_seasonality_features",
+            "gold_bucket_features",
+            "gold_external_signals",
+            "gold_promotional_features",
+            "gold_sales_actuals",
+            "gold_aggregation_features",
+            "gold_lagging_features",
+            "gold_rolling_features",
+            "gold_trend_features"
+          ]
+        }
       ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/commerce-media-networks.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "commerce-media-networks",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Sponsored Products Placement",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "In-Store Digital Ads",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Incrementality Testing",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Cross-Platform Retail Management",
+          "status": "in-progress",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/connected-store-signals.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "connected-store-signals",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Smart Shelf",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "RFID Tracking",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Foot Traffic Analysis",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "IoT Sensor Monitoring",
+          "status": "planned",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [
@@ -7205,6 +7489,40 @@
           "name": "gold_category_growth",
           "role": "gold",
           "scd2": false
+        }
+      ],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Media Measurement",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Data Monetization",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Joint Demand Planning",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [
+            "calendar",
+            "order",
+            "procurement",
+            "product",
+            "transaction"
+          ],
+          "name": "Category Growth",
+          "status": "done",
+          "tables": [
+            "gold_category_growth"
+          ]
         }
       ]
     },
@@ -8721,16 +9039,81 @@
           "role": "gold",
           "scd2": false
         }
+      ],
+      "use_cases": [
+        {
+          "consumes": [
+            "calendar",
+            "inventory",
+            "logistics",
+            "procurement",
+            "product",
+            "supplier",
+            "transaction"
+          ],
+          "name": "Real Time Disruption Detection",
+          "status": "done",
+          "tables": [
+            "gold_control_tower",
+            "gold_shipment_current_state",
+            "gold_inventory_risk"
+          ]
+        },
+        {
+          "consumes": [
+            "calendar",
+            "procurement",
+            "supplier"
+          ],
+          "name": "Supplier Score & Monitoring",
+          "status": "done",
+          "tables": [
+            "gold_supplier_scorecard"
+          ]
+        },
+        {
+          "consumes": [
+            "calendar",
+            "procurement",
+            "product",
+            "supplier"
+          ],
+          "name": "Procurement Risk Detection",
+          "status": "done",
+          "tables": [
+            "gold_procurement_risk"
+          ]
+        }
       ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/predictive-operations.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "predictive-operations",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Store Performance",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Workforce Optimization",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "In-Store Equipment Maintenance",
+          "status": "planned",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [
@@ -9316,25 +9699,110 @@
           "role": "gold",
           "scd2": false
         }
+      ],
+      "use_cases": [
+        {
+          "consumes": [
+            "calendar",
+            "marketing",
+            "product",
+            "store",
+            "transaction"
+          ],
+          "name": "Trade Promotion",
+          "status": "done",
+          "tables": [
+            "gold_trade_promotion",
+            "gold_promo_performance"
+          ]
+        },
+        {
+          "consumes": [],
+          "name": "Location-Based Offers",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [
+            "calendar",
+            "marketing",
+            "product",
+            "store",
+            "transaction"
+          ],
+          "name": "Post-Promotion ROI Analysis",
+          "status": "done",
+          "tables": [
+            "gold_promo_roi",
+            "gold_promo_roi_by_category",
+            "gold_weekly_baseline"
+          ]
+        }
       ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/smarter-demand-and-inventory-decisions.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "smarter-demand-and-inventory-decisions",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Demand & Order Forecasting",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Inventory Optimization",
+          "status": "planned",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Out-of-Stocks Optimization",
+          "status": "planned",
+          "tables": []
+        }
+      ]
     },
     {
       "checks": [],
-      "contract_path": "contracts/odcs/unified-customer-view.odcs.yaml",
+      "contract_path": null,
       "glossary_path": null,
       "kind": "outcome",
       "name": "unified-customer-view",
       "relationships": [],
-      "tables": []
+      "tables": [],
+      "use_cases": [
+        {
+          "consumes": [],
+          "name": "Customer 360",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Identity Resolution",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "CDP",
+          "status": "in-progress",
+          "tables": []
+        },
+        {
+          "consumes": [],
+          "name": "Customer Lifetime Value",
+          "status": "done",
+          "tables": []
+        }
+      ]
     }
   ]
 }
