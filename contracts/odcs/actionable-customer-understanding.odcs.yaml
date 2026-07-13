@@ -46,37 +46,69 @@ schema:
     type: businessDefinition
   properties:
   - name: profile_sk
+    logicalType: integer
+    physicalType: BIGINT
     description: Customer surrogate key (the governed dimension key).
   - name: profile_id
+    logicalType: string
+    physicalType: STRING
     description: Durable, pseudonymous customer business key (not raw PII).
   - name: recency_periods
+    logicalType: integer
+    physicalType: INT
     description: Fiscal periods (NRF 4-5-4) since the customer last purchased.
   - name: frequency
+    logicalType: integer
+    physicalType: BIGINT
     description: Distinct purchase occasions (orders) in the observation window.
   - name: total_units
+    logicalType: integer
+    physicalType: BIGINT
     description: Total units purchased.
   - name: total_spend
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Total net spend.
   - name: avg_order_value
+    logicalType: number
+    physicalType: DECIMAL
     description: Average net spend per order (total_spend / frequency).
   - name: historical_clv
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Realized gross margin to date; can be negative (a real loss).
   - name: expected_active_periods
+    logicalType: integer
+    physicalType: INT
     description: 'Survival heuristic: GREATEST(0, LEAST(tenure, 12) - recency) forward periods.'
   - name: predicted_clv
+    logicalType: number
+    physicalType: DOUBLE
     description: Transparent forward estimate = avg_order_margin x freq_per_period x expected_active_periods;
       clamped >= 0. Heuristic, not an ML model.
   - name: r_score
+    logicalType: integer
+    physicalType: BIGINT
     description: Recency quintile 1-5 (5 = most recent).
   - name: f_score
+    logicalType: integer
+    physicalType: BIGINT
     description: Frequency quintile 1-5 (5 = most frequent).
   - name: m_score
+    logicalType: integer
+    physicalType: BIGINT
     description: Monetary quintile 1-5 (5 = highest spend).
   - name: rfm_score
+    logicalType: integer
+    physicalType: BIGINT
     description: Combined RFM cell = 100*R + 10*F + M (111..555).
   - name: value_tier
+    logicalType: string
+    physicalType: STRING
     description: 'historical_clv quartile: PLATINUM / GOLD / SILVER / BRONZE.'
   - name: churn_risk_proxy
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: 'Heuristic flag: recency exceeds 2x the typical purchase cadence (tenure / frequency).'
   quality:
   - name: ltv_rfm_components_range

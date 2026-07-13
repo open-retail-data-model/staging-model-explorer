@@ -180,22 +180,61 @@ schema:
     type: businessDefinition
   properties:
   - name: promo_id
+    logicalType: string
+    physicalType: STRING
     description: Promotion business key.
+  - name: promo_name
+    logicalType: string
+    physicalType: STRING
+  - name: promo_type
+    logicalType: string
+    physicalType: STRING
+  - name: funding_type
+    logicalType: string
+    physicalType: STRING
+  - name: funded_by
+    logicalType: string
+    physicalType: STRING
+  - name: start_date
+    logicalType: date
+    physicalType: DATE
+  - name: end_date
+    logicalType: date
+    physicalType: DATE
   - name: scope_skus
+    logicalType: integer
+    physicalType: BIGINT
     description: Distinct products in the promotion scope.
   - name: scope_stores
+    logicalType: integer
+    physicalType: BIGINT
     description: Distinct stores in the promotion scope.
   - name: fiscal_weeks
+    logicalType: integer
+    physicalType: BIGINT
     description: Distinct fiscal weeks the promotion ran.
   - name: promoted_units
+    logicalType: integer
+    physicalType: BIGINT
     description: Total promoted units.
   - name: promoted_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Total promoted net revenue.
   - name: baseline_units
+    logicalType: number
+    physicalType: DOUBLE
     description: Total trailing-baseline units over the promo.
   - name: planned_trade_spend
+    logicalType: number
+    physicalType: DECIMAL
     description: Total planned trade spend.
+  - name: planned_lift_pct
+    logicalType: number
+    physicalType: DECIMAL(6, 2)
   - name: realized_lift_pct
+    logicalType: number
+    physicalType: DOUBLE
     description: 100 x (promoted_units - baseline_units) / baseline_units.
 - name: gold_promo_roi
   physicalName: promote_with_purpose.gold_promo_roi
@@ -214,50 +253,102 @@ schema:
     type: businessDefinition
   properties:
   - name: promo_id
+    logicalType: string
+    physicalType: STRING
     description: Promotion business key.
   - name: promo_name
+    logicalType: string
+    physicalType: STRING
     description: Promotion name.
   - name: promo_type
+    logicalType: string
+    physicalType: STRING
     description: 'Mechanic: TPR / FEATURE / DISPLAY / FEATURE_AND_DISPLAY / BOGO / COUPON / BUNDLE.'
   - name: funding_type
+    logicalType: string
+    physicalType: STRING
     description: OFF_INVOICE / BILL_BACK / SCAN_DOWN / LUMP_SUM.
   - name: funded_by
+    logicalType: string
+    physicalType: STRING
     description: SUPPLIER / RETAILER / SHARED.
+  - name: start_date
+    logicalType: date
+    physicalType: DATE
+  - name: end_date
+    logicalType: date
+    physicalType: DATE
   - name: promoted_units
+    logicalType: integer
+    physicalType: BIGINT
     description: Units sold on promotion.
   - name: promoted_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Net revenue on promotion.
   - name: promoted_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Gross margin on promotion.
   - name: baseline_units
+    logicalType: number
+    physicalType: DOUBLE
     description: Expected non-promoted units over the promo window (trailing-8-week baseline).
   - name: baseline_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Baseline units valued at normal price.
   - name: baseline_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Baseline units valued at normal margin.
   - name: incremental_units
+    logicalType: number
+    physicalType: DOUBLE
     description: promoted_units - baseline_units (NOT clamped; negative = lost volume).
   - name: incremental_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: promoted_revenue - baseline_revenue.
   - name: incremental_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: promoted_margin - baseline_margin.
   - name: trade_spend
+    logicalType: number
+    physicalType: DECIMAL
     description: Planned trade spend (realized actuals not modelled in v1).
   - name: roi
+    logicalType: number
+    physicalType: DECIMAL
     description: incremental_margin / NULLIF(trade_spend, 0); NULL-safe.
   - name: planned_lift_pct
+    logicalType: number
+    physicalType: DECIMAL(6, 2)
     description: Planned incremental unit lift %.
   - name: realized_lift_pct
+    logicalType: number
+    physicalType: DOUBLE
     description: 100 x incremental_units / baseline_units.
   - name: cannibalization_units
+    logicalType: number
+    physicalType: DOUBLE
     description: Lost units on substitute SKUs (same category, not on promo) during the window.
   - name: cannibalization_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Margin lost to cannibalization.
   - name: forward_buy_units
+    logicalType: number
+    physicalType: DOUBLE
     description: Lost units on promoted SKUs in the N weeks after the promo (pantry loading).
   - name: forward_buy_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Margin lost to forward buy.
   - name: net_incremental_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: incremental_margin - cannibalization_margin - forward_buy_margin (negative = value destroyed).
   quality:
   - name: roi_null_only_when_no_trade_spend
@@ -320,6 +411,85 @@ schema:
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
+  properties:
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
+  - name: promo_name
+    logicalType: string
+    physicalType: STRING
+  - name: promo_type
+    logicalType: string
+    physicalType: STRING
+  - name: funding_type
+    logicalType: string
+    physicalType: STRING
+  - name: funded_by
+    logicalType: string
+    physicalType: STRING
+  - name: start_date
+    logicalType: date
+    physicalType: DATE
+  - name: end_date
+    logicalType: date
+    physicalType: DATE
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: promoted_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: promoted_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: promoted_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: baseline_units
+    logicalType: number
+    physicalType: DOUBLE
+  - name: baseline_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: baseline_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: incremental_units
+    logicalType: number
+    physicalType: DOUBLE
+  - name: incremental_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: incremental_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: trade_spend
+    logicalType: number
+    physicalType: DECIMAL
+  - name: roi
+    logicalType: number
+    physicalType: DECIMAL
+  - name: planned_lift_pct
+    logicalType: number
+    physicalType: DECIMAL(6, 2)
+  - name: realized_lift_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: cannibalization_units
+    logicalType: number
+    physicalType: DOUBLE
+  - name: cannibalization_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: forward_buy_units
+    logicalType: number
+    physicalType: DOUBLE
+  - name: forward_buy_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: net_incremental_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
 - name: gold_trade_promotion
   physicalName: promote_with_purpose.gold_trade_promotion
   physicalType: view
@@ -336,15 +506,70 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
+  - name: promo_name
+    logicalType: string
+    physicalType: STRING
+  - name: promo_type
+    logicalType: string
+    physicalType: STRING
+  - name: funding_type
+    logicalType: string
+    physicalType: STRING
+  - name: funded_by
+    logicalType: string
+    physicalType: STRING
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_name
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+  - name: store_format
+    logicalType: string
+    physicalType: STRING
+  - name: region
+    logicalType: string
+    physicalType: STRING
   - name: fiscal_week_id
+    logicalType: integer
+    physicalType: INT
     description: Fiscal week identifier (fiscal_year*100 + fiscal_week).
   - name: promoted_units
+    logicalType: integer
+    physicalType: BIGINT
     description: Promoted units for this promo x product x store x week.
   - name: promoted_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Promoted net revenue for this cell.
   - name: planned_trade_spend
+    logicalType: number
+    physicalType: DECIMAL
     description: Planned trade spend allocated to this cell (evenly across scope x weeks).
+  - name: planned_lift_pct
+    logicalType: number
+    physicalType: DECIMAL(6, 2)
   - name: baseline_units
+    logicalType: number
+    physicalType: DOUBLE
     description: Trailing-8-week non-promoted mean units; NULL if < 4 weeks available.
   quality:
   - name: gold_trade_promotion_rowcount
@@ -377,3 +602,22 @@ schema:
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fiscal_week_index
+    logicalType: integer
+    physicalType: INT
+  - name: actual_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: actual_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: baseline_units
+    logicalType: number
+    physicalType: DOUBLE

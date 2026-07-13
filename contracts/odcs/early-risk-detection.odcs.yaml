@@ -700,20 +700,106 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: disruption_alert_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: disruption_alert_id
+    logicalType: string
+    physicalType: STRING
   - name: alert_type
+    logicalType: string
+    physicalType: STRING
     description: 'Category of disruption: shipment_delay, stockout_risk, quality_issue, feed_outage, etc.'
   - name: severity
+    logicalType: string
+    physicalType: STRING
     description: 'Alert severity: info, warning, or critical.'
   - name: alert_status
+    logicalType: string
+    physicalType: STRING
     description: 'Lifecycle status: open or acknowledged (resolved/suppressed filtered out).'
-  - name: supplier_risk_tier
-    description: Procurement risk tier of the affected supplier (from gold_procurement_risk).
-  - name: inventory_on_hand
-    description: Current units on hand for the affected product x store.
-  - name: inventory_is_stockout
-    description: Whether the affected product x store is currently stocked out.
+  - name: alert_title
+    logicalType: string
+    physicalType: STRING
+  - name: alert_description
+    logicalType: string
+    physicalType: STRING
+  - name: assigned_to
+    logicalType: string
+    physicalType: STRING
+  - name: rule_name
+    logicalType: string
+    physicalType: STRING
+  - name: metric_name
+    logicalType: string
+    physicalType: STRING
+  - name: rule_threshold
+    logicalType: number
+    physicalType: DOUBLE
+  - name: created_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+  - name: acknowledged_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+  - name: shipment_id
+    logicalType: string
+    physicalType: STRING
+  - name: shipment_current_status
+    logicalType: string
+    physicalType: STRING
+  - name: shipment_current_eta
+    logicalType: date
+    physicalType: DATE
   - name: shipment_eta_slip_days
+    logicalType: integer
+    physicalType: INT
     description: ETA slip in days for the affected shipment. Positive = late.
+  - name: shipment_transit_elapsed_days
+    logicalType: integer
+    physicalType: INT
+  - name: shipment_planned_transit_days
+    logicalType: integer
+    physicalType: INT
+  - name: shipment_last_event
+    logicalType: date
+    physicalType: TIMESTAMP
+  - name: shipment_last_location
+    logicalType: string
+    physicalType: STRING
+  - name: shipment_carrier
+    logicalType: string
+    physicalType: STRING
+  - name: supplier_name
+    logicalType: string
+    physicalType: STRING
+  - name: supplier_id
+    logicalType: string
+    physicalType: STRING
+  - name: supplier_risk_tier
+    logicalType: string
+    physicalType: STRING
+    description: Procurement risk tier of the affected supplier (from gold_procurement_risk).
+  - name: supplier_composite_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: inventory_on_hand
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Current units on hand for the affected product x store.
+  - name: inventory_in_transit
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: inventory_is_stockout
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Whether the affected product x store is currently stocked out.
 - name: gold_inventory_risk
   physicalName: early_risk_detection.gold_inventory_risk
   physicalType: view
@@ -730,16 +816,56 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: units_on_hand_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: units_in_transit
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: is_stockout
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: stockout_pct_day
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: snapshot_date
+    logicalType: date
+    physicalType: DATE
+  - name: trailing_units_sold
+    logicalType: integer
+    physicalType: BIGINT
+  - name: avg_daily_sales
+    logicalType: number
+    physicalType: DOUBLE
+    description: Trailing 14-day average daily unit sales.
   - name: days_of_supply
+    logicalType: number
+    physicalType: DOUBLE
     description: units_on_hand_eod / avg_daily_sales. NULL if no sales velocity.
   - name: days_of_supply_with_transit
+    logicalType: number
+    physicalType: DOUBLE
     description: (on_hand + in_transit) / avg_daily_sales. Includes replenishment en route.
   - name: stockout_risk_score
+    logicalType: integer
+    physicalType: INT
     description: '0-100 score: higher = more risk. 100 = currently stocked out.'
   - name: inventory_risk_tier
+    logicalType: string
+    physicalType: STRING
     description: stockout / critical / at_risk / healthy based on days-of-supply.
-  - name: avg_daily_sales
-    description: Trailing 14-day average daily unit sales.
   quality:
   - name: inv_risk_dos_nonnegative
     type: sql
@@ -828,37 +954,69 @@ schema:
     type: businessDefinition
   properties:
   - name: supplier_sk
+    logicalType: integer
+    physicalType: BIGINT
     description: Supplier surrogate key.
   - name: supplier_id
+    logicalType: string
+    physicalType: STRING
     description: Durable supplier business key.
   - name: supplier_name
+    logicalType: string
+    physicalType: STRING
     description: Supplier name.
   - name: country_code
+    logicalType: string
+    physicalType: STRING
     description: Supplier country, ISO 3166-1 alpha-2.
   - name: composite_current
+    logicalType: number
+    physicalType: DOUBLE
     description: Current-period scorecard composite (0-100).
   - name: performance_risk
+    logicalType: number
+    physicalType: DOUBLE
     description: Risk from current performance = 100 - composite_current (0-100).
   - name: trend_risk
+    logicalType: number
+    physicalType: DOUBLE
     description: Risk from deterioration over the trailing 4 periods (0-100); fires even with an OK current
       score.
   - name: concentration_risk
+    logicalType: number
+    physicalType: DECIMAL
     description: 100 x concentration_hhi.
   - name: concentration_hhi
+    logicalType: number
+    physicalType: DECIMAL
     description: Spend-weighted avg category Herfindahl index, fractional [0,1].
   - name: single_source_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: TRUE if the supplier is the sole source of >= 1 SKU.
   - name: single_sourced_sku_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Number of SKUs sole-sourced by this supplier.
   - name: geo_risk
+    logicalType: number
+    physicalType: DECIMAL
     description: 100 x the largest single-country spend share among the supplier categories (own country).
   - name: geo_concentration_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: TRUE if that country share exceeds 0.60.
   - name: risk_score
+    logicalType: number
+    physicalType: DOUBLE
     description: 'Weighted blend: performance 25, trend 30, concentration 20, single_source 15, geo 10.'
   - name: risk_tier
+    logicalType: string
+    physicalType: STRING
     description: LOW / MEDIUM / HIGH / CRITICAL; single-source or steep trend escalate to at least HIGH.
   - name: top_risk_factors
+    logicalType: string
+    physicalType: STRING
     description: Up to 3 factors with the largest weighted contribution.
   quality:
   - name: risk_hhi_range
@@ -947,31 +1105,108 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: shipment_sk
+    logicalType: integer
+    physicalType: BIGINT
   - name: shipment_id
+    logicalType: string
+    physicalType: STRING
     description: Durable shipment business key.
+  - name: supplier_id
+    logicalType: string
+    physicalType: STRING
+  - name: supplier_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: supplier_name
+    logicalType: string
+    physicalType: STRING
+  - name: lane_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: lane_id
+    logicalType: string
+    physicalType: STRING
+  - name: destination_store_id
+    logicalType: string
+    physicalType: STRING
+  - name: carrier_name
+    logicalType: string
+    physicalType: STRING
+  - name: transport_mode
+    logicalType: string
+    physicalType: STRING
+  - name: ship_date
+    logicalType: date
+    physicalType: DATE
+  - name: original_eta_date
+    logicalType: date
+    physicalType: DATE
+  - name: estimated_arrival_date
+    logicalType: date
+    physicalType: DATE
+  - name: actual_arrival_date
+    logicalType: date
+    physicalType: DATE
   - name: current_status
+    logicalType: string
+    physicalType: STRING
     description: Latest carrier checkpoint type (e.g. in_transit, delivered, exception).
   - name: current_status_reason
+    logicalType: string
+    physicalType: STRING
     description: Carrier message text for the latest checkpoint.
-  - name: current_eta_date
-    description: 'Most recent ETA: carrier_eta from the latest tracking event, or the shipment estimated_arrival_date.'
-  - name: eta_slip_days
-    description: Days between current ETA and original ETA. Positive = late.
-  - name: transit_elapsed_days
-    description: Calendar days since ship_date.
   - name: last_event_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
     description: Timestamp of the most recent carrier tracking event.
   - name: last_known_location
+    logicalType: string
+    physicalType: STRING
     description: Facility name from the most recent tracking event.
   - name: last_known_city
+    logicalType: string
+    physicalType: STRING
     description: City from the most recent tracking event.
   - name: last_known_country
+    logicalType: string
+    physicalType: STRING
     description: Country code (ISO 3166-1 alpha-2) from the most recent tracking event.
+  - name: last_known_latitude
+    logicalType: number
+    physicalType: DOUBLE
+  - name: last_known_longitude
+    logicalType: number
+    physicalType: DOUBLE
   - name: carrier_code
+    logicalType: string
+    physicalType: STRING
     description: Standardized carrier identifier (SCAC or BIC code).
   - name: tracking_number
+    logicalType: string
+    physicalType: STRING
     description: Carrier-assigned tracking or waybill number.
+  - name: current_eta_date
+    logicalType: date
+    physicalType: DATE
+    description: 'Most recent ETA: carrier_eta from the latest tracking event, or the shipment estimated_arrival_date.'
+  - name: eta_slip_days
+    logicalType: integer
+    physicalType: INT
+    description: Days between current ETA and original ETA. Positive = late.
+  - name: transit_elapsed_days
+    logicalType: integer
+    physicalType: INT
+    description: Calendar days since ship_date.
+  - name: planned_transit_days
+    logicalType: integer
+    physicalType: INT
+  - name: last_ingest_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
   - name: last_event_latency_seconds
+    logicalType: integer
+    physicalType: INT
     description: Ingest latency of the most recent tracking event, in seconds.
 - name: gold_supplier_scorecard
   physicalName: early_risk_detection.gold_supplier_scorecard
@@ -989,32 +1224,60 @@ schema:
     type: businessDefinition
   properties:
   - name: supplier_sk
+    logicalType: integer
+    physicalType: BIGINT
     description: Supplier surrogate key.
   - name: supplier_id
+    logicalType: string
+    physicalType: STRING
     description: Durable supplier business key.
   - name: supplier_name
+    logicalType: string
+    physicalType: STRING
     description: Supplier name.
   - name: country_code
+    logicalType: string
+    physicalType: STRING
     description: Supplier country, ISO 3166-1 alpha-2.
   - name: fiscal_year
+    logicalType: integer
+    physicalType: INT
     description: NRF fiscal year.
   - name: fiscal_period
+    logicalType: integer
+    physicalType: INT
     description: NRF 4-5-4 fiscal period (1-12).
   - name: order_lines
+    logicalType: integer
+    physicalType: BIGINT
     description: Order lines in the period (OTIF / price-compliance denominator).
   - name: otif_pct
+    logicalType: number
+    physicalType: DOUBLE
     description: 'On-Time In-Full rate: lines on time AND in full / total lines.'
   - name: fill_rate
+    logicalType: number
+    physicalType: DOUBLE
     description: SUM(received_qty) / SUM(ordered_qty).
   - name: avg_lead_time_days
+    logicalType: number
+    physicalType: DOUBLE
     description: Mean (actual_delivery_date - order_date) over delivered lines.
   - name: lead_time_variance
+    logicalType: number
+    physicalType: DOUBLE
     description: Population variance (var_pop) of lead time; higher = less reliable.
   - name: defect_rate
+    logicalType: number
+    physicalType: DOUBLE
     description: (defective + returned units) / received units.
   - name: price_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
     description: Share of lines invoiced at or below contract price.
   - name: composite_score
+    logicalType: number
+    physicalType: DOUBLE
     description: 'Weighted 0-100 score: OTIF 35, fill 25, lead-time reliability 20, defect 15, price 5.'
   quality:
   - name: scorecard_otif_pct_range

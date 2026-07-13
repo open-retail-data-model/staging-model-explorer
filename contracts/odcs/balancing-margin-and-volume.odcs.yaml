@@ -428,13 +428,30 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
   - name: substitute_price_ratio
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Own price divided by average substitute price.
   - name: complement_price_ratio
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Own price divided by average complement price.
   - name: substitute_markdown_depth_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Average markdown depth of substitute products.
   - name: complement_markdown_depth_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Average markdown depth of complement products.
 - name: gold_aggregation_features
   physicalName: balancing_margin_and_volume.gold_aggregation_features
@@ -449,6 +466,40 @@ schema:
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: gross_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: discount_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: is_on_promo
+    logicalType: integer
+    physicalType: INT
 - name: gold_bucket_features
   physicalName: balancing_margin_and_volume.gold_bucket_features
   physicalType: view
@@ -463,21 +514,46 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
   - name: margin_health_bucket
+    logicalType: string
+    physicalType: STRING
     description: Categorical indicator of gross margin performance (e.g., 'High', 'Healthy', 'Bleeding').
   - name: competitive_pressure_bucket
+    logicalType: string
+    physicalType: STRING
     description: Categorical indicator of competitor price aggression (e.g., 'Severe', 'Moderate', 'Low').
   - name: discount_depth_bucket
+    logicalType: string
+    physicalType: STRING
     description: Categorical depth of the current markdown (e.g., 'Clearance >50%', 'Shallow <10%').
   - name: demand_bucket_7d
+    logicalType: string
+    physicalType: STRING
     description: Categorical volume tier based on the last 7 days of sales.
   - name: weeks_of_cover_bucket
+    logicalType: string
+    physicalType: STRING
     description: Inventory health indicator categorizing stock life (e.g., '<1 Week', 'Overstock').
   - name: article_age_bucket
+    logicalType: string
+    physicalType: STRING
     description: Lifecycle stage of the product (e.g., 'New Arrival', 'Mature', 'End of Life').
   - name: demand_velocity_bucket
+    logicalType: string
+    physicalType: STRING
     description: Categorical speed of sales (e.g., 'Fast Mover', 'Slow Mover').
   - name: promo_frequency_bucket
+    logicalType: string
+    physicalType: STRING
     description: Categorical classification of how often the item is discounted.
   quality:
   - name: bmv_bucket_features_domain_margin
@@ -515,14 +591,58 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: effective_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
   - name: competitor_regular_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: The tracked shelf price of the matched competitor.
+  - name: is_comp_on_promo
+    logicalType: boolean
+    physicalType: BOOLEAN
   - name: price_gap_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: 'The absolute difference: effective_price_lc - competitor_regular_price_lc.'
-  - name: price_index_vs_comp
-    description: (effective_price_lc / competitor_regular_price_lc) * 100.
   - name: is_comp_price_below_own
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: True if the competitor is pricing lower than our effective price.
+  - name: price_index_vs_comp
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: (effective_price_lc / competitor_regular_price_lc) * 100.
+  - name: comp_price_trend_7d
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+  - name: price_gap_trend_flag
+    logicalType: string
+    physicalType: STRING
+  - name: is_kvi
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: kvi_own_revenue_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: kvi_comp_revenue_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
   quality:
   - name: bmv_competitor_analysis_undercut_rate
     type: sql
@@ -546,21 +666,46 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
   - name: local_footfall_index
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Index representing overall traffic volume in the specific store/location.
   - name: temp_max_celsius
+    logicalType: number
+    physicalType: DECIMAL(5, 2)
     description: Maximum recorded temperature for the day at the store location.
   - name: rainfall_mm
+    logicalType: number
+    physicalType: DECIMAL(8, 2)
     description: Total rainfall in millimeters for the day.
   - name: is_heatwave
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean flag triggered when temperatures exceed specific regional thresholds.
   - name: cpi_category_monthly_index
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: The macroeconomic Consumer Price Index specific to the subcategory.
   - name: fuel_price_index
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: Macroeconomic tracking of fuel prices, influencing discretionary spending.
   - name: is_state_election_day
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean flag for local/state election events impacting shopping behavior.
   - name: is_major_sporting_event_local
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean flag for local major sporting events driving specific traffic patterns.
 - name: gold_lagging_features
   physicalName: balancing_margin_and_volume.gold_lagging_features
@@ -576,6 +721,22 @@ schema:
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: effective_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
 - name: gold_outcome_variables
   physicalName: balancing_margin_and_volume.gold_outcome_variables
   physicalType: view
@@ -590,20 +751,103 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: effective_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: cost_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: discount_value_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: promo_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
   - name: recommended_optimal_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: The model's suggested profit-maximizing price.
+  - name: recommended_discount_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
   - name: predicted_units_at_optimal_price
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: The forecasted volume if the recommended price is applied.
+  - name: predicted_revenue_at_optimal_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: price_action_recommendation
+    logicalType: string
+    physicalType: STRING
+  - name: predicted_incremental_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Lift volume generated by a markdown.
+  - name: gross_margin_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: min_price_corridor_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: max_price_corridor_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
   - name: price_rounding_rule_code
+    logicalType: string
+    physicalType: STRING
     description: The logic applied to round recommended prices (e.g., .99 endings).
   - name: point_own_price_elasticity
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: The percentage change in volume for a 1% change in price (PED).
   - name: cross_elasticity_proxy
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: The substitution effect drawn from cannibalized items.
-  - name: predicted_incremental_units
-    description: Lift volume generated by a markdown.
+  - name: elasticity_confidence_lower
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+  - name: elasticity_confidence_upper
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
   - name: promo_elasticity_lift_adj
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
     description: The additional elasticity sensitivity introduced during a promotion.
+  - name: is_valid_for_elasticity_training
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: days_since_launch
+    logicalType: integer
+    physicalType: INT
+  - name: data_completeness_score
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: model_version
+    logicalType: string
+    physicalType: STRING
+  - name: scored_at
+    logicalType: date
+    physicalType: TIMESTAMP
   quality:
   - name: bmv_outcome_variables_grain
     type: sql
@@ -649,23 +893,68 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
-  - name: base_price_lc
-    description: The regular, undiscounted shelf price in local currency.
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
   - name: effective_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: The actual price paid after promotional discounts.
-  - name: mrp_lc
-    description: Manufacturer suggested retail price in local currency.
-  - name: gross_margin_pct
-    description: (effective_price_lc - cost_price_lc) / effective_price_lc.
+  - name: base_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: The regular, undiscounted shelf price in local currency.
   - name: cost_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: The unit cost of goods sold.
+  - name: mrp_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Manufacturer suggested retail price in local currency.
+  - name: realized_discount_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: price_vs_mrp_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: gross_margin_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+    description: (effective_price_lc - cost_price_lc) / effective_price_lc.
+  - name: log_effective_price
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
+  - name: is_price_anomaly
+    logicalType: boolean
+    physicalType: BOOLEAN
   - name: price_change_direction
+    logicalType: string
+    physicalType: STRING
     description: Indicator of whether the price increased, decreased, or remained flat.
   - name: price_change_magnitude_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: The percentage change in price compared to the previous period.
   - name: days_since_last_price_change
+    logicalType: integer
+    physicalType: INT
     description: Tracks the decay of consumer shock as they adapt to new prices.
   - name: price_barrier_proximity
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: effective_price_lc % 1.00, measuring proximity to psychological boundaries like .99.
 - name: gold_pricing_constraints
   physicalName: balancing_margin_and_volume.gold_pricing_constraints
@@ -681,19 +970,42 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
   - name: mrp_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Maximum Retail Price ceiling.
   - name: min_margin_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: Minimum acceptable profit margin percentage.
   - name: max_discount_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: Maximum allowed discount depth percentage.
   - name: min_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Derived minimum price bounded by cost and min margin.
   - name: max_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Derived maximum price bounded by MRP.
   - name: max_competitor_index
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: Maximum allowable price index against the primary competitor.
   - name: price_rounding_rule_code
+    logicalType: string
+    physicalType: STRING
     description: Rule applied to round recommended prices.
   quality:
   - name: bmv_pricing_constraints_logic
@@ -720,36 +1032,81 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: promo_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
   - name: is_on_promo
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean indicating if any promotion is currently active.
   - name: markdown_event_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean indicating if a specific markdown event is active.
   - name: markdown_depth_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: The percentage depth of the markdown relative to base price.
-  - name: is_promo_start_day
-    description: Boolean indicating if a new promotion started exactly on this date.
-  - name: days_into_promo
-    description: The number of days elapsed since the current promotion started.
-  - name: days_to_promo_end
-    description: The number of days remaining until the current promotion expires.
-  - name: is_promo_last_day
-    description: Boolean indicating if this is the final day of the promotion.
-  - name: days_post_promo_end
-    description: The number of days elapsed since the last promotion ended.
-  - name: is_post_promo_decay_window
-    description: Boolean indicating if the product is in the immediate post-promo "hangover" period.
-  - name: promo_frequency_30d
-    description: The number of distinct promotional days in the last 30 days.
-  - name: days_since_last_promo
-    description: The number of days since the product was last on promotion.
-  - name: concurrent_promo_count
-    description: The number of overlapping promotional mechanics currently active.
+  - name: planned_discount_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 2)
+    description: The planned percentage depth of the markdown.
   - name: promo_type
+    logicalType: string
+    physicalType: STRING
     description: Promotion mechanic type (e.g., TPR, DISPLAY).
   - name: funding_type
+    logicalType: string
+    physicalType: STRING
     description: How the promotion is funded.
-  - name: planned_discount_pct
-    description: The planned percentage depth of the markdown.
+  - name: is_promo_start_day
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Boolean indicating if a new promotion started exactly on this date.
+  - name: days_into_promo
+    logicalType: integer
+    physicalType: INT
+    description: The number of days elapsed since the current promotion started.
+  - name: days_to_promo_end
+    logicalType: integer
+    physicalType: INT
+    description: The number of days remaining until the current promotion expires.
+  - name: is_promo_last_day
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Boolean indicating if this is the final day of the promotion.
+  - name: days_post_promo_end
+    logicalType: integer
+    physicalType: INT
+    description: The number of days elapsed since the last promotion ended.
+  - name: is_post_promo_decay_window
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Boolean indicating if the product is in the immediate post-promo "hangover" period.
+  - name: promo_frequency_30d
+    logicalType: integer
+    physicalType: INT
+    description: The number of distinct promotional days in the last 30 days.
+  - name: days_since_last_promo
+    logicalType: integer
+    physicalType: INT
+    description: The number of days since the product was last on promotion.
+  - name: concurrent_promo_count
+    logicalType: integer
+    physicalType: INT
+    description: The number of overlapping promotional mechanics currently active.
   quality:
   - name: bmv_promotional_features_markdown_depth
     type: sql
@@ -776,6 +1133,37 @@ schema:
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: effective_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: gross_margin_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: stockout_pct_day
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: competitor_regular_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: is_on_promo
+    logicalType: integer
+    physicalType: INT
 - name: gold_sales_actuals
   physicalName: balancing_margin_and_volume.gold_sales_actuals
   physicalType: view
@@ -790,21 +1178,55 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
   - name: units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: Raw units sold at the till.
   - name: gross_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Total sales value before discounts.
   - name: net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Total sales value after discounts.
+  - name: discount_value_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
   - name: returns_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: Units returned by customers.
   - name: net_units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: units_sold - returns_units.
+  - name: log_units_sold
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
+  - name: log_net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
   - name: baseline_units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: De-seasonalized and de-promoted normal demand.
   - name: incremental_lift_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
     description: Extra units sold attributable specifically to a promotion.
   - name: stockout_pct_day
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
     description: Percentage of the day the product was out of stock on shelf.
 - name: gold_seasonality_features
   physicalName: balancing_margin_and_volume.gold_seasonality_features
@@ -820,15 +1242,40 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: month_sin
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
+  - name: month_cos
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
+  - name: day_of_year_sin
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
+  - name: day_of_year_cos
+    logicalType: number
+    physicalType: DECIMAL(10, 6)
   - name: is_weekend_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean indicating if the date falls on a weekend.
   - name: is_public_holiday
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean indicating if the date is a public holiday.
   - name: is_peak_shopping_season
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: Boolean indicating if the date falls in a high-demand retail period.
   - name: days_to_next_holiday
+    logicalType: integer
+    physicalType: INT
     description: Days remaining until the next public holiday.
   - name: days_since_last_holiday
+    logicalType: integer
+    physicalType: INT
     description: Days elapsed since the previous public holiday.
 - name: gold_trend_features
   physicalName: balancing_margin_and_volume.gold_trend_features
@@ -844,7 +1291,23 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+  - name: subcategory_daily_units_sold
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
   - name: subcategory_yoy_growth_pct
+    logicalType: number
+    physicalType: DOUBLE
     description: Year-over-year percentage growth in volume for the subcategory.
   - name: baseline_units_sold_forecast
+    logicalType: number
+    physicalType: DOUBLE
     description: Model feedback ingestion column for ARIMA/Prophet baseline.

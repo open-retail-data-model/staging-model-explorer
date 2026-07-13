@@ -46,53 +46,101 @@ schema:
     type: businessDefinition
   properties:
   - name: category
+    logicalType: string
+    physicalType: STRING
     description: Merchandising category.
   - name: fiscal_year
+    logicalType: integer
+    physicalType: INT
     description: NRF fiscal year.
   - name: fiscal_period
+    logicalType: integer
+    physicalType: INT
     description: NRF 4-5-4 fiscal period (1-12).
   - name: category_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Category net revenue in the period.
   - name: category_units
+    logicalType: integer
+    physicalType: BIGINT
     description: Category units sold in the period.
   - name: category_margin
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Category gross margin (revenue - units x unit_cost).
   - name: prior_period_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Revenue in the prior fiscal period (period_index - 1).
   - name: delta_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: category_revenue - prior_period_revenue (the four effects reconcile to this).
   - name: pop_growth_pct
+    logicalType: number
+    physicalType: DECIMAL
     description: Period-over-period revenue growth %; NULL when no prior period.
   - name: prior_year_revenue
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Revenue in the same fiscal period last year (period_index - 12).
   - name: yoy_growth_pct
+    logicalType: number
+    physicalType: DECIMAL
     description: Year-over-year revenue growth %; NULL when no prior-year period.
   - name: distribution_effect
+    logicalType: number
+    physicalType: DOUBLE
     description: Delta-revenue from changing the number of product x store selling points.
   - name: volume_effect
+    logicalType: number
+    physicalType: DOUBLE
     description: Delta-revenue from changing units per selling point (depth).
   - name: price_effect
+    logicalType: number
+    physicalType: DOUBLE
     description: Delta-revenue from like-for-like sub-category price change.
   - name: mix_effect
+    logicalType: number
+    physicalType: DOUBLE
     description: Delta-revenue from shifting the sub-category mix.
   - name: category_share
+    logicalType: number
+    physicalType: DECIMAL
     description: category_revenue / total period revenue (sums to ~1 across categories).
   - name: promo_contribution
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
     description: Incremental margin from promotions in the category that period (NULL if the promo view
       is absent).
   - name: value_share_platinum
+    logicalType: number
+    physicalType: DECIMAL
     description: Share of customer-attributed category revenue from PLATINUM CLV customers.
   - name: value_share_gold
+    logicalType: number
+    physicalType: DECIMAL
     description: Share of customer-attributed category revenue from GOLD CLV customers.
   - name: value_share_silver
+    logicalType: number
+    physicalType: DECIMAL
     description: Share of customer-attributed category revenue from SILVER CLV customers.
   - name: value_share_bronze
+    logicalType: number
+    physicalType: DECIMAL
     description: Share of customer-attributed category revenue from BRONZE CLV customers.
   - name: top_supplier_id
+    logicalType: string
+    physicalType: STRING
     description: Supplier with the largest share of category procurement spend.
   - name: supplier_top_share
+    logicalType: number
+    physicalType: DECIMAL
     description: That supplier share of category procurement spend.
   - name: supplier_top_score
+    logicalType: number
+    physicalType: DOUBLE
     description: That supplier average scorecard composite (NULL if the scorecard is absent).
   quality:
   - name: growth_decomposition_reconciles
