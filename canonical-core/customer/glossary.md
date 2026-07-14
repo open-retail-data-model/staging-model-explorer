@@ -1,6 +1,6 @@
 # Customer Domain — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-06-09
+> Status: 🟢 Review complete (v1_mvm) · Last reviewed: 2026-07-10 · identity slice (`household`, `identity_link`, `channel_preference`) in review in PR #60, pending reviewer sign-off
 
 Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog schema). Definitions are vendor-neutral and follow the ORDM [data model principles](../../docs/data-model-standards.md).
 
@@ -11,8 +11,11 @@ Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog sc
 | `profile` | One version per individual customer | SCD2 | Conformed individual-customer master — identity, locale, retail identifiers, lifecycle. Shared by every outcome package. |
 | `address` | One version per customer address | SCD2 | Postal addresses (billing, shipping, home, work). |
 | `contact` | One contact point | Operational (current-state) | Reachable contact points — email / phone. Type+value model. |
-| `consent` | One version per consent decision | SCD2 (date) + `decision_timestamp` | **Single source of truth** for opt-ins and processing permissions. Date-grained SCD2 like every other master; `decision_timestamp` keeps the legal-grade instant the decision was recorded. |
+| `consent` | One version per consent decision | SCD2 (date) + `decision_timestamp` | **Single source of truth** for opt-ins and processing permissions. Date-grained SCD2 like every other master; `decision_timestamp` keeps the legal-grade instant. Scoped by `consent_type` × `jurisdiction_code` (GDPR vs CCPA/CPRA). |
 | `account` | One version per organization | SCD2 | Optional B2B organization account a customer transacts on behalf of. |
+| `household` | One version per household | SCD2 | Conformed household master — a grouping of related individuals. `profile.household_sk`/`household_id` reference it. |
+| `identity_link` | One version per identifier→profile assertion | SCD2 | Thin resolved-identity primitive: a pseudonymized source identifier resolved to a `profile`, with match method and confidence. |
+| `channel_preference` | Type-aware: per (profile, channel, preference_type) for contact_frequency/format; + preference_value for topic_subscription; per (profile) for preferred_channel | SCD2 | Soft communication preferences. `preference_value` is in the grain only for topic_subscription (multiple concurrent topics per channel); `preferred_channel` is a single cross-channel choice (one per profile). **Not** consent — legal permissions live only in `consent`. |
 
 ## Key concepts
 
@@ -20,7 +23,10 @@ Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog sc
 - **Business / natural key (`*_id`)** — durable, externally-meaningful identifier, stable across SCD2 versions. Use with `is_current = TRUE` for "current state" joins.
 - **SCD2 versioning** — `effective_from_date` / `effective_to_date` / `is_current`. A new version is appended when a tracked attribute changes; the prior version is end-dated. No destructive overwrite of master attributes (principle #8).
 - **Audit block** — every mutable entity carries `created_timestamp` and `source_updated_timestamp` (source-system instants) alongside `load_timestamp` (pipeline instant). All timestamps are stored in **UTC** (principle #9b).
-- **Consent is centralized** — marketing and processing permissions exist **only** in `consent`, never as flags on `profile`/`account`/`contact` (principle #5).
+- **Consent is centralized** — marketing and processing permissions exist **only** in `consent`, never as flags on `profile`/`account`/`contact`/`channel_preference` (principle #5).
+- **Resolve consent as-of jurisdiction** — the current-consent grain is `(profile, consent_type, jurisdiction_code)`, not `(profile, consent_type)`. A customer can hold different current consent per regime (GDPR-EU vs CCPA/CPRA-US). Consumers (activation, Unified Customer View, …) **must** filter by the applicable `jurisdiction_code` (with `is_current = TRUE`) or they may see multiple current rows and pick the wrong one.
+- **Consent vs. preference** — `consent` answers "am I legally permitted to contact/process?" (lawful basis, opt-in/opt-out, jurisdiction). `channel_preference` answers "how does the customer prefer to be contacted?" (frequency, topic, format). `is_subscribed = false` is a **soft** targeting opt-out (a preference the customer expressed), **not** a legal withdrawal — that is a `consent` state. A preference neither grants what consent withheld nor legally overrides consent; a consumer combines both (contactable = consent granted AND preference allows). See [`design/customer-identity/consent-and-preferences-notes.md`](../../design/customer-identity/consent-and-preferences-notes.md).
+- **Identity is resolved upstream** — `identity_link` is the thin conformed projection of an identity-resolution process; the full graph (nodes/edges, merge/split, suppression) is deferred to [`design/customer-identity/`](../../design/customer-identity/), not the core.
 - **No derived columns on masters** — lifetime value, order counts, churn/CLTV scores, last-purchase dates are computed in outcome-package metric views, not stored here (principle #4).
 
 ## Selected terms
@@ -29,11 +35,15 @@ Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog sc
 |---|---|
 | **Profile** | A single individual customer (a person), independent of any organization. |
 | **Account** | A business/organization entity (B2B). Its `primary_contact_profile_sk` is the declared FK to the primary-contact profile (resolved as-of the account version's effective date); the durable `primary_contact_profile_id` business key is retained for lineage. |
-| **Household** | A grouping of related individuals (`household_id`). PII. |
+| **Household** | A grouping of related individuals, a first-class master keyed on `household_id`. A `profile` references its household via `household_sk` (as-of) + durable `household_id`. PII. |
 | **Loyalty ID** | Identifier of the individual within a loyalty/membership program (`loyalty_id`). PII. |
 | **Contact point** | One way to reach a customer (an email address or a phone number), typed via `contact_type`. |
 | **Consent type** | The activity a consent decision governs (e.g. `marketing_email`, `data_processing`). |
 | **Legal basis** | The lawful basis for processing personal data (e.g. `consent`, `contract`, `legitimate_interest`). |
+| **Jurisdiction code** | Region/law scope a consent decision applies under, ISO 3166 (e.g. `EU`, `GB`, `US-CA`); lets one customer hold different consent per regime. |
+| **Identity link** | A pseudonymized source identifier (hashed email/phone/device/loyalty id) resolved to a `profile`, with `match_method` and `match_confidence` in [0,1]. |
+| **Match confidence** | Probability in [0,1] that an `identity_link` correctly resolves an identifier to its profile; 1.0 = deterministic/asserted. |
+| **Channel preference** | A soft communication preference (preferred channel, frequency cap, topic subscription, format) — distinct from consent. |
 
 ## Standards used
 
@@ -53,9 +63,12 @@ Tagged via `dbx_pii_*` column tags (principle #11; consumed by governance / dbxm
 |---|---|
 | `profile.first_name`, `middle_name`, `last_name` | `dbx_pii_name` |
 | `profile.date_of_birth` | `dbx_pii_dob` |
-| `profile.loyalty_id`, `profile.household_id` | `dbx_pii` |
+| `profile.loyalty_id` | `dbx_pii_identifier` |
+| `profile.household_id` | `dbx_pii_identifier` |
 | `address.address_line_1`, `address_line_2`, `city`, `postal_code` | `dbx_pii_address` |
 | `contact.contact_value` | `dbx_pii_email`, `dbx_pii_phone` |
 | `account.tax_id`, `account.credit_limit_amount` | `dbx_pii_financial` |
+| `household.household_id` | `dbx_pii_identifier` |
+| `identity_link.identifier_value_hash` | `dbx_pii_identifier` (pseudonymized identifier) |
 
 > Per ORDM/RSK calibration: **UPC/SKU are not PII**; **`loyalty_id` and `household_id` are PII**.

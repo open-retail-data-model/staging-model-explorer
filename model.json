@@ -685,6 +685,18 @@
         },
         {
           "column": null,
+          "name": "profile_household_fk_orphan",
+          "severity": "error",
+          "table": "profile"
+        },
+        {
+          "column": null,
+          "name": "profile_household_businesskey_orphan",
+          "severity": "warn",
+          "table": "profile"
+        },
+        {
+          "column": null,
           "name": "address_keys_not_null",
           "severity": "error",
           "table": "address"
@@ -802,6 +814,186 @@
           "name": "account_no_self_parent",
           "severity": "error",
           "table": "account"
+        },
+        {
+          "column": null,
+          "name": "household_keys_not_null",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "household_business_key_unique_current",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "household_type_domain",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "household_status_domain",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "household_scd2_current_open",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "household_scd2_date_order",
+          "severity": "error",
+          "table": "household"
+        },
+        {
+          "column": null,
+          "name": "identity_link_keys_not_null",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_business_key_unique_current",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_profile_fk_orphan",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_profile_businesskey_orphan",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_identifier_type_domain",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_match_method_domain",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_status_domain",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_single_active_profile_per_identifier",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_confidence_range",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_scd2_current_open",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "identity_link_scd2_date_order",
+          "severity": "error",
+          "table": "identity_link"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_keys_not_null",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_business_key_unique_current",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_profile_fk_orphan",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_profile_businesskey_orphan",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_channel_domain",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_type_domain",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_frequency_period_domain",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_scd2_current_open",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_scd2_date_order",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_single_current_singlevalue",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_single_preferred_channel",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_single_current_topic",
+          "severity": "error",
+          "table": "channel_preference"
+        },
+        {
+          "column": null,
+          "name": "channel_preference_frequency_cap_nonnegative",
+          "severity": "error",
+          "table": "channel_preference"
         }
       ],
       "contract_path": "contracts/odcs/customer.odcs.yaml",
@@ -847,6 +1039,39 @@
             "primary_contact_profile_sk"
           ],
           "child_table": "account",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "household_sk"
+          ],
+          "child_table": "profile",
+          "declared_fk": true,
+          "parent_cols": [
+            "household_sk"
+          ],
+          "parent_table": "household"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "identity_link",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "channel_preference",
           "declared_fk": true,
           "parent_cols": [
             "profile_sk"
@@ -1303,6 +1528,186 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_preference_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the preference record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_preference_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to profile.profile_sk (the profile version this preference attaches to).",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the owning customer (join on current profile version).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Communication channel the preference applies to. For preference_type = preferred_channel this is the CHOSEN channel (not a scope). Allowed values: email, sms, phone, postal, push, in_app, web.",
+              "enum_values": [
+                "email",
+                "sms",
+                "phone",
+                "postal",
+                "push",
+                "in_app",
+                "web"
+              ],
+              "fk": false,
+              "name": "channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What the preference governs. Allowed values: contact_frequency, topic_subscription, format, preferred_channel.",
+              "enum_values": [
+                "contact_frequency",
+                "topic_subscription",
+                "format",
+                "preferred_channel"
+              ],
+              "fk": false,
+              "name": "preference_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The preference value, interpreted per preference_type: topic name (topic_subscription), format code (format). Unused (NULL) for preferred_channel (the chosen channel is in `channel`) and contact_frequency (see frequency_cap_per_period).",
+              "enum_values": [],
+              "fk": false,
+              "name": "preference_value",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Soft enrolment flag for THIS preference (topic/format/channel), by customer choice. Non-legal: a false value is a soft targeting opt-out, NOT a consent withdrawal \u2014 legal permission lives only in consent, which still governs lawful contact.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_subscribed",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Maximum desired contacts per frequency_period for this channel (NULL = no cap expressed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "frequency_cap_per_period",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Period the frequency cap applies over. Allowed values: day, week, month.",
+              "enum_values": [
+                "day",
+                "week",
+                "month"
+              ],
+              "fk": false,
+              "name": "frequency_period",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version. Current-row grain by type: (profile, channel, preference_type) for contact_frequency/format; + preference_value for topic_subscription (multi-valued); (profile) alone for preferred_channel (a single cross-channel choice).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core customer communication preferences (SCD2). Soft preferences only \u2014 legal permissions live in consent.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "channel_preference",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
               "comment": "Surrogate key. Unique per consent version.",
               "enum_values": [],
               "fk": false,
@@ -1389,6 +1794,15 @@
               "type": "STRING"
             },
             {
+              "comment": "Region/law scope this decision applies under. May be an ISO 3166-1 country (GB), an ISO 3166-2 subdivision (US-CA), or a reserved regional code (EU) \u2014 not alpha-2-only, since regulatory scope does not map cleanly to countries. Lets one customer hold different consent per jurisdiction (GDPR vs CCPA/CPRA). NULL = global/unspecified.",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
               "comment": "SCD2: inclusive start date this consent version became effective.",
               "enum_values": [],
               "fk": false,
@@ -1407,7 +1821,7 @@
               "type": "DATE"
             },
             {
-              "comment": "SCD2: TRUE for the currently effective consent record per (profile, consent_type).",
+              "comment": "SCD2: TRUE for the currently effective consent record per (profile, consent_type, jurisdiction_code).",
               "enum_values": [],
               "fk": false,
               "name": "is_current",
@@ -1621,6 +2035,314 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key. Unique per SCD2 version. FK target for profile.household_sk.",
+              "enum_values": [],
+              "fk": false,
+              "name": "household_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the household. Referenced by profile.household_id. Treated as PII.",
+              "enum_values": [],
+              "fk": false,
+              "name": "household_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nature of the household grouping. Allowed values: family, single, shared, business, other.",
+              "enum_values": [
+                "family",
+                "single",
+                "shared",
+                "business",
+                "other"
+              ],
+              "fk": false,
+              "name": "household_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Date the household grouping was first established/observed (ISO 8601 date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "formation_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Lifecycle status. Allowed values: active, inactive.",
+              "enum_values": [
+                "active",
+                "inactive"
+              ],
+              "fk": false,
+              "name": "household_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version of this household.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core household master (SCD2). Conformed household grouping shared by all outcome packages.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "household",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "identity_link_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the assertion, stable per (source_system, identifier_type, identifier_value_hash) across SCD2 versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "identity_link_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to profile.profile_sk (the profile version this identifier resolves to).",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the resolved customer (join on current profile version).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system that asserted the identifier (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Type of identifier. Allowed values: email_hash, phone_hash, device_id, cookie_id, maid, loyalty_id, login_id, customer_id.",
+              "enum_values": [
+                "email_hash",
+                "phone_hash",
+                "device_id",
+                "cookie_id",
+                "maid",
+                "loyalty_id",
+                "login_id",
+                "customer_id"
+              ],
+              "fk": false,
+              "name": "identifier_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Canonical hashed/tokenized identifier value. Never a raw email/phone/device id (PII, pseudonymized).",
+              "enum_values": [],
+              "fk": false,
+              "name": "identifier_value_hash",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the link was established. Allowed values: deterministic, probabilistic, declared, manual.",
+              "enum_values": [
+                "deterministic",
+                "probabilistic",
+                "declared",
+                "manual"
+              ],
+              "fk": false,
+              "name": "match_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Resolution confidence in [0,1]. 1.0000 = asserted/deterministic.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Lifecycle of the link. Allowed values: active, superseded, suppressed.",
+              "enum_values": [
+                "active",
+                "superseded",
+                "suppressed"
+              ],
+              "fk": false,
+              "name": "link_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this link version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL while still in effect.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently effective version of this identity link.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core resolved identity links \u2014 pseudonymized identifier\u2192profile assertions with match confidence.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "identity_link",
+          "role": "association",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
               "comment": "Surrogate key. Unique per SCD2 version. Used as the join/FK target for downstream dimensional models.",
               "enum_values": [],
               "fk": false,
@@ -1729,7 +2451,16 @@
               "type": "STRING"
             },
             {
-              "comment": "Household grouping identifier linking related individuals. Treated as PII.",
+              "comment": "FK to household.household_sk (the household version this profile is a member of). Resolved as-of the profile version.",
+              "enum_values": [],
+              "fk": true,
+              "name": "household_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable household grouping key linking related individuals; joins household.household_id (current version). Treated as PII.",
               "enum_values": [],
               "fk": false,
               "name": "household_id",
