@@ -1,6 +1,6 @@
 # Calendar Domain — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-07-06
+> Status: 🟢 Review complete (v1_mvm) · Last reviewed: 2026-07-14
 
 | Term | Definition |
 |---|---|
