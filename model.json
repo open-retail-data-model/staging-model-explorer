@@ -131,6 +131,11 @@
         "kind": "consumes",
         "source": "promote-with-purpose",
         "target": "transaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "unified-customer-view",
+        "target": "customer"
       }
     ],
     "nodes": [
@@ -12886,13 +12891,654 @@
       ]
     },
     {
-      "checks": [],
-      "contract_path": null,
-      "glossary_path": null,
+      "checks": [
+        {
+          "column": null,
+          "name": "cps_keys_not_null",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_grain_unique",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_pk_unique",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_profile_fk_orphan",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_profile_businesskey_orphan",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_snapshot_reason_domain",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_status_domain",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "cps_scores_in_range",
+          "severity": "error",
+          "table": "customer_profile_snapshot"
+        },
+        {
+          "column": null,
+          "name": "ucv_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "ucv_360_scores_in_range",
+          "severity": "error",
+          "table": "gold_unified_customer_360_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_360_one_row_per_customer",
+          "severity": "error",
+          "table": "gold_unified_customer_360_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_360_customer_count",
+          "severity": "metric",
+          "table": "gold_unified_customer_360_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligibility_one_row_per_grain",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligibility_blocking_reason_domain",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligibility_flag_consistency",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligible_rate",
+          "severity": "metric",
+          "table": "gold_customer_activation_eligibility_current"
+        }
+      ],
+      "contract_path": "contracts/odcs/unified-customer-view.odcs.yaml",
+      "glossary_path": "outcome-packages/unified-customer-view/glossary.md",
       "kind": "outcome",
       "name": "unified-customer-view",
-      "relationships": [],
-      "tables": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "customer_profile_snapshot",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per snapshot row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_profile_snapshot_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the snapshot (e.g. profile_id + snapshot_date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_profile_snapshot_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk (the profile version snapshotted).",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the customer (pseudonymous; not a name).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date this snapshot represents (ISO 8601 date). Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "snapshot_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Why the snapshot was taken. Allowed values: scheduled, pre_campaign, ad_hoc, audit.",
+              "enum_values": [
+                "scheduled",
+                "pre_campaign",
+                "ad_hoc",
+                "audit"
+              ],
+              "fk": false,
+              "name": "snapshot_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Count of current, active resolved identifiers mapped to this profile.",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_identifier_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Summary identity-resolution confidence in [0,1] over active links (max/weighted).",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolved_identity_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Count of channels with a current granted consent for this profile.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consented_channel_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Number of profiles currently sharing this household (outcome-layer roll-up).",
+              "enum_values": [],
+              "fk": false,
+              "name": "household_size",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Populated required attributes / required attributes, in [0,1].",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_completeness_score",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Activation-readiness across channels (consent + preference + identifier presence), in [0,1].",
+              "enum_values": [],
+              "fk": false,
+              "name": "reachability_score",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Lifecycle status snapshotted from profile. Allowed values: prospect, active, inactive, closed.",
+              "enum_values": [
+                "prospect",
+                "active",
+                "inactive",
+                "closed"
+              ],
+              "fk": false,
+              "name": "customer_status_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM Unified Customer View \u2014 append-only per-customer snapshot of identity/consent/preference/household roll-ups (no raw PII).",
+          "consumes_tables": [
+            {
+              "table": "profile",
+              "unit": "customer"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "customer_profile_snapshot",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Customer surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous customer business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Processing purpose (marketing).",
+              "enum_values": [],
+              "fk": false,
+              "name": "purpose_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Channel: email, sms, phone, postal.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Consent jurisdiction scope, ISO 3166 (GDPR vs CCPA/CPRA).",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current consent is granted for this purpose x channel x jurisdiction.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_granted_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Customer has not opted out of this channel in preferences.",
+              "enum_values": [],
+              "fk": false,
+              "name": "preference_allows_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "A valid identifier/contact exists for the channel.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_identifier_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Net permission: consent AND preference AND identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "First failing rule when not eligible: consent_denied, withdrawn, preference_opt_out, no_identifier (suppressed reserved).",
+              "enum_values": [],
+              "fk": false,
+              "name": "blocking_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluated_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "The net-permission gate: \"can I contact this customer for purpose X on channel Y?\" Grain: one row per customer x purpose x channel (x jurisdiction), specifically per EVALUABLE consent decision \u2014 a row exists only where the customer holds a marketing_* consent record. A \"never asked\" customer (no consent on record) is intentionally ABSENT here (neither eligible nor consent_denied): absence means \"no decision to evaluate\", and an activation gate must treat unknown consent as NOT eligible (do not infer eligibility from absence). Combines the THREE distinct governed states the briefs insist must not be collapsed (principle #5): consent (legal permission), preference (soft opt-out / channel), and reachability (a valid identifier/contact for the channel).",
+          "consumes_tables": [
+            {
+              "table": "address",
+              "unit": "customer"
+            },
+            {
+              "table": "channel_preference",
+              "unit": "customer"
+            },
+            {
+              "table": "consent",
+              "unit": "customer"
+            },
+            {
+              "table": "contact",
+              "unit": "customer"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_customer_activation_eligibility_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Customer surrogate key (join target).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous customer business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Number of current profiles sharing this household (outcome-layer roll-up).",
+              "enum_values": [],
+              "fk": false,
+              "name": "household_size",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Count of current, active resolved identifiers for the customer.",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_identifier_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Summary identity-resolution confidence in [0,1] over active links.",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolved_identity_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "TRUE if an active email contact point exists.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_email_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if an active phone contact point exists.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_phone_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if an active postal address exists.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_mailable_address_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Governing privacy region from primary address (ISO 3166).",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_primary_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Summary: any marketing consent granted (see eligibility view for the per-channel, jurisdiction-resolved gate).",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_marketing_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Summary: profiling/personalization consent granted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_personalization_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Summary: third-party-sharing consent granted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_third_party_sharing_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Count of distinct consent types currently granted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consented_purpose_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Summary: has email AND email marketing consent AND not opted out.",
+              "enum_values": [],
+              "fk": false,
+              "name": "email_contactable_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Summary: has phone AND sms marketing consent AND not opted out.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sms_contactable_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Summary marketing-reachability: marketing consent granted AND customer active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "marketing_eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Highest-ranked opted-in communication channel.",
+              "enum_values": [],
+              "fk": false,
+              "name": "preferred_channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Lifecycle status: prospect, active, inactive, closed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_status_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Populated key attributes / required, in [0,1].",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_completeness_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Activation-readiness across channels, in [0,1].",
+              "enum_values": [],
+              "fk": false,
+              "name": "reachability_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "One current row per resolved customer: a conformed 360 summary built ONLY from the thin customer core (profile, identity_link, consent, channel_preference, contact, address, household). Keyed on the customer SURROGATE; no raw PII (names / dob / loyalty / household ids / contact values) is exposed -- those stay in the governed dimension.",
+          "consumes_tables": [
+            {
+              "table": "address",
+              "unit": "customer"
+            },
+            {
+              "table": "channel_preference",
+              "unit": "customer"
+            },
+            {
+              "table": "consent",
+              "unit": "customer"
+            },
+            {
+              "table": "contact",
+              "unit": "customer"
+            },
+            {
+              "table": "identity_link",
+              "unit": "customer"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_unified_customer_360_current",
+          "role": "gold",
+          "scd2": false
+        }
+      ],
       "use_cases": [
         {
           "consumes": [],
