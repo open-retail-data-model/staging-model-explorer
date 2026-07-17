@@ -33,3 +33,24 @@ The Category Growth use case sits in the **Data Sharing with Suppliers** column 
 | **Promo contribution** | Incremental margin from `gold_promo_roi` attributable to the category that period (the share of growth that was promo-driven). NULL if the promo view is absent. |
 | **Value-tier mix** | `value_share_platinum/gold/silver/bronze` — the split of customer-attributed category revenue across CLV value tiers (`gold_customer_ltv`), showing whether growth comes from high- or low-value customers. NULL if the LTV view is absent. |
 | **Supplier contribution** (Interpretation A) | `top_supplier_id`, `supplier_top_share` (share of category procurement spend) and `supplier_top_score` (its scorecard composite). NULL if procurement/scorecard is absent. |
+
+## Media Measurement (supplier media reporting)
+
+The supplier-facing publish + entitlement layer over the Commerce Media Networks fact layer — how a retail-media
+network shares measured campaign performance with each supplier/advertiser under access control, with an
+immutable audit trail. Routes the media-measurement brief.
+
+| Object | Grain | Description |
+|---|---|---|
+| `reporting_entitlement` | one version per (principal, advertiser, campaign-scope) | Row-level access anchor: which governance principal may see which advertiser (optionally one campaign) + the minimum disclosure threshold. SCD2. |
+| `supplier_media_report_snapshot` | one publish snapshot × brand × campaign × level | Immutable frozen report — what was disclosed to a supplier at a point in time (audit/dispute), sourced from `campaign_day`. |
+| `gold_supplier_media_report` | principal × brand × campaign | Entitled supplier report (row-filter source): the CMN `campaign_day` rolled to brand×campaign, joined to `reporting_entitlement`. No person-level data. |
+
+| Term | Definition |
+|---|---|
+| **Reporting entitlement** | A grant letting a principal (UC group / account / service principal — not a customer) see a supplier's media results, brand-wide or campaign-scoped. |
+| **Disclosure threshold** | Minimum aggregation count a row must meet before it is shared with a supplier (privacy/competitive protection). |
+| **Published snapshot** | An immutable, versioned freeze of the numbers shared with a supplier, so a later restatement doesn't change the historical disclosure. |
+
+Builds on: `commerce-media-networks` (`campaign_day`) and `commerce-media-networks` (`advertiser`, `campaign`).
+Deferred: Lakebase serving projections (`api_supplier_campaign_summary`, `api_user_supplier_map`).

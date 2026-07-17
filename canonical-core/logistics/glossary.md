@@ -28,4 +28,5 @@ Business terms for the logistics domain. Vendor-neutral; follows the ORDM [data 
 | **Checkpoint type** | The kind of tracking event: `pickup`, `hub_scan`, `in_transit`, `out_for_delivery`, `delivered`, `attempted_delivery`, `customs_entry`, `customs_release`, `exception`, `return_to_sender`, or `info`. |
 | **Carrier code** | A standardized short identifier for the carrier (e.g. a SCAC or BIC code). |
 | **Tracking number** | The carrier-assigned waybill or tracking reference for the shipment. |
+| **Delivered** | Delivery is expressible both as `shipment.actual_arrival_date` (header-level) and as a `delivered` checkpoint in `shipment_tracking`. The **authoritative source** for delivery confirmation is `shipment_tracking` (the raw carrier feed); `shipment.actual_arrival_date` is set at load time and may lag. For reconciliation, prefer the tracking feed. |
 | **Ingest latency** | Time in seconds between when a tracking event occurred at the carrier and when it was ingested into the lakehouse. Lower = more real-time. |

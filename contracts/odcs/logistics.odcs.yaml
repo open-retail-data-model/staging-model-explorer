@@ -315,7 +315,8 @@ schema:
     logicalType: date
     physicalType: DATE
     required: false
-    description: Current estimated arrival date at destination (ISO 8601).
+    description: Estimated arrival date at destination, set at load time (ISO 8601). Real-time ETA revisions
+      are tracked via shipment_tracking.carrier_eta_date.
   - name: original_eta_date
     logicalType: date
     physicalType: DATE
@@ -722,7 +723,8 @@ schema:
     logicalType: boolean
     physicalType: BOOLEAN
     required: false
-    description: Whether signature was required for this shipment.
+    description: Whether signature was required for this shipment (shipment-level attribute, populated
+      on delivered checkpoint only).
   - name: delivery_location_type
     logicalType: string
     physicalType: STRING

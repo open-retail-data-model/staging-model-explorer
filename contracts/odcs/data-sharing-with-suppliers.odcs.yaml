@@ -27,6 +27,433 @@ authoritativeDefinitions:
 - url: docs/data-model-standards.md
   type: businessDefinition
 schema:
+- name: reporting_entitlement
+  physicalName: data_sharing_with_suppliers.reporting_entitlement
+  physicalType: table
+  description: Data Sharing with Suppliers — supplier reporting entitlement (row-level access anchor,
+    SCD2).
+  tags:
+  - association
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: reporting_entitlement_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: reporting_entitlement_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the entitlement.
+  - name: principal_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Governance principal granted access (UC group / account / service principal; not a customer
+      identity).
+  - name: principal_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Kind of principal. Allowed values: group, account, service_principal.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: group, account, service_principal.'
+  - name: advertiser_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to cmn.advertiser.advertiser_sk (the advertiser the principal may see).
+    relationships:
+    - to: advertiser.advertiser_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: commerce_media_networks
+      - property: enforced
+        value: false
+  - name: advertiser_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable advertiser business key.
+  - name: campaign_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to cmn.campaign.campaign_sk when scoped to one campaign (NULL = all campaigns of the
+      brand).
+    relationships:
+    - to: campaign.campaign_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: commerce_media_networks
+      - property: enforced
+        value: false
+  - name: campaign_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable campaign business key; NULL for brand-wide entitlement.
+  - name: min_disclosure_threshold
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Minimum aggregation count required before a row is disclosable to this principal.
+  - name: entitlement_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Lifecycle. Allowed values: active, suspended, revoked.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, suspended, revoked.'
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: re_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: re_keys_not_null
+    query: "SELECT * FROM data_sharing_with_suppliers.reporting_entitlement\nWHERE reporting_entitlement_sk\
+      \ IS NULL OR reporting_entitlement_id IS NULL OR principal_id IS NULL\n   OR effective_from_date\
+      \ IS NULL OR is_current IS NULL"
+  - name: re_business_key_unique_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: re_business_key_unique_current
+    query: 'SELECT reporting_entitlement_id, COUNT(*) AS n
+
+      FROM data_sharing_with_suppliers.reporting_entitlement
+
+      WHERE is_current = true GROUP BY reporting_entitlement_id HAVING COUNT(*) > 1'
+  - name: re_advertiser_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: re_advertiser_fk_orphan
+    query: 'SELECT e.* FROM data_sharing_with_suppliers.reporting_entitlement e
+
+      LEFT JOIN commerce_media_networks.advertiser sb ON e.advertiser_sk = sb.advertiser_sk
+
+      WHERE e.advertiser_sk IS NOT NULL AND sb.advertiser_sk IS NULL'
+  - name: re_campaign_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The optional campaign scope must resolve to an existing campaign (guarded; NULL = brand-wide).
+    query: 'SELECT e.* FROM data_sharing_with_suppliers.reporting_entitlement e
+
+      LEFT JOIN commerce_media_networks.campaign c ON e.campaign_sk = c.campaign_sk
+
+      WHERE e.campaign_sk IS NOT NULL AND c.campaign_sk IS NULL'
+  - name: re_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: re_status_domain
+    query: 'SELECT * FROM data_sharing_with_suppliers.reporting_entitlement
+
+      WHERE entitlement_status IS NOT NULL AND entitlement_status NOT IN (''active'', ''suspended'', ''revoked'')'
+  - name: re_scd2_current_open
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: re_scd2_current_open
+    query: 'SELECT * FROM data_sharing_with_suppliers.reporting_entitlement
+
+      WHERE (is_current = true AND effective_to_date IS NOT NULL) OR (is_current = false AND effective_to_date
+      IS NULL)'
+- name: supplier_media_report_snapshot
+  physicalName: data_sharing_with_suppliers.supplier_media_report_snapshot
+  physicalType: table
+  description: Data Sharing with Suppliers — immutable published supplier media report snapshot (append-only).
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: supplier_media_report_snapshot_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: supplier_media_report_snapshot_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key (grain hash incl. report_version).
+  - name: advertiser_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to cmn.advertiser.advertiser_sk.
+    relationships:
+    - to: advertiser.advertiser_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: commerce_media_networks
+      - property: enforced
+        value: false
+  - name: advertiser_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable advertiser business key.
+  - name: campaign_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to cmn.campaign.campaign_sk (or NULL for brand-level).
+    relationships:
+    - to: campaign.campaign_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: commerce_media_networks
+      - property: enforced
+        value: false
+  - name: campaign_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable campaign business key; NULL for brand-level.
+  - name: report_level
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Aggregation level of the report row. Allowed values: brand, campaign, product.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: brand, campaign, product.'
+  - name: report_period_start
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: Reporting period start, inclusive (ISO 8601).
+  - name: report_period_end
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: Reporting period end, inclusive (ISO 8601).
+  - name: snapshot_ts
+    logicalType: date
+    physicalType: TIMESTAMP
+    required: true
+    description: When this report was published/frozen (UTC, ISO 8601).
+  - name: snapshot_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Publish date (cluster key).
+  - name: report_version
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Monotonic publish version for this scope/period (immutable per version).
+  - name: impressions
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Impressions disclosed.
+  - name: viewable_impressions
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Viewable impressions disclosed.
+  - name: clicks
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Clicks disclosed.
+  - name: conversions
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Attributed conversions disclosed.
+  - name: units
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Attributed units disclosed.
+  - name: media_spend_net
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Net media spend disclosed, reporting/base currency.
+  - name: attributed_net_sales
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Attributed net sales disclosed, reporting/base currency.
+  - name: new_to_brand_sales
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: New-to-brand sales disclosed, reporting/base currency.
+  - name: incremental_sales
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Incremental sales disclosed, reporting/base currency.
+  - name: roas_net
+    logicalType: number
+    physicalType: DECIMAL(12,4)
+    required: false
+    description: Return on ad spend at publish time.
+  - name: iroas_value
+    logicalType: number
+    physicalType: DECIMAL(12,4)
+    required: false
+    description: Incremental ROAS at publish time.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Amount currency, ISO 4217 alpha-3 (single reporting currency).
+  - name: threshold_suppressed_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE if any measure was threshold-suppressed before disclosure.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: date
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: smrs_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Grain integrity: assert the DURABLE business key, not the IDENTITY surrogate (*_sk is
+      generated per row and can never collide — a tautology).'
+    query: 'SELECT supplier_media_report_snapshot_id, COUNT(*) AS n
+
+      FROM data_sharing_with_suppliers.supplier_media_report_snapshot
+
+      GROUP BY supplier_media_report_snapshot_id HAVING COUNT(*) > 1'
+  - name: smrs_advertiser_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: smrs_advertiser_fk_orphan
+    query: 'SELECT s.* FROM data_sharing_with_suppliers.supplier_media_report_snapshot s
+
+      LEFT JOIN commerce_media_networks.advertiser sb ON s.advertiser_sk = sb.advertiser_sk
+
+      WHERE s.advertiser_sk IS NOT NULL AND sb.advertiser_sk IS NULL'
+  - name: smrs_campaign_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The optional campaign scope must resolve to an existing campaign (guarded; NULL = brand-wide).
+    query: 'SELECT s.* FROM data_sharing_with_suppliers.supplier_media_report_snapshot s
+
+      LEFT JOIN commerce_media_networks.campaign c ON s.campaign_sk = c.campaign_sk
+
+      WHERE s.campaign_sk IS NOT NULL AND c.campaign_sk IS NULL'
+  - name: smrs_report_level_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: smrs_report_level_domain
+    query: 'SELECT * FROM data_sharing_with_suppliers.supplier_media_report_snapshot
+
+      WHERE report_level IS NOT NULL AND report_level NOT IN (''brand'', ''campaign'', ''product'')'
+  - name: smrs_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: smrs_single_currency
+    query: SELECT * FROM (SELECT COUNT(DISTINCT currency_code) AS n FROM data_sharing_with_suppliers.supplier_media_report_snapshot
+      WHERE currency_code IS NOT NULL) WHERE n > 1
 - name: gold_category_growth
   physicalName: data_sharing_with_suppliers.gold_category_growth
   physicalType: view
@@ -209,3 +636,83 @@ schema:
     query: 'SELECT ROUND(AVG(CASE WHEN top_supplier_id IS NULL THEN 1.0 ELSE 0.0 END), 4) AS supplier_null_rate
 
       FROM data_sharing_with_suppliers.gold_category_growth'
+- name: gold_supplier_media_report
+  physicalName: data_sharing_with_suppliers.gold_supplier_media_report
+  physicalType: view
+  description: 'The ENTITLED supplier media report: the Commerce Media Networks campaign_day rolled to
+    advertiser × campaign, joined to reporting_entitlement so every row carries the principal_id permitted
+    to see it (brand-wide or campaign-scoped). Threshold-suppressed and below-threshold rows are excluded.
+    No person-level data. This is the row-filter source for supplier sharing; pairs with supplier_media_report_snapshot
+    (the immutable published freeze).'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: principal_id
+    logicalType: string
+    physicalType: STRING
+    description: Governance principal entitled to see this row (row-filter key).
+  - name: advertiser_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable advertiser business key.
+  - name: brand_name
+    logicalType: string
+    physicalType: STRING
+    description: Advertised brand name.
+  - name: campaign_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable campaign business key.
+  - name: campaign_name
+    logicalType: string
+    physicalType: STRING
+    description: Campaign display name.
+  - name: impressions
+    logicalType: integer
+    physicalType: BIGINT
+    description: Impressions disclosed to the supplier.
+  - name: viewable_impressions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: clicks
+    logicalType: integer
+    physicalType: BIGINT
+  - name: conversions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: media_spend_net
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Net media spend, reporting/base currency.
+  - name: attributed_net_sales
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Attributed net sales, reporting/base currency.
+  - name: new_to_brand_sales
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: incremental_sales
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: roas_net
+    logicalType: number
+    physicalType: DOUBLE
+    description: Return on ad spend.
+  - name: iroas
+    logicalType: number
+    physicalType: DOUBLE
+    description: Incremental ROAS.
+  - name: fresh_as_of_ts
+    logicalType: date
+    physicalType: TIMESTAMP
+    description: View evaluation timestamp (UTC).

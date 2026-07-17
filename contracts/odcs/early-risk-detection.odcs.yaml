@@ -105,7 +105,8 @@ schema:
     logicalType: string
     physicalType: STRING
     required: true
-    description: 'Lifecycle status. Allowed values: open, acknowledged, resolved, escalated, suppressed.'
+    description: 'Lifecycle status (adopter-managed, should default to open). Allowed values: open, acknowledged,
+      resolved, escalated, suppressed.'
   - name: alert_title
     logicalType: string
     physicalType: STRING
@@ -120,7 +121,7 @@ schema:
     logicalType: string
     physicalType: STRING
     required: false
-    description: User or team assigned to handle the alert.
+    description: User or team assigned to handle the alert (adopter-managed).
     classification: restricted
     tags:
     - dbx_pii_name
@@ -153,17 +154,17 @@ schema:
     logicalType: date
     physicalType: TIMESTAMP
     required: false
-    description: When the alert was acknowledged (UTC, ISO 8601).
+    description: When the alert was acknowledged (UTC, ISO 8601). Adopter-managed.
   - name: resolved_timestamp
     logicalType: date
     physicalType: TIMESTAMP
     required: false
-    description: When the alert was resolved (UTC, ISO 8601).
+    description: When the alert was resolved (UTC, ISO 8601). Adopter-managed.
   - name: resolution_notes
     logicalType: string
     physicalType: STRING
     required: false
-    description: Notes on how the alert was resolved.
+    description: Notes on how the alert was resolved. Adopter-managed.
   - name: record_source
     logicalType: string
     physicalType: STRING
