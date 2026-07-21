@@ -138,12 +138,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -153,7 +153,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -308,7 +308,7 @@ schema:
     required: false
     description: Reporting period end, inclusive (ISO 8601).
   - name: snapshot_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When this report was published/frozen (UTC, ISO 8601).
@@ -393,7 +393,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -713,6 +713,6 @@ schema:
     physicalType: DOUBLE
     description: Incremental ROAS.
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).

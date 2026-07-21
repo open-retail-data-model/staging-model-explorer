@@ -172,12 +172,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this ad group.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -187,7 +187,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -430,12 +430,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this advertiser.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -445,7 +445,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -909,7 +909,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -1166,12 +1166,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this audience.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1181,7 +1181,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -1426,7 +1426,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -1648,12 +1648,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this campaign.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1663,7 +1663,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -2168,7 +2168,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -2511,7 +2511,7 @@ schema:
       severity: error
       description: 'Allowed values: purchase, add_to_cart, pdp_view, store_visit, signup.'
   - name: outcome_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the conversion occurred (UTC, ISO 8601).
@@ -2569,7 +2569,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -2787,12 +2787,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this creative.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -2802,7 +2802,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -2961,12 +2961,12 @@ schema:
     required: false
     description: TRUE for in-store channels (screens, audio); FALSE for online/offsite channels.
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -2976,7 +2976,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -3149,12 +3149,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this experiment.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -3164,7 +3164,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -3402,7 +3402,7 @@ schema:
     tags:
     - dbx_pii_identifier
   - name: assignment_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the unit was assigned to the cell (UTC, ISO 8601).
@@ -3412,7 +3412,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -3540,12 +3540,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this cell.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -3555,7 +3555,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -3753,7 +3753,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -4060,7 +4060,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -4259,12 +4259,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this keyword.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -4274,7 +4274,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -4653,7 +4653,7 @@ schema:
       severity: error
       description: 'Allowed values: impression, viewable_impression, click, ad_play, video_start, video_complete.'
   - name: event_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the event occurred at source (UTC, ISO 8601).
@@ -4734,7 +4734,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -4982,7 +4982,7 @@ schema:
     required: false
     description: Durable placement business key.
   - name: snapshot_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the pacing state was captured (UTC, ISO 8601).
@@ -5042,7 +5042,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -5240,12 +5240,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this placement.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -5255,7 +5255,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -5475,7 +5475,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -5566,7 +5566,7 @@ schema:
     required: false
     description: 'In-store zone code (IAB zone taxonomy: entrance/checkout/aisle/etc.).'
   - name: interval_start_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: Interval start (UTC, ISO 8601).
@@ -5606,7 +5606,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -5746,7 +5746,7 @@ schema:
     physicalType: DOUBLE
     description: New-to-brand sales / attributed net sales.
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
 - name: gold_incrementality_readout
@@ -5848,7 +5848,7 @@ schema:
     logicalType: integer
     physicalType: BIGINT
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
 - name: gold_pacing_current
@@ -5880,7 +5880,7 @@ schema:
     logicalType: string
     physicalType: STRING
   - name: snapshot_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: Latest pacing snapshot timestamp (UTC).
   - name: daily_budget
@@ -5909,7 +5909,7 @@ schema:
     physicalType: STRING
     description: on_track / under_pacing / over_pacing / exhausted.
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
 - name: gold_supplier_campaign_report
@@ -5995,6 +5995,6 @@ schema:
     physicalType: DOUBLE
     description: Incremental ROAS.
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).

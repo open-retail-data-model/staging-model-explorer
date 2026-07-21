@@ -40,6 +40,11 @@
       {
         "kind": "consumes",
         "source": "balancing-margin-and-volume",
+        "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
         "target": "transaction"
       },
       {
@@ -139,22 +144,22 @@
       },
       {
         "kind": "consumes",
-        "source": "in-store-equipment-maintenance",
+        "source": "predictive-operations",
         "target": "equipment"
       },
       {
         "kind": "consumes",
-        "source": "in-store-equipment-maintenance",
+        "source": "predictive-operations",
         "target": "inventory"
       },
       {
         "kind": "consumes",
-        "source": "in-store-equipment-maintenance",
+        "source": "predictive-operations",
         "target": "product"
       },
       {
         "kind": "consumes",
-        "source": "in-store-equipment-maintenance",
+        "source": "predictive-operations",
         "target": "store"
       },
       {
@@ -293,11 +298,6 @@
         "id": "early-risk-detection",
         "kind": "outcome",
         "label": "early-risk-detection"
-      },
-      {
-        "id": "in-store-equipment-maintenance",
-        "kind": "outcome",
-        "label": "in-store-equipment-maintenance"
       },
       {
         "id": "predictive-operations",
@@ -7006,7 +7006,7 @@
         {
           "consumes": [],
           "name": "Agent-to-Agent Transactions",
-          "status": "planned",
+          "status": "in-progress",
           "tables": []
         }
       ]
@@ -7044,21 +7044,63 @@
       "checks": [
         {
           "column": null,
-          "name": "bmv_outcome_variables_grain",
-          "severity": "error",
-          "table": "gold_outcome_variables"
-        },
-        {
-          "column": null,
           "name": "bmv_competitor_price_grain_unique",
           "severity": "error",
           "table": "competitor_price"
         },
         {
           "column": null,
-          "name": "bmv_outcome_variables_price_validity",
+          "name": "bmv_sales_actuals_grain_unique",
           "severity": "error",
-          "table": "gold_outcome_variables"
+          "table": "gold_sales_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_sales_actuals_inventory_validity",
+          "severity": "error",
+          "table": "gold_sales_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_opt_grain_unique",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_opt_metrics_validity",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_price_actuals_grain_unique",
+          "severity": "error",
+          "table": "gold_price_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_price_actuals_price_validity",
+          "severity": "error",
+          "table": "gold_price_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_affinity_features_grain_unique",
+          "severity": "error",
+          "table": "gold_affinity_features"
+        },
+        {
+          "column": null,
+          "name": "bmv_external_signals_grain_unique",
+          "severity": "error",
+          "table": "gold_external_signals"
+        },
+        {
+          "column": null,
+          "name": "bmv_seasonality_features_grain_unique",
+          "severity": "error",
+          "table": "gold_seasonality_features"
         },
         {
           "column": null,
@@ -7074,9 +7116,9 @@
         },
         {
           "column": null,
-          "name": "bmv_outcome_variables_rowcount",
-          "severity": "metric",
-          "table": "gold_outcome_variables"
+          "name": "bmv_promotional_features_markdown_depth",
+          "severity": "error",
+          "table": "gold_promotional_features"
         },
         {
           "column": null,
@@ -7089,12 +7131,6 @@
           "name": "bmv_pricing_constraints_logic",
           "severity": "error",
           "table": "gold_pricing_constraints"
-        },
-        {
-          "column": null,
-          "name": "bmv_promotional_features_markdown_depth",
-          "severity": "error",
-          "table": "gold_promotional_features"
         },
         {
           "column": null,
@@ -7149,6 +7185,36 @@
           "name": "bmv_product_relationship_grain_unique",
           "severity": "error",
           "table": "product_relationship"
+        },
+        {
+          "column": null,
+          "name": "bmv_planogram_grain_unique",
+          "severity": "error",
+          "table": "planogram"
+        },
+        {
+          "column": null,
+          "name": "bmv_planogram_non_current_closed",
+          "severity": "error",
+          "table": "planogram"
+        },
+        {
+          "column": null,
+          "name": "bmv_planogram_scd2_date_validity",
+          "severity": "error",
+          "table": "planogram"
+        },
+        {
+          "column": null,
+          "name": "bmv_planogram_store_fk_orphan",
+          "severity": "error",
+          "table": "planogram"
+        },
+        {
+          "column": null,
+          "name": "bmv_planogram_product_fk_orphan",
+          "severity": "error",
+          "table": "planogram"
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
@@ -7194,6 +7260,28 @@
             "related_product_sk"
           ],
           "child_table": "product_relationship",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "planogram",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "planogram",
           "declared_fk": true,
           "parent_cols": [
             "product_sk"
@@ -7475,6 +7563,170 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the planogram observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planogram_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural key (store_id|product_id).",
+              "enum_values": [],
+              "fk": false,
+              "name": "planogram_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to canonical store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to canonical product.product_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Merchandising category for the planogram allocation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "space_planning_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Number of facings allocated",
+              "enum_values": [],
+              "fk": false,
+              "name": "allocated_facings",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Square footage allocated",
+              "enum_values": [],
+              "fk": false,
+              "name": "allocated_sqft",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(10,2)"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Planogram and space allocation dimension.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "planogram",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
               "comment": "Surrogate key. Unique per relationship record.",
               "enum_values": [],
               "fk": false,
@@ -7581,6 +7833,24 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
               "comment": "",
               "enum_values": [],
               "fk": false,
@@ -7642,9 +7912,18 @@
               "pii": false,
               "pk": false,
               "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "substitute_demand_transfer_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
             }
           ],
-          "comment": "Cross-elasticity features derived from product relationships (substitutes and complements).",
+          "comment": "Cross-elasticity and affinity scores for complementary / substitute items.",
           "consumes_tables": [
             {
               "table": "inventory_position",
@@ -7668,6 +7947,24 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
               "comment": "",
               "enum_values": [],
               "fk": false,
@@ -7689,85 +7986,130 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "date_key",
+              "name": "snapshot_date",
               "pii": false,
               "pk": false,
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Number of facings on the planogram.",
               "enum_values": [],
               "fk": false,
-              "name": "category",
+              "name": "allocated_facings",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Square footage on the planogram.",
               "enum_values": [],
               "fk": false,
-              "name": "subcategory",
+              "name": "allocated_sqft",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "DECIMAL(10, 2)"
             },
             {
-              "comment": "",
+              "comment": "Probability of demand transfer from substitute products.",
               "enum_values": [],
               "fk": false,
-              "name": "brand",
+              "name": "substitute_demand_transfer_pct",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "DECIMAL(8, 4)"
             },
             {
-              "comment": "",
+              "comment": "14-day rolling average of daily sales.",
               "enum_values": [],
               "fk": false,
-              "name": "units_sold",
+              "name": "rolling_sales_velocity_14d",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "14-day rolling sum of daily revenue.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rolling_revenue_14d",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Units on hand at end of day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_on_hand_eod",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Elasticity of volume to allocated space.",
               "enum_values": [],
               "fk": false,
-              "name": "net_sales_lc",
+              "name": "space_elasticity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "Base volume sold absent of promotions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "baseline_velocity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Margin contribution percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "margin_contribution_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "AI recommendation (e.g. KEEP, DROP, EXPAND).",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Projected volume change.",
+              "enum_values": [],
+              "fk": false,
+              "name": "projected_volume_lift",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Projected margin change.",
+              "enum_values": [],
+              "fk": false,
+              "name": "projected_margin_lift_lc",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Expected cannibalization on other items.",
               "enum_values": [],
               "fk": false,
-              "name": "gross_revenue",
+              "name": "cannibalization_drag_lc",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "discount_amount",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "is_on_promo",
-              "pii": false,
-              "pk": false,
-              "type": "INT"
             }
           ],
-          "comment": "Cross-sectional aggregations (store, category, brand level).",
+          "comment": "Assortment optimization features and model placeholders.",
           "consumes_tables": [
             {
               "table": "inventory_position",
@@ -7778,22 +8120,40 @@
               "unit": "product"
             },
             {
-              "table": "promotion",
-              "unit": "marketing"
-            },
-            {
               "table": "sales",
               "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             }
           ],
           "layer": "gold",
           "materialized": true,
-          "name": "gold_aggregation_features",
+          "name": "gold_assortment_optimization",
           "role": "gold",
           "scd2": false
         },
         {
           "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
             {
               "comment": "",
               "enum_values": [],
@@ -7926,6 +8286,24 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
               "comment": "",
               "enum_values": [],
               "fk": false,
@@ -7951,6 +8329,15 @@
               "pii": false,
               "pk": false,
               "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
             },
             {
               "comment": "",
@@ -8028,15 +8415,6 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "comp_price_trend_7d",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
               "name": "price_gap_trend_flag",
               "pii": false,
               "pk": false,
@@ -8068,9 +8446,18 @@
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_assortment_overlap_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
             }
           ],
-          "comment": "Competitive intelligence metrics and price gaps.",
+          "comment": "Competitor price alignment and tracking.",
           "consumes_tables": [
             {
               "table": "inventory_position",
@@ -8097,6 +8484,24 @@
         },
         {
           "columns": [
+            {
+              "comment": "Surrogate key for the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
             {
               "comment": "",
               "enum_values": [],
@@ -8217,380 +8622,23 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Surrogate key for the product.",
               "enum_values": [],
               "fk": false,
-              "name": "product_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "store_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "date_key",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "units_sold",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "effective_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            }
-          ],
-          "comment": "Time-shifted lag features for elasticity model training. NOTE: Currently an inert passthrough; lag computations deferred.",
-          "consumes_tables": [
-            {
-              "table": "inventory_position",
-              "unit": "inventory"
-            },
-            {
-              "table": "product",
-              "unit": "product"
-            },
-            {
-              "table": "product_price",
-              "unit": "product"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
-            }
-          ],
-          "layer": "gold",
-          "materialized": true,
-          "name": "gold_lagging_features",
-          "role": "gold",
-          "scd2": false
-        },
-        {
-          "columns": [
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "product_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "store_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "date_key",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "units_sold",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "net_sales_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "effective_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "cost_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "discount_value_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "promo_sk",
+              "name": "product_sk",
               "pii": false,
               "pk": false,
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Surrogate key for the store.",
               "enum_values": [],
               "fk": false,
-              "name": "promo_id",
+              "name": "store_sk",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "BIGINT"
             },
-            {
-              "comment": "The model's suggested profit-maximizing price.",
-              "enum_values": [],
-              "fk": false,
-              "name": "recommended_optimal_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "recommended_discount_pct",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(5, 4)"
-            },
-            {
-              "comment": "The forecasted volume if the recommended price is applied.",
-              "enum_values": [],
-              "fk": false,
-              "name": "predicted_units_at_optimal_price",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "predicted_revenue_at_optimal_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "price_action_recommendation",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "Lift volume generated by a markdown.",
-              "enum_values": [],
-              "fk": false,
-              "name": "predicted_incremental_units",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "gross_margin_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "min_price_corridor_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "max_price_corridor_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "The logic applied to round recommended prices (e.g., .99 endings).",
-              "enum_values": [],
-              "fk": false,
-              "name": "price_rounding_rule_code",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "The percentage change in volume for a 1% change in price (PED).",
-              "enum_values": [],
-              "fk": false,
-              "name": "point_own_price_elasticity",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "The substitution effect drawn from cannibalized items.",
-              "enum_values": [],
-              "fk": false,
-              "name": "cross_elasticity_proxy",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "elasticity_confidence_lower",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "elasticity_confidence_upper",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "The additional elasticity sensitivity introduced during a promotion.",
-              "enum_values": [],
-              "fk": false,
-              "name": "promo_elasticity_lift_adj",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(8, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "is_valid_for_elasticity_training",
-              "pii": false,
-              "pk": false,
-              "type": "BOOLEAN"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "days_since_launch",
-              "pii": false,
-              "pk": false,
-              "type": "INT"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "data_completeness_score",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(5, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "model_version",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "scored_at",
-              "pii": false,
-              "pk": false,
-              "type": "TIMESTAMP"
-            }
-          ],
-          "comment": "Computed ML outputs, elasticity coefficients, and recommendations.",
-          "consumes_tables": [
-            {
-              "table": "inventory_position",
-              "unit": "inventory"
-            },
-            {
-              "table": "product",
-              "unit": "product"
-            },
-            {
-              "table": "product_price",
-              "unit": "product"
-            },
-            {
-              "table": "promotion",
-              "unit": "marketing"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
-            }
-          ],
-          "layer": "gold",
-          "materialized": true,
-          "name": "gold_outcome_variables",
-          "role": "gold",
-          "scd2": false
-        },
-        {
-          "columns": [
             {
               "comment": "",
               "enum_values": [],
@@ -8781,6 +8829,24 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "product_id",
               "pii": false,
               "pk": false,
@@ -8832,19 +8898,19 @@
               "type": "DECIMAL(5, 4)"
             },
             {
-              "comment": "Derived minimum price bounded by cost and min margin.",
+              "comment": "Derived maximum price bounded by MRP.",
               "enum_values": [],
               "fk": false,
-              "name": "min_price_lc",
+              "name": "max_price_lc",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "Derived maximum price bounded by MRP.",
+              "comment": "Derived minimum price bounded by cost and min margin.",
               "enum_values": [],
               "fk": false,
-              "name": "max_price_lc",
+              "name": "min_price_lc",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18, 2)"
@@ -8895,6 +8961,24 @@
         },
         {
           "columns": [
+            {
+              "comment": "Surrogate key for the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
             {
               "comment": "",
               "enum_values": [],
@@ -9100,127 +9184,23 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Surrogate key for the product.",
               "enum_values": [],
               "fk": false,
-              "name": "product_id",
+              "name": "product_sk",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Surrogate key for the store.",
               "enum_values": [],
               "fk": false,
-              "name": "store_id",
+              "name": "store_sk",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": "BIGINT"
             },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "date_key",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "units_sold",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "net_sales_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "effective_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "gross_margin_pct",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(5, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "stockout_pct_day",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(5, 4)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "competitor_regular_price_lc",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(18, 2)"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "is_on_promo",
-              "pii": false,
-              "pk": false,
-              "type": "INT"
-            }
-          ],
-          "comment": "Rolling window averages and stockout rates for ML training. NOTE: Currently an inert passthrough; rolling window computations deferred.",
-          "consumes_tables": [
-            {
-              "table": "inventory_position",
-              "unit": "inventory"
-            },
-            {
-              "table": "product",
-              "unit": "product"
-            },
-            {
-              "table": "product_price",
-              "unit": "product"
-            },
-            {
-              "table": "promotion",
-              "unit": "marketing"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
-            }
-          ],
-          "layer": "gold",
-          "materialized": true,
-          "name": "gold_rolling_features",
-          "role": "gold",
-          "scd2": false
-        },
-        {
-          "columns": [
             {
               "comment": "",
               "enum_values": [],
@@ -9346,6 +9326,15 @@
               "pii": false,
               "pk": false,
               "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "Units received today for sell-through calculation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_received_today",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
             }
           ],
           "comment": "Grain-level sales and volume actuals.",
@@ -9470,84 +9459,6 @@
           "name": "gold_seasonality_features",
           "role": "gold",
           "scd2": false
-        },
-        {
-          "columns": [
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "product_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "store_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "date_key",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "subcategory_daily_units_sold",
-              "pii": false,
-              "pk": false,
-              "type": "DECIMAL(12, 3)"
-            },
-            {
-              "comment": "Year-over-year percentage growth in volume for the subcategory.",
-              "enum_values": [],
-              "fk": false,
-              "name": "subcategory_yoy_growth_pct",
-              "pii": false,
-              "pk": false,
-              "type": "DOUBLE"
-            },
-            {
-              "comment": "Model feedback ingestion column for ARIMA/Prophet baseline.",
-              "enum_values": [],
-              "fk": false,
-              "name": "baseline_units_sold_forecast",
-              "pii": false,
-              "pk": false,
-              "type": "DOUBLE"
-            }
-          ],
-          "comment": "Macro trends and modeled baseline feedback loops.",
-          "consumes_tables": [
-            {
-              "table": "inventory_position",
-              "unit": "inventory"
-            },
-            {
-              "table": "product",
-              "unit": "product"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
-            }
-          ],
-          "layer": "gold",
-          "materialized": true,
-          "name": "gold_trend_features",
-          "role": "gold",
-          "scd2": false
         }
       ],
       "use_cases": [
@@ -9559,27 +9470,34 @@
             "transaction"
           ],
           "name": "Dynamic Price Optimization",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_price_actuals",
             "gold_competitor_analysis",
             "gold_pricing_constraints",
-            "gold_outcome_variables",
             "gold_bucket_features",
             "gold_external_signals",
             "gold_promotional_features",
-            "gold_sales_actuals",
-            "gold_aggregation_features",
-            "gold_lagging_features",
-            "gold_rolling_features",
-            "gold_trend_features"
+            "gold_sales_actuals"
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "inventory",
+            "marketing",
+            "product",
+            "store",
+            "transaction"
+          ],
           "name": "Assortment Optimization",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_assortment_optimization",
+            "gold_affinity_features",
+            "gold_competitor_analysis",
+            "gold_sales_actuals",
+            "gold_bucket_features"
+          ]
         },
         {
           "consumes": [
@@ -9590,21 +9508,16 @@
             "transaction"
           ],
           "name": "Elasticity Modeling",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_price_actuals",
             "gold_competitor_analysis",
-            "gold_outcome_variables",
             "gold_affinity_features",
             "gold_seasonality_features",
             "gold_bucket_features",
             "gold_external_signals",
             "gold_promotional_features",
-            "gold_sales_actuals",
-            "gold_aggregation_features",
-            "gold_lagging_features",
-            "gold_rolling_features",
-            "gold_trend_features"
+            "gold_sales_actuals"
           ]
         }
       ]
@@ -17383,25 +17296,25 @@
         {
           "consumes": [],
           "name": "Sponsored Products Placement",
-          "status": "in-progress",
+          "status": "done",
           "tables": []
         },
         {
           "consumes": [],
           "name": "In-Store Digital Ads",
-          "status": "in-progress",
+          "status": "done",
           "tables": []
         },
         {
           "consumes": [],
           "name": "Incrementality Testing",
-          "status": "in-progress",
+          "status": "done",
           "tables": []
         },
         {
           "consumes": [],
           "name": "Cross-Platform Retail Management",
-          "status": "in-progress",
+          "status": "done",
           "tables": []
         }
       ]
@@ -18456,7 +18369,7 @@
         {
           "consumes": [],
           "name": "Media Measurement",
-          "status": "in-progress",
+          "status": "done",
           "tables": []
         },
         {
@@ -20831,10 +20744,10 @@
           "table": "gold_maintenance_effectiveness"
         }
       ],
-      "contract_path": "contracts/odcs/in-store-equipment-maintenance.odcs.yaml",
-      "glossary_path": "outcome-packages/in-store-equipment-maintenance/glossary.md",
+      "contract_path": "contracts/odcs/predictive-operations.odcs.yaml",
+      "glossary_path": "outcome-packages/predictive-operations/glossary.md",
       "kind": "outcome",
-      "name": "in-store-equipment-maintenance",
+      "name": "predictive-operations",
       "relationships": [
         {
           "child_cols": [
@@ -22190,16 +22103,6 @@
           "scd2": false
         }
       ],
-      "use_cases": []
-    },
-    {
-      "checks": [],
-      "contract_path": null,
-      "glossary_path": null,
-      "kind": "outcome",
-      "name": "predictive-operations",
-      "relationships": [],
-      "tables": [],
       "use_cases": [
         {
           "consumes": [],
@@ -22214,10 +22117,19 @@
           "tables": []
         },
         {
-          "consumes": [],
+          "consumes": [
+            "equipment",
+            "inventory",
+            "product",
+            "store"
+          ],
           "name": "In-Store Equipment Maintenance",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_equipment_health",
+            "gold_maintenance_effectiveness",
+            "gold_downtime_impact"
+          ]
         }
       ]
     },
@@ -24158,7 +24070,7 @@
         {
           "consumes": [],
           "name": "CDP",
-          "status": "in-progress",
+          "status": "blocked",
           "tables": []
         },
         {

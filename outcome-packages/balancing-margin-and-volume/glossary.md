@@ -16,3 +16,15 @@
 | **Discount Depth Bucket** | Categorical depth of the current markdown (e.g., 'Clearance >50%', 'Shallow <10%'). |
 | **Cross Elasticity Proxy** | The substitution effect drawn from cannibalized items. |
 | **Point Own Price Elasticity** | The percentage change in volume for a 1% change in price (PED). |
+| **Planogram** | A visual representation of a stores products or services, used to maximize sales and space. |
+| **Allocated Facings** | The number of physical items of a specific product visible at the front of a retail shelf. |
+| **Allocated Sqft** | The total square footage assigned to a specific product on a retail shelf. |
+| **Space Elasticity** | The sensitivity of sales volume to changes in the amount of shelf space allocated to a product. |
+| **Substitute Demand Transfer Pct** | The probability that demand transfers to a substitute product when an item is unavailable or dropped. |
+| **Rolling Sales Velocity 14d** | The 14-day rolling average of daily units sold. |
+| **Baseline Velocity** | The expected volume sold in the absence of promotions. |
+| **Margin Contribution Pct** | The percentage margin contribution of an item relative to its category or overall sales. |
+| **Assortment Recommendation** | AI-generated recommendation for an item's status in the assortment (e.g., KEEP, DROP, EXPAND). |
+| **Projected Volume Lift** | The expected change in volume from a recommended assortment action. |
+| **Projected Margin Lift** | The expected change in margin from a recommended assortment action. |
+| **Cannibalization Drag** | The expected loss in sales on other items due to demand transfer or cannibalization. |

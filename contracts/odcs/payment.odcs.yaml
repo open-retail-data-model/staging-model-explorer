@@ -132,7 +132,7 @@ schema:
     description: Original tender currency before normalization (lineage only), ISO 4217 alpha-3. Convert
       with fx_rate.
   - name: event_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Instant the payment event occurred (UTC, ISO 8601) — the event-time, distinct from load_timestamp
@@ -143,7 +143,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).

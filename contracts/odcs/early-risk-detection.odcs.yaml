@@ -146,17 +146,17 @@ schema:
     required: false
     description: Affected store business key.
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the alert was created (UTC, ISO 8601).
   - name: acknowledged_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the alert was acknowledged (UTC, ISO 8601). Adopter-managed.
   - name: resolved_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the alert was resolved (UTC, ISO 8601). Adopter-managed.
@@ -171,7 +171,7 @@ schema:
     required: false
     description: Originating system or rule engine.
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -407,12 +407,12 @@ schema:
     required: false
     description: Threshold that was breached.
   - name: event_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the disruption was detected at source (UTC, ISO 8601).
   - name: ingest_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When this event was ingested into the lakehouse (UTC, ISO 8601).
@@ -427,7 +427,7 @@ schema:
     required: false
     description: Originating system or rule engine that produced this event.
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -634,12 +634,12 @@ schema:
     required: false
     description: How often the rule runs (e.g. 5m, 1h, 1d). Informational.
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the rule was created (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the rule was last modified (UTC, ISO 8601).
@@ -649,7 +649,7 @@ schema:
     required: false
     description: Originating system or configuration source.
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -738,10 +738,10 @@ schema:
     logicalType: number
     physicalType: DOUBLE
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
   - name: acknowledged_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
   - name: shipment_id
     logicalType: string
@@ -763,7 +763,7 @@ schema:
     logicalType: integer
     physicalType: INT
   - name: shipment_last_event
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
   - name: shipment_last_location
     logicalType: string
@@ -1158,7 +1158,7 @@ schema:
     physicalType: STRING
     description: Carrier message text for the latest checkpoint.
   - name: last_event_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: Timestamp of the most recent carrier tracking event.
   - name: last_known_location
@@ -1203,7 +1203,7 @@ schema:
     logicalType: integer
     physicalType: INT
   - name: last_ingest_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
   - name: last_event_latency_seconds
     logicalType: integer

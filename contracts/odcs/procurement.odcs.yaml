@@ -194,7 +194,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).

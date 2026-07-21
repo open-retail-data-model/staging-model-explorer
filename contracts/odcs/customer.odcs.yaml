@@ -174,12 +174,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this account.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -189,7 +189,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -393,12 +393,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this address.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -408,7 +408,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -582,12 +582,12 @@ schema:
       preference_type) for contact_frequency/format; + preference_value for topic_subscription (multi-valued);
       (profile) alone for preferred_channel (a single cross-channel choice).'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -597,7 +597,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -849,17 +849,17 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently effective consent record per (profile, consent_type, jurisdiction_code).'
   - name: decision_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Legal-grade instant the consent decision was given/withdrawn (UTC, ISO 8601).
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -869,7 +869,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -1005,7 +1005,7 @@ schema:
     required: false
     description: TRUE if the contact point has been verified (e.g. confirmed email / SMS).
   - name: verified_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Timestamp the contact point was verified (UTC, ISO 8601); NULL if unverified.
@@ -1020,12 +1020,12 @@ schema:
       severity: error
       description: 'Allowed values: active, inactive, bounced, opted_out.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1035,7 +1035,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -1151,12 +1151,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this household.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1166,7 +1166,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -1351,12 +1351,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently effective version of this identity link.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1366,7 +1366,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -1633,12 +1633,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version of this profile.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -1648,7 +1648,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).

@@ -170,13 +170,13 @@ schema:
     required: false
     description: Last date (Saturday) of the fiscal week.
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601). Required on reference
       tables (standard §8).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601). Required on reference
@@ -187,7 +187,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).
@@ -315,13 +315,13 @@ schema:
       severity: error
       description: CHECK (rate IS NULL OR rate > 0).
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601). Required on reference
       tables (standard §8).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601). Required on reference
@@ -332,7 +332,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).

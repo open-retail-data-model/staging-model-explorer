@@ -84,12 +84,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -99,7 +99,7 @@ schema:
     required: false
     description: Originating system of record.
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -247,7 +247,7 @@ schema:
     required: false
     description: Originating system (e.g. scraping vendor).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC).
@@ -296,6 +296,187 @@ schema:
     description: bmv_fk_orphan_product
     query: "SELECT cp.* FROM balancing_margin_and_volume.competitor_price cp\nWHERE cp.product_sk IS NOT\
       \ NULL AND NOT EXISTS (\n  SELECT 1 FROM product.product p WHERE p.product_sk = cp.product_sk\n)"
+- name: planogram
+  physicalName: balancing_margin_and_volume.planogram
+  physicalType: table
+  description: Planogram and space allocation dimension.
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: planogram_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the planogram observation.
+  - name: planogram_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural key (store_id|product_id).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to canonical store.store_sk.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Store business key.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to canonical product.product_sk.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Product business key.
+  - name: space_planning_category
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Merchandising category for the planogram allocation.
+  - name: allocated_facings
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Number of facings allocated
+  - name: allocated_sqft
+    logicalType: number
+    physicalType: DECIMAL(10,2)
+    required: false
+    description: Square footage allocated
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: bmv_planogram_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure only one current active row per store_id, product_id
+    query: 'SELECT store_id, product_id
+
+      FROM balancing_margin_and_volume.planogram
+
+      WHERE is_current = TRUE
+
+      GROUP BY store_id, product_id
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_planogram_non_current_closed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure non-current rows have an effective_to_date
+    query: 'SELECT store_id, product_id
+
+      FROM balancing_margin_and_volume.planogram
+
+      WHERE is_current = FALSE AND effective_to_date IS NULL'
+  - name: bmv_planogram_scd2_date_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure effective_from_date is strictly before effective_to_date
+    query: 'SELECT *
+
+      FROM balancing_margin_and_volume.planogram
+
+      WHERE effective_from_date >= effective_to_date'
+  - name: bmv_planogram_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure planogram store_sk resolves to a valid store
+    query: 'SELECT p.planogram_sk, p.store_sk
+
+      FROM balancing_margin_and_volume.planogram p
+
+      LEFT JOIN store.store s ON p.store_sk = s.store_sk
+
+      WHERE p.store_sk IS NOT NULL AND s.store_sk IS NULL'
+  - name: bmv_planogram_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure planogram product_sk resolves to a valid product
+    query: 'SELECT p.planogram_sk, p.product_sk
+
+      FROM balancing_margin_and_volume.planogram p
+
+      LEFT JOIN product.product pr ON p.product_sk = pr.product_sk
+
+      WHERE p.product_sk IS NOT NULL AND pr.product_sk IS NULL'
 - name: product_relationship
   physicalName: balancing_margin_and_volume.product_relationship
   physicalType: table
@@ -374,7 +555,7 @@ schema:
     required: false
     description: Originating system.
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC).
@@ -417,7 +598,7 @@ schema:
 - name: gold_affinity_features
   physicalName: balancing_margin_and_volume.gold_affinity_features
   physicalType: view
-  description: Cross-elasticity features derived from product relationships (substitutes and complements).
+  description: Cross-elasticity and affinity scores for complementary / substitute items.
   tags:
   - gold
   authoritativeDefinitions:
@@ -428,6 +609,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -453,10 +642,28 @@ schema:
     logicalType: number
     physicalType: DECIMAL(8, 4)
     description: Average markdown depth of complement products.
-- name: gold_aggregation_features
-  physicalName: balancing_margin_and_volume.gold_aggregation_features
+  - name: substitute_demand_transfer_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+  quality:
+  - name: bmv_affinity_features_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_affinity_features operates at the product x store x date grain
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_affinity_features
+
+      GROUP BY product_sk, store_sk, date_key
+
+      HAVING COUNT(*) > 1'
+- name: gold_assortment_optimization
+  physicalName: balancing_margin_and_volume.gold_assortment_optimization
   physicalType: view
-  description: Cross-sectional aggregations (store, category, brand level).
+  description: Assortment optimization features and model placeholders.
   tags:
   - gold
   authoritativeDefinitions:
@@ -467,39 +674,100 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
   - name: store_id
     logicalType: string
     physicalType: STRING
-  - name: date_key
+  - name: snapshot_date
     logicalType: date
     physicalType: DATE
-  - name: category
-    logicalType: string
-    physicalType: STRING
-  - name: subcategory
-    logicalType: string
-    physicalType: STRING
-  - name: brand
-    logicalType: string
-    physicalType: STRING
-  - name: units_sold
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-  - name: net_sales_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: gross_revenue
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: discount_amount
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: is_on_promo
+  - name: allocated_facings
     logicalType: integer
     physicalType: INT
+    description: Number of facings on the planogram.
+  - name: allocated_sqft
+    logicalType: number
+    physicalType: DECIMAL(10, 2)
+    description: Square footage on the planogram.
+  - name: substitute_demand_transfer_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Probability of demand transfer from substitute products.
+  - name: rolling_sales_velocity_14d
+    logicalType: number
+    physicalType: DOUBLE
+    description: 14-day rolling average of daily sales.
+  - name: rolling_revenue_14d
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: 14-day rolling sum of daily revenue.
+  - name: units_on_hand_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Units on hand at end of day.
+  - name: space_elasticity
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Elasticity of volume to allocated space.
+  - name: baseline_velocity
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Base volume sold absent of promotions.
+  - name: margin_contribution_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Margin contribution percentage.
+  - name: recommendation
+    logicalType: string
+    physicalType: STRING
+    description: AI recommendation (e.g. KEEP, DROP, EXPAND).
+  - name: projected_volume_lift
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Projected volume change.
+  - name: projected_margin_lift_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Projected margin change.
+  - name: cannibalization_drag_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Expected cannibalization on other items.
+  quality:
+  - name: bmv_assortment_opt_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_assortment_optimization operates at the product x store grain (snapshot)
+    query: 'SELECT product_sk, store_sk
+
+      FROM balancing_margin_and_volume.gold_assortment_optimization
+
+      GROUP BY product_sk, store_sk
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_assortment_opt_metrics_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure inventory and productivity metrics are non-negative
+    query: "SELECT * FROM balancing_margin_and_volume.gold_assortment_optimization\nWHERE (units_on_hand_eod\
+      \ IS NOT NULL AND units_on_hand_eod < 0)\n   OR (rolling_revenue_14d IS NOT NULL AND rolling_revenue_14d\
+      \ < 0)"
 - name: gold_bucket_features
   physicalName: balancing_margin_and_volume.gold_bucket_features
   physicalType: view
@@ -514,6 +782,12 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -580,7 +854,7 @@ schema:
 - name: gold_competitor_analysis
   physicalName: balancing_margin_and_volume.gold_competitor_analysis
   physicalType: view
-  description: Competitive intelligence metrics and price gaps.
+  description: Competitor price alignment and tracking.
   tags:
   - gold
   authoritativeDefinitions:
@@ -591,6 +865,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -600,6 +882,9 @@ schema:
   - name: date_key
     logicalType: date
     physicalType: DATE
+  - name: competitor_sk
+    logicalType: integer
+    physicalType: BIGINT
   - name: competitor_id
     logicalType: string
     physicalType: STRING
@@ -628,9 +913,6 @@ schema:
     logicalType: number
     physicalType: DECIMAL(8, 4)
     description: (effective_price_lc / competitor_regular_price_lc) * 100.
-  - name: comp_price_trend_7d
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
   - name: price_gap_trend_flag
     logicalType: string
     physicalType: STRING
@@ -643,6 +925,9 @@ schema:
   - name: kvi_comp_revenue_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
+  - name: competitor_assortment_overlap_pct
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
   quality:
   - name: bmv_competitor_analysis_undercut_rate
     type: sql
@@ -666,6 +951,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -707,178 +1000,21 @@ schema:
     logicalType: boolean
     physicalType: BOOLEAN
     description: Boolean flag for local major sporting events driving specific traffic patterns.
-- name: gold_lagging_features
-  physicalName: balancing_margin_and_volume.gold_lagging_features
-  physicalType: view
-  description: 'Time-shifted lag features for elasticity model training. NOTE: Currently an inert passthrough;
-    lag computations deferred.'
-  tags:
-  - gold
-  authoritativeDefinitions:
-  - url: outcome-packages/balancing-margin-and-volume/README.md
-    type: businessDefinition
-  - url: outcome-packages/balancing-margin-and-volume/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: product_id
-    logicalType: string
-    physicalType: STRING
-  - name: store_id
-    logicalType: string
-    physicalType: STRING
-  - name: date_key
-    logicalType: date
-    physicalType: DATE
-  - name: units_sold
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-  - name: effective_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-- name: gold_outcome_variables
-  physicalName: balancing_margin_and_volume.gold_outcome_variables
-  physicalType: view
-  description: Computed ML outputs, elasticity coefficients, and recommendations.
-  tags:
-  - gold
-  authoritativeDefinitions:
-  - url: outcome-packages/balancing-margin-and-volume/README.md
-    type: businessDefinition
-  - url: outcome-packages/balancing-margin-and-volume/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: product_id
-    logicalType: string
-    physicalType: STRING
-  - name: store_id
-    logicalType: string
-    physicalType: STRING
-  - name: date_key
-    logicalType: date
-    physicalType: DATE
-  - name: units_sold
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-  - name: net_sales_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: effective_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: cost_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: discount_value_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: promo_sk
-    logicalType: integer
-    physicalType: BIGINT
-  - name: promo_id
-    logicalType: string
-    physicalType: STRING
-  - name: recommended_optimal_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-    description: The model's suggested profit-maximizing price.
-  - name: recommended_discount_pct
-    logicalType: number
-    physicalType: DECIMAL(5, 4)
-  - name: predicted_units_at_optimal_price
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-    description: The forecasted volume if the recommended price is applied.
-  - name: predicted_revenue_at_optimal_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: price_action_recommendation
-    logicalType: string
-    physicalType: STRING
-  - name: predicted_incremental_units
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-    description: Lift volume generated by a markdown.
-  - name: gross_margin_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: min_price_corridor_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: max_price_corridor_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: price_rounding_rule_code
-    logicalType: string
-    physicalType: STRING
-    description: The logic applied to round recommended prices (e.g., .99 endings).
-  - name: point_own_price_elasticity
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
-    description: The percentage change in volume for a 1% change in price (PED).
-  - name: cross_elasticity_proxy
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
-    description: The substitution effect drawn from cannibalized items.
-  - name: elasticity_confidence_lower
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
-  - name: elasticity_confidence_upper
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
-  - name: promo_elasticity_lift_adj
-    logicalType: number
-    physicalType: DECIMAL(8, 4)
-    description: The additional elasticity sensitivity introduced during a promotion.
-  - name: is_valid_for_elasticity_training
-    logicalType: boolean
-    physicalType: BOOLEAN
-  - name: days_since_launch
-    logicalType: integer
-    physicalType: INT
-  - name: data_completeness_score
-    logicalType: number
-    physicalType: DECIMAL(5, 4)
-  - name: model_version
-    logicalType: string
-    physicalType: STRING
-  - name: scored_at
-    logicalType: date
-    physicalType: TIMESTAMP
   quality:
-  - name: bmv_outcome_variables_grain
+  - name: bmv_external_signals_grain_unique
     type: sql
     dimension: accuracy
     severity: error
     mustBe: 0
     unit: rows
-    description: Ensure the outcome package spine operates strictly at the product x store x date grain
-    query: 'SELECT product_id, store_id, date_key
+    description: Ensure gold_external_signals operates at the product x store x date grain
+    query: 'SELECT product_sk, store_sk, date_key
 
-      FROM balancing_margin_and_volume.gold_outcome_variables
+      FROM balancing_margin_and_volume.gold_external_signals
 
-      GROUP BY product_id, store_id, date_key
+      GROUP BY product_sk, store_sk, date_key
 
       HAVING COUNT(*) > 1'
-  - name: bmv_outcome_variables_price_validity
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: Effective price cannot be negative.
-    query: 'SELECT * FROM balancing_margin_and_volume.gold_outcome_variables
-
-      WHERE effective_price_lc < 0'
-  - name: bmv_outcome_variables_rowcount
-    type: sql
-    dimension: accuracy
-    severity: info
-    description: bmv_outcome_variables_rowcount
-    query: SELECT COUNT(*) AS bmv_total_scored_rows FROM balancing_margin_and_volume.gold_outcome_variables
 - name: gold_price_actuals
   physicalName: balancing_margin_and_volume.gold_price_actuals
   physicalType: view
@@ -893,6 +1029,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -956,6 +1100,31 @@ schema:
     logicalType: number
     physicalType: DECIMAL(5, 4)
     description: effective_price_lc % 1.00, measuring proximity to psychological boundaries like .99.
+  quality:
+  - name: bmv_price_actuals_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_price_actuals operates at the product x store x date grain
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_price_actuals
+
+      GROUP BY product_sk, store_sk, date_key
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_price_actuals_price_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure effective_price_lc is not negative
+    query: 'SELECT * FROM balancing_margin_and_volume.gold_price_actuals
+
+      WHERE effective_price_lc < 0'
 - name: gold_pricing_constraints
   physicalName: balancing_margin_and_volume.gold_pricing_constraints
   physicalType: view
@@ -970,6 +1139,12 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -991,14 +1166,14 @@ schema:
     logicalType: number
     physicalType: DECIMAL(5, 4)
     description: Maximum allowed discount depth percentage.
-  - name: min_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-    description: Derived minimum price bounded by cost and min margin.
   - name: max_price_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
     description: Derived maximum price bounded by MRP.
+  - name: min_price_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Derived minimum price bounded by cost and min margin.
   - name: max_competitor_index
     logicalType: number
     physicalType: DECIMAL(5, 4)
@@ -1032,6 +1207,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -1114,56 +1297,10 @@ schema:
     severity: error
     mustBe: 0
     unit: rows
-    description: Markdown depth should theoretically be between 0 and 1 (100% discount). Flag instances
-      where items are sold at negative gross revenue (depth > 1) or incorrectly negative discounts.
+    description: Ensure markdown_depth_pct is bounded between 0 and 1 (inclusive)
     query: 'SELECT * FROM balancing_margin_and_volume.gold_promotional_features
 
-      WHERE markdown_depth_pct < 0 OR markdown_depth_pct > 1.0'
-- name: gold_rolling_features
-  physicalName: balancing_margin_and_volume.gold_rolling_features
-  physicalType: view
-  description: 'Rolling window averages and stockout rates for ML training. NOTE: Currently an inert passthrough;
-    rolling window computations deferred.'
-  tags:
-  - gold
-  authoritativeDefinitions:
-  - url: outcome-packages/balancing-margin-and-volume/README.md
-    type: businessDefinition
-  - url: outcome-packages/balancing-margin-and-volume/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: product_id
-    logicalType: string
-    physicalType: STRING
-  - name: store_id
-    logicalType: string
-    physicalType: STRING
-  - name: date_key
-    logicalType: date
-    physicalType: DATE
-  - name: units_sold
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-  - name: net_sales_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: effective_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: gross_margin_pct
-    logicalType: number
-    physicalType: DECIMAL(5, 4)
-  - name: stockout_pct_day
-    logicalType: number
-    physicalType: DECIMAL(5, 4)
-  - name: competitor_regular_price_lc
-    logicalType: number
-    physicalType: DECIMAL(18, 2)
-  - name: is_on_promo
-    logicalType: integer
-    physicalType: INT
+      WHERE markdown_depth_pct < 0.0 OR markdown_depth_pct > 1.0'
 - name: gold_sales_actuals
   physicalName: balancing_margin_and_volume.gold_sales_actuals
   physicalType: view
@@ -1178,6 +1315,14 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -1228,6 +1373,36 @@ schema:
     logicalType: number
     physicalType: DECIMAL(5, 4)
     description: Percentage of the day the product was out of stock on shelf.
+  - name: units_received_today
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Units received today for sell-through calculation.
+  quality:
+  - name: bmv_sales_actuals_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_sales_actuals operates at the product x store x date grain (spine for window
+      measures)
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_sales_actuals
+
+      GROUP BY product_sk, store_sk, date_key
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_sales_actuals_inventory_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure units_received_today is non-negative
+    query: 'SELECT * FROM balancing_margin_and_volume.gold_sales_actuals
+
+      WHERE units_received_today IS NOT NULL AND units_received_today < 0'
 - name: gold_seasonality_features
   physicalName: balancing_margin_and_volume.gold_seasonality_features
   physicalType: view
@@ -1277,37 +1452,18 @@ schema:
     logicalType: integer
     physicalType: INT
     description: Days elapsed since the previous public holiday.
-- name: gold_trend_features
-  physicalName: balancing_margin_and_volume.gold_trend_features
-  physicalType: view
-  description: Macro trends and modeled baseline feedback loops.
-  tags:
-  - gold
-  authoritativeDefinitions:
-  - url: outcome-packages/balancing-margin-and-volume/README.md
-    type: businessDefinition
-  - url: outcome-packages/balancing-margin-and-volume/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: product_id
-    logicalType: string
-    physicalType: STRING
-  - name: store_id
-    logicalType: string
-    physicalType: STRING
-  - name: date_key
-    logicalType: date
-    physicalType: DATE
-  - name: subcategory_daily_units_sold
-    logicalType: number
-    physicalType: DECIMAL(12, 3)
-  - name: subcategory_yoy_growth_pct
-    logicalType: number
-    physicalType: DOUBLE
-    description: Year-over-year percentage growth in volume for the subcategory.
-  - name: baseline_units_sold_forecast
-    logicalType: number
-    physicalType: DOUBLE
-    description: Model feedback ingestion column for ARIMA/Prophet baseline.
+  quality:
+  - name: bmv_seasonality_features_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_seasonality_features operates at the date grain
+    query: 'SELECT date_key
+
+      FROM balancing_margin_and_volume.gold_seasonality_features
+
+      GROUP BY date_key
+
+      HAVING COUNT(*) > 1'

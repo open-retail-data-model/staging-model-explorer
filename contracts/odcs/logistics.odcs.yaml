@@ -135,12 +135,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -150,7 +150,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -333,7 +333,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -534,7 +534,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).
@@ -756,12 +756,12 @@ schema:
     required: false
     description: Carrier-provided revised ETA as of this checkpoint (ISO 8601); NULL if not revised.
   - name: event_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When the tracking event occurred at the carrier (UTC, ISO 8601).
   - name: ingest_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
     description: When this message was ingested into the lakehouse (UTC, ISO 8601).
@@ -776,7 +776,7 @@ schema:
     required: false
     description: Originating carrier or tracking aggregator (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded into the canonical core (UTC, ISO 8601).

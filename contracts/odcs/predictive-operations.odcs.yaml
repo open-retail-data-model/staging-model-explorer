@@ -4,25 +4,25 @@
 # Regenerate: python tools/generate_odcs.py
 apiVersion: v3.1.0
 kind: DataContract
-id: ordm-outcome-in-store-equipment-maintenance
-name: ordm_in_store_equipment_maintenance
+id: ordm-outcome-predictive-operations
+name: ordm_predictive_operations
 version: 1.0.0
 status: draft
-domain: in-store-equipment-maintenance
+domain: predictive-operations
 tags:
 - ordm
 - retail
 - outcome-package
 description:
-  purpose: ORDM outcome package 'in-store-equipment-maintenance'. Generated from the committed DDL, relationships,
+  purpose: ORDM outcome package 'predictive-operations'. Generated from the committed DDL, relationships,
     quality checks and glossary — ORDM's source of truth. ODCS is an optional integration; the model does
     not depend on it.
   usage: Optional. Consumable by contract-driven tools (e.g. DQX for data-quality execution, Lockstep
     for Unity Catalog sync, Ontos as data products). See docs/odcs-integration.md.
 authoritativeDefinitions:
-- url: outcome-packages/in-store-equipment-maintenance/README.md
+- url: outcome-packages/predictive-operations/README.md
   type: businessDefinition
-- url: outcome-packages/in-store-equipment-maintenance/glossary.md
+- url: outcome-packages/predictive-operations/glossary.md
   type: businessDefinition
 - url: docs/data-model-standards.md
   type: businessDefinition
@@ -35,9 +35,9 @@ schema:
   tags:
   - master
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
@@ -139,12 +139,12 @@ schema:
     required: true
     description: 'SCD2: TRUE for the currently active version.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -154,7 +154,7 @@ schema:
     required: false
     description: Originating system (CMMS, EAM, or manual entry).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -262,9 +262,9 @@ schema:
   tags:
   - transactional
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
@@ -446,7 +446,7 @@ schema:
     required: false
     description: Originating system (CMMS, EAM, or manual entry).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -595,9 +595,9 @@ schema:
   tags:
   - transactional
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
@@ -683,7 +683,7 @@ schema:
     required: false
     description: Originating system (CMMS, EAM, or manual entry).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -766,9 +766,9 @@ schema:
   tags:
   - gold
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
@@ -849,9 +849,9 @@ schema:
   tags:
   - gold
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition
@@ -912,7 +912,7 @@ schema:
     logicalType: number
     physicalType: DOUBLE
   - name: last_reading_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
   - name: total_readings_7d
     logicalType: integer
@@ -994,9 +994,9 @@ schema:
   tags:
   - gold
   authoritativeDefinitions:
-  - url: outcome-packages/in-store-equipment-maintenance/README.md
+  - url: outcome-packages/predictive-operations/README.md
     type: businessDefinition
-  - url: outcome-packages/in-store-equipment-maintenance/glossary.md
+  - url: outcome-packages/predictive-operations/glossary.md
     type: businessDefinition
   - url: docs/data-model-standards.md
     type: businessDefinition

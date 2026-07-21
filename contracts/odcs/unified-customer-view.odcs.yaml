@@ -130,12 +130,12 @@ schema:
       severity: error
       description: 'Allowed values: prospect, active, inactive, closed.'
   - name: created_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the record was last modified in the source system (UTC, ISO 8601).
@@ -145,7 +145,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When this row was loaded (UTC, ISO 8601).
@@ -298,7 +298,7 @@ schema:
     description: 'First failing rule when not eligible: consent_denied, withdrawn, preference_opt_out,
       no_identifier (suppressed reserved).'
   - name: evaluated_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
   quality:
@@ -444,7 +444,7 @@ schema:
     physicalType: DOUBLE
     description: Activation-readiness across channels, in [0,1].
   - name: fresh_as_of_ts
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
   quality:

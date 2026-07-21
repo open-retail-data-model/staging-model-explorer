@@ -119,7 +119,7 @@ schema:
     required: false
     description: Order date (calendar day). FK to fiscal_calendar.date_key (ISO 8601).
   - name: event_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Instant the order line was placed (UTC, ISO 8601) — event-time, distinct from load_timestamp
@@ -157,7 +157,7 @@ schema:
     required: false
     description: Originating system of record (vendor-neutral label).
   - name: load_timestamp
-    logicalType: date
+    logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).
