@@ -35,6 +35,16 @@
       {
         "kind": "consumes",
         "source": "balancing-margin-and-volume",
+        "target": "order"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
+        "target": "payment"
+      },
+      {
+        "kind": "consumes",
+        "source": "balancing-margin-and-volume",
         "target": "product"
       },
       {
@@ -185,6 +195,41 @@
       {
         "kind": "consumes",
         "source": "promote-with-purpose",
+        "target": "transaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "procurement"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
+        "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "smarter-demand-and-inventory-decisions",
         "target": "transaction"
       },
       {
@@ -7215,6 +7260,54 @@
           "name": "bmv_planogram_product_fk_orphan",
           "severity": "error",
           "table": "planogram"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_actuals_grain_unique",
+          "severity": "error",
+          "table": "gold_payment_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_actuals_single_currency",
+          "severity": "error",
+          "table": "gold_payment_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_actuals_nonneg",
+          "severity": "error",
+          "table": "gold_payment_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_bridge_fk_orphan",
+          "severity": "warn",
+          "table": "payment"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_sale_terminal_status",
+          "severity": "warn",
+          "table": "payment"
+        },
+        {
+          "column": null,
+          "name": "bmv_payment_alloc_reconciliation",
+          "severity": "metric",
+          "table": "gold_payment_actuals"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_recommendation_domain",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_computed_not_all_null",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
@@ -8010,7 +8103,7 @@
               "type": "DECIMAL(10, 2)"
             },
             {
-              "comment": "Probability of demand transfer from substitute products.",
+              "comment": "Probability of demand transfer from substitute products. DEFERRED (NULL at source; needs a demand-transfer model).",
               "enum_values": [],
               "fk": false,
               "name": "substitute_demand_transfer_pct",
@@ -8019,7 +8112,7 @@
               "type": "DECIMAL(8, 4)"
             },
             {
-              "comment": "14-day rolling average of daily sales.",
+              "comment": "14-day rolling average of daily units sold.",
               "enum_values": [],
               "fk": false,
               "name": "rolling_sales_velocity_14d",
@@ -8028,7 +8121,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "14-day rolling sum of daily revenue.",
+              "comment": "14-day rolling sum of daily net revenue.",
               "enum_values": [],
               "fk": false,
               "name": "rolling_revenue_14d",
@@ -8046,16 +8139,43 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "Elasticity of volume to allocated space.",
+              "comment": "14-day rolling sum of daily gross-margin dollars (numerator for margin_contribution_pct).",
               "enum_values": [],
               "fk": false,
-              "name": "space_elasticity",
+              "name": "rolling_margin_14d",
               "pii": false,
               "pk": false,
-              "type": "DECIMAL(8, 4)"
+              "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "Base volume sold absent of promotions.",
+              "comment": "14-day rolling sum of net revenue on days that carry a gross-margin rate; the denominator base for margin_contribution_pct so days lacking a rate do not bias it down.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rolling_margin_base_rev_14d",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "28-day non-promo unit sum (numerator for baseline_velocity).",
+              "enum_values": [],
+              "fk": false,
+              "name": "baseline_units_28d",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 3)"
+            },
+            {
+              "comment": "28-day count of non-promo days (denominator for baseline_velocity).",
+              "enum_values": [],
+              "fk": false,
+              "name": "baseline_nonpromo_days_28d",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "28-day non-promo observed mean units/day (heuristic baseline proxy; ratio of baseline_units_28d / baseline_nonpromo_days_28d).",
               "enum_values": [],
               "fk": false,
               "name": "baseline_velocity",
@@ -8064,7 +8184,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "Margin contribution percentage.",
+              "comment": "14-day realized gross-margin rate = rolling_margin_14d / rolling_margin_base_rev_14d (rate-bearing revenue only).",
               "enum_values": [],
               "fk": false,
               "name": "margin_contribution_pct",
@@ -8073,7 +8193,7 @@
               "type": "DECIMAL(8, 4)"
             },
             {
-              "comment": "AI recommendation (e.g. KEEP, DROP, EXPAND).",
+              "comment": "Rule-based assortment action (KEEP / DROP / EXPAND) over velocity + margin buckets and days-on-hand; deterministic, not ML.",
               "enum_values": [],
               "fk": false,
               "name": "recommendation",
@@ -8082,7 +8202,16 @@
               "type": "STRING"
             },
             {
-              "comment": "Projected volume change.",
+              "comment": "Elasticity of volume to allocated space. DEFERRED (needs a fitted regression; no facing variation to regress).",
+              "enum_values": [],
+              "fk": false,
+              "name": "space_elasticity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "Projected volume change. DEFERRED (what-if optimizer output).",
               "enum_values": [],
               "fk": false,
               "name": "projected_volume_lift",
@@ -8091,7 +8220,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "Projected margin change.",
+              "comment": "Projected margin change. DEFERRED (downstream of projected_volume_lift).",
               "enum_values": [],
               "fk": false,
               "name": "projected_margin_lift_lc",
@@ -8100,7 +8229,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "Expected cannibalization on other items.",
+              "comment": "Expected cannibalization on other items. DEFERRED (needs the optimizer + substitute_demand_transfer_pct, itself NULL).",
               "enum_values": [],
               "fk": false,
               "name": "cannibalization_drag_lc",
@@ -8109,7 +8238,7 @@
               "type": "DECIMAL(18, 2)"
             }
           ],
-          "comment": "Assortment optimization features and model placeholders.",
+          "comment": "Assortment optimization: features, a rule-based recommendation, and deferred model outputs.",
           "consumes_tables": [
             {
               "table": "inventory_position",
@@ -8118,6 +8247,14 @@
             {
               "table": "product",
               "unit": "product"
+            },
+            {
+              "table": "product_price",
+              "unit": "product"
+            },
+            {
+              "table": "promotion",
+              "unit": "marketing"
             },
             {
               "table": "sales",
@@ -8616,6 +8753,116 @@
           "layer": "gold",
           "materialized": true,
           "name": "gold_external_signals",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the product (from the order line the payment allocated to).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store (from the order line).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Payment event date (when money moved), not the original sale date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Reporting/base currency of all monetary columns (ISO 4217 alpha-3); single-currency by construction.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Allocated magnitude of settled/captured sale payments; the base for payment-side leakage rates.",
+              "enum_values": [],
+              "fk": false,
+              "name": "settled_sale_amount_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Allocated magnitude of merchant-initiated refunds (contra-revenue). Distinct from chargebacks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "refund_amount_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Allocated magnitude of bank-initiated payment reversals (disputes); involuntary, typically irrecoverable, never touches the POS sales fact.",
+              "enum_values": [],
+              "fk": false,
+              "name": "chargeback_amount_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Allocated magnitude of post-sale payment adjustments (goodwill / corrections); treated as contra-revenue.",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjustment_amount_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            }
+          ],
+          "comment": "Payment-side revenue leakage at product x store x day, giving BMV a REALIZED-margin lens the POS `sales` fact cannot: refunds, chargebacks, and adjustments (contra-revenue in money) plus a settled-sale base. This is the first consumer of the canonical-core `payment` domain.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "payment",
+              "unit": "payment"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_payment_actuals",
           "role": "gold",
           "scd2": false
         },
@@ -9490,7 +9737,7 @@
             "transaction"
           ],
           "name": "Assortment Optimization",
-          "status": "done",
+          "status": "in-progress",
           "tables": [
             "gold_assortment_optimization",
             "gold_affinity_features",
@@ -9518,6 +9765,17 @@
             "gold_external_signals",
             "gold_promotional_features",
             "gold_sales_actuals"
+          ]
+        },
+        {
+          "consumes": [
+            "order",
+            "payment"
+          ],
+          "name": "Realized Margin & Revenue Leakage",
+          "status": "in-progress",
+          "tables": [
+            "gold_payment_actuals"
           ]
         }
       ]
@@ -23377,31 +23635,4844 @@
       ]
     },
     {
-      "checks": [],
-      "contract_path": null,
-      "glossary_path": null,
+      "checks": [
+        {
+          "column": null,
+          "name": "planning_unit_grain_type",
+          "severity": "error",
+          "table": "planning_unit"
+        },
+        {
+          "column": null,
+          "name": "demand_forecast_quantity_positive",
+          "severity": "error",
+          "table": "demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "forecast_accuracy_range",
+          "severity": "error",
+          "table": "forecast_accuracy"
+        },
+        {
+          "column": null,
+          "name": "oos_event_dates",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_non_negative",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_current_open",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_single_currency",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "oos_recovery_single_currency",
+          "severity": "error",
+          "table": "oos_recovery_action"
+        },
+        {
+          "column": null,
+          "name": "planning_unit_product_fk_orphan",
+          "severity": "error",
+          "table": "planning_unit"
+        },
+        {
+          "column": null,
+          "name": "planning_unit_store_fk_orphan",
+          "severity": "error",
+          "table": "planning_unit"
+        },
+        {
+          "column": null,
+          "name": "planning_unit_segment_fk_orphan",
+          "severity": "error",
+          "table": "planning_unit_segment"
+        },
+        {
+          "column": null,
+          "name": "demand_forecast_planning_unit_fk_orphan",
+          "severity": "error",
+          "table": "demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "demand_forecast_model_run_fk_orphan",
+          "severity": "error",
+          "table": "demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "forecast_component_fk_orphan",
+          "severity": "error",
+          "table": "forecast_component"
+        },
+        {
+          "column": null,
+          "name": "forecast_adjustment_fk_orphan",
+          "severity": "error",
+          "table": "forecast_adjustment"
+        },
+        {
+          "column": null,
+          "name": "forecast_accuracy_fk_orphan",
+          "severity": "error",
+          "table": "forecast_accuracy"
+        },
+        {
+          "column": null,
+          "name": "order_forecast_planning_unit_fk_orphan",
+          "severity": "error",
+          "table": "order_forecast"
+        },
+        {
+          "column": null,
+          "name": "order_forecast_demand_fk_orphan",
+          "severity": "error",
+          "table": "order_forecast"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_planning_unit_fk_orphan",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_slt_fk_orphan",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_calculation_fk_orphan",
+          "severity": "error",
+          "table": "inventory_policy_calculation"
+        },
+        {
+          "column": null,
+          "name": "inventory_recommendation_fk_orphan",
+          "severity": "error",
+          "table": "inventory_recommendation"
+        },
+        {
+          "column": null,
+          "name": "oos_event_product_fk_orphan",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "oos_event_store_fk_orphan",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_estimate_fk_orphan",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "demand_sensing_signal_fk_orphan",
+          "severity": "error",
+          "table": "demand_sensing_signal"
+        },
+        {
+          "column": null,
+          "name": "oos_recovery_action_fk_orphan",
+          "severity": "error",
+          "table": "oos_recovery_action"
+        },
+        {
+          "column": null,
+          "name": "planning_unit_grain_unique",
+          "severity": "error",
+          "table": "planning_unit"
+        },
+        {
+          "column": null,
+          "name": "planning_unit_segment_grain_unique",
+          "severity": "error",
+          "table": "planning_unit_segment"
+        },
+        {
+          "column": null,
+          "name": "forecast_model_run_grain_unique",
+          "severity": "error",
+          "table": "forecast_model_run"
+        },
+        {
+          "column": null,
+          "name": "demand_forecast_grain_unique",
+          "severity": "error",
+          "table": "demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "forecast_component_grain_unique",
+          "severity": "error",
+          "table": "forecast_component"
+        },
+        {
+          "column": null,
+          "name": "forecast_adjustment_grain_unique",
+          "severity": "error",
+          "table": "forecast_adjustment"
+        },
+        {
+          "column": null,
+          "name": "forecast_accuracy_grain_unique",
+          "severity": "error",
+          "table": "forecast_accuracy"
+        },
+        {
+          "column": null,
+          "name": "service_level_target_grain_unique",
+          "severity": "error",
+          "table": "service_level_target"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_grain_unique",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_calculation_grain_unique",
+          "severity": "error",
+          "table": "inventory_policy_calculation"
+        },
+        {
+          "column": null,
+          "name": "inventory_recommendation_grain_unique",
+          "severity": "error",
+          "table": "inventory_recommendation"
+        },
+        {
+          "column": null,
+          "name": "order_forecast_grain_unique",
+          "severity": "error",
+          "table": "order_forecast"
+        },
+        {
+          "column": null,
+          "name": "oos_event_grain_unique",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_estimate_grain_unique",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "demand_sensing_signal_grain_unique",
+          "severity": "error",
+          "table": "demand_sensing_signal"
+        },
+        {
+          "column": null,
+          "name": "oos_recovery_action_grain_unique",
+          "severity": "error",
+          "table": "oos_recovery_action"
+        },
+        {
+          "column": null,
+          "name": "demand_forecast_rowcount",
+          "severity": "metric",
+          "table": "demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "oos_event_rowcount",
+          "severity": "metric",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_revenue_total",
+          "severity": "metric",
+          "table": "lost_sales_estimate"
+        }
+      ],
+      "contract_path": "contracts/odcs/smarter-demand-and-inventory-decisions.odcs.yaml",
+      "glossary_path": "outcome-packages/smarter-demand-and-inventory-decisions/glossary.md",
       "kind": "outcome",
       "name": "smarter-demand-and-inventory-decisions",
-      "relationships": [],
-      "tables": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "planning_unit",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "planning_unit",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "account_sk"
+          ],
+          "child_table": "planning_unit",
+          "declared_fk": true,
+          "parent_cols": [
+            "account_sk"
+          ],
+          "parent_table": "account"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "planning_unit_segment",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "model_run_sk"
+          ],
+          "child_table": "demand_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "model_run_sk"
+          ],
+          "parent_table": "forecast_model_run"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "demand_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "demand_forecast_sk"
+          ],
+          "child_table": "forecast_component",
+          "declared_fk": true,
+          "parent_cols": [
+            "demand_forecast_sk"
+          ],
+          "parent_table": "demand_forecast"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "forecast_adjustment",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "forecast_accuracy",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "order_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "demand_forecast_sk"
+          ],
+          "child_table": "order_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "demand_forecast_sk"
+          ],
+          "parent_table": "demand_forecast"
+        },
+        {
+          "child_cols": [
+            "inventory_policy_sk"
+          ],
+          "child_table": "order_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "inventory_policy_sk"
+          ],
+          "parent_table": "inventory_policy"
+        },
+        {
+          "child_cols": [
+            "destination_store_sk"
+          ],
+          "child_table": "order_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "inventory_policy",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "service_level_target_sk"
+          ],
+          "child_table": "inventory_policy",
+          "declared_fk": true,
+          "parent_cols": [
+            "service_level_target_sk"
+          ],
+          "parent_table": "service_level_target"
+        },
+        {
+          "child_cols": [
+            "inventory_policy_sk"
+          ],
+          "child_table": "inventory_policy_calculation",
+          "declared_fk": true,
+          "parent_cols": [
+            "inventory_policy_sk"
+          ],
+          "parent_table": "inventory_policy"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "inventory_recommendation",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "inventory_policy_sk"
+          ],
+          "child_table": "inventory_recommendation",
+          "declared_fk": true,
+          "parent_cols": [
+            "inventory_policy_sk"
+          ],
+          "parent_table": "inventory_policy"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "oos_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "oos_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "oos_event_sk"
+          ],
+          "child_table": "lost_sales_estimate",
+          "declared_fk": true,
+          "parent_cols": [
+            "oos_event_sk"
+          ],
+          "parent_table": "oos_event"
+        },
+        {
+          "child_cols": [
+            "planning_unit_sk"
+          ],
+          "child_table": "demand_sensing_signal",
+          "declared_fk": true,
+          "parent_cols": [
+            "planning_unit_sk"
+          ],
+          "parent_table": "planning_unit"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "demand_sensing_signal",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "demand_sensing_signal",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "linked_oos_event_sk"
+          ],
+          "child_table": "demand_sensing_signal",
+          "declared_fk": true,
+          "parent_cols": [
+            "oos_event_sk"
+          ],
+          "parent_table": "oos_event"
+        },
+        {
+          "child_cols": [
+            "oos_event_sk"
+          ],
+          "child_table": "oos_recovery_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "oos_event_sk"
+          ],
+          "parent_table": "oos_event"
+        },
+        {
+          "child_cols": [
+            "inventory_recommendation_sk"
+          ],
+          "child_table": "oos_recovery_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "inventory_recommendation_sk"
+          ],
+          "parent_table": "inventory_recommendation"
+        },
+        {
+          "child_cols": [
+            "linked_po_line_sk"
+          ],
+          "child_table": "oos_recovery_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "po_line_sk"
+          ],
+          "parent_table": "purchase_order_line"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the forecast line.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to forecast_model_run.model_run_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "model_run_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable model run business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Period being forecast (day or week start).",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Horizon bucket. Allowed values: short_term, mid_term, long_term, backtest.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Weeks between forecast origin and actuals availability.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_lag_weeks",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Date the forecast was produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_origin_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Forecasted demand quantity in UOM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Lower prediction interval bound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_lower_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Upper prediction interval bound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_upper_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Unit of measure code.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_of_measure",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Demand forecast fact at planning-unit x period grain.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "demand_forecast",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_sensing_signal_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the signal was detected (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Category. Allowed values: supply, promo, weather, transport, social, data_quality, competitor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Specific signal type (e.g. retail_stockout, transport_delay).",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable description.",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_description",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Severity. Allowed values: critical, high, medium, low.",
+              "enum_values": [],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Whether the signal has been resolved.",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolved_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When resolved (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolved_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "FK to oos_event.oos_event_sk when promoted.",
+              "enum_values": [],
+              "fk": true,
+              "name": "linked_oos_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only short-horizon demand sensing signals.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "demand_sensing_signal",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_accuracy_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_accuracy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast period evaluated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Actual demand from sales or shipments.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Statistical forecast at lag.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Forecast after planner adjustments.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Lag in weeks between forecast and actuals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lag_weeks",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Forecast accuracy percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "accuracy_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Forecast bias percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "bias_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Mean absolute percentage error.",
+              "enum_values": [],
+              "fk": false,
+              "name": "mape",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when actual period had a stockout.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_stockout_censored",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Forecast accuracy and bias at planning-unit x period grain.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "forecast_accuracy",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_adjustment_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_adjustment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast period being adjusted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Adjustment amount per adjustment_method.",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjustment_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "How to apply adjustment. Allowed values: absolute, delta, pct.",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjustment_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Reason code (e.g. promo_not_in_model, new_listing).",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjustment_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Planner identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjusted_by",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the adjustment was made (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "adjusted_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Approval state. Allowed values: pending, approved, rejected.",
+              "enum_values": [],
+              "fk": false,
+              "name": "approval_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Planner forecast adjustments for FVA and enriched forecast.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "forecast_adjustment",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_component_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_component_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to demand_forecast.demand_forecast_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "demand_forecast_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable demand forecast business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Driver type. Allowed values: base, promo, price, weather, holiday, trend, residual.",
+              "enum_values": [],
+              "fk": false,
+              "name": "component_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Signed contribution in UOM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "component_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Demand driver decomposition child of demand_forecast.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "forecast_component",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_run_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the model run.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Model algorithm name (e.g. lightgbm, prophet, arima).",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Semantic version or artifact hash.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast hierarchy level this run targets.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hierarchy_level",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Training window start date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "training_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Training window end date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "training_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "When the model was scored (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "scored_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Whether this is the champion model for its hierarchy.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_champion",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Holdout forecast accuracy (0-1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "accuracy_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Holdout forecast bias percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "bias_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "When the record was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Registry of forecast model training and scoring runs.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "forecast_model_run",
+          "role": "reference",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Policy type. Allowed values: min_max, reorder_point, periodic_review, days_of_supply.",
+              "enum_values": [],
+              "fk": false,
+              "name": "policy_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Safety stock in units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "safety_stock_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Reorder point in units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reorder_point_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Minimum shelf or order quantity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Maximum shelf or order quantity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Order-up-to level for (s,S) policies.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_up_to_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Review period for periodic review policies.",
+              "enum_values": [],
+              "fk": false,
+              "name": "review_period_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Default lead time in days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lead_time_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "FK to service_level_target.service_level_target_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "service_level_target_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable service level target business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_target_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Origin. Allowed values: system_calculated, planner_override, abc_xyz_template.",
+              "enum_values": [],
+              "fk": false,
+              "name": "policy_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Inclusive start date for this version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exclusive end date; NULL for current.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Whether this is the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When created (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When last modified (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Versioned inventory replenishment policy per planning unit.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "inventory_policy",
+          "role": "reference",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "policy_calculation_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "policy_calculation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to inventory_policy.inventory_policy_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "inventory_policy_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable inventory policy business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the policy was calculated (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "calculated_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Average daily demand used.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_daily_demand",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Demand standard deviation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_std_dev",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Forecast bias percentage input.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_bias_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Lead time in days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lead_time_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Lead time standard deviation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lead_time_std_dev",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Formula identifier used.",
+              "enum_values": [],
+              "fk": false,
+              "name": "safety_stock_formula",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Z-score from service level.",
+              "enum_values": [],
+              "fk": false,
+              "name": "z_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Supplier reliability adjustment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_reliability_multiplier",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Audit trail for inventory policy derivation.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "inventory_policy_calculation",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_recommendation_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_recommendation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Date recommendation was generated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Recommended order quantity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_order_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Recommended order placement date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_order_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Projected DoS before recommendation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "projected_days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "Projected DoS after receipt.",
+              "enum_values": [],
+              "fk": false,
+              "name": "projected_days_of_supply_after",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "Reason. Allowed values: below_rop, below_min, forecast_spike, promo_build.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Status. Allowed values: open, accepted, rejected, expired.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to inventory_policy.inventory_policy_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "inventory_policy_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable inventory policy business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Replenishment recommendations generated from inventory policy.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "inventory_recommendation",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_sales_estimate_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_sales_estimate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to oos_event.oos_event_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "oos_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable OOS event business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Day within the OOS episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimate_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Actual units sold from sales.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_units_sold",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Expected unconstrained demand.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_units_demand",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Estimated lost units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Method. Allowed values: forecast_residual, trailing_average, peer_store, ml_model.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimation_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when forecast excludes stockout days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "censoring_adjusted",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Estimated lost revenue, in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_revenue",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Reporting/base currency of ALL monetary columns, ISO 4217 alpha-3. Equals the deploy base_currency; single-currency by construction.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Confidence score 0-1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Daily lost sales estimate within an OOS episode.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "lost_sales_estimate",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "First day of the OOS episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_start_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Last day of the episode; NULL if ongoing.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_end_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Duration of the episode in days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_duration_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "How detected. Allowed values: inventory_snapshot, velocity_collapse, pos_absence, smart_shelf, planner_reported.",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Root cause. Allowed values: replenishment_miss, supplier_delay, demand_spike, allocation_shortage, planogram_issue, unknown.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_cause",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Severity. Allowed values: critical, high, medium, low.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Whether a promotion overlapped the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_promo_period",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Average stockout_pct_day over the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "stockout_pct_total",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Competitor stockout spillover detected.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_spillover_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Suspected data quality issue.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_quality_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Whether the OOS was preventable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_preventable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Degenerate reference to early-risk-detection disruption_event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "linked_disruption_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Out-of-stock episode fact at product x store grain.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "oos_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_recovery_action_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_recovery_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to oos_event.oos_event_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "oos_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable OOS event business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Action type. Allowed values: emergency_order, transfer, allocation_shift, substitute_product, expedite_shipment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Recommended recovery quantity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Recommended action date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_action_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Estimated recovery date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_recovery_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Estimated revenue recovery, in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_revenue_recovery",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Reporting/base currency of ALL monetary columns, ISO 4217 alpha-3. Equals the deploy base_currency; single-currency by construction.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Status. Allowed values: recommended, approved, executed, rejected.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to inventory_recommendation.inventory_recommendation_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "inventory_recommendation_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable inventory recommendation business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_recommendation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to purchase_order_line.po_line_sk when PO created.",
+              "enum_values": [],
+              "fk": true,
+              "name": "linked_po_line_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Recovery actions recommended or executed for OOS events.",
+          "consumes_tables": [
+            {
+              "table": "purchase_order_line",
+              "unit": "procurement"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "oos_recovery_action",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Planned order placement date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Required on-shelf or in-DC date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "need_by_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Forecasted order quantity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Order type. Allowed values: replenishment, purchase, transfer, allocation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Origin DC or supplier site (degenerate polymorphic reference).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_location_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "destination_store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to demand_forecast.demand_forecast_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "demand_forecast_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable demand forecast business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to inventory_policy.inventory_policy_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "inventory_policy_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable inventory policy business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Order forecast at planning-unit x order-date grain.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "order_forecast",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the planning unit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Planning grain. Allowed values: store_sku, account_product_region, dc_product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "grain_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk (version-specific). Nullable when grain is above SKU.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific). Nullable when grain is above store.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to account.account_sk (version-specific). Optional B2B key account.",
+              "enum_values": [],
+              "fk": true,
+              "name": "account_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable account business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "account_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast hierarchy level (e.g. H1, H2, H3, H4, store_sku).",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_hierarchy_level",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Whether this planning unit is currently active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Reference table defining atomic demand-planning entities.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "planning_unit",
+          "role": "reference",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "segment_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key (planning_unit|fiscal_period).",
+              "enum_values": [],
+              "fk": false,
+              "name": "segment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to planning_unit.planning_unit_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Fiscal period key = fiscal_calendar.fiscal_week_id (e.g. 202628 for fiscal year 2026 week 28).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period_key",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Volume tier. Allowed values: A, B, C.",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Demand variability. Allowed values: X, Y, Z.",
+              "enum_values": [],
+              "fk": false,
+              "name": "xyz_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Volume tier label (e.g. very_high, intermittent, obsolete).",
+              "enum_values": [],
+              "fk": false,
+              "name": "volume_tier",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Model recipe selector cluster identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cluster_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Cumulative volume percentage for ABC audit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cumulative_volume_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Coefficient of variation for XYZ audit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "coefficient_of_variation",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "When the record was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ABC/XYZ segmentation per planning unit per fiscal period.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "planning_unit_segment",
+          "role": "reference",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_target_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_target_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "ABC class filter; NULL = default for all.",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "XYZ class filter; NULL = default for all.",
+              "enum_values": [],
+              "fk": false,
+              "name": "xyz_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Target in-stock fill rate (0-1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_fill_rate_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Target days of supply alternative.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "Inclusive start date for this version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exclusive end date; NULL for current.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Whether this is the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When created (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When last modified (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Service level targets by ABC/XYZ segment.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "service_level_target",
+          "role": "reference",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "grain_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_origin_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_of_measure",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Demand forecast aggregated to fiscal week with planning unit and dimension context.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_demand_forecast_weekly",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_description",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Unresolved demand sensing signals and forecast divergence for short-horizon triage.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_demand_sensing_queue",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable planning unit business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast period (day or week start).",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period_key",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Model-generated forecast before adjustments.",
+              "enum_values": [],
+              "fk": false,
+              "name": "statistical_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Forecast after latest approved planner adjustment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_of_measure",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Statistical demand forecast enriched with the latest approved planner adjustment.",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_effective_forecast",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_accuracy_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lag_weeks",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "accuracy_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "bias_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "mape",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_stockout_censored",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "xyz_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "cluster_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Forecast accuracy dashboard with ABC/XYZ segment attributes.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_forecast_accuracy",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_forecast",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "naive_forecast",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "enriched_forecast",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fva_vs_naive",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL"
+            }
+          ],
+          "comment": "Forecast Value Added: model vs na\u00efve trailing average vs planner-enriched forecast.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_forecast_value_added",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sku_store_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_inventory_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "excess_inventory_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "understock_revenue_at_risk",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            }
+          ],
+          "comment": "Aggregated working capital and excess inventory exposure by category and ABC class.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_capital_summary",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Units on hand divided by trailing average daily sales.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_of_supply_with_transit",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "overstock_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "understock_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Health status: overstock, healthy, at_risk, stockout.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_position_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Per product x store inventory health combining position, velocity, policy, and forecast.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_health",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_on_hand_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reorder_point_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_below_rop",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_above_max",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_position_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Compares current inventory position against active policy thresholds.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_policy_compliance",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_cause",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_lost_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_lost_revenue",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            }
+          ],
+          "comment": "Aggregated lost sales by category, cause, and fiscal period.",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_lost_sales_summary",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_start_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_end_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_duration_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_cause",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_preventable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_on_hand_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_units_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Cumulative estimated lost revenue for the active OOS episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_revenue_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "open_recovery_actions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            }
+          ],
+          "comment": "Active out-of-stock episodes with cumulative lost sales.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "purchase_order_line",
+              "unit": "procurement"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_oos_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_cause",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reorder_point_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_bias_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "preventability_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Classifies OOS episodes as preventable, partially preventable, or not preventable.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_oos_preventability",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_sku_days",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "stockout_sku_days",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_rate_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "OOS rate KPIs from daily inventory position snapshots.",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_oos_rate",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_revenue_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_revenue_recovery",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recovery_priority_rank",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            }
+          ],
+          "comment": "Ranks open OOS events by estimated revenue recovery potential.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "purchase_order_line",
+              "unit": "procurement"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_oos_recovery_priority",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "need_by_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_forecast_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_location_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_policy_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Order forecast with planning unit context and open purchase order comparison.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_order_forecast",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_recommendation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "planning_unit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_order_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_order_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_position_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_of_supply",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "priority_rank",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            }
+          ],
+          "comment": "Open replenishment recommendations ranked by ABC class service impact.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_replenishment_queue",
+          "role": "gold",
+          "scd2": false
+        }
+      ],
       "use_cases": [
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "customer",
+            "product",
+            "store",
+            "transaction"
+          ],
           "name": "Demand & Order Forecasting",
           "status": "in-progress",
-          "tables": []
+          "tables": [
+            "gold_demand_forecast_weekly",
+            "gold_effective_forecast",
+            "gold_order_forecast",
+            "gold_forecast_accuracy",
+            "gold_forecast_value_added",
+            "gold_demand_sensing_queue"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "inventory",
+            "product",
+            "store",
+            "transaction"
+          ],
           "name": "Inventory Optimization",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_inventory_health",
+            "gold_inventory_policy_compliance",
+            "gold_replenishment_queue",
+            "gold_inventory_capital_summary"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "customer",
+            "inventory",
+            "procurement",
+            "product",
+            "store",
+            "transaction"
+          ],
           "name": "Out-of-Stocks Optimization",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_oos_current",
+            "gold_oos_preventability",
+            "gold_lost_sales_summary",
+            "gold_oos_recovery_priority",
+            "gold_oos_rate"
+          ]
         }
       ]
     },

@@ -23,8 +23,14 @@
 | **Substitute Demand Transfer Pct** | The probability that demand transfers to a substitute product when an item is unavailable or dropped. |
 | **Rolling Sales Velocity 14d** | The 14-day rolling average of daily units sold. |
 | **Baseline Velocity** | The expected volume sold in the absence of promotions. |
-| **Margin Contribution Pct** | The percentage margin contribution of an item relative to its category or overall sales. |
-| **Assortment Recommendation** | AI-generated recommendation for an item's status in the assortment (e.g., KEEP, DROP, EXPAND). |
+| **Margin Contribution Pct** | An item's 14-day realized gross-margin rate: rolling gross-margin dollars divided by rolling net revenue on days that carry a gross-margin rate, over the same 14-day window (ratio-of-sums). Days lacking a margin rate are excluded from the denominator so the rate is not biased downward. |
+| **Assortment Recommendation** | Rule-based recommendation for an item's status in the assortment (KEEP, DROP, EXPAND), derived deterministically from sales velocity, margin health, and days-on-hand. |
 | **Projected Volume Lift** | The expected change in volume from a recommended assortment action. |
 | **Projected Margin Lift** | The expected change in margin from a recommended assortment action. |
 | **Cannibalization Drag** | The expected loss in sales on other items due to demand transfer or cannibalization. |
+| **Settled Sale Amount** | Allocated magnitude of sale payments in a settled or captured state, spread to product × store × day. The denominator base for payment-side leakage rates. |
+| **Refund Amount** | Allocated magnitude of merchant-initiated refunds (contra-revenue), from the payment domain. Distinct from a chargeback. |
+| **Chargeback Amount** | Allocated magnitude of bank-initiated payment reversals (disputes). Kept distinct from refunds: involuntary, typically irrecoverable, and never touches the POS sales fact. |
+| **Adjustment Amount** | Allocated magnitude of post-sale payment adjustments (goodwill / corrections); treated as contra-revenue. |
+| **Revenue Leakage** | Booked revenue not ultimately realized, surfaced via the payment side: refunds, chargebacks, and adjustments that reduce realized margin below the sales-fact figure. |
+| **Realized Margin** | Gross margin after subtracting payment-side leakage (refunds, chargebacks, adjustments); the money actually kept, distinct from booked (net-of-discount) margin. |

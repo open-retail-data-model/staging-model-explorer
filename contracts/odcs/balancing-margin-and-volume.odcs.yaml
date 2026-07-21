@@ -663,7 +663,7 @@ schema:
 - name: gold_assortment_optimization
   physicalName: balancing_margin_and_volume.gold_assortment_optimization
   physicalType: view
-  description: Assortment optimization features and model placeholders.
+  description: 'Assortment optimization: features, a rule-based recommendation, and deferred model outputs.'
   tags:
   - gold
   authoritativeDefinitions:
@@ -702,47 +702,70 @@ schema:
   - name: substitute_demand_transfer_pct
     logicalType: number
     physicalType: DECIMAL(8, 4)
-    description: Probability of demand transfer from substitute products.
+    description: Probability of demand transfer from substitute products. DEFERRED (NULL at source; needs
+      a demand-transfer model).
   - name: rolling_sales_velocity_14d
     logicalType: number
     physicalType: DOUBLE
-    description: 14-day rolling average of daily sales.
+    description: 14-day rolling average of daily units sold.
   - name: rolling_revenue_14d
     logicalType: number
     physicalType: DECIMAL(18, 2)
-    description: 14-day rolling sum of daily revenue.
+    description: 14-day rolling sum of daily net revenue.
   - name: units_on_hand_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
     description: Units on hand at end of day.
-  - name: space_elasticity
+  - name: rolling_margin_14d
     logicalType: number
-    physicalType: DECIMAL(8, 4)
-    description: Elasticity of volume to allocated space.
+    physicalType: DECIMAL(18, 2)
+    description: 14-day rolling sum of daily gross-margin dollars (numerator for margin_contribution_pct).
+  - name: rolling_margin_base_rev_14d
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: 14-day rolling sum of net revenue on days that carry a gross-margin rate; the denominator
+      base for margin_contribution_pct so days lacking a rate do not bias it down.
+  - name: baseline_units_28d
+    logicalType: number
+    physicalType: DECIMAL(18, 3)
+    description: 28-day non-promo unit sum (numerator for baseline_velocity).
+  - name: baseline_nonpromo_days_28d
+    logicalType: integer
+    physicalType: INT
+    description: 28-day count of non-promo days (denominator for baseline_velocity).
   - name: baseline_velocity
     logicalType: number
     physicalType: DECIMAL(12, 3)
-    description: Base volume sold absent of promotions.
+    description: 28-day non-promo observed mean units/day (heuristic baseline proxy; ratio of baseline_units_28d
+      / baseline_nonpromo_days_28d).
   - name: margin_contribution_pct
     logicalType: number
     physicalType: DECIMAL(8, 4)
-    description: Margin contribution percentage.
+    description: 14-day realized gross-margin rate = rolling_margin_14d / rolling_margin_base_rev_14d
+      (rate-bearing revenue only).
   - name: recommendation
     logicalType: string
     physicalType: STRING
-    description: AI recommendation (e.g. KEEP, DROP, EXPAND).
+    description: Rule-based assortment action (KEEP / DROP / EXPAND) over velocity + margin buckets and
+      days-on-hand; deterministic, not ML.
+  - name: space_elasticity
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Elasticity of volume to allocated space. DEFERRED (needs a fitted regression; no facing
+      variation to regress).
   - name: projected_volume_lift
     logicalType: number
     physicalType: DECIMAL(12, 3)
-    description: Projected volume change.
+    description: Projected volume change. DEFERRED (what-if optimizer output).
   - name: projected_margin_lift_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
-    description: Projected margin change.
+    description: Projected margin change. DEFERRED (downstream of projected_volume_lift).
   - name: cannibalization_drag_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
-    description: Expected cannibalization on other items.
+    description: Expected cannibalization on other items. DEFERRED (needs the optimizer + substitute_demand_transfer_pct,
+      itself NULL).
   quality:
   - name: bmv_assortment_opt_grain_unique
     type: sql
@@ -768,6 +791,33 @@ schema:
     query: "SELECT * FROM balancing_margin_and_volume.gold_assortment_optimization\nWHERE (units_on_hand_eod\
       \ IS NOT NULL AND units_on_hand_eod < 0)\n   OR (rolling_revenue_14d IS NOT NULL AND rolling_revenue_14d\
       \ < 0)"
+  - name: bmv_assortment_recommendation_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The rule-based recommendation is one of the three allowed actions (never NULL/other)
+    query: 'SELECT product_sk, store_sk, recommendation
+
+      FROM balancing_margin_and_volume.gold_assortment_optimization
+
+      WHERE recommendation NOT IN (''KEEP'', ''DROP'', ''EXPAND'') OR recommendation IS NULL'
+  - name: bmv_assortment_computed_not_all_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Guard the NULL-KPI regression: when the view has rows, the computed columns must have
+      at least one non-NULL value (a 100%-NULL governed output is the anti-pattern this view was fixed
+      to avoid). The COUNT(*) > 0 guard means a legitimately-empty deploy stage does NOT red the run (empty
+      != all-NULL).'
+    query: 'SELECT 1
+
+      FROM balancing_margin_and_volume.gold_assortment_optimization
+
+      HAVING COUNT(*) > 0 AND (COUNT(margin_contribution_pct) = 0 OR COUNT(baseline_velocity) = 0)'
 - name: gold_bucket_features
   physicalName: balancing_margin_and_volume.gold_bucket_features
   physicalType: view
@@ -1015,6 +1065,121 @@ schema:
       GROUP BY product_sk, store_sk, date_key
 
       HAVING COUNT(*) > 1'
+- name: gold_payment_actuals
+  physicalName: balancing_margin_and_volume.gold_payment_actuals
+  physicalType: view
+  description: 'Payment-side revenue leakage at product x store x day, giving BMV a REALIZED-margin lens
+    the POS `sales` fact cannot: refunds, chargebacks, and adjustments (contra-revenue in money) plus
+    a settled-sale base. This is the first consumer of the canonical-core `payment` domain.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product (from the order line the payment allocated to).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store (from the order line).
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable product business key.
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key.
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+    description: Payment event date (when money moved), not the original sale date.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: Reporting/base currency of all monetary columns (ISO 4217 alpha-3); single-currency by
+      construction.
+  - name: settled_sale_amount_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Allocated magnitude of settled/captured sale payments; the base for payment-side leakage
+      rates.
+  - name: refund_amount_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Allocated magnitude of merchant-initiated refunds (contra-revenue). Distinct from chargebacks.
+  - name: chargeback_amount_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Allocated magnitude of bank-initiated payment reversals (disputes); involuntary, typically
+      irrecoverable, never touches the POS sales fact.
+  - name: adjustment_amount_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Allocated magnitude of post-sale payment adjustments (goodwill / corrections); treated
+      as contra-revenue.
+  quality:
+  - name: bmv_payment_actuals_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_payment_actuals operates at the product x store x date grain
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_payment_actuals
+
+      GROUP BY product_sk, store_sk, date_key
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_payment_actuals_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'All allocated payment magnitudes are in the single reporting/base currency. NULL-aware
+      (matches bmv_single_currency_check): a NULL currency_code is a leak, not silently ignored.'
+    query: "SELECT DISTINCT currency_code\nFROM balancing_margin_and_volume.gold_payment_actuals\nWHERE\
+      \ currency_code <> (SELECT MAX(currency_code) FROM balancing_margin_and_volume.gold_payment_actuals)\n\
+      \   OR currency_code IS NULL"
+  - name: bmv_payment_actuals_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Allocated magnitudes are non-negative (payment_type carries direction, amount is a magnitude)
+    query: "SELECT product_sk, store_sk, date_key\nFROM balancing_margin_and_volume.gold_payment_actuals\n\
+      WHERE settled_sale_amount_lc < 0 OR refund_amount_lc < 0\n   OR chargeback_amount_lc < 0 OR adjustment_amount_lc\
+      \ < 0"
+  - name: bmv_payment_alloc_reconciliation
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: Report the share of ALLOCATABLE payment magnitude that landed on the product grain. The
+      denominator is scoped to the SAME event set the gold view aggregates (settled/captured sales + REALIZED
+      refund/chargeback/adjustment) so the gap reflects allocation/bridge loss (orphan/zero-net orders)
+      ONLY, not non-realized volume (authorized/declined/voided). The status predicate mirrors the gold
+      view's M1 guard exactly. To match the view's append-only-lifecycle dedup (H1), the denominator also
+      collapses to the latest row per payment_id, so a multi-row lifecycle counts its magnitude once on
+      both sides. Metric never fails the run.
+    query: "SELECT\n  (SELECT COALESCE(SUM(settled_sale_amount_lc + refund_amount_lc + chargeback_amount_lc\
+      \ + adjustment_amount_lc), 0)\n     FROM balancing_margin_and_volume.gold_payment_actuals)\n  /\
+      \ NULLIF((\n      SELECT SUM(amount) FROM (\n        SELECT amount, payment_type, payment_status,\n\
+      \               ROW_NUMBER() OVER (PARTITION BY payment_id\n                                  ORDER\
+      \ BY event_timestamp DESC, payment_sk DESC) AS rn\n        FROM payment.payment\n      )\n     \
+      \ WHERE rn = 1\n        AND ((payment_type IN ('refund', 'chargeback', 'adjustment')\n         \
+      \       AND payment_status NOT IN ('authorized', 'declined', 'voided'))\n             OR (payment_type\
+      \ = 'sale' AND payment_status IN ('settled', 'captured')))), 0)\n    AS pct_payment_magnitude_allocated"
 - name: gold_price_actuals
   physicalName: balancing_margin_and_volume.gold_price_actuals
   physicalType: view
