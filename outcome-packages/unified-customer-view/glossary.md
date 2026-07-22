@@ -1,6 +1,6 @@
 # Unified Customer View — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-07-10
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-10
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). Built entirely
 on the thin customer core — no product/transaction/campaign data.

@@ -1,6 +1,6 @@
 # In-Store Equipment Maintenance — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-07-15
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-15
 
 Business terms for the In-Store Equipment Maintenance use case of the Predictive Operations outcome package. Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
 

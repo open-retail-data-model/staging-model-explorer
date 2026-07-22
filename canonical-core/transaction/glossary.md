@@ -1,6 +1,6 @@
 # Transaction Domain — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-06-09
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-06-09
 
 | Term | Definition |
 |---|---|

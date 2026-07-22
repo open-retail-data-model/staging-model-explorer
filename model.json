@@ -12007,7 +12007,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Brand marketed by the supplier (the advertised brand). One brand per advertiser row (MVM thin-dim intent, ADR 0021); a supplier advertising multiple brands has multiple advertiser rows.",
+              "comment": "Brand marketed by the supplier (the advertised brand). One brand per advertiser row (thin-dimension intent, ADR 0021); a supplier advertising multiple brands has multiple advertiser rows.",
               "enum_values": [],
               "fk": false,
               "name": "brand_name",

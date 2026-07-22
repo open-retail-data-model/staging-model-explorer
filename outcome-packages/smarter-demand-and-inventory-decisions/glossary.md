@@ -1,6 +1,6 @@
 # Smarter Demand and Inventory Decisions — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-07-21
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-21
 
 ## Tables & views
 

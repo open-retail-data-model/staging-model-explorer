@@ -1,6 +1,6 @@
 # Customer Domain — Business Glossary
 
-> Status: 🟢 Review complete (v1_mvm) · Last reviewed: 2026-07-10 · identity slice (`household`, `identity_link`, `channel_preference`) in review in PR #60, pending reviewer sign-off
+> Status: 🟢 Review complete (0.1-beta) · Last reviewed: 2026-07-10 · identity slice (`household`, `identity_link`, `channel_preference`) in review in PR #60, pending reviewer sign-off
 
 Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog schema). Definitions are vendor-neutral and follow the ORDM [data model principles](../../docs/data-model-standards.md).
 

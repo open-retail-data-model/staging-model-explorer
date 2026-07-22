@@ -375,8 +375,8 @@ schema:
     logicalType: string
     physicalType: STRING
     required: false
-    description: Brand marketed by the supplier (the advertised brand). One brand per advertiser row (MVM
-      thin-dim intent, ADR 0021); a supplier advertising multiple brands has multiple advertiser rows.
+    description: Brand marketed by the supplier (the advertised brand). One brand per advertiser row (thin-dimension
+      intent, ADR 0021); a supplier advertising multiple brands has multiple advertiser rows.
   - name: agency_name
     logicalType: string
     physicalType: STRING

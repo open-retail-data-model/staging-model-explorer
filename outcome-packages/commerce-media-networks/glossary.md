@@ -1,6 +1,6 @@
 # Commerce Media Networks — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm) · Last reviewed: 2026-07-13
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-13
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). The retail-media
 FACTS + metrics built on this package's co-located retail-media dimensions (advertiser, campaign, ad_group,

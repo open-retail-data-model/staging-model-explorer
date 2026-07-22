@@ -1,6 +1,6 @@
 # Procurement Domain — Business Glossary
 
-> Status: 🟡 In progress (v1_mvm)
+> Status: 🟡 In progress (0.1-beta)
 
 | Term | Definition |
 |---|---|
