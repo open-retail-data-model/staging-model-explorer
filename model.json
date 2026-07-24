@@ -10,6 +10,11 @@
       {
         "kind": "consumes",
         "source": "actionable-customer-understanding",
+        "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
         "target": "order"
       },
       {
@@ -236,6 +241,11 @@
         "kind": "consumes",
         "source": "unified-customer-view",
         "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "unified-customer-view",
+        "target": "marketing"
       }
     ],
     "nodes": [
@@ -4526,6 +4536,72 @@
           "name": "promotion_supplier_share_required",
           "severity": "error",
           "table": "promotion"
+        },
+        {
+          "column": null,
+          "name": "audience_keys_not_null",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_business_key_unique_current",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_type_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_origin_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_segmentation_basis_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_definition_origin_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_definition_method_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_evaluation_mode_domain",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_size_nonnegative",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_scd2_current_open",
+          "severity": "error",
+          "table": "audience"
+        },
+        {
+          "column": null,
+          "name": "audience_scd2_date_order",
+          "severity": "error",
+          "table": "audience"
         }
       ],
       "contract_path": "contracts/odcs/marketing.odcs.yaml",
@@ -4534,6 +4610,242 @@
       "name": "marketing",
       "relationships": [],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version; the join/FK target.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the audience/segment. The stable key consumers reference and reverse-ETL diffs on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable audience/segment name.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the segment is defined. Allowed values: first_party, modeled, lookalike, demographic, behavioral, contextual, retargeting, custom.",
+              "enum_values": [
+                "first_party",
+                "modeled",
+                "lookalike",
+                "demographic",
+                "behavioral",
+                "contextual",
+                "retargeting",
+                "custom"
+              ],
+              "fk": false,
+              "name": "audience_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Where the segment originates. Allowed values: crm, loyalty, modeled, third_party, platform, survey.",
+              "enum_values": [
+                "crm",
+                "loyalty",
+                "modeled",
+                "third_party",
+                "platform",
+                "survey"
+              ],
+              "fk": false,
+              "name": "audience_origin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral description of the membership criteria (no PII, no member lists).",
+              "enum_values": [],
+              "fk": false,
+              "name": "definition_description",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Approximate member count as of this SCD2 version \u2014 a point-in-time snapshot attribute (>= 0), not a refreshed rollup of another table.",
+              "enum_values": [],
+              "fk": false,
+              "name": "size_estimate",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "TRUE if the audience can be targeted/activated for delivery.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_addressable_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "The axis the definition is built on. Allowed values: behavioral, value_rfm, lifecycle, demographic, geographic, predictive, lookalike, contextual.",
+              "enum_values": [
+                "behavioral",
+                "value_rfm",
+                "lifecycle",
+                "demographic",
+                "geographic",
+                "predictive",
+                "lookalike",
+                "contextual"
+              ],
+              "fk": false,
+              "name": "segmentation_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the definition was authored. Allowed values: canned, custom, agent_generated.",
+              "enum_values": [
+                "canned",
+                "custom",
+                "agent_generated"
+              ],
+              "fk": false,
+              "name": "definition_origin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How membership is computed. Allowed values: rule, ml_score, imported.",
+              "enum_values": [
+                "rule",
+                "ml_score",
+                "imported"
+              ],
+              "fk": false,
+              "name": "definition_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Portable, vendor-neutral predicate/SQL text describing the membership rule. No PII, no member lists.",
+              "enum_values": [],
+              "fk": false,
+              "name": "criteria_expression",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Refresh latency of the definition (an attribute, not a schema fork). Allowed values: batch, streaming, edge.",
+              "enum_values": [
+                "batch",
+                "streaming",
+                "edge"
+              ],
+              "fk": false,
+              "name": "evaluation_mode",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional IAB Audience Taxonomy tier code for cross-platform interoperability (NULL if unmapped). Kept on the shared audience dimension (not a CMN/activation extension) because it is a standards-based interoperability attribute OF the audience concept itself \u2014 any activation consumer benefits, so it belongs with the entity, not one outcome package.",
+              "enum_values": [],
+              "fk": false,
+              "name": "iab_taxonomy_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version of this audience.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core marketing audience/segment-definition dimension (SCD2) \u2014 the single source of truth for a segment definition, shared by retail media and customer-intelligence segmentation.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "audience",
+          "role": "master",
+          "scd2": true
+        },
         {
           "columns": [
             {
@@ -6823,6 +7135,72 @@
           "name": "ltv_predicted_clv_null_rate",
           "severity": "metric",
           "table": "gold_customer_ltv"
+        },
+        {
+          "column": null,
+          "name": "behavioral_attributes_grain_unique",
+          "severity": "error",
+          "table": "gold_customer_behavioral_attributes"
+        },
+        {
+          "column": null,
+          "name": "behavioral_attributes_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "behavioral_attributes_lifecycle_domain",
+          "severity": "error",
+          "table": "gold_customer_behavioral_attributes"
+        },
+        {
+          "column": null,
+          "name": "behavioral_attributes_opt_in_domain",
+          "severity": "error",
+          "table": "gold_customer_behavioral_attributes"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_grain_unique",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_keys_not_null",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_status_domain",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_score_range",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_profile_fk_orphan",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_audience_fk_orphan",
+          "severity": "error",
+          "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "segment_membership_rowcount",
+          "severity": "metric",
+          "table": "segment_membership"
         }
       ],
       "contract_path": "contracts/odcs/actionable-customer-understanding.odcs.yaml",
@@ -6831,6 +7209,408 @@
       "name": "actionable-customer-understanding",
       "relationships": [],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per (profile, segment, as_of) row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "segment_membership_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the membership row (profile_id + audience_id + as_of_date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "segment_membership_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous; not raw PII). Joins customer.profile / gold_customer_behavioral_attributes and is the single stable activation/join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable key of the segment DEFINITION this membership is for. FK to marketing.audience.audience_id (the shared conformed definition, ADR 0022).",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Evaluation date of this membership snapshot (the temporal key; append-only, never version-closed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "as_of_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Membership state at as_of. Allowed values: realized, existing, exited. Standard segment-membership lifecycle semantics: realized = newly qualified this evaluation, existing = still qualifies, exited = no longer qualifies. v1 is current-state append-only: the generator emits mostly `existing` plus a deterministic ~5% `exited` slice (so the exclusion path is exercised on seed data); `realized` is RESERVED for a future entered/exited delta feed.",
+              "enum_values": [
+                "realized",
+                "existing",
+                "exited"
+              ],
+              "fk": false,
+              "name": "membership_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional confidence/propensity score behind the membership (0..1); NULL for a pure deterministic rule match.",
+              "enum_values": [],
+              "fk": false,
+              "name": "membership_score",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,4)"
+            },
+            {
+              "comment": "How membership was assigned. Allowed values: rule, ml_score, imported.",
+              "enum_values": [
+                "rule",
+                "ml_score",
+                "imported"
+              ],
+              "fk": false,
+              "name": "assignment_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Version of the rule set / model that produced this membership (audit / reproducibility). NULL if not applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM Actionable Customer Understanding behavioral-segment membership (append-only as-of snapshots). Targeting plane only; gated for activation in UCV.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "segment_membership",
+          "role": "association",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable, pseudonymous customer business key (not raw PII) \u2014 the single stable activation/join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Fiscal periods since the customer last purchased.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recency_periods",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Distinct purchase occasions (orders) observed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "frequency",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Orders per fiscal period of tenure (purchase cadence).",
+              "enum_values": [],
+              "fk": false,
+              "name": "frequency_per_period",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Total units purchased.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Total net spend.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_spend",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Date of the customer's most recent order.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_order_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Fiscal periods from first to latest observed order.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tenure_periods",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "The customer's average purchase cadence: fiscal periods of tenure per order (tenure / frequency). Drives the lifecycle_stage derivation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_cadence_periods",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Count of distinct product categories purchased (breadth of category affinity).",
+              "enum_values": [],
+              "fk": false,
+              "name": "distinct_categories",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of distinct brands purchased.",
+              "enum_values": [],
+              "fk": false,
+              "name": "distinct_brands",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "The category the customer spends the most net revenue in (dominant category affinity).",
+              "enum_values": [],
+              "fk": false,
+              "name": "top_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The brand the customer spends the most net revenue in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "top_brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Share of net spend on discounted lines (net < gross) \u2014 promo responsiveness, 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_purchase_share_ratio",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(6, 4)"
+            },
+            {
+              "comment": "Behaviorally-derived relationship stage: new / active / lapsing / churned (from recency vs the customer's own cadence).",
+              "enum_values": [],
+              "fk": false,
+              "name": "lifecycle_stage",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Recency score 1-5 (from gold_customer_ltv; surfaced as a trait, not recomputed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "r_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Frequency score 1-5 (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "f_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Monetary score 1-5 (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "m_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Combined RFM cell 111..555 (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfm_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Value tier PLATINUM/GOLD/SILVER/BRONZE (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "value_tier",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Realized lifetime gross margin (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "historical_clv",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Heuristic forward CLV estimate (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "predicted_clv",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Heuristic churn-risk flag (from gold_customer_ltv).",
+              "enum_values": [],
+              "fk": false,
+              "name": "churn_risk_proxy",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Marketing consent as a DISCOVERABLE ATTRIBUTE (opted_in / opted_out / unknown). NOT the legal source of truth (that is canonical-core consent) and never the activation gate \u2014 the net gate is applied only in UCV gold_activatable_audience_current.",
+              "enum_values": [],
+              "fk": false,
+              "name": "opt_in_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "B2B: durable account key this customer is the PRIMARY CONTACT for. NULL for B2C and for non-primary account members (a full all-contacts roll-up is a follow-up).",
+              "enum_values": [],
+              "fk": false,
+              "name": "account_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "B2B account type (NULL for B2C).",
+              "enum_values": [],
+              "fk": false,
+              "name": "account_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "B2B parent account (account hierarchy), NULL if none.",
+              "enum_values": [],
+              "fk": false,
+              "name": "parent_account_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this trait row was computed (freshness).",
+              "enum_values": [],
+              "fk": false,
+              "name": "computed_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "The wide, agent-discoverable customer TRAIT surface for behavioral segmentation (the \"parent model\" a warehouse-native / composable CDP activation platform reads to compose custom audiences). ONE CURRENT ROW PER CUSTOMER, keyed on the durable `profile_id` \u2014 a single stable join key so a downstream activation platform (and reverse-ETL CDC) diffs on one column, never a multi-column predicate.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "consent",
+              "unit": "customer"
+            },
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_customer_behavioral_attributes",
+          "role": "gold",
+          "scd2": false
+        },
         {
           "columns": [
             {
@@ -6924,31 +7704,31 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Recency quintile 1-5 (5 = most recent).",
+              "comment": "Recency score 1-5 from stable fixed thresholds (5 = most recent; reproducible across refreshes, not a population quintile).",
               "enum_values": [],
               "fk": false,
               "name": "r_score",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": "INT"
             },
             {
-              "comment": "Frequency quintile 1-5 (5 = most frequent).",
+              "comment": "Frequency score 1-5 from stable fixed thresholds (5 = most frequent).",
               "enum_values": [],
               "fk": false,
               "name": "f_score",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": "INT"
             },
             {
-              "comment": "Monetary quintile 1-5 (5 = highest spend).",
+              "comment": "Monetary score 1-5 from stable fixed thresholds (5 = highest spend).",
               "enum_values": [],
               "fk": false,
               "name": "m_score",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": "INT"
             },
             {
               "comment": "Combined RFM cell = 100*R + 10*F + M (111..555).",
@@ -6957,10 +7737,10 @@
               "name": "rfm_score",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": "INT"
             },
             {
-              "comment": "historical_clv quartile: PLATINUM / GOLD / SILVER / BRONZE.",
+              "comment": "historical_clv tier from stable fixed thresholds (PLATINUM >=2500 / GOLD >=1000 / SILVER >=250 / BRONZE else); reproducible across refreshes, not an NTILE quartile.",
               "enum_values": [],
               "fk": false,
               "name": "value_tier",
@@ -7004,13 +7784,14 @@
         {
           "consumes": [
             "calendar",
+            "customer",
             "order",
             "product"
           ],
           "name": "Behavioral Segmentation",
-          "status": "planned",
+          "status": "in-progress",
           "tables": [
-            "gold_customer_ltv"
+            "gold_customer_behavioral_attributes"
           ]
         },
         {
@@ -10915,42 +11696,6 @@
           "name": "keyword_scd2_date_order",
           "severity": "error",
           "table": "keyword"
-        },
-        {
-          "column": null,
-          "name": "audience_keys_not_null",
-          "severity": "error",
-          "table": "audience"
-        },
-        {
-          "column": null,
-          "name": "audience_business_key_unique_current",
-          "severity": "error",
-          "table": "audience"
-        },
-        {
-          "column": null,
-          "name": "audience_type_domain",
-          "severity": "error",
-          "table": "audience"
-        },
-        {
-          "column": null,
-          "name": "audience_origin_domain",
-          "severity": "error",
-          "table": "audience"
-        },
-        {
-          "column": null,
-          "name": "audience_scd2_current_open",
-          "severity": "error",
-          "table": "audience"
-        },
-        {
-          "column": null,
-          "name": "audience_scd2_date_order",
-          "severity": "error",
-          "table": "audience"
         }
       ],
       "contract_path": "contracts/odcs/commerce-media-networks.odcs.yaml",
@@ -11780,7 +12525,7 @@
               "type": "STRING"
             },
             {
-              "comment": "FK to cmn.audience.audience_sk (the segment this ad group targets), if audience-targeted.",
+              "comment": "FK to marketing.audience.audience_sk (the segment this ad group targets), if audience-targeted.",
               "enum_values": [],
               "fk": true,
               "name": "audience_sk",
@@ -11967,7 +12712,12 @@
             }
           ],
           "comment": "ORDM Commerce Media Networks retail-media ad group dimension (SCD2).",
-          "consumes_tables": [],
+          "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            }
+          ],
           "layer": "silver",
           "materialized": true,
           "name": "ad_group",
@@ -12622,168 +13372,6 @@
           "name": "attributed_outcome",
           "role": "transactional",
           "scd2": false
-        },
-        {
-          "columns": [
-            {
-              "comment": "Surrogate key. Unique per SCD2 version; the join/FK target.",
-              "enum_values": [],
-              "fk": false,
-              "name": "audience_sk",
-              "pii": false,
-              "pk": true,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "Durable natural/business key for the audience/segment.",
-              "enum_values": [],
-              "fk": false,
-              "name": "audience_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "Human-readable audience name.",
-              "enum_values": [],
-              "fk": false,
-              "name": "audience_name",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "How the segment is defined. Allowed values: first_party, modeled, lookalike, demographic, behavioral, contextual, retargeting, custom.",
-              "enum_values": [
-                "first_party",
-                "modeled",
-                "lookalike",
-                "demographic",
-                "behavioral",
-                "contextual",
-                "retargeting",
-                "custom"
-              ],
-              "fk": false,
-              "name": "audience_type",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "Where the segment originates. Allowed values: crm, loyalty, modeled, third_party, platform, survey.",
-              "enum_values": [
-                "crm",
-                "loyalty",
-                "modeled",
-                "third_party",
-                "platform",
-                "survey"
-              ],
-              "fk": false,
-              "name": "audience_origin",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "Vendor-neutral description of the membership criteria (no PII, no member lists).",
-              "enum_values": [],
-              "fk": false,
-              "name": "definition_description",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "Approximate member count as of this SCD2 version \u2014 a point-in-time snapshot attribute (>= 0), not a refreshed rollup of another table.",
-              "enum_values": [],
-              "fk": false,
-              "name": "size_estimate",
-              "pii": false,
-              "pk": false,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "TRUE if the audience can be targeted/activated for delivery.",
-              "enum_values": [],
-              "fk": false,
-              "name": "is_addressable_flag",
-              "pii": false,
-              "pk": false,
-              "type": "BOOLEAN"
-            },
-            {
-              "comment": "SCD2: inclusive start date this version became effective.",
-              "enum_values": [],
-              "fk": false,
-              "name": "effective_from_date",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "SCD2: exclusive end date; NULL for the current version.",
-              "enum_values": [],
-              "fk": false,
-              "name": "effective_to_date",
-              "pii": false,
-              "pk": false,
-              "type": "DATE"
-            },
-            {
-              "comment": "SCD2: TRUE for the currently active version of this audience.",
-              "enum_values": [],
-              "fk": false,
-              "name": "is_current",
-              "pii": false,
-              "pk": false,
-              "type": "BOOLEAN"
-            },
-            {
-              "comment": "When the record was created in the source system (UTC, ISO 8601).",
-              "enum_values": [],
-              "fk": false,
-              "name": "created_timestamp",
-              "pii": false,
-              "pk": false,
-              "type": "TIMESTAMP"
-            },
-            {
-              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
-              "enum_values": [],
-              "fk": false,
-              "name": "source_updated_timestamp",
-              "pii": false,
-              "pk": false,
-              "type": "TIMESTAMP"
-            },
-            {
-              "comment": "Originating system of record (vendor-neutral label).",
-              "enum_values": [],
-              "fk": false,
-              "name": "record_source",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "When this row was loaded (UTC, ISO 8601).",
-              "enum_values": [],
-              "fk": false,
-              "name": "load_timestamp",
-              "pii": false,
-              "pk": false,
-              "type": "TIMESTAMP"
-            }
-          ],
-          "comment": "ORDM Commerce Media Networks retail-media audience/targeting-segment dimension (SCD2).",
-          "consumes_tables": [],
-          "layer": "silver",
-          "materialized": true,
-          "name": "audience",
-          "role": "master",
-          "scd2": true
         },
         {
           "columns": [
@@ -13445,7 +14033,7 @@
               "type": "STRING"
             },
             {
-              "comment": "FK to cmn.audience.audience_sk (or sentinel ALL member).",
+              "comment": "FK to marketing.audience.audience_sk (or sentinel ALL member).",
               "enum_values": [],
               "fk": true,
               "name": "audience_sk",
@@ -13764,6 +14352,10 @@
           ],
           "comment": "Commerce Media Networks \u2014 conformed campaign\u00d7day delivery/attribution aggregate (supplier-safe).",
           "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -15761,7 +16353,7 @@
               "type": "STRING"
             },
             {
-              "comment": "FK to cmn.audience.audience_sk (targeted segment), if audience-targeted.",
+              "comment": "FK to marketing.audience.audience_sk (targeted segment), if audience-targeted.",
               "enum_values": [],
               "fk": true,
               "name": "audience_sk",
@@ -16012,6 +16604,10 @@
           ],
           "comment": "Commerce Media Networks \u2014 conformed retail-media delivery/engagement event fact (append-only).",
           "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -16991,6 +17587,10 @@
           "comment": "Campaign \u00d7 day performance KPIs, rolled up from campaign_day and joined to the media campaign / advertiser dimensions. Supplier-safe (no person-level data); threshold-suppressed rows are excluded.",
           "consumes_tables": [
             {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -17536,6 +18136,10 @@
           ],
           "comment": "Supplier-safe campaign report: campaign_day rolled to advertiser \u00d7 campaign, threshold-suppressed rows excluded, no person-level data. This is the surface a supplier/advertiser consumes (entitlement is applied by a row filter on advertiser at deploy time; the ledger/entitlement bridge is the data-sharing-with-suppliers package).",
           "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -28609,6 +29213,30 @@
           "name": "ucv_eligible_rate",
           "severity": "metric",
           "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "uav_grain_unique",
+          "severity": "error",
+          "table": "gold_activatable_audience_current"
+        },
+        {
+          "column": null,
+          "name": "uav_all_eligible",
+          "severity": "error",
+          "table": "gold_activatable_audience_current"
+        },
+        {
+          "column": null,
+          "name": "uav_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "uav_activatable_rowcount",
+          "severity": "metric",
+          "table": "gold_activatable_audience_current"
         }
       ],
       "contract_path": "contracts/odcs/unified-customer-view.odcs.yaml",
@@ -28806,6 +29434,128 @@
           "materialized": true,
           "name": "customer_profile_snapshot",
           "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable segment/audience key (marketing.audience) being activated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable segment name.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable, pseudonymous customer key \u2014 the single stable activation/join key (identifier resolution happens at the reverse-ETL boundary, not here).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Activation purpose (e.g. marketing) from the eligibility gate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "purpose_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Channel (email/sms/phone/postal) the customer is eligible on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Consent jurisdiction scope passed through from the gate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Segment membership state (realized/existing) from segment_membership.",
+              "enum_values": [],
+              "fk": false,
+              "name": "membership_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional membership confidence/propensity from segment_membership.",
+              "enum_values": [],
+              "fk": false,
+              "name": "membership_score",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "Always TRUE here (the view exposes only gate-eligible rows); kept for consumer clarity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "From the gate; NULL for eligible rows.",
+              "enum_values": [],
+              "fk": false,
+              "name": "blocking_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "THE ACTIVATION SURFACE: \"which customers in segment X may I actually contact for purpose P on channel C?\" \u2014 the reverse-ETL-ready join a warehouse-native / composable CDP activation platform reads to sync an addressable audience.",
+          "consumes_tables": [
+            {
+              "table": "address",
+              "unit": "customer"
+            },
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
+              "table": "channel_preference",
+              "unit": "customer"
+            },
+            {
+              "table": "consent",
+              "unit": "customer"
+            },
+            {
+              "table": "contact",
+              "unit": "customer"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_activatable_audience_current",
+          "role": "gold",
           "scd2": false
         },
         {

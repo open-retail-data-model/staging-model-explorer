@@ -12,6 +12,7 @@ on the thin customer core — no product/transaction/campaign data.
 | `customer_profile_snapshot` | One row per profile per snapshot_date | Append-only point-in-time snapshot of identity/consent/preference/household roll-ups. Extension table; no raw PII. |
 | `gold_unified_customer_360_current` | One current row per customer | Conformed 360 summary keyed on the customer surrogate; identity, consent, preference, household roll-ups. No raw PII. |
 | `gold_customer_activation_eligibility_current` | One row per customer × purpose × channel | Net-permission gate: `eligible_flag` = consent granted AND preference allows AND a valid identifier exists, with `blocking_reason_code`. |
+| `gold_activatable_audience_current` | One row per audience × profile × purpose × channel × jurisdiction | The activation surface: behavioral-segment membership (ACU `segment_membership`, latest as-of) joined to the net eligibility gate, keyed on the durable `profile_id`. Fail-closed — a customer appears only where an eligible gate row exists and the segment is addressable. No raw PII. |
 | `profile` / `identity_link` / `consent` / `channel_preference` / `household` / `contact` / `address` | — | *(canonical-core)* the customer core this package rolls up. |
 
 ## Key concepts
@@ -57,6 +58,8 @@ overlay is a deferred, optional Databricks-native materialization of the same de
 
 ## Deferred (documented, not built)
 
-UC Metric Views (optional Databricks overlay of the metrics above); segment/audience/campaign/activation
-machinery; the suppression ledger; and any 360 field needing transaction/product/store data (LTV, purchase
-recency, affinity, preferred store). See [`design/customer-identity/`](../../design/customer-identity/).
+UC Metric Views (optional Databricks overlay of the metrics above); campaign machinery; the suppression
+ledger; and any 360 field needing transaction/product/store data (LTV, purchase recency, affinity,
+preferred store). (Segment/audience membership and the activation surface are now BUILT: `audience` is a
+silver master, ACU ships `segment_membership`, and `gold_activatable_audience_current` above is the
+activation join.) See [`design/customer-identity/`](../../design/customer-identity/).

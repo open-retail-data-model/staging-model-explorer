@@ -27,6 +27,343 @@ authoritativeDefinitions:
 - url: docs/data-model-standards.md
   type: businessDefinition
 schema:
+- name: segment_membership
+  physicalName: actionable_customer_understanding.segment_membership
+  physicalType: table
+  description: ORDM Actionable Customer Understanding behavioral-segment membership (append-only as-of
+    snapshots). Targeting plane only; gated for activation in UCV.
+  tags:
+  - association
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: segment_membership_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per (profile, segment, as_of) row.
+  - name: segment_membership_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the membership row (profile_id + audience_id + as_of_date).
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable customer business key (pseudonymous; not raw PII). Joins customer.profile / gold_customer_behavioral_attributes
+      and is the single stable activation/join key.
+  - name: audience_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable key of the segment DEFINITION this membership is for. FK to marketing.audience.audience_id
+      (the shared conformed definition, ADR 0022).
+  - name: as_of_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Evaluation date of this membership snapshot (the temporal key; append-only, never version-closed).
+  - name: membership_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Membership state at as_of. Allowed values: realized, existing, exited. Standard segment-membership
+      lifecycle semantics: realized = newly qualified this evaluation, existing = still qualifies, exited
+      = no longer qualifies. v1 is current-state append-only: the generator emits mostly `existing` plus
+      a deterministic ~5% `exited` slice (so the exclusion path is exercised on seed data); `realized`
+      is RESERVED for a future entered/exited delta feed.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: realized, existing, exited.'
+  - name: membership_score
+    logicalType: number
+    physicalType: DECIMAL(8,4)
+    required: false
+    description: Optional confidence/propensity score behind the membership (0..1); NULL for a pure deterministic
+      rule match.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (membership_score IS NULL OR (membership_score >= 0 AND membership_score <= 1)).
+  - name: assignment_method
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'How membership was assigned. Allowed values: rule, ml_score, imported.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: rule, ml_score, imported.'
+  - name: model_version
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Version of the rule set / model that produced this membership (audit / reproducibility).
+      NULL if not applicable.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: segment_membership_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per (profile_id x audience_id x as_of_date) — no fan-out/double-count.
+    query: 'SELECT profile_id, audience_id, as_of_date
+
+      FROM actionable_customer_understanding.segment_membership
+
+      GROUP BY profile_id, audience_id, as_of_date
+
+      HAVING COUNT(*) > 1'
+  - name: segment_membership_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: segment_membership_keys_not_null
+    query: 'SELECT * FROM actionable_customer_understanding.segment_membership
+
+      WHERE segment_membership_id IS NULL OR profile_id IS NULL OR audience_id IS NULL OR as_of_date IS
+      NULL'
+  - name: segment_membership_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: segment_membership_status_domain
+    query: "SELECT * FROM actionable_customer_understanding.segment_membership\nWHERE membership_status\
+      \ IS NOT NULL\n  AND membership_status NOT IN ('realized', 'existing', 'exited')"
+  - name: segment_membership_score_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: segment_membership_score_range
+    query: 'SELECT * FROM actionable_customer_understanding.segment_membership
+
+      WHERE membership_score IS NOT NULL AND (membership_score < 0 OR membership_score > 1)'
+  - name: segment_membership_profile_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Membership profile_id must resolve to a current customer profile (durable-key FK).
+    query: "SELECT m.segment_membership_id, m.profile_id\nFROM actionable_customer_understanding.segment_membership\
+      \ m\nLEFT JOIN customer.profile p\n  ON m.profile_id = p.profile_id AND p.is_current = TRUE\nWHERE\
+      \ p.profile_id IS NULL"
+  - name: segment_membership_audience_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Membership audience_id must resolve to a current segment definition (durable-key FK into
+      the shared silver marketing.audience dim, ADR 0022).
+    query: "SELECT m.segment_membership_id, m.audience_id\nFROM actionable_customer_understanding.segment_membership\
+      \ m\nLEFT JOIN marketing.audience a\n  ON m.audience_id = a.audience_id AND a.is_current = TRUE\n\
+      WHERE a.audience_id IS NULL"
+  - name: segment_membership_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: segment_membership_rowcount
+    query: SELECT COUNT(*) AS membership_rows FROM actionable_customer_understanding.segment_membership
+- name: gold_customer_behavioral_attributes
+  physicalName: actionable_customer_understanding.gold_customer_behavioral_attributes
+  physicalType: view
+  description: The wide, agent-discoverable customer TRAIT surface for behavioral segmentation (the "parent
+    model" a warehouse-native / composable CDP activation platform reads to compose custom audiences).
+    ONE CURRENT ROW PER CUSTOMER, keyed on the durable `profile_id` — a single stable join key so a downstream
+    activation platform (and reverse-ETL CDC) diffs on one column, never a multi-column predicate.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable, pseudonymous customer business key (not raw PII) — the single stable activation/join
+      key.
+  - name: recency_periods
+    logicalType: integer
+    physicalType: INT
+    description: Fiscal periods since the customer last purchased.
+  - name: frequency
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct purchase occasions (orders) observed.
+  - name: frequency_per_period
+    logicalType: number
+    physicalType: DOUBLE
+    description: Orders per fiscal period of tenure (purchase cadence).
+  - name: total_units
+    logicalType: integer
+    physicalType: BIGINT
+    description: Total units purchased.
+  - name: total_spend
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Total net spend.
+  - name: last_order_date
+    logicalType: date
+    physicalType: DATE
+    description: Date of the customer's most recent order.
+  - name: tenure_periods
+    logicalType: integer
+    physicalType: INT
+    description: Fiscal periods from first to latest observed order.
+  - name: avg_cadence_periods
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'The customer''s average purchase cadence: fiscal periods of tenure per order (tenure
+      / frequency). Drives the lifecycle_stage derivation.'
+  - name: distinct_categories
+    logicalType: integer
+    physicalType: BIGINT
+    description: Count of distinct product categories purchased (breadth of category affinity).
+  - name: distinct_brands
+    logicalType: integer
+    physicalType: BIGINT
+    description: Count of distinct brands purchased.
+  - name: top_category
+    logicalType: string
+    physicalType: STRING
+    description: The category the customer spends the most net revenue in (dominant category affinity).
+  - name: top_brand
+    logicalType: string
+    physicalType: STRING
+    description: The brand the customer spends the most net revenue in.
+  - name: promo_purchase_share_ratio
+    logicalType: number
+    physicalType: DECIMAL(6, 4)
+    description: Share of net spend on discounted lines (net < gross) — promo responsiveness, 0..1.
+  - name: lifecycle_stage
+    logicalType: string
+    physicalType: STRING
+    description: 'Behaviorally-derived relationship stage: new / active / lapsing / churned (from recency
+      vs the customer''s own cadence).'
+  - name: r_score
+    logicalType: integer
+    physicalType: INT
+    description: Recency score 1-5 (from gold_customer_ltv; surfaced as a trait, not recomputed).
+  - name: f_score
+    logicalType: integer
+    physicalType: INT
+    description: Frequency score 1-5 (from gold_customer_ltv).
+  - name: m_score
+    logicalType: integer
+    physicalType: INT
+    description: Monetary score 1-5 (from gold_customer_ltv).
+  - name: rfm_score
+    logicalType: integer
+    physicalType: INT
+    description: Combined RFM cell 111..555 (from gold_customer_ltv).
+  - name: value_tier
+    logicalType: string
+    physicalType: STRING
+    description: Value tier PLATINUM/GOLD/SILVER/BRONZE (from gold_customer_ltv).
+  - name: historical_clv
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Realized lifetime gross margin (from gold_customer_ltv).
+  - name: predicted_clv
+    logicalType: number
+    physicalType: DOUBLE
+    description: Heuristic forward CLV estimate (from gold_customer_ltv).
+  - name: churn_risk_proxy
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Heuristic churn-risk flag (from gold_customer_ltv).
+  - name: opt_in_status
+    logicalType: string
+    physicalType: STRING
+    description: Marketing consent as a DISCOVERABLE ATTRIBUTE (opted_in / opted_out / unknown). NOT the
+      legal source of truth (that is canonical-core consent) and never the activation gate — the net gate
+      is applied only in UCV gold_activatable_audience_current.
+  - name: account_id
+    logicalType: string
+    physicalType: STRING
+    description: 'B2B: durable account key this customer is the PRIMARY CONTACT for. NULL for B2C and
+      for non-primary account members (a full all-contacts roll-up is a follow-up).'
+  - name: account_type
+    logicalType: string
+    physicalType: STRING
+    description: B2B account type (NULL for B2C).
+  - name: parent_account_id
+    logicalType: string
+    physicalType: STRING
+    description: B2B parent account (account hierarchy), NULL if none.
+  - name: computed_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: When this trait row was computed (freshness).
+  quality:
+  - name: behavioral_attributes_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One current row per customer (the wide trait surface / parent model).
+    query: 'SELECT profile_id
+
+      FROM actionable_customer_understanding.gold_customer_behavioral_attributes
+
+      GROUP BY profile_id
+
+      HAVING COUNT(*) > 1'
+  - name: behavioral_attributes_lifecycle_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: behavioral_attributes_lifecycle_domain
+    query: 'SELECT * FROM actionable_customer_understanding.gold_customer_behavioral_attributes
+
+      WHERE lifecycle_stage NOT IN (''new'', ''active'', ''lapsing'', ''churned'')'
+  - name: behavioral_attributes_opt_in_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: behavioral_attributes_opt_in_domain
+    query: 'SELECT * FROM actionable_customer_understanding.gold_customer_behavioral_attributes
+
+      WHERE opt_in_status NOT IN (''opted_in'', ''opted_out'', ''unknown'')'
 - name: gold_customer_ltv
   physicalName: actionable_customer_understanding.gold_customer_ltv
   physicalType: view
@@ -88,24 +425,26 @@ schema:
       clamped >= 0. Heuristic, not an ML model.
   - name: r_score
     logicalType: integer
-    physicalType: BIGINT
-    description: Recency quintile 1-5 (5 = most recent).
+    physicalType: INT
+    description: Recency score 1-5 from stable fixed thresholds (5 = most recent; reproducible across
+      refreshes, not a population quintile).
   - name: f_score
     logicalType: integer
-    physicalType: BIGINT
-    description: Frequency quintile 1-5 (5 = most frequent).
+    physicalType: INT
+    description: Frequency score 1-5 from stable fixed thresholds (5 = most frequent).
   - name: m_score
     logicalType: integer
-    physicalType: BIGINT
-    description: Monetary quintile 1-5 (5 = highest spend).
+    physicalType: INT
+    description: Monetary score 1-5 from stable fixed thresholds (5 = highest spend).
   - name: rfm_score
     logicalType: integer
-    physicalType: BIGINT
+    physicalType: INT
     description: Combined RFM cell = 100*R + 10*F + M (111..555).
   - name: value_tier
     logicalType: string
     physicalType: STRING
-    description: 'historical_clv quartile: PLATINUM / GOLD / SILVER / BRONZE.'
+    description: historical_clv tier from stable fixed thresholds (PLATINUM >=2500 / GOLD >=1000 / SILVER
+      >=250 / BRONZE else); reproducible across refreshes, not an NTILE quartile.
   - name: churn_risk_proxy
     logicalType: boolean
     physicalType: BOOLEAN

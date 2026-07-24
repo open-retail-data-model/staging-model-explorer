@@ -235,6 +235,96 @@ schema:
       \ IS NOT NULL AND resolved_identity_confidence NOT BETWEEN 0 AND 1)\n   OR (profile_completeness_score\
       \ IS NOT NULL AND profile_completeness_score NOT BETWEEN 0 AND 1)\n   OR (reachability_score IS\
       \ NOT NULL AND reachability_score NOT BETWEEN 0 AND 1)"
+- name: gold_activatable_audience_current
+  physicalName: unified_customer_view.gold_activatable_audience_current
+  physicalType: view
+  description: 'THE ACTIVATION SURFACE: "which customers in segment X may I actually contact for purpose
+    P on channel C?" — the reverse-ETL-ready join a warehouse-native / composable CDP activation platform
+    reads to sync an addressable audience.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: audience_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable segment/audience key (marketing.audience) being activated.
+  - name: audience_name
+    logicalType: string
+    physicalType: STRING
+    description: Human-readable segment name.
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable, pseudonymous customer key — the single stable activation/join key (identifier
+      resolution happens at the reverse-ETL boundary, not here).
+  - name: purpose_code
+    logicalType: string
+    physicalType: STRING
+    description: Activation purpose (e.g. marketing) from the eligibility gate.
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    description: Channel (email/sms/phone/postal) the customer is eligible on.
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+    description: Consent jurisdiction scope passed through from the gate.
+  - name: membership_status
+    logicalType: string
+    physicalType: STRING
+    description: Segment membership state (realized/existing) from segment_membership.
+  - name: membership_score
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Optional membership confidence/propensity from segment_membership.
+  - name: eligible_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: Always TRUE here (the view exposes only gate-eligible rows); kept for consumer clarity.
+  - name: blocking_reason_code
+    logicalType: string
+    physicalType: STRING
+    description: From the gate; NULL for eligible rows.
+  quality:
+  - name: uav_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per (audience_id x profile_id x purpose x channel x jurisdiction). Jurisdiction
+      is part of the grain because the eligibility gate is grained by jurisdiction (consent is per-jurisdiction)
+      — a profile eligible in >1 jurisdiction for one purpose x channel is an expected shape, not a duplicate.
+    query: 'SELECT audience_id, profile_id, purpose_code, channel_code, jurisdiction_code
+
+      FROM unified_customer_view.gold_activatable_audience_current
+
+      GROUP BY audience_id, profile_id, purpose_code, channel_code, jurisdiction_code
+
+      HAVING COUNT(*) > 1'
+  - name: uav_all_eligible
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The activation surface exposes ONLY gate-eligible rows (a segment never overrides consent).
+    query: 'SELECT * FROM unified_customer_view.gold_activatable_audience_current
+
+      WHERE eligible_flag <> TRUE OR eligible_flag IS NULL'
+  - name: uav_activatable_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: uav_activatable_rowcount
+    query: SELECT COUNT(*) AS activatable_rows FROM unified_customer_view.gold_activatable_audience_current
 - name: gold_customer_activation_eligibility_current
   physicalName: unified_customer_view.gold_customer_activation_eligibility_current
   physicalType: view

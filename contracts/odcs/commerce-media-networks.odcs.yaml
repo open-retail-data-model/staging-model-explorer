@@ -75,13 +75,13 @@ schema:
     logicalType: integer
     physicalType: BIGINT
     required: false
-    description: FK to cmn.audience.audience_sk (the segment this ad group targets), if audience-targeted.
+    description: FK to marketing.audience.audience_sk (the segment this ad group targets), if audience-targeted.
     relationships:
     - to: audience.audience_sk
       type: foreignKey
       customProperties:
       - property: toSchema
-        value: commerce_media_networks
+        value: marketing
       - property: enforced
         value: false
   - name: audience_id
@@ -238,7 +238,7 @@ schema:
     description: ad_group_audience_fk_orphan
     query: 'SELECT ag.* FROM commerce_media_networks.ad_group ag
 
-      LEFT JOIN commerce_media_networks.audience a ON ag.audience_sk = a.audience_sk
+      LEFT JOIN marketing.audience a ON ag.audience_sk = a.audience_sk
 
       WHERE ag.audience_sk IS NOT NULL AND a.audience_sk IS NULL'
   - name: ad_group_campaign_businesskey_orphan
@@ -1075,183 +1075,6 @@ schema:
     description: fao_keyword_fk_orphan
     query: SELECT f.* FROM commerce_media_networks.attributed_outcome f LEFT JOIN commerce_media_networks.keyword
       d ON f.keyword_sk = d.keyword_sk WHERE f.keyword_sk IS NOT NULL AND d.keyword_sk IS NULL
-- name: audience
-  physicalName: commerce_media_networks.audience
-  physicalType: table
-  description: ORDM Commerce Media Networks retail-media audience/targeting-segment dimension (SCD2).
-  tags:
-  - master
-  authoritativeDefinitions:
-  - url: outcome-packages/commerce-media-networks/README.md
-    type: businessDefinition
-  - url: outcome-packages/commerce-media-networks/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: audience_sk
-    logicalType: integer
-    physicalType: BIGINT
-    required: true
-    primaryKey: true
-    primaryKeyPosition: 1
-    description: Surrogate key. Unique per SCD2 version; the join/FK target.
-  - name: audience_id
-    logicalType: string
-    physicalType: STRING
-    required: true
-    description: Durable natural/business key for the audience/segment.
-  - name: audience_name
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: Human-readable audience name.
-  - name: audience_type
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: 'How the segment is defined. Allowed values: first_party, modeled, lookalike, demographic,
-      behavioral, contextual, retargeting, custom.'
-    quality:
-    - type: text
-      dimension: validity
-      severity: error
-      description: 'Allowed values: first_party, modeled, lookalike, demographic, behavioral, contextual,
-        retargeting, custom.'
-  - name: audience_origin
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: 'Where the segment originates. Allowed values: crm, loyalty, modeled, third_party, platform,
-      survey.'
-    quality:
-    - type: text
-      dimension: validity
-      severity: error
-      description: 'Allowed values: crm, loyalty, modeled, third_party, platform, survey.'
-  - name: definition_description
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: Vendor-neutral description of the membership criteria (no PII, no member lists).
-  - name: size_estimate
-    logicalType: integer
-    physicalType: BIGINT
-    required: false
-    description: Approximate member count as of this SCD2 version — a point-in-time snapshot attribute
-      (>= 0), not a refreshed rollup of another table.
-    quality:
-    - type: text
-      dimension: validity
-      severity: error
-      description: CHECK (size_estimate IS NULL OR size_estimate >= 0).
-  - name: is_addressable_flag
-    logicalType: boolean
-    physicalType: BOOLEAN
-    required: false
-    description: TRUE if the audience can be targeted/activated for delivery.
-  - name: effective_from_date
-    logicalType: date
-    physicalType: DATE
-    required: true
-    description: 'SCD2: inclusive start date this version became effective.'
-  - name: effective_to_date
-    logicalType: date
-    physicalType: DATE
-    required: false
-    description: 'SCD2: exclusive end date; NULL for the current version.'
-  - name: is_current
-    logicalType: boolean
-    physicalType: BOOLEAN
-    required: true
-    description: 'SCD2: TRUE for the currently active version of this audience.'
-  - name: created_timestamp
-    logicalType: timestamp
-    physicalType: TIMESTAMP
-    required: false
-    description: When the record was created in the source system (UTC, ISO 8601).
-  - name: source_updated_timestamp
-    logicalType: timestamp
-    physicalType: TIMESTAMP
-    required: false
-    description: When the record was last modified in the source system (UTC, ISO 8601).
-  - name: record_source
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: Originating system of record (vendor-neutral label).
-  - name: load_timestamp
-    logicalType: timestamp
-    physicalType: TIMESTAMP
-    required: false
-    description: When this row was loaded (UTC, ISO 8601).
-  quality:
-  - name: audience_keys_not_null
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_keys_not_null
-    query: 'SELECT * FROM commerce_media_networks.audience
-
-      WHERE audience_sk IS NULL OR audience_id IS NULL OR is_current IS NULL'
-  - name: audience_business_key_unique_current
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_business_key_unique_current
-    query: 'SELECT audience_id, COUNT(*) AS current_versions
-
-      FROM commerce_media_networks.audience
-
-      WHERE is_current = true
-
-      GROUP BY audience_id
-
-      HAVING COUNT(*) > 1'
-  - name: audience_type_domain
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_type_domain
-    query: "SELECT * FROM commerce_media_networks.audience\nWHERE audience_type IS NOT NULL\n  AND audience_type\
-      \ NOT IN ('first_party', 'modeled', 'lookalike', 'demographic', 'behavioral', 'contextual', 'retargeting',\
-      \ 'custom')"
-  - name: audience_origin_domain
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_origin_domain
-    query: "SELECT * FROM commerce_media_networks.audience\nWHERE audience_origin IS NOT NULL\n  AND audience_origin\
-      \ NOT IN ('crm', 'loyalty', 'modeled', 'third_party', 'platform', 'survey')"
-  - name: audience_scd2_current_open
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_scd2_current_open
-    query: 'SELECT * FROM commerce_media_networks.audience
-
-      WHERE (is_current = true AND effective_to_date IS NOT NULL) OR (is_current = false AND effective_to_date
-      IS NULL)'
-  - name: audience_scd2_date_order
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: audience_scd2_date_order
-    query: 'SELECT * FROM commerce_media_networks.audience
-
-      WHERE effective_to_date IS NOT NULL AND effective_to_date <= effective_from_date'
 - name: budget_allocation
   physicalName: commerce_media_networks.budget_allocation
   physicalType: table
@@ -1986,13 +1809,13 @@ schema:
     logicalType: integer
     physicalType: BIGINT
     required: false
-    description: FK to cmn.audience.audience_sk (or sentinel ALL member).
+    description: FK to marketing.audience.audience_sk (or sentinel ALL member).
     relationships:
     - to: audience.audience_sk
       type: foreignKey
       customProperties:
       - property: toSchema
-        value: commerce_media_networks
+        value: marketing
       - property: enforced
         value: false
   - name: audience_id
@@ -2286,8 +2109,8 @@ schema:
     mustBe: 0
     unit: rows
     description: acd_audience_fk_orphan
-    query: SELECT a.* FROM commerce_media_networks.campaign_day a LEFT JOIN commerce_media_networks.audience
-      au ON a.audience_sk = au.audience_sk WHERE a.audience_sk IS NOT NULL AND au.audience_sk IS NULL
+    query: SELECT a.* FROM commerce_media_networks.campaign_day a LEFT JOIN marketing.audience au ON a.audience_sk
+      = au.audience_sk WHERE a.audience_sk IS NOT NULL AND au.audience_sk IS NULL
   - name: acd_advertiser_fk_orphan
     type: sql
     dimension: accuracy
@@ -4548,13 +4371,13 @@ schema:
     logicalType: integer
     physicalType: BIGINT
     required: false
-    description: FK to cmn.audience.audience_sk (targeted segment), if audience-targeted.
+    description: FK to marketing.audience.audience_sk (targeted segment), if audience-targeted.
     relationships:
     - to: audience.audience_sk
       type: foreignKey
       customProperties:
       - property: toSchema
-        value: commerce_media_networks
+        value: marketing
       - property: enforced
         value: false
   - name: audience_id
@@ -4800,8 +4623,8 @@ schema:
     mustBe: 0
     unit: rows
     description: fme_audience_fk_orphan
-    query: SELECT f.* FROM commerce_media_networks.media_event f LEFT JOIN commerce_media_networks.audience
-      a ON f.audience_sk = a.audience_sk WHERE f.audience_sk IS NOT NULL AND a.audience_sk IS NULL
+    query: SELECT f.* FROM commerce_media_networks.media_event f LEFT JOIN marketing.audience a ON f.audience_sk
+      = a.audience_sk WHERE f.audience_sk IS NOT NULL AND a.audience_sk IS NULL
   - name: fme_ad_group_fk_orphan
     type: sql
     dimension: accuracy
