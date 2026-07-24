@@ -6778,6 +6778,12 @@
         },
         {
           "column": null,
+          "name": "ltv_grain_unique",
+          "severity": "error",
+          "table": "gold_customer_ltv"
+        },
+        {
+          "column": null,
           "name": "ltv_rfm_components_range",
           "severity": "error",
           "table": "gold_customer_ltv"
@@ -18662,6 +18668,12 @@
       "checks": [
         {
           "column": null,
+          "name": "scorecard_grain_unique",
+          "severity": "error",
+          "table": "gold_supplier_scorecard"
+        },
+        {
+          "column": null,
           "name": "scorecard_otif_pct_range",
           "severity": "error",
           "table": "gold_supplier_scorecard"
@@ -18713,6 +18725,12 @@
           "name": "scorecard_composite_spread",
           "severity": "metric",
           "table": "gold_supplier_scorecard"
+        },
+        {
+          "column": null,
+          "name": "risk_grain_unique",
+          "severity": "error",
+          "table": "gold_procurement_risk"
         },
         {
           "column": null,
@@ -22416,6 +22434,24 @@
           "name": "scope_store_fk_orphan",
           "severity": "error",
           "table": "promotion_scope"
+        },
+        {
+          "column": null,
+          "name": "gold_trade_promotion_grain_unique",
+          "severity": "error",
+          "table": "gold_trade_promotion"
+        },
+        {
+          "column": null,
+          "name": "gold_promo_roi_grain_unique",
+          "severity": "error",
+          "table": "gold_promo_roi_by_category"
+        },
+        {
+          "column": null,
+          "name": "gold_weekly_baseline_grain_dupe_rows",
+          "severity": "metric",
+          "table": "gold_weekly_baseline"
         },
         {
           "column": null,

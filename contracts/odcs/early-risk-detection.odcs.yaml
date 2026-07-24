@@ -1020,6 +1020,24 @@ schema:
     physicalType: STRING
     description: Up to 3 factors with the largest weighted contribution.
   quality:
+  - name: risk_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'One row per supplier, keyed on the DURABLE supplier_id: a re-versioned supplier must
+      not fragment into multiple rows — the SCD2 fragmentation guard (standard §A.16). (This uniqueness
+      check catches DUPLICATION only; the separate drop risk — a versioned supplier vanishing from the
+      register via an is_current INNER join — is guarded by the join fix in the fix-the-views PR, not
+      here.) Dormant-green under single-version synthetic data.'
+    query: 'SELECT supplier_id
+
+      FROM early_risk_detection.gold_procurement_risk
+
+      GROUP BY supplier_id
+
+      HAVING COUNT(*) > 1'
   - name: risk_hhi_range
     type: sql
     dimension: accuracy
@@ -1281,6 +1299,22 @@ schema:
     physicalType: DOUBLE
     description: 'Weighted 0-100 score: OTIF 35, fill 25, lead-time reliability 20, defect 15, price 5.'
   quality:
+  - name: scorecard_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per supplier x fiscal period, keyed on the DURABLE supplier_id (never the version-specific
+      supplier_sk). A supplier versioned mid-period must not split its PO lines across surrogate keys
+      — the SCD2 fragmentation guard (standard §A.16). Dormant-green under single-version synthetic data.
+    query: 'SELECT supplier_id, fiscal_year, fiscal_period
+
+      FROM early_risk_detection.gold_supplier_scorecard
+
+      GROUP BY supplier_id, fiscal_year, fiscal_period
+
+      HAVING COUNT(*) > 1'
   - name: scorecard_otif_pct_range
     type: sql
     dimension: accuracy

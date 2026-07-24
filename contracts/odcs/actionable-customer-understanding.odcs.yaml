@@ -111,6 +111,22 @@ schema:
     physicalType: BOOLEAN
     description: 'Heuristic flag: recency exceeds 2x the typical purchase cadence (tenure / frequency).'
   quality:
+  - name: ltv_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per customer, keyed on the DURABLE profile_id (never the version-specific profile_sk).
+      A re-versioned customer must not fragment into multiple rows — the SCD2 fragmentation guard (standard
+      §A.16). Dormant-green under single-version synthetic data; fires once profile carries history.
+    query: 'SELECT profile_id
+
+      FROM actionable_customer_understanding.gold_customer_ltv
+
+      GROUP BY profile_id
+
+      HAVING COUNT(*) > 1'
   - name: ltv_rfm_components_range
     type: sql
     dimension: accuracy

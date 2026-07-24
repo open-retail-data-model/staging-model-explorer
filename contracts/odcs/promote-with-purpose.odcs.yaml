@@ -490,6 +490,23 @@ schema:
   - name: net_incremental_margin
     logicalType: number
     physicalType: DECIMAL(18, 2)
+  quality:
+  - name: gold_promo_roi_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per promo x category, keyed on the durable promo_id. A re-versioned promotion
+      must not split its category ROI across surrogate keys (standard §A.16). Dormant-green under single-version
+      synthetic data.
+    query: 'SELECT promo_id, category
+
+      FROM promote_with_purpose.gold_promo_roi_by_category
+
+      GROUP BY promo_id, category
+
+      HAVING COUNT(*) > 1'
 - name: gold_trade_promotion
   physicalName: promote_with_purpose.gold_trade_promotion
   physicalType: view
@@ -572,6 +589,23 @@ schema:
     physicalType: DOUBLE
     description: Trailing-8-week non-promoted mean units; NULL if < 4 weeks available.
   quality:
+  - name: gold_trade_promotion_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per promo x product x store x fiscal week, keyed on the DURABLE ids (never the
+      version-specific promo_sk); fiscal_week_id is part of the grain (the view is weekly). A re-versioned
+      promotion must not fragment into multiple rows — the SCD2 fragmentation guard (standard §A.16).
+      Dormant-green under single-version synthetic data.
+    query: 'SELECT promo_id, product_id, store_id, fiscal_week_id
+
+      FROM promote_with_purpose.gold_trade_promotion
+
+      GROUP BY promo_id, product_id, store_id, fiscal_week_id
+
+      HAVING COUNT(*) > 1'
   - name: gold_trade_promotion_rowcount
     type: sql
     dimension: accuracy
@@ -621,3 +655,15 @@ schema:
   - name: baseline_units
     logicalType: number
     physicalType: DOUBLE
+  quality:
+  - name: gold_weekly_baseline_grain_dupe_rows
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'Reported only (NOT an error): the view already GROUP BYs (product_sk, store_sk, fiscal_week_index),
+      so keyed on those this can never fire — it would be a no-op error check. It is a metric placeholder
+      until the fix-the-views PR re-grains the window to durable product_id/store_id, at which point it
+      becomes a real error-severity grain guard keyed on the durable ids (like its five siblings).'
+    query: "SELECT COUNT(*) AS weekly_baseline_dupe_grain_rows FROM (\n  SELECT product_sk, store_sk,\
+      \ fiscal_week_index\n  FROM promote_with_purpose.gold_weekly_baseline\n  GROUP BY product_sk, store_sk,\
+      \ fiscal_week_index\n  HAVING COUNT(*) > 1\n)"
