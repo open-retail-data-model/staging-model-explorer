@@ -211,7 +211,7 @@ schema:
     primaryKey: true
     primaryKeyPosition: 1
     description: Surrogate key.
-  - name: signal_id
+  - name: demand_sensing_signal_id
     logicalType: string
     physicalType: STRING
     required: true
@@ -348,9 +348,9 @@ schema:
     mustBe: 0
     unit: rows
     description: demand_sensing_signal_grain_unique
-    query: 'SELECT signal_id FROM smarter_demand_and_inventory_decisions.demand_sensing_signal
+    query: 'SELECT demand_sensing_signal_id FROM smarter_demand_and_inventory_decisions.demand_sensing_signal
 
-      GROUP BY signal_id HAVING COUNT(*) > 1'
+      GROUP BY demand_sensing_signal_id HAVING COUNT(*) > 1'
 - name: forecast_accuracy
   physicalName: smarter_demand_and_inventory_decisions.forecast_accuracy
   physicalType: table
@@ -429,7 +429,10 @@ schema:
     logicalType: number
     physicalType: DOUBLE
     required: false
-    description: Forecast bias percentage.
+    description: 'Forecast bias in WHOLE PERCENTAGE POINTS (e.g. -5.0 = 5% under-forecast), NOT a 0-1
+      fraction. Downstream thresholds (e.g. gold_oos_preventability) read this points scale. Note: mv_forecast_accuracy
+      publishes a DIFFERENT, volume-weighted bias measure on a 0-1 fraction; same word, different object
+      and scale.'
   - name: mape
     logicalType: number
     physicalType: DOUBLE
@@ -461,6 +464,14 @@ schema:
     query: 'SELECT * FROM smarter_demand_and_inventory_decisions.forecast_accuracy
 
       WHERE accuracy_pct IS NOT NULL AND accuracy_pct NOT BETWEEN 0 AND 1'
+  - name: forecast_accuracy_bias_range
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: Bias has no hard bound, but track the spread to catch runaway values.
+    query: 'SELECT MIN(bias_pct) AS min_bias_pct, MAX(bias_pct) AS max_bias_pct
+
+      FROM smarter_demand_and_inventory_decisions.forecast_accuracy'
   - name: forecast_accuracy_fk_orphan
     type: sql
     dimension: accuracy
@@ -663,6 +674,19 @@ schema:
     required: false
     description: When this row was loaded (UTC, ISO 8601).
   quality:
+  - name: forecast_component_decomposition_integrity
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: 'Component quantities should sum to the parent forecast (within rounding). WARN, not
+      error: some deployments decompose only a subset of drivers.'
+    query: "SELECT fc.demand_forecast_sk,\n       SUM(fc.component_quantity) AS component_total,\n   \
+      \    MAX(df.forecast_quantity)  AS forecast_quantity\nFROM smarter_demand_and_inventory_decisions.forecast_component\
+      \ fc\nJOIN smarter_demand_and_inventory_decisions.demand_forecast df ON df.demand_forecast_sk =\
+      \ fc.demand_forecast_sk\nGROUP BY fc.demand_forecast_sk\nHAVING ABS(SUM(fc.component_quantity) -\
+      \ MAX(df.forecast_quantity)) > 0.5"
   - name: forecast_component_fk_orphan
     type: sql
     dimension: accuracy
@@ -946,6 +970,26 @@ schema:
       GROUP BY planning_unit_sk
 
       HAVING COUNT(*) > 1'
+  - name: inventory_policy_noncurrent_closed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A superseded (is_current = FALSE) version must have a closing date.
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.inventory_policy
+
+      WHERE is_current = FALSE AND effective_to_date IS NULL'
+  - name: inventory_policy_effective_order
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: effective_from_date must not fall after effective_to_date.
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.inventory_policy
+
+      WHERE effective_to_date IS NOT NULL AND effective_to_date < effective_from_date'
   - name: inventory_policy_planning_unit_fk_orphan
     type: sql
     dimension: accuracy
@@ -1313,6 +1357,12 @@ schema:
     physicalType: DECIMAL(18,2)
     required: false
     description: Estimated lost revenue, in the reporting/base currency.
+  - name: lost_margin
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Estimated lost GROSS MARGIN (lost_units x (list_price - unit_cost)), in the reporting/base
+      currency. Margin, not revenue, is the correct basis for prioritizing recovery.
   - name: currency_code
     logicalType: string
     physicalType: STRING
@@ -1345,6 +1395,35 @@ schema:
     query: 'SELECT * FROM smarter_demand_and_inventory_decisions.lost_sales_estimate
 
       WHERE lost_units < 0'
+  - name: lost_sales_confidence_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: confidence_score is documented as 0-1.
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.lost_sales_estimate
+
+      WHERE confidence_score IS NOT NULL AND confidence_score NOT BETWEEN 0 AND 1'
+  - name: lost_sales_not_exceeding_demand
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Lost units cannot exceed expected unconstrained demand for the day.
+    query: "SELECT * FROM smarter_demand_and_inventory_decisions.lost_sales_estimate\nWHERE lost_units\
+      \ IS NOT NULL AND expected_units_demand IS NOT NULL\n  AND lost_units > expected_units_demand"
+  - name: lost_sales_margin_non_negative
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: lost_sales_margin_non_negative
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.lost_sales_estimate
+
+      WHERE lost_margin IS NOT NULL AND lost_margin < 0'
   - name: lost_sales_single_currency
     type: sql
     dimension: accuracy
@@ -1472,7 +1551,10 @@ schema:
     physicalType: STRING
     required: true
     description: 'Root cause. Allowed values: replenishment_miss, supplier_delay, demand_spike, allocation_shortage,
-      planogram_issue, unknown.'
+      planogram_issue, phantom_stock, record_inaccuracy, shrinkage, misplaced, unknown. The phantom_stock/record_inaccuracy/shrinkage/misplaced
+      values capture on-shelf-availability gaps where system on-hand > 0 but the shelf is empty (the dominant
+      real-world OOS driver); populated only where a shelf/OSA signal exists, else system-availability
+      causes apply.'
   - name: oos_severity
     logicalType: string
     physicalType: STRING
@@ -1529,6 +1611,26 @@ schema:
     query: 'SELECT * FROM smarter_demand_and_inventory_decisions.oos_event
 
       WHERE oos_end_date_key IS NOT NULL AND oos_end_date_key < oos_start_date_key'
+  - name: oos_event_duration_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: When both dates are present, stored duration must match the date span (inclusive).
+    query: "SELECT * FROM smarter_demand_and_inventory_decisions.oos_event\nWHERE oos_end_date_key IS\
+      \ NOT NULL AND oos_duration_days IS NOT NULL\n  AND oos_duration_days <> DATEDIFF(oos_end_date_key,\
+      \ oos_start_date_key) + 1"
+  - name: oos_event_stockout_pct_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: oos_event_stockout_pct_range
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.oos_event
+
+      WHERE stockout_pct_total IS NOT NULL AND stockout_pct_total NOT BETWEEN 0 AND 1'
   - name: oos_event_product_fk_orphan
     type: sql
     dimension: accuracy
@@ -1639,6 +1741,29 @@ schema:
     physicalType: DECIMAL(18,2)
     required: false
     description: Estimated revenue recovery, in the reporting/base currency.
+  - name: estimated_margin_recovery
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Estimated GROSS-MARGIN recovery, in the reporting/base currency. Prioritizing by margin
+      (not revenue) avoids over-ranking low-margin high-revenue SKUs.
+  - name: recoverability_probability
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Probability the recovery action succeeds within the horizon (0-1). Used with estimated_margin_recovery
+      for expected-value ranking.
+  - name: actual_revenue_recovered
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Realized revenue recovery after execution (NULL until measured); closes the estimate-vs-actual
+      learn loop.
+  - name: time_to_recover_days
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Days from recommended_action_date_key to observed recovery; NULL until recovered.
   - name: currency_code
     logicalType: string
     physicalType: STRING
@@ -1692,6 +1817,16 @@ schema:
     required: false
     description: When this row was loaded (UTC, ISO 8601).
   quality:
+  - name: oos_recovery_recoverability_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: oos_recovery_recoverability_range
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.oos_recovery_action
+
+      WHERE recoverability_probability IS NOT NULL AND recoverability_probability NOT BETWEEN 0 AND 1'
   - name: oos_recovery_single_currency
     type: sql
     dimension: accuracy
@@ -2212,11 +2347,26 @@ schema:
     physicalType: STRING
     required: false
     description: XYZ class filter; NULL = default for all.
+  - name: service_measure_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Which service definition target_service_level_pct expresses. Allowed values: cycle_service_level
+      (Type I / alpha - probability of no stockout per cycle, maps directly to the safety-stock z-score),
+      fill_rate (Type II / beta - fraction of demand met from stock, requires the unit-normal loss function),
+      in_stock_rate (share of time in stock). These are NOT interchangeable; conflating them mis-sizes
+      safety stock.'
+  - name: target_service_level_pct
+    logicalType: number
+    physicalType: DECIMAL(5,4)
+    required: false
+    description: Target service level (0-1) interpreted per service_measure_type.
   - name: target_fill_rate_pct
     logicalType: number
     physicalType: DECIMAL(5,4)
     required: false
-    description: Target in-stock fill rate (0-1).
+    description: Target in-stock fill rate (0-1). Retained for backward compatibility; prefer service_measure_type
+      = fill_rate with target_service_level_pct.
   - name: target_days_of_supply
     logicalType: number
     physicalType: DECIMAL(8,2)
@@ -2258,6 +2408,43 @@ schema:
     required: false
     description: When this row was loaded (UTC, ISO 8601).
   quality:
+  - name: service_level_target_current_single
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: At most one current version per (abc_class, xyz_class) segment; NULL segments are the
+      default, compared with null-safe equality.
+    query: 'SELECT abc_class, xyz_class, COUNT(*) AS cnt
+
+      FROM smarter_demand_and_inventory_decisions.service_level_target
+
+      WHERE is_current = TRUE
+
+      GROUP BY abc_class, xyz_class
+
+      HAVING COUNT(*) > 1'
+  - name: service_level_target_noncurrent_closed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: service_level_target_noncurrent_closed
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.service_level_target
+
+      WHERE is_current = FALSE AND effective_to_date IS NULL'
+  - name: service_level_target_effective_order
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: service_level_target_effective_order
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.service_level_target
+
+      WHERE effective_to_date IS NOT NULL AND effective_to_date < effective_from_date'
   - name: service_level_target_grain_unique
     type: sql
     dimension: accuracy
@@ -2268,6 +2455,100 @@ schema:
     query: 'SELECT service_level_target_id FROM smarter_demand_and_inventory_decisions.service_level_target
 
       GROUP BY service_level_target_id HAVING COUNT(*) > 1'
+- name: service_level_z
+  physicalName: smarter_demand_and_inventory_decisions.service_level_z
+  physicalType: table
+  description: Service-level to z-score and unit-normal loss lookup for safety-stock sizing.
+  tags:
+  - reference
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: service_level_z_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: service_level_z_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key (service level as basis points, e.g. SLZ-9500).
+  - name: service_level_pct
+    logicalType: number
+    physicalType: DECIMAL(6,5)
+    required: true
+    description: Cycle service level / non-stockout probability (0-1).
+  - name: z_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: true
+    description: Inverse standard-normal quantile for service_level_pct (safety factor).
+  - name: loss_function_l_z
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Standard-normal unit loss integral L(z) = phi(z) - z*(1-Phi(z)); used for fill-rate (Type
+      II) sizing.
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: service_level_z_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: service_level_z_grain_unique
+    query: 'SELECT service_level_z_id FROM smarter_demand_and_inventory_decisions.service_level_z
+
+      GROUP BY service_level_z_id HAVING COUNT(*) > 1'
+  - name: service_level_z_pct_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: service_level_z_pct_range
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.service_level_z
+
+      WHERE service_level_pct NOT BETWEEN 0 AND 1'
+  - name: service_level_z_score_valid
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: z_score is multiplied directly into every safety-stock recommendation, so a NULL or negative
+      seeded value silently mis-sizes stock. A standard-normal quantile at a service level >= 0.5 is non-negative.
+    query: 'SELECT * FROM smarter_demand_and_inventory_decisions.service_level_z
+
+      WHERE z_score IS NULL OR z_score < 0'
 - name: gold_demand_forecast_weekly
   physicalName: smarter_demand_and_inventory_decisions.gold_demand_forecast_weekly
   physicalType: view
@@ -2329,7 +2610,7 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
-  - name: signal_id
+  - name: demand_sensing_signal_id
     logicalType: string
     physicalType: STRING
   - name: signal_timestamp
@@ -2457,6 +2738,9 @@ schema:
   - name: cluster_id
     logicalType: string
     physicalType: STRING
+  - name: grain_type
+    logicalType: string
+    physicalType: STRING
   - name: product_id
     logicalType: string
     physicalType: STRING
@@ -2466,7 +2750,8 @@ schema:
 - name: gold_forecast_value_added
   physicalName: smarter_demand_and_inventory_decisions.gold_forecast_value_added
   physicalType: view
-  description: 'Forecast Value Added: model vs naïve trailing average vs planner-enriched forecast.'
+  description: 'Forecast Value Added: matched-lag naive baseline vs statistical model vs planner- enriched
+    forecast, at the SAME period the accuracy row is measured.'
   tags:
   - gold
   authoritativeDefinitions:
@@ -2483,6 +2768,9 @@ schema:
   - name: planning_unit_id
     logicalType: string
     physicalType: STRING
+  - name: grain_type
+    logicalType: string
+    physicalType: STRING
   - name: forecast_date_key
     logicalType: date
     physicalType: DATE
@@ -2491,20 +2779,23 @@ schema:
     physicalType: DECIMAL(12, 3)
   - name: naive_forecast
     logicalType: number
-    physicalType: DOUBLE
+    physicalType: DECIMAL(12, 3)
   - name: enriched_forecast
     logicalType: number
     physicalType: DECIMAL(12, 3)
   - name: actual_quantity
     logicalType: number
     physicalType: DECIMAL(12, 3)
-  - name: fva_vs_naive
+  - name: fva_model_vs_naive
+    logicalType: number
+    physicalType: DECIMAL
+  - name: fva_enriched_vs_model
     logicalType: number
     physicalType: DECIMAL
 - name: gold_inventory_capital_summary
   physicalName: smarter_demand_and_inventory_decisions.gold_inventory_capital_summary
   physicalType: view
-  description: Aggregated working capital and excess inventory exposure by category and ABC class.
+  description: Aggregated working capital and excess/understock exposure by category and ABC class.
   tags:
   - gold
   authoritativeDefinitions:
@@ -2530,7 +2821,7 @@ schema:
   - name: excess_inventory_value
     logicalType: number
     physicalType: DECIMAL(12, 3)
-  - name: understock_revenue_at_risk
+  - name: understock_margin_at_risk
     logicalType: number
     physicalType: DECIMAL(12, 3)
 - name: gold_inventory_health
@@ -2608,6 +2899,62 @@ schema:
   - name: inventory_position_status
     logicalType: string
     physicalType: STRING
+- name: gold_inventory_productivity
+  physicalName: smarter_demand_and_inventory_decisions.gold_inventory_productivity
+  physicalType: view
+  description: 'Inventory PRODUCTIVITY metrics (review finding A17: turnover, weeks-of-cover, GMROI, sell-through
+    were entirely absent - the package reported tied-up value but never productivity). Aggregated per
+    category x ABC class over a trailing window, all as ratio-of-sums: - inventory_turnover = trailing
+    COGS / average inventory value (annualized) - weeks_of_cover     = average inventory units / avg weekly
+    sell rate - sell_through_rate  = units sold / (units sold + avg inventory units) - gmroi              =
+    annualized gross margin / average inventory cost (gross margin = realized net_revenue - COGS) Revenue
+    is the sales fact''s realized net_revenue (after discount), so promo-driven margin erosion is reflected
+    rather than hidden by a list-price reconstruction.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: abc_class
+    logicalType: string
+    physicalType: STRING
+  - name: sku_store_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: trailing_units_sold
+    logicalType: integer
+    physicalType: BIGINT
+  - name: trailing_cogs
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: avg_inventory_value
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+    description: Mean of daily on-hand inventory value over the trailing window (not the period-end snapshot).
+  - name: inventory_turnover
+    logicalType: number
+    physicalType: DECIMAL
+    description: 'Annualized: trailing COGS scaled to a year / AVERAGE inventory value over the trailing
+      window.'
+  - name: weeks_of_cover
+    logicalType: number
+    physicalType: DOUBLE
+  - name: sell_through_rate
+    logicalType: number
+    physicalType: DOUBLE
+  - name: gmroi
+    logicalType: number
+    physicalType: DECIMAL
+    description: Annualized gross margin (realized net_revenue - COGS) / AVERAGE inventory cost over the
+      trailing window.
 - name: gold_lost_sales_summary
   physicalName: smarter_demand_and_inventory_decisions.gold_lost_sales_summary
   physicalType: view
@@ -2643,7 +2990,7 @@ schema:
 - name: gold_oos_current
   physicalName: smarter_demand_and_inventory_decisions.gold_oos_current
   physicalType: view
-  description: Active out-of-stock episodes with cumulative lost sales.
+  description: Ongoing out-of-stock episodes with cumulative lost sales.
   tags:
   - gold
   authoritativeDefinitions:
@@ -2696,6 +3043,9 @@ schema:
   - name: units_on_hand_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
+  - name: is_stocked_out_now
+    logicalType: boolean
+    physicalType: BOOLEAN
   - name: lost_units_to_date
     logicalType: number
     physicalType: DECIMAL(12, 3)
@@ -2732,21 +3082,30 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+  - name: oos_start_date_key
+    logicalType: date
+    physicalType: DATE
   - name: oos_cause
     logicalType: string
     physicalType: STRING
-  - name: days_of_supply
+  - name: units_on_hand_at_start
     logicalType: number
-    physicalType: DOUBLE
+    physicalType: DECIMAL(12, 3)
   - name: reorder_point_quantity
     logicalType: number
     physicalType: DECIMAL(12, 3)
-  - name: forecast_bias_pct
+  - name: forecast_bias_pct_at_start
     logicalType: number
     physicalType: DOUBLE
+  - name: stored_is_preventable
+    logicalType: boolean
+    physicalType: BOOLEAN
   - name: preventability_class
     logicalType: string
     physicalType: STRING
+  - name: preventability_agrees
+    logicalType: boolean
+    physicalType: BOOLEAN
 - name: gold_oos_rate
   physicalName: smarter_demand_and_inventory_decisions.gold_oos_rate
   physicalType: view
@@ -2782,7 +3141,7 @@ schema:
 - name: gold_oos_recovery_priority
   physicalName: smarter_demand_and_inventory_decisions.gold_oos_recovery_priority
   physicalType: view
-  description: Ranks open OOS events by estimated revenue recovery potential.
+  description: Ranks open OOS events by EXPECTED MARGIN recovery potential.
   tags:
   - gold
   authoritativeDefinitions:
@@ -2812,6 +3171,15 @@ schema:
     logicalType: number
     physicalType: DECIMAL(18, 2)
   - name: estimated_revenue_recovery
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: estimated_margin_recovery
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: recoverability_probability
+    logicalType: number
+    physicalType: DOUBLE
+  - name: expected_margin_recovery
     logicalType: number
     physicalType: DECIMAL(18, 2)
   - name: action_type
@@ -2926,3 +3294,82 @@ schema:
   - name: priority_rank
     logicalType: integer
     physicalType: BIGINT
+- name: gold_service_level_attainment
+  physicalName: smarter_demand_and_inventory_decisions.gold_service_level_attainment
+  physicalType: view
+  description: 'ACHIEVED service level vs TARGET, per store x category x fiscal week. Review finding A2
+    noted the package modeled only service-level TARGETS and never measured attainment, despite inventory_position.is_stockout
+    / stockout_pct_day being available in core. This computes two attained measures with distinct, correctly-labelled
+    definitions (they are NOT interchangeable): - attained_in_stock_rate = 1 - (stockout SKU-days / total
+    SKU-days) A TIME-based measure: the share of SKU-days fully in stock. Answers "how often were we in
+    stock", not "how much demand did we meet". - attained_fill_rate     = units_sold / (units_sold + lost_units)
+    A true DEMAND-weighted (Type II / beta) fill rate: units met divided by units demanded, where unmet
+    demand is the censoring-aware lost_units from lost_sales_estimate (NOT the stockout-constrained actual).
+    This is the correct like-for-like counterpart to a fill_rate target — an earlier draft used 1 - SUM(stockout_pct_day)/SKU-days,
+    which is a second TIME-based availability measure with no demand in the denominator, so differencing
+    it against a Type-II target was the very A2 conflation this view exists to avoid. Ratios are computed
+    as ratio-of-sums (not a mean of per-row rates).'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: fiscal_week_id
+    logicalType: integer
+    physicalType: INT
+  - name: total_sku_days
+    logicalType: integer
+    physicalType: BIGINT
+  - name: stockout_sku_days
+    logicalType: integer
+    physicalType: BIGINT
+  - name: units_sold
+    logicalType: integer
+    physicalType: BIGINT
+  - name: lost_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: attained_in_stock_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Time-based availability: 1 - stockout SKU-days / total SKU-days.'
+  - name: attained_fill_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Demand-weighted (Type II) fill rate: units sold / (units sold + censoring-aware lost
+      units).'
+  - name: target_measure_type
+    logicalType: string
+    physicalType: STRING
+  - name: target_service_level_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+    description: Target from the DEFAULT segment only (abc_class/xyz_class NULL); NOT the per-ABC/XYZ
+      segment target. Segment-specific attainment is a documented follow-up.
+  - name: gap_measure_type
+    logicalType: string
+    physicalType: STRING
+  - name: gap_is_approximate
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when service_level_gap_to_target differences a cycle_service_level target (per-cycle
+      probability) against the time-based attained_in_stock_rate proxy; FALSE when the target and attained
+      measure are the same unit.
+  - name: service_level_gap_to_target
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+    description: Attained minus target on the target measure type. Exact for fill_rate/in_stock_rate;
+      for a cycle_service_level target it is an approximation (per-cycle probability vs the time-based
+      in-stock rate) — see gap_is_approximate. Uses the default segment target, so read as an enterprise-default
+      gap, not a segment-accurate one.

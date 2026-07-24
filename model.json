@@ -24308,9 +24308,87 @@
         },
         {
           "column": null,
+          "name": "lost_sales_confidence_range",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_not_exceeding_demand",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "oos_event_duration_consistency",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "oos_event_stockout_pct_range",
+          "severity": "error",
+          "table": "oos_event"
+        },
+        {
+          "column": null,
+          "name": "oos_recovery_recoverability_range",
+          "severity": "error",
+          "table": "oos_recovery_action"
+        },
+        {
+          "column": null,
+          "name": "lost_sales_margin_non_negative",
+          "severity": "error",
+          "table": "lost_sales_estimate"
+        },
+        {
+          "column": null,
+          "name": "forecast_component_decomposition_integrity",
+          "severity": "warn",
+          "table": "forecast_component"
+        },
+        {
+          "column": null,
+          "name": "forecast_accuracy_bias_range",
+          "severity": "metric",
+          "table": "forecast_accuracy"
+        },
+        {
+          "column": null,
           "name": "inventory_policy_current_open",
           "severity": "error",
           "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_noncurrent_closed",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "inventory_policy_effective_order",
+          "severity": "error",
+          "table": "inventory_policy"
+        },
+        {
+          "column": null,
+          "name": "service_level_target_current_single",
+          "severity": "error",
+          "table": "service_level_target"
+        },
+        {
+          "column": null,
+          "name": "service_level_target_noncurrent_closed",
+          "severity": "error",
+          "table": "service_level_target"
+        },
+        {
+          "column": null,
+          "name": "service_level_target_effective_order",
+          "severity": "error",
+          "table": "service_level_target"
         },
         {
           "column": null,
@@ -24485,6 +24563,24 @@
           "name": "service_level_target_grain_unique",
           "severity": "error",
           "table": "service_level_target"
+        },
+        {
+          "column": null,
+          "name": "service_level_z_grain_unique",
+          "severity": "error",
+          "table": "service_level_z"
+        },
+        {
+          "column": null,
+          "name": "service_level_z_pct_range",
+          "severity": "error",
+          "table": "service_level_z"
+        },
+        {
+          "column": null,
+          "name": "service_level_z_score_valid",
+          "severity": "error",
+          "table": "service_level_z"
         },
         {
           "column": null,
@@ -25038,7 +25134,7 @@
               "comment": "Durable business key.",
               "enum_values": [],
               "fk": false,
-              "name": "signal_id",
+              "name": "demand_sensing_signal_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -25298,7 +25394,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Forecast bias percentage.",
+              "comment": "Forecast bias in WHOLE PERCENTAGE POINTS (e.g. -5.0 = 5% under-forecast), NOT a 0-1 fraction. Downstream thresholds (e.g. gold_oos_preventability) read this points scale. Note: mv_forecast_accuracy publishes a DIFFERENT, volume-weighted bias measure on a 0-1 fraction; same word, different object and scale.",
               "enum_values": [],
               "fk": false,
               "name": "bias_pct",
@@ -26311,6 +26407,15 @@
               "type": "DECIMAL(18,2)"
             },
             {
+              "comment": "Estimated lost GROSS MARGIN (lost_units x (list_price - unit_cost)), in the reporting/base currency. Margin, not revenue, is the correct basis for prioritizing recovery.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_margin",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
               "comment": "Reporting/base currency of ALL monetary columns, ISO 4217 alpha-3. Equals the deploy base_currency; single-currency by construction.",
               "enum_values": [],
               "fk": false,
@@ -26448,7 +26553,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Root cause. Allowed values: replenishment_miss, supplier_delay, demand_spike, allocation_shortage, planogram_issue, unknown.",
+              "comment": "Root cause. Allowed values: replenishment_miss, supplier_delay, demand_spike, allocation_shortage, planogram_issue, phantom_stock, record_inaccuracy, shrinkage, misplaced, unknown. The phantom_stock/record_inaccuracy/shrinkage/misplaced values capture on-shelf-availability gaps where system on-hand > 0 but the shelf is empty (the dominant real-world OOS driver); populated only where a shelf/OSA signal exists, else system-availability causes apply.",
               "enum_values": [],
               "fk": false,
               "name": "oos_cause",
@@ -26637,6 +26742,42 @@
               "pii": false,
               "pk": false,
               "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Estimated GROSS-MARGIN recovery, in the reporting/base currency. Prioritizing by margin (not revenue) avoids over-ranking low-margin high-revenue SKUs.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_margin_recovery",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Probability the recovery action succeeds within the horizon (0-1). Used with estimated_margin_recovery for expected-value ranking.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recoverability_probability",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Realized revenue recovery after execution (NULL until measured); closes the estimate-vs-actual learn loop.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_revenue_recovered",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Days from recommended_action_date_key to observed recovery; NULL until recovered.",
+              "enum_values": [],
+              "fk": false,
+              "name": "time_to_recover_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
             },
             {
               "comment": "Reporting/base currency of ALL monetary columns, ISO 4217 alpha-3. Equals the deploy base_currency; single-currency by construction.",
@@ -27228,7 +27369,25 @@
               "type": "STRING"
             },
             {
-              "comment": "Target in-stock fill rate (0-1).",
+              "comment": "Which service definition target_service_level_pct expresses. Allowed values: cycle_service_level (Type I / alpha - probability of no stockout per cycle, maps directly to the safety-stock z-score), fill_rate (Type II / beta - fraction of demand met from stock, requires the unit-normal loss function), in_stock_rate (share of time in stock). These are NOT interchangeable; conflating them mis-sizes safety stock.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_measure_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Target service level (0-1) interpreted per service_measure_type.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_service_level_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Target in-stock fill rate (0-1). Retained for backward compatibility; prefer service_measure_type = fill_rate with target_service_level_pct.",
               "enum_values": [],
               "fk": false,
               "name": "target_fill_rate_pct",
@@ -27316,6 +27475,98 @@
           "name": "service_level_target",
           "role": "reference",
           "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_z_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key (service level as basis points, e.g. SLZ-9500).",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_z_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Cycle service level / non-stockout probability (0-1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(6,5)"
+            },
+            {
+              "comment": "Inverse standard-normal quantile for service_level_pct (safety factor).",
+              "enum_values": [],
+              "fk": false,
+              "name": "z_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Standard-normal unit loss integral L(z) = phi(z) - z*(1-Phi(z)); used for fill-rate (Type II) sizing.",
+              "enum_values": [],
+              "fk": false,
+              "name": "loss_function_l_z",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "When the record was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Service-level to z-score and unit-normal loss lookup for safety-stock sizing.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "service_level_z",
+          "role": "reference",
+          "scd2": false
         },
         {
           "columns": [
@@ -27450,7 +27701,7 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "signal_id",
+              "name": "demand_sensing_signal_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -27774,6 +28025,15 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "grain_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "product_id",
               "pii": false,
               "pk": false,
@@ -27838,6 +28098,15 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "grain_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "forecast_date_key",
               "pii": false,
               "pk": false,
@@ -27859,7 +28128,7 @@
               "name": "naive_forecast",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": "DECIMAL(12, 3)"
             },
             {
               "comment": "",
@@ -27883,13 +28152,22 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "fva_vs_naive",
+              "name": "fva_model_vs_naive",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fva_enriched_vs_model",
               "pii": false,
               "pk": false,
               "type": "DECIMAL"
             }
           ],
-          "comment": "Forecast Value Added: model vs na\u00efve trailing average vs planner-enriched forecast.",
+          "comment": "Forecast Value Added: matched-lag naive baseline vs statistical model vs planner- enriched forecast, at the SAME period the accuracy row is measured.",
           "consumes_tables": [
             {
               "table": "account",
@@ -27898,10 +28176,6 @@
             {
               "table": "product",
               "unit": "product"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
             },
             {
               "table": "store",
@@ -27965,13 +28239,13 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "understock_revenue_at_risk",
+              "name": "understock_margin_at_risk",
               "pii": false,
               "pk": false,
               "type": "DECIMAL(12, 3)"
             }
           ],
-          "comment": "Aggregated working capital and excess inventory exposure by category and ABC class.",
+          "comment": "Aggregated working capital and excess/understock exposure by category and ABC class.",
           "consumes_tables": [
             {
               "table": "account",
@@ -28214,6 +28488,128 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "abc_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sku_store_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trailing_units_sold",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trailing_cogs",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Mean of daily on-hand inventory value over the trailing window (not the period-end snapshot).",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_inventory_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Annualized: trailing COGS scaled to a year / AVERAGE inventory value over the trailing window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_turnover",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "weeks_of_cover",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sell_through_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Annualized gross margin (realized net_revenue - COGS) / AVERAGE inventory cost over the trailing window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "gmroi",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL"
+            }
+          ],
+          "comment": "Inventory PRODUCTIVITY metrics (review finding A17: turnover, weeks-of-cover, GMROI, sell-through were entirely absent - the package reported tied-up value but never productivity). Aggregated per category x ABC class over a trailing window, all as ratio-of-sums: - inventory_turnover = trailing COGS / average inventory value (annualized) - weeks_of_cover     = average inventory units / avg weekly sell rate - sell_through_rate  = units sold / (units sold + avg inventory units) - gmroi              = annualized gross margin / average inventory cost (gross margin = realized net_revenue - COGS) Revenue is the sales fact's realized net_revenue (after discount), so promo-driven margin erosion is reflected rather than hidden by a list-price reconstruction.",
+          "consumes_tables": [
+            {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_productivity",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "oos_cause",
               "pii": false,
               "pk": false,
@@ -28409,6 +28805,15 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "is_stocked_out_now",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "lost_units_to_date",
               "pii": false,
               "pk": false,
@@ -28442,7 +28847,7 @@
               "type": "BIGINT"
             }
           ],
-          "comment": "Active out-of-stock episodes with cumulative lost sales.",
+          "comment": "Ongoing out-of-stock episodes with cumulative lost sales.",
           "consumes_tables": [
             {
               "table": "account",
@@ -28504,6 +28909,15 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "oos_start_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "oos_cause",
               "pii": false,
               "pk": false,
@@ -28513,10 +28927,10 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "days_of_supply",
+              "name": "units_on_hand_at_start",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": "DECIMAL(12, 3)"
             },
             {
               "comment": "",
@@ -28531,10 +28945,19 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
-              "name": "forecast_bias_pct",
+              "name": "forecast_bias_pct_at_start",
               "pii": false,
               "pk": false,
               "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "stored_is_preventable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
             },
             {
               "comment": "",
@@ -28544,6 +28967,15 @@
               "pii": false,
               "pk": false,
               "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "preventability_agrees",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
             }
           ],
           "comment": "Classifies OOS episodes as preventable, partially preventable, or not preventable.",
@@ -28559,10 +28991,6 @@
             {
               "table": "product",
               "unit": "product"
-            },
-            {
-              "table": "sales",
-              "unit": "transaction"
             },
             {
               "table": "store",
@@ -28722,6 +29150,33 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "estimated_margin_recovery",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recoverability_probability",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_margin_recovery",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "action_type",
               "pii": false,
               "pk": false,
@@ -28746,7 +29201,7 @@
               "type": "BIGINT"
             }
           ],
-          "comment": "Ranks open OOS events by estimated revenue recovery potential.",
+          "comment": "Ranks open OOS events by EXPECTED MARGIN recovery potential.",
           "consumes_tables": [
             {
               "table": "account",
@@ -29055,6 +29510,164 @@
           "name": "gold_replenishment_queue",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_sku_days",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "stockout_sku_days",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_sold",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Time-based availability: 1 - stockout SKU-days / total SKU-days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "attained_in_stock_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Demand-weighted (Type II) fill rate: units sold / (units sold + censoring-aware lost units).",
+              "enum_values": [],
+              "fk": false,
+              "name": "attained_fill_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_measure_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Target from the DEFAULT segment only (abc_class/xyz_class NULL); NOT the per-ABC/XYZ segment target. Segment-specific attainment is a documented follow-up.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_service_level_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "gap_measure_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when service_level_gap_to_target differences a cycle_service_level target (per-cycle probability) against the time-based attained_in_stock_rate proxy; FALSE when the target and attained measure are the same unit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "gap_is_approximate",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Attained minus target on the target measure type. Exact for fill_rate/in_stock_rate; for a cycle_service_level target it is an approximation (per-cycle probability vs the time-based in-stock rate) \u2014 see gap_is_approximate. Uses the default segment target, so read as an enterprise-default gap, not a segment-accurate one.",
+              "enum_values": [],
+              "fk": false,
+              "name": "service_level_gap_to_target",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            }
+          ],
+          "comment": "ACHIEVED service level vs TARGET, per store x category x fiscal week. Review finding A2 noted the package modeled only service-level TARGETS and never measured attainment, despite inventory_position.is_stockout / stockout_pct_day being available in core. This computes two attained measures with distinct, correctly-labelled definitions (they are NOT interchangeable): - attained_in_stock_rate = 1 - (stockout SKU-days / total SKU-days) A TIME-based measure: the share of SKU-days fully in stock. Answers \"how often were we in stock\", not \"how much demand did we meet\". - attained_fill_rate     = units_sold / (units_sold + lost_units) A true DEMAND-weighted (Type II / beta) fill rate: units met divided by units demanded, where unmet demand is the censoring-aware lost_units from lost_sales_estimate (NOT the stockout-constrained actual). This is the correct like-for-like counterpart to a fill_rate target \u2014 an earlier draft used 1 - SUM(stockout_pct_day)/SKU-days, which is a second TIME-based availability measure with no demand in the denominator, so differencing it against a Type-II target was the very A2 conflation this view exists to avoid. Ratios are computed as ratio-of-sums (not a mean of per-row rates).",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_service_level_attainment",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
@@ -29063,11 +29676,10 @@
             "calendar",
             "customer",
             "product",
-            "store",
-            "transaction"
+            "store"
           ],
           "name": "Demand & Order Forecasting",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_demand_forecast_weekly",
             "gold_effective_forecast",
@@ -29079,6 +29691,7 @@
         },
         {
           "consumes": [
+            "calendar",
             "customer",
             "inventory",
             "product",
@@ -29086,12 +29699,14 @@
             "transaction"
           ],
           "name": "Inventory Optimization",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_inventory_health",
             "gold_inventory_policy_compliance",
             "gold_replenishment_queue",
-            "gold_inventory_capital_summary"
+            "gold_inventory_capital_summary",
+            "gold_service_level_attainment",
+            "gold_inventory_productivity"
           ]
         },
         {
@@ -29101,11 +29716,10 @@
             "inventory",
             "procurement",
             "product",
-            "store",
-            "transaction"
+            "store"
           ],
           "name": "Out-of-Stocks Optimization",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_oos_current",
             "gold_oos_preventability",
