@@ -11,7 +11,7 @@ Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog sc
 | `profile` | One version per individual customer | SCD2 | Conformed individual-customer master — identity, locale, retail identifiers, lifecycle. Shared by every outcome package. |
 | `address` | One version per customer address | SCD2 | Postal addresses (billing, shipping, home, work). |
 | `contact` | One contact point | Operational (current-state) | Reachable contact points — email / phone. Type+value model. |
-| `consent` | One version per consent decision | SCD2 (date) + `decision_timestamp` | **Single source of truth** for opt-ins and processing permissions. Date-grained SCD2 like every other master; `decision_timestamp` keeps the legal-grade instant. Scoped by `consent_type` × `jurisdiction_code` (GDPR vs CCPA/CPRA). |
+| `consent` | One version per consent decision | SCD2 (date) + `decision_timestamp` | **Single source of truth** for opt-ins and processing permissions. Date-grained SCD2 like every other master; `decision_timestamp` keeps the legal-grade instant. Scoped by `consent_type` × `jurisdiction_code` (GDPR vs CCPA/CPRA). Also carries the **suppression overlay** (`suppression_indicator` + `suppression_reason_code`) — a do-not-contact signal that overrides granted consent. |
 | `account` | One version per organization | SCD2 | Optional B2B organization account a customer transacts on behalf of. |
 | `household` | One version per household | SCD2 | Conformed household master — a grouping of related individuals. `profile.household_sk`/`household_id` reference it. |
 | `identity_link` | One version per identifier→profile assertion | SCD2 | Thin resolved-identity primitive: a pseudonymized source identifier resolved to a `profile`, with match method and confidence. |
@@ -44,6 +44,7 @@ Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog sc
 | **Identity link** | A pseudonymized source identifier (hashed email/phone/device/loyalty id) resolved to a `profile`, with `match_method` and `match_confidence` in [0,1]. |
 | **Match confidence** | Probability in [0,1] that an `identity_link` correctly resolves an identifier to its profile; 1.0 = deterministic/asserted. |
 | **Channel preference** | A soft communication preference (preferred channel, frequency cap, topic subscription, format) — distinct from consent. |
+| **Suppression** | An operational/legal do-not-contact overlay on a consent scope (`suppression_indicator` + `suppression_reason_code`). It **overrides granted consent** in the activation gate and is a distinct governed state (principle #5) — not the same as a consent withdrawal. Two scopes: **channel-level** reasons (`unsubscribe`, `hard_bounce`, `spam_complaint`, `list_hygiene`) block only the consent scope they sit on; **person-level** reasons (`deceased`, `fraud`, `do_not_contact`, `legal_objection`) block every channel for the profile (the activation gate propagates them across scopes). Retained as evidence even after erasure (ICO do-not-contact guidance). |
 
 ## Standards used
 

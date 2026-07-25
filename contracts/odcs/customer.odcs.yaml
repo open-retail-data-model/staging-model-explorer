@@ -833,6 +833,30 @@ schema:
       3166-2 subdivision (US-CA), or a reserved regional code (EU) — not alpha-2-only, since regulatory
       scope does not map cleanly to countries. Lets one customer hold different consent per jurisdiction
       (GDPR vs CCPA/CPRA). NULL = global/unspecified.
+  - name: suppression_indicator
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: Operational do-not-activate overlay for this consent scope. TRUE = suppress activation
+      on this purpose x channel even when consent_status is granted (suppression OVERRIDES consent). Distinct
+      from withdrawal (consent_status=withdrawn is the customer revoking permission; suppression is an
+      operational/legal do-not-contact signal, e.g. hard bounce or a direct-marketing objection). NULL/FALSE
+      = not suppressed.
+  - name: suppression_reason_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Why this scope is suppressed (set only when suppression_indicator is TRUE). Two scopes:
+      CHANNEL-level reasons block only this consent scope (unsubscribe, hard_bounce, spam_complaint, list_hygiene);
+      PERSON-level reasons block EVERY channel for the profile and the activation gate propagates them
+      across scopes (deceased, fraud, do_not_contact, legal_objection). Allowed values: unsubscribe, hard_bounce,
+      spam_complaint, legal_objection, deceased, fraud, do_not_contact, list_hygiene.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: unsubscribe, hard_bounce, spam_complaint, legal_objection, deceased,
+        fraud, do_not_contact, list_hygiene.'
   - name: effective_from_date
     logicalType: date
     physicalType: DATE
@@ -931,6 +955,41 @@ schema:
       GROUP BY profile_id, consent_type, COALESCE(jurisdiction_code, '''')
 
       HAVING COUNT(*) > 1'
+  - name: consent_suppression_reason_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: consent_suppression_reason_domain
+    query: "SELECT * FROM customer.consent\nWHERE suppression_reason_code IS NOT NULL\n  AND suppression_reason_code\
+      \ NOT IN ('unsubscribe', 'hard_bounce', 'spam_complaint',\n    'legal_objection', 'deceased', 'fraud',\
+      \ 'do_not_contact', 'list_hygiene')"
+  - name: consent_suppression_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'A suppression reason is meaningful only when the scope is actually suppressed. This
+      guard is ONE-DIRECTIONAL BY DESIGN (reason ⇒ indicator, not the reverse): an indicator=TRUE with
+      a NULL reason is a valid CHANNEL-scope-only suppression that blocks its own scope but will NOT propagate
+      person-wide — person-level propagation in the activation gate keys on the reason (deceased/fraud/do_not_contact/legal_objection),
+      so an uncategorized suppression deliberately stays channel-local.'
+    query: 'SELECT * FROM customer.consent
+
+      WHERE suppression_reason_code IS NOT NULL AND COALESCE(suppression_indicator, FALSE) = FALSE'
+  - name: consent_suppressed_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: Share of current consent scopes carrying an active suppression overlay.
+    query: 'SELECT ROUND(AVG(CASE WHEN COALESCE(suppression_indicator, FALSE) THEN 1.0 ELSE 0 END), 4)
+      AS suppressed_rate
+
+      FROM customer.consent
+
+      WHERE is_current = true'
 - name: contact
   physicalName: customer.contact
   physicalType: table

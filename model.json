@@ -901,6 +901,24 @@
         },
         {
           "column": null,
+          "name": "consent_suppression_reason_domain",
+          "severity": "error",
+          "table": "consent"
+        },
+        {
+          "column": null,
+          "name": "consent_suppression_consistency",
+          "severity": "error",
+          "table": "consent"
+        },
+        {
+          "column": null,
+          "name": "consent_suppressed_rate",
+          "severity": "metric",
+          "table": "consent"
+        },
+        {
+          "column": null,
           "name": "account_keys_not_null",
           "severity": "error",
           "table": "account"
@@ -1918,6 +1936,33 @@
               "enum_values": [],
               "fk": false,
               "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Operational do-not-activate overlay for this consent scope. TRUE = suppress activation on this purpose x channel even when consent_status is granted (suppression OVERRIDES consent). Distinct from withdrawal (consent_status=withdrawn is the customer revoking permission; suppression is an operational/legal do-not-contact signal, e.g. hard bounce or a direct-marketing objection). NULL/FALSE = not suppressed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suppression_indicator",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Why this scope is suppressed (set only when suppression_indicator is TRUE). Two scopes: CHANNEL-level reasons block only this consent scope (unsubscribe, hard_bounce, spam_complaint, list_hygiene); PERSON-level reasons block EVERY channel for the profile and the activation gate propagates them across scopes (deceased, fraud, do_not_contact, legal_objection). Allowed values: unsubscribe, hard_bounce, spam_complaint, legal_objection, deceased, fraud, do_not_contact, list_hygiene.",
+              "enum_values": [
+                "unsubscribe",
+                "hard_bounce",
+                "spam_complaint",
+                "legal_objection",
+                "deceased",
+                "fraud",
+                "do_not_contact",
+                "list_hygiene"
+              ],
+              "fk": false,
+              "name": "suppression_reason_code",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -29830,6 +29875,12 @@
         },
         {
           "column": null,
+          "name": "ucv_suppression_rate",
+          "severity": "metric",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
           "name": "uav_grain_unique",
           "severity": "error",
           "table": "gold_activatable_audience_current"
@@ -29851,6 +29902,282 @@
           "name": "uav_activatable_rowcount",
           "severity": "metric",
           "table": "gold_activatable_audience_current"
+        },
+        {
+          "column": null,
+          "name": "ad_keys_not_null",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_id_unique",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_pk_unique",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_connector_kind_domain",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_required_purpose_domain",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_required_channel_domain",
+          "severity": "error",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "ad_destination_count",
+          "severity": "metric",
+          "table": "activation_destination"
+        },
+        {
+          "column": null,
+          "name": "aj_keys_not_null",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_grain_unique",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_pk_unique",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_id_unique",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_audience_fk_orphan",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_audience_businesskey_orphan",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_destination_fk_orphan",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_destination_businesskey_orphan",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_status_domain",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_failure_reason_domain",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_counts_nonneg",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_counts_monotonic",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_blocked_reconciles",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_match_rate_in_range",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_destination_purpose_channel_match",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_export_rate",
+          "severity": "metric",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_block_rate",
+          "severity": "metric",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_match_rate",
+          "severity": "metric",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "ct_keys_not_null",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_grain_unique",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_pk_unique",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_id_unique",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_profile_fk_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_profile_businesskey_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_audience_fk_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_audience_businesskey_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_promotion_fk_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_promotion_businesskey_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_activation_job_fk_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_activation_job_businesskey_orphan",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_direction_domain",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_type_domain",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_channel_domain",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_delivery_status_domain",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_consent_status_domain",
+          "severity": "error",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_touch_count",
+          "severity": "metric",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_campaign_reach",
+          "severity": "metric",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_delivered_to_denied",
+          "severity": "metric",
+          "table": "campaign_touch"
+        },
+        {
+          "column": null,
+          "name": "ct_activation_job_audience_consistency",
+          "severity": "error",
+          "table": "campaign_touch"
         }
       ],
       "contract_path": "contracts/odcs/unified-customer-view.odcs.yaml",
@@ -29868,9 +30195,764 @@
             "profile_sk"
           ],
           "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "audience_sk"
+          ],
+          "child_table": "activation_job",
+          "declared_fk": true,
+          "parent_cols": [
+            "audience_sk"
+          ],
+          "parent_table": "audience"
+        },
+        {
+          "child_cols": [
+            "activation_destination_sk"
+          ],
+          "child_table": "activation_job",
+          "declared_fk": true,
+          "parent_cols": [
+            "activation_destination_sk"
+          ],
+          "parent_table": "activation_destination"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "campaign_touch",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "audience_sk"
+          ],
+          "child_table": "campaign_touch",
+          "declared_fk": true,
+          "parent_cols": [
+            "audience_sk"
+          ],
+          "parent_table": "audience"
+        },
+        {
+          "child_cols": [
+            "promo_sk"
+          ],
+          "child_table": "campaign_touch",
+          "declared_fk": true,
+          "parent_cols": [
+            "promo_sk"
+          ],
+          "parent_table": "promotion"
+        },
+        {
+          "child_cols": [
+            "activation_job_sk"
+          ],
+          "child_table": "campaign_touch",
+          "declared_fk": true,
+          "parent_cols": [
+            "activation_job_sk"
+          ],
+          "parent_table": "activation_job"
         }
       ],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_destination_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key / destination-connector code (e.g., dsp_ca_prod, esp_01). The stable key activation_job references and reverse-ETL diffs on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_destination_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable destination name.",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The activation platform (free text, adopter-defined \u2014 vendor-neutral schema, so no CHECK enum). Categorical examples: a DSP, a social platform, a search/ad platform, a retail-media network, a data onboarder / identity-resolution provider, an ESP, an SMS gateway, a push service, a clean room, object storage, or a custom webhook.",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_platform",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How audiences reach the destination. Allowed values: reverse_etl, api_push, file_export, clean_room_match, managed_connector.",
+              "enum_values": [
+                "reverse_etl",
+                "api_push",
+                "file_export",
+                "clean_room_match",
+                "managed_connector"
+              ],
+              "fk": false,
+              "name": "connector_kind",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The identity key this destination is synced on (governs which hashed identifier a job exports). Allowed values: email_hash, phone_hash, maid, people_based_id, platform_user_id, custom_audience_id, first_party_id.",
+              "enum_values": [
+                "email_hash",
+                "phone_hash",
+                "maid",
+                "people_based_id",
+                "platform_user_id",
+                "custom_audience_id",
+                "first_party_id"
+              ],
+              "fk": false,
+              "name": "match_key_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The marketing purpose a job to this destination must gate on (joins the eligibility gate purpose). NULL = not purpose-constrained (a multi-purpose destination; the aj_destination_purpose_channel_match check does not fire). Allowed values: marketing, personalization, analytics, retail_media, service.",
+              "enum_values": [
+                "marketing",
+                "personalization",
+                "analytics",
+                "retail_media",
+                "service"
+              ],
+              "fk": false,
+              "name": "required_consent_purpose",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The channel a job to this destination activates on (joins the eligibility gate channel; the consent-channel values email/sms/phone/postal align with the gate, the rest are non-gated channels). NULL = not channel-constrained (a multi-channel destination such as an ESP; the match check does not fire). Allowed values: email, sms, phone, postal, push, web, in_app, ctv, social, display, search.",
+              "enum_values": [
+                "email",
+                "sms",
+                "phone",
+                "postal",
+                "push",
+                "web",
+                "in_app",
+                "ctv",
+                "social",
+                "display",
+                "search"
+              ],
+              "fk": false,
+              "name": "required_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Region the destination processes data in, for residency governance (ISO 3166-1 alpha-2 or a region label; NULL if not constrained).",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_residency_region",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if the destination currently accepts audience publishes (a disabled connector stays in the catalog for lineage but is not addressable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_addressable_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Vendor-neutral label of the team that owns/operates this connector.",
+              "enum_values": [],
+              "fk": false,
+              "name": "owner_team",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM Unified Customer View \u2014 activation destination connector catalog (Type 1). The single source of truth for where an activatable audience can publish; runs are the activation_job fact.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "activation_destination",
+          "role": "reference",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per run row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_job_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the activation run. Composed from the full grain: audience_id + activation_destination_id + jurisdiction_code + job_run_ts (a NULL jurisdiction is its own agnostic scope) \u2014 so two runs differing only by jurisdiction get distinct ids. If minted opaquely instead, it must still be unique at that grain (aj_id_unique).",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_job_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to marketing.audience.audience_sk \u2014 the published audience/segment version.",
+              "enum_values": [],
+              "fk": true,
+              "name": "audience_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable audience business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to ucv.activation_destination.activation_destination_sk \u2014 where the audience was published.",
+              "enum_values": [],
+              "fk": true,
+              "name": "activation_destination_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable destination business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_destination_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The ACU segment_membership snapshot date this run exported (pins reproducibility to a frozen membership).",
+              "enum_values": [],
+              "fk": false,
+              "name": "membership_as_of_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "When the activation run executed at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "job_run_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the run (cluster key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "job_run_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Terminal or in-flight run state. Allowed values: queued, running, succeeded, partial, failed, cancelled.",
+              "enum_values": [
+                "queued",
+                "running",
+                "succeeded",
+                "partial",
+                "failed",
+                "cancelled"
+              ],
+              "fk": false,
+              "name": "job_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Marketing purpose this activation served \u2014 must match the destination required_consent_purpose. Allowed values: marketing, personalization, analytics, retail_media, service.",
+              "enum_values": [
+                "marketing",
+                "personalization",
+                "analytics",
+                "retail_media",
+                "service"
+              ],
+              "fk": false,
+              "name": "purpose_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Channel this activation targeted \u2014 must match the destination required_channel. The consent-channel values email/sms/phone/postal align with the eligibility gate (so those runs reconcile against it); the rest are channels the gate does not evaluate today. Allowed values: email, sms, phone, postal, push, web, in_app, ctv, social, display, search.",
+              "enum_values": [
+                "email",
+                "sms",
+                "phone",
+                "postal",
+                "push",
+                "web",
+                "in_app",
+                "ctv",
+                "social",
+                "display",
+                "search"
+              ],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Regulatory regime the counts are scoped to (ISO 3166 country/subdivision, or a regional code such as EU \u2014 matching consent.jurisdiction_code), so eligible_member_count reconciles against the jurisdiction-grained gate. It ALSO gives informational residency traceability against a residency-constrained destination (activation_destination.data_residency_region), but the two are NOT DQ-reconciled: a regulatory-regime code and a processing-region label do not map 1:1 (e.g. regime EU vs region a specific country). NULL = a jurisdiction-agnostic roll-up across regimes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Raw segment size at membership_as_of_date, before the consent gate (>= 0).",
+              "enum_values": [],
+              "fk": false,
+              "name": "requested_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Members with an eligible gate row for this purpose \u00d7 channel \u00d7 jurisdiction (>= 0, <= requested_member_count).",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Members the eligibility gate removed for ANY reason \u2014 consent, preference, reachability, OR suppression (>= 0) = requested_member_count - eligible_member_count. ALL-CAUSE, NOT suppression-specific (ADR 0027 keeps those states distinct); a genuinely suppression-scoped count is a future per-reason breakout.",
+              "enum_values": [],
+              "fk": false,
+              "name": "blocked_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Members actually published to the destination (>= 0, <= eligible_member_count).",
+              "enum_values": [],
+              "fk": false,
+              "name": "exported_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Provider match rate for exported members (0..1); NULL if the destination does not report one.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "The provider-side audience identifier returned by the destination (vendor-neutral, no PII, no member lists).",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_audience_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Why a failed/partial run did not complete. Allowed values: none, auth_error, quota_exceeded, schema_mismatch, consent_block, provider_error, timeout.",
+              "enum_values": [
+                "none",
+                "auth_error",
+                "quota_exceeded",
+                "schema_mismatch",
+                "consent_block",
+                "provider_error",
+                "timeout"
+              ],
+              "fk": false,
+              "name": "failure_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Version of the activation job runner / rule set that produced this run (audit / reproducibility). NULL if not applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM Unified Customer View \u2014 activation/export run audit fact (append-only). Records each audience-to-destination publish and its consent-gate counts; the gate itself is gold_activatable_audience_current.",
+          "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "activation_job",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per touch row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "campaign_touch_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the touch \u2014 one per INTERACTION EVENT, unique at row grain (send/delivery/open/click of the same message are separate touches with distinct ids). A platform message id that repeats across event types is NOT this key; carry it in external_campaign_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "campaign_touch_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk \u2014 the touched customer (resolved).",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous; not raw PII).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to marketing.audience.audience_sk \u2014 the segment the touch was sourced from, if audience-driven.",
+              "enum_values": [],
+              "fk": true,
+              "name": "audience_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable audience business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "audience_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to marketing.promotion.promo_sk \u2014 the offer/campaign this touch delivered, if attributable.",
+              "enum_values": [],
+              "fk": true,
+              "name": "promo_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable promotion/campaign business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to ucv.activation_job.activation_job_sk \u2014 the activation run that produced this touch, if outbound-activated.",
+              "enum_values": [],
+              "fk": true,
+              "name": "activation_job_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable activation-job business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "activation_job_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Platform-facing campaign identifier for reconciliation (degenerate attribute; vendor-neutral, no PII).",
+              "enum_values": [],
+              "fk": false,
+              "name": "external_campaign_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the touch occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "touch_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the touch (cluster key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "touch_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Interaction direction. Allowed values: outbound, inbound.",
+              "enum_values": [
+                "outbound",
+                "inbound"
+              ],
+              "fk": false,
+              "name": "touch_direction",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Interaction type. Allowed values: send, delivery, open, click, bounce, unsubscribe, reply, conversion, complaint.",
+              "enum_values": [
+                "send",
+                "delivery",
+                "open",
+                "click",
+                "bounce",
+                "unsubscribe",
+                "reply",
+                "conversion",
+                "complaint"
+              ],
+              "fk": false,
+              "name": "touch_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Channel the touch occurred on. Allowed values: email, sms, push, direct_mail, web, in_app, call_center, in_store.",
+              "enum_values": [
+                "email",
+                "sms",
+                "push",
+                "direct_mail",
+                "web",
+                "in_app",
+                "call_center",
+                "in_store"
+              ],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "ORDM-canonical delivery state. Allowed values: queued, sent, delivered, bounced, failed, suppressed.",
+              "enum_values": [
+                "queued",
+                "sent",
+                "delivered",
+                "bounced",
+                "failed",
+                "suppressed"
+              ],
+              "fk": false,
+              "name": "delivery_status_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Raw provider-facing delivery status, canonicalized-through (vendor label; no PII).",
+              "enum_values": [],
+              "fk": false,
+              "name": "destination_delivery_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Consent state AS OBSERVED AT TOUCH TIME (governance evidence / point-in-time snapshot) \u2014 deliberately a 3-value snapshot domain, the SAME as the sibling fact cmn.media_event.consent_status, and NOT the same domain as the canonical-core consent master (customer.consent.consent_status = granted/withdrawn/pending/expired, an SCD2 lifecycle). This is not a join key to that master. Allowed values: granted, denied, unknown.",
+              "enum_values": [
+                "granted",
+                "denied",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral reference to the message/creative variant sent (no PII, no content body).",
+              "enum_values": [],
+              "fk": false,
+              "name": "message_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM Unified Customer View \u2014 owned/CRM campaign interaction fact (append-only). Outbound sends and inbound responses per customer, sourced from an activation; distinct from paid CMN media_event.",
+          "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "promotion",
+              "unit": "marketing"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "campaign_touch",
+          "role": "transactional",
+          "scd2": false
+        },
         {
           "columns": [
             {
@@ -30247,6 +31329,15 @@
               "type": "BOOLEAN"
             },
             {
+              "comment": "A do-not-contact suppression overlay applies to this scope (consent.suppression_indicator); overrides granted consent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_suppressed_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
               "comment": "Net permission: consent AND preference AND identifier.",
               "enum_values": [],
               "fk": false,
@@ -30256,7 +31347,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "First failing rule when not eligible: consent_denied, withdrawn, preference_opt_out, no_identifier (suppressed reserved).",
+              "comment": "First failing rule when not eligible, suppression first: suppressed, withdrawn, consent_denied, preference_opt_out, no_identifier.",
               "enum_values": [],
               "fk": false,
               "name": "blocking_reason_code",
@@ -30539,10 +31630,15 @@
           "tables": []
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "marketing"
+          ],
           "name": "CDP",
-          "status": "blocked",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_activatable_audience_current"
+          ]
         },
         {
           "consumes": [],

@@ -1,6 +1,6 @@
 # Unified Customer View — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-10
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-07-24
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). Built entirely
 on the thin customer core — no product/transaction/campaign data.
@@ -13,15 +13,19 @@ on the thin customer core — no product/transaction/campaign data.
 | `gold_unified_customer_360_current` | One current row per customer | Conformed 360 summary keyed on the customer surrogate; identity, consent, preference, household roll-ups. No raw PII. |
 | `gold_customer_activation_eligibility_current` | One row per customer × purpose × channel | Net-permission gate: `eligible_flag` = consent granted AND preference allows AND a valid identifier exists, with `blocking_reason_code`. |
 | `gold_activatable_audience_current` | One row per audience × profile × purpose × channel × jurisdiction | The activation surface: behavioral-segment membership (ACU `segment_membership`, latest as-of) joined to the net eligibility gate, keyed on the durable `profile_id`. Fail-closed — a customer appears only where an eligible gate row exists and the segment is addressable. No raw PII. |
+| `activation_destination` | One row per destination connector | *(CDP activation layer, ADR 0026)* Type-1 catalog of where an activatable audience can publish (reverse-ETL / ad platform / ESP-SMS / clean room / file export). `required_consent_purpose` × `required_channel` make the gate destination-aware. Config only — never member lists. |
+| `activation_job` | One row per audience × destination × jurisdiction × run | *(CDP activation layer, ADR 0026)* Append-only audit of each audience-to-destination publish: requested / eligible / blocked / exported member counts and match rate, scoped to a `jurisdiction_code`. `blocked` is all-cause (consent, preference, reachability, or suppression) — not suppression-specific. Audits the fail-closed gate (`exported ≤ eligible ≤ requested`); does not perform it. |
+| `campaign_touch` | One row per profile × promotion × touch_ts × touch_type | *(CDP activation layer, ADR 0026)* Append-only owned/CRM interaction history (sends, opens, clicks, unsubscribes, conversions) sourced from an activation. Distinct from paid CMN `media_event`. Keyed on the pseudonymous `profile_id`; no raw PII. |
 | `profile` / `identity_link` / `consent` / `channel_preference` / `household` / `contact` / `address` | — | *(canonical-core)* the customer core this package rolls up. |
+| `audience` / `promotion` | — | *(canonical-core marketing)* the shared segment definition (ADR 0022) and offer/campaign the activation layer references. |
 
 ## Key concepts
 
 | Term | Definition |
 |---|---|
 | **360 summary vs. eligibility gate** | The 360 view's consent flags are a customer-level *summary* ("granted anywhere"). The authoritative per-purpose × channel permission — resolved as-of `jurisdiction_code` — is `gold_customer_activation_eligibility_current`. |
-| **Activation eligibility** | `eligible_flag = consent_granted AND preference_allows AND has_identifier`. Consent (legal), preference (soft opt-out), and reachability (a valid identifier) are three distinct governed states and are never collapsed (principle #5). |
-| **`blocking_reason_code`** | First failing rule when not eligible: `consent_denied` / `withdrawn` / `preference_opt_out` / `no_identifier`. `suppressed` is **reserved** for the deferred suppression ledger (not produced yet). |
+| **Activation eligibility** | `eligible_flag = consent_granted AND preference_allows AND has_identifier AND NOT suppressed`. Consent (legal), preference (soft opt-out), reachability (a valid identifier), and suppression (a do-not-contact overlay) are four distinct governed states and are never collapsed (principle #5). |
+| **`blocking_reason_code`** | First failing rule when not eligible, suppression first: `suppressed` / `withdrawn` / `consent_denied` / `preference_opt_out` / `no_identifier`. `suppressed` is a do-not-contact overlay (`consent.suppression_indicator`) that **overrides granted consent**, distinct from the customer withdrawing consent. Channel-level reasons (bounce, complaint, unsubscribe) block one channel; person-level reasons (deceased, fraud, do_not_contact, legal_objection) block **all** channels for the profile (the gate propagates them across scopes — review H1). |
 | **`resolved_identity_confidence`** | Summary identity-resolution confidence in [0,1] over a customer's current `active` identity links. |
 | **`reachability_score`** | Fraction of channels (email/sms/postal) a customer is reachable on = consent + preference + identifier present. |
 | **`profile_completeness_score`** | Fraction of key attributes populated (name, dob, email, address). |
@@ -46,7 +50,12 @@ overlay is a deferred, optional Databricks-native materialization of the same de
 | `avg_profile_completeness` | Mean profile completeness. | customer | `AVG(profile_completeness_score)` |
 | `consent_granted_rate_by_purpose` | Share of purpose×channel rows with consent granted. | customer × purpose × channel · dims: jurisdiction | `AVG(CASE WHEN consent_granted_flag THEN 1.0 ELSE 0 END)` over the eligibility view |
 | `eligible_rate` | Share of purpose×channel rows that are activation-eligible. | customer × purpose × channel · dims: purpose, channel, jurisdiction | `AVG(CASE WHEN eligible_flag THEN 1.0 ELSE 0 END)` |
-| `suppression_rate` | *(reserved)* Share blocked by suppression. | customer × purpose × channel | pending the deferred suppression ledger |
+| `suppression_rate` | Share of purpose×channel rows blocked by a do-not-contact suppression overlay. | customer × purpose × channel · dims: jurisdiction | `AVG(CASE WHEN is_suppressed_flag THEN 1.0 ELSE 0 END)` over the eligibility view |
+| `activation_export_rate` | Share of gate-eligible members actually exported (activation efficiency). | destination × audience | `SUM(exported_member_count) / SUM(eligible_member_count)` over `activation_job` (ratio-of-sums) |
+| `activation_block_rate` | Share of requested members the eligibility gate removed for ANY reason (consent, preference, reachability, or suppression) — an all-cause block rate, NOT suppression-specific. | destination × audience · dims: purpose, channel, jurisdiction | `SUM(blocked_member_count) / SUM(requested_member_count)` over `activation_job` |
+| `activation_match_rate` | Member-weighted provider match rate across exports (denominator counts only exports with a known match_rate). | destination | `SUM(exported_member_count * match_rate) / SUM(CASE WHEN match_rate IS NOT NULL THEN exported_member_count END)` over `activation_job` |
+| `campaign_touch_count` | Count of campaign interactions. | profile × promotion · dims: channel, direction, touch_type | `COUNT(*)` over `campaign_touch` |
+| `campaign_reach` | Distinct customers touched by a campaign. | promotion | `COUNT(DISTINCT profile_id)` over `campaign_touch` |
 
 ## Standards used
 
@@ -58,8 +67,11 @@ overlay is a deferred, optional Databricks-native materialization of the same de
 
 ## Deferred (documented, not built)
 
-UC Metric Views (optional Databricks overlay of the metrics above); campaign machinery; the suppression
-ledger; and any 360 field needing transaction/product/store data (LTV, purchase recency, affinity,
-preferred store). (Segment/audience membership and the activation surface are now BUILT: `audience` is a
-silver master, ACU ships `segment_membership`, and `gold_activatable_audience_current` above is the
-activation join.) See [`design/customer-identity/`](../../design/customer-identity/).
+UC Metric Views (optional Databricks overlay of the metrics above); the suppression ledger; a
+`fact_behavior_event` clickstream fact (raw event collection is out of scope per the CDP brief); and any
+360 field needing transaction/product/store data (LTV, purchase recency, affinity, preferred store).
+(Segment/audience membership and the activation surface are BUILT: `audience` is a silver master, ACU ships
+`segment_membership`, and `gold_activatable_audience_current` is the activation join. The **activation layer**
+is now BUILT too, ADR 0026: `activation_destination`, `activation_job`, and `campaign_touch` — shipped as
+schema + DQ contract, adopter-owned producers like `customer_profile_snapshot`.) See
+[`design/customer-identity/`](../../design/customer-identity/).

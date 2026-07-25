@@ -27,6 +27,1021 @@ authoritativeDefinitions:
 - url: docs/data-model-standards.md
   type: businessDefinition
 schema:
+- name: activation_destination
+  physicalName: unified_customer_view.activation_destination
+  physicalType: table
+  description: ORDM Unified Customer View — activation destination connector catalog (Type 1). The single
+    source of truth for where an activatable audience can publish; runs are the activation_job fact.
+  tags:
+  - reference
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: activation_destination_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: activation_destination_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key / destination-connector code (e.g., dsp_ca_prod, esp_01). The stable
+      key activation_job references and reverse-ETL diffs on.
+  - name: destination_name
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Human-readable destination name.
+  - name: destination_platform
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The activation platform (free text, adopter-defined — vendor-neutral schema, so no CHECK
+      enum). Categorical examples: a DSP, a social platform, a search/ad platform, a retail-media network,
+      a data onboarder / identity-resolution provider, an ESP, an SMS gateway, a push service, a clean
+      room, object storage, or a custom webhook.'
+  - name: connector_kind
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'How audiences reach the destination. Allowed values: reverse_etl, api_push, file_export,
+      clean_room_match, managed_connector.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: reverse_etl, api_push, file_export, clean_room_match, managed_connector.'
+  - name: match_key_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The identity key this destination is synced on (governs which hashed identifier a job
+      exports). Allowed values: email_hash, phone_hash, maid, people_based_id, platform_user_id, custom_audience_id,
+      first_party_id.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: email_hash, phone_hash, maid, people_based_id, platform_user_id, custom_audience_id,
+        first_party_id.'
+  - name: required_consent_purpose
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The marketing purpose a job to this destination must gate on (joins the eligibility
+      gate purpose). NULL = not purpose-constrained (a multi-purpose destination; the aj_destination_purpose_channel_match
+      check does not fire). Allowed values: marketing, personalization, analytics, retail_media, service.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: marketing, personalization, analytics, retail_media, service.'
+  - name: required_channel
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The channel a job to this destination activates on (joins the eligibility gate channel;
+      the consent-channel values email/sms/phone/postal align with the gate, the rest are non-gated channels).
+      NULL = not channel-constrained (a multi-channel destination such as an ESP; the match check does
+      not fire). Allowed values: email, sms, phone, postal, push, web, in_app, ctv, social, display, search.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: email, sms, phone, postal, push, web, in_app, ctv, social, display,
+        search.'
+  - name: data_residency_region
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Region the destination processes data in, for residency governance (ISO 3166-1 alpha-2
+      or a region label; NULL if not constrained).
+  - name: is_addressable_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE if the destination currently accepts audience publishes (a disabled connector stays
+      in the catalog for lineage but is not addressable).
+  - name: owner_team
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Vendor-neutral label of the team that owns/operates this connector.
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ad_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ad_keys_not_null
+    query: 'SELECT * FROM unified_customer_view.activation_destination
+
+      WHERE activation_destination_sk IS NULL OR activation_destination_id IS NULL'
+  - name: ad_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Type-1 grain guard: one row per destination connector.'
+    query: 'SELECT activation_destination_id, COUNT(*) AS n
+
+      FROM unified_customer_view.activation_destination
+
+      GROUP BY activation_destination_id HAVING COUNT(*) > 1'
+  - name: ad_pk_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ad_pk_unique
+    query: 'SELECT activation_destination_sk, COUNT(*) AS n
+
+      FROM unified_customer_view.activation_destination
+
+      GROUP BY activation_destination_sk HAVING COUNT(*) > 1'
+  - name: ad_connector_kind_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ad_connector_kind_domain
+    query: "SELECT * FROM unified_customer_view.activation_destination\nWHERE connector_kind IS NOT NULL\n\
+      \  AND connector_kind NOT IN ('reverse_etl', 'api_push', 'file_export', 'clean_room_match', 'managed_connector')"
+  - name: ad_required_purpose_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ad_required_purpose_domain
+    query: "SELECT * FROM unified_customer_view.activation_destination\nWHERE required_consent_purpose\
+      \ IS NOT NULL\n  AND required_consent_purpose NOT IN ('marketing', 'personalization', 'analytics',\
+      \ 'retail_media', 'service')"
+  - name: ad_required_channel_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ad_required_channel_domain
+    query: "SELECT * FROM unified_customer_view.activation_destination\nWHERE required_channel IS NOT\
+      \ NULL\n  AND required_channel NOT IN ('email', 'sms', 'phone', 'postal', 'push', 'web', 'in_app',\
+      \ 'ctv', 'social', 'display', 'search')"
+  - name: ad_destination_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ad_destination_count
+    query: 'SELECT COUNT(*) AS destination_count
+
+      FROM unified_customer_view.activation_destination'
+- name: activation_job
+  physicalName: unified_customer_view.activation_job
+  physicalType: table
+  description: ORDM Unified Customer View — activation/export run audit fact (append-only). Records each
+    audience-to-destination publish and its consent-gate counts; the gate itself is gold_activatable_audience_current.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: activation_job_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per run row.
+  - name: activation_job_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable natural/business key for the activation run. Composed from the full grain: audience_id
+      + activation_destination_id + jurisdiction_code + job_run_ts (a NULL jurisdiction is its own agnostic
+      scope) — so two runs differing only by jurisdiction get distinct ids. If minted opaquely instead,
+      it must still be unique at that grain (aj_id_unique).'
+  - name: audience_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to marketing.audience.audience_sk — the published audience/segment version.
+    relationships:
+    - to: audience.audience_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: marketing
+      - property: enforced
+        value: false
+  - name: audience_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable audience business key.
+  - name: activation_destination_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to ucv.activation_destination.activation_destination_sk — where the audience was published.
+    relationships:
+    - to: activation_destination.activation_destination_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: unified_customer_view
+      - property: enforced
+        value: false
+  - name: activation_destination_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable destination business key.
+  - name: membership_as_of_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: The ACU segment_membership snapshot date this run exported (pins reproducibility to a
+      frozen membership).
+  - name: job_run_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the activation run executed at source (UTC, ISO 8601).
+  - name: job_run_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the run (cluster key).
+  - name: job_status
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Terminal or in-flight run state. Allowed values: queued, running, succeeded, partial,
+      failed, cancelled.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: queued, running, succeeded, partial, failed, cancelled.'
+  - name: purpose_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Marketing purpose this activation served — must match the destination required_consent_purpose.
+      Allowed values: marketing, personalization, analytics, retail_media, service.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: marketing, personalization, analytics, retail_media, service.'
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Channel this activation targeted — must match the destination required_channel. The
+      consent-channel values email/sms/phone/postal align with the eligibility gate (so those runs reconcile
+      against it); the rest are channels the gate does not evaluate today. Allowed values: email, sms,
+      phone, postal, push, web, in_app, ctv, social, display, search.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: email, sms, phone, postal, push, web, in_app, ctv, social, display,
+        search.'
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Regulatory regime the counts are scoped to (ISO 3166 country/subdivision, or a regional
+      code such as EU — matching consent.jurisdiction_code), so eligible_member_count reconciles against
+      the jurisdiction-grained gate. It ALSO gives informational residency traceability against a residency-constrained
+      destination (activation_destination.data_residency_region), but the two are NOT DQ-reconciled: a
+      regulatory-regime code and a processing-region label do not map 1:1 (e.g. regime EU vs region a
+      specific country). NULL = a jurisdiction-agnostic roll-up across regimes.'
+  - name: requested_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Raw segment size at membership_as_of_date, before the consent gate (>= 0).
+  - name: eligible_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Members with an eligible gate row for this purpose × channel × jurisdiction (>= 0, <=
+      requested_member_count).
+  - name: blocked_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Members the eligibility gate removed for ANY reason — consent, preference, reachability,
+      OR suppression (>= 0) = requested_member_count - eligible_member_count. ALL-CAUSE, NOT suppression-specific
+      (ADR 0027 keeps those states distinct); a genuinely suppression-scoped count is a future per-reason
+      breakout.
+  - name: exported_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Members actually published to the destination (>= 0, <= eligible_member_count).
+  - name: match_rate
+    logicalType: number
+    physicalType: DECIMAL(5,4)
+    required: false
+    description: Provider match rate for exported members (0..1); NULL if the destination does not report
+      one.
+  - name: destination_audience_ref
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: The provider-side audience identifier returned by the destination (vendor-neutral, no
+      PII, no member lists).
+  - name: failure_reason_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Why a failed/partial run did not complete. Allowed values: none, auth_error, quota_exceeded,
+      schema_mismatch, consent_block, provider_error, timeout.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: none, auth_error, quota_exceeded, schema_mismatch, consent_block,
+        provider_error, timeout.'
+  - name: model_version
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Version of the activation job runner / rule set that produced this run (audit / reproducibility).
+      NULL if not applicable.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: aj_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_keys_not_null
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE activation_job_sk IS NULL OR activation_job_id\
+      \ IS NULL\n   OR job_run_ts IS NULL OR job_run_date IS NULL OR job_status IS NULL"
+  - name: aj_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Grain guard: one row per (audience_id, activation_destination_id, jurisdiction_code,
+      job_run_ts). jurisdiction_code is nullable (an agnostic roll-up), so COALESCE it. NOTE: the durable
+      activation_job_id (aj_id_unique) is the PRIMARY row-uniqueness guarantee; this composite key includes
+      a TIMESTAMP (job_run_ts) and is a business-grain sanity check.'
+    query: "SELECT audience_id, activation_destination_id,\n       COALESCE(jurisdiction_code, '') AS\
+      \ jurisdiction_code, job_run_ts, COUNT(*) AS n\nFROM unified_customer_view.activation_job\nGROUP\
+      \ BY audience_id, activation_destination_id, COALESCE(jurisdiction_code, ''), job_run_ts\nHAVING\
+      \ COUNT(*) > 1"
+  - name: aj_pk_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_pk_unique
+    query: 'SELECT activation_job_sk, COUNT(*) AS n
+
+      FROM unified_customer_view.activation_job
+
+      GROUP BY activation_job_sk HAVING COUNT(*) > 1'
+  - name: aj_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Durable business key guard (sibling convention: every fact guards its <stem>_id, so
+      a duplicate id can''t silently fan out the *_businesskey_orphan joins that resolve on it).'
+    query: 'SELECT activation_job_id, COUNT(*) AS n
+
+      FROM unified_customer_view.activation_job
+
+      GROUP BY activation_job_id HAVING COUNT(*) > 1'
+  - name: aj_audience_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_audience_fk_orphan
+    query: 'SELECT j.* FROM unified_customer_view.activation_job j
+
+      LEFT JOIN marketing.audience a ON j.audience_sk = a.audience_sk
+
+      WHERE j.audience_sk IS NOT NULL AND a.audience_sk IS NULL'
+  - name: aj_audience_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_audience_businesskey_orphan
+    query: "SELECT j.* FROM unified_customer_view.activation_job j\nLEFT JOIN (SELECT DISTINCT audience_id\
+      \ FROM marketing.audience) a\n  ON j.audience_id = a.audience_id\nWHERE j.audience_id IS NOT NULL\
+      \ AND a.audience_id IS NULL"
+  - name: aj_destination_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_destination_fk_orphan
+    query: 'SELECT j.* FROM unified_customer_view.activation_job j
+
+      LEFT JOIN unified_customer_view.activation_destination d ON j.activation_destination_sk = d.activation_destination_sk
+
+      WHERE j.activation_destination_sk IS NOT NULL AND d.activation_destination_sk IS NULL'
+  - name: aj_destination_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_destination_businesskey_orphan
+    query: "SELECT j.* FROM unified_customer_view.activation_job j\nLEFT JOIN (SELECT DISTINCT activation_destination_id\
+      \ FROM unified_customer_view.activation_destination) d\n  ON j.activation_destination_id = d.activation_destination_id\n\
+      WHERE j.activation_destination_id IS NOT NULL AND d.activation_destination_id IS NULL"
+  - name: aj_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_status_domain
+    query: 'SELECT * FROM unified_customer_view.activation_job
+
+      WHERE job_status NOT IN (''queued'', ''running'', ''succeeded'', ''partial'', ''failed'', ''cancelled'')'
+  - name: aj_failure_reason_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_failure_reason_domain
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE failure_reason_code IS NOT NULL\n\
+      \  AND failure_reason_code NOT IN ('none', 'auth_error', 'quota_exceeded', 'schema_mismatch', 'consent_block',\
+      \ 'provider_error', 'timeout')"
+  - name: aj_counts_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Member counts are non-negative.
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE (requested_member_count  IS NOT\
+      \ NULL AND requested_member_count  < 0)\n   OR (eligible_member_count   IS NOT NULL AND eligible_member_count\
+      \   < 0)\n   OR (blocked_member_count    IS NOT NULL AND blocked_member_count    < 0)\n   OR (exported_member_count\
+      \   IS NOT NULL AND exported_member_count   < 0)"
+  - name: aj_counts_monotonic
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Consent gate is fail-closed: a job can never export more than eligible, and never eligible
+      more than requested. exported <= eligible <= requested.'
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE (eligible_member_count IS NOT NULL\
+      \ AND requested_member_count IS NOT NULL\n        AND eligible_member_count > requested_member_count)\n\
+      \   OR (exported_member_count IS NOT NULL AND eligible_member_count IS NOT NULL\n        AND exported_member_count\
+      \ > eligible_member_count)"
+  - name: aj_blocked_reconciles
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: blocked_member_count is DEFINED as requested - eligible (ADR 0026 §2 / column comment)
+      — the ALL-CAUSE count of members the gate removed, not suppression-specific. Enforce that identity
+      so the column can't silently disagree with the counts it derives from (which would skew activation_block_rate).
+      Only where all three are populated.
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE requested_member_count IS NOT NULL\n\
+      \  AND eligible_member_count  IS NOT NULL\n  AND blocked_member_count   IS NOT NULL\n  AND (requested_member_count\
+      \ - eligible_member_count) <> blocked_member_count"
+  - name: aj_match_rate_in_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aj_match_rate_in_range
+    query: 'SELECT * FROM unified_customer_view.activation_job
+
+      WHERE match_rate IS NOT NULL AND match_rate NOT BETWEEN 0 AND 1'
+  - name: aj_destination_purpose_channel_match
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A run's purpose/channel MUST match the destination's declared required_consent_purpose
+      / required_channel (activation_job.sql + activation_destination.sql document this invariant; it's
+      what makes the consent gate destination-aware). Enforce it where both sides are set.
+    query: "SELECT j.* FROM unified_customer_view.activation_job j\nJOIN unified_customer_view.activation_destination\
+      \ d\n  ON j.activation_destination_id = d.activation_destination_id\nWHERE (d.required_consent_purpose\
+      \ IS NOT NULL AND j.purpose_code IS NOT NULL\n        AND j.purpose_code <> d.required_consent_purpose)\n\
+      \   OR (d.required_channel IS NOT NULL AND j.channel_code IS NOT NULL\n        AND j.channel_code\
+      \ <> d.required_channel)"
+  - name: aj_export_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: Share of eligible members actually exported across runs (activation efficiency).
+    query: "SELECT ROUND(\n  SUM(exported_member_count) / NULLIF(SUM(eligible_member_count), 0), 4) AS\
+      \ export_rate\nFROM unified_customer_view.activation_job"
+  - name: aj_block_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'The activation_block_rate KPI (glossary): all-cause share of requested members the gate
+      removed. Ratio-of-sums, not an avg of per-run rates.'
+    query: "SELECT ROUND(\n  SUM(blocked_member_count) / NULLIF(SUM(requested_member_count), 0), 4) AS\
+      \ block_rate\nFROM unified_customer_view.activation_job"
+  - name: aj_match_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'The activation_match_rate KPI (glossary): member-weighted provider match rate across
+      exports. Ratio-of-sums (matched estimate / exported), not an avg of per-run rates. The denominator
+      counts only exports with a KNOWN match_rate — including NULL-match exports would dilute the rate
+      toward 0 (review m1).'
+    query: "SELECT ROUND(\n  SUM(exported_member_count * match_rate)\n  / NULLIF(SUM(CASE WHEN match_rate\
+      \ IS NOT NULL THEN exported_member_count END), 0), 4) AS match_rate\nFROM unified_customer_view.activation_job"
+- name: campaign_touch
+  physicalName: unified_customer_view.campaign_touch
+  physicalType: table
+  description: ORDM Unified Customer View — owned/CRM campaign interaction fact (append-only). Outbound
+    sends and inbound responses per customer, sourced from an activation; distinct from paid CMN media_event.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: campaign_touch_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per touch row.
+  - name: campaign_touch_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the touch — one per INTERACTION EVENT, unique at row
+      grain (send/delivery/open/click of the same message are separate touches with distinct ids). A platform
+      message id that repeats across event types is NOT this key; carry it in external_campaign_id.
+  - name: profile_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to customer.profile.profile_sk — the touched customer (resolved).
+    relationships:
+    - to: profile.profile_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: customer
+      - property: enforced
+        value: false
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable customer business key (pseudonymous; not raw PII).
+  - name: audience_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to marketing.audience.audience_sk — the segment the touch was sourced from, if audience-driven.
+    relationships:
+    - to: audience.audience_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: marketing
+      - property: enforced
+        value: false
+  - name: audience_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable audience business key.
+  - name: promo_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to marketing.promotion.promo_sk — the offer/campaign this touch delivered, if attributable.
+    relationships:
+    - to: promotion.promo_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: marketing
+      - property: enforced
+        value: false
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable promotion/campaign business key.
+  - name: activation_job_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to ucv.activation_job.activation_job_sk — the activation run that produced this touch,
+      if outbound-activated.
+    relationships:
+    - to: activation_job.activation_job_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: unified_customer_view
+      - property: enforced
+        value: false
+  - name: activation_job_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable activation-job business key.
+  - name: external_campaign_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Platform-facing campaign identifier for reconciliation (degenerate attribute; vendor-neutral,
+      no PII).
+  - name: touch_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the touch occurred at source (UTC, ISO 8601).
+  - name: touch_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the touch (cluster key).
+  - name: touch_direction
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Interaction direction. Allowed values: outbound, inbound.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: outbound, inbound.'
+  - name: touch_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Interaction type. Allowed values: send, delivery, open, click, bounce, unsubscribe,
+      reply, conversion, complaint.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: send, delivery, open, click, bounce, unsubscribe, reply, conversion,
+        complaint.'
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Channel the touch occurred on. Allowed values: email, sms, push, direct_mail, web, in_app,
+      call_center, in_store.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: email, sms, push, direct_mail, web, in_app, call_center, in_store.'
+  - name: delivery_status_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'ORDM-canonical delivery state. Allowed values: queued, sent, delivered, bounced, failed,
+      suppressed.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: queued, sent, delivered, bounced, failed, suppressed.'
+  - name: destination_delivery_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Raw provider-facing delivery status, canonicalized-through (vendor label; no PII).
+  - name: consent_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Consent state AS OBSERVED AT TOUCH TIME (governance evidence / point-in-time snapshot)
+      — deliberately a 3-value snapshot domain, the SAME as the sibling fact cmn.media_event.consent_status,
+      and NOT the same domain as the canonical-core consent master (customer.consent.consent_status =
+      granted/withdrawn/pending/expired, an SCD2 lifecycle). This is not a join key to that master. Allowed
+      values: granted, denied, unknown.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: granted, denied, unknown.'
+  - name: message_ref
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Vendor-neutral reference to the message/creative variant sent (no PII, no content body).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ct_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_keys_not_null
+    query: "SELECT * FROM unified_customer_view.campaign_touch\nWHERE campaign_touch_sk IS NULL OR campaign_touch_id\
+      \ IS NULL\n   OR touch_ts IS NULL OR touch_date IS NULL OR touch_direction IS NULL OR touch_type\
+      \ IS NULL"
+  - name: ct_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Grain guard: one row per (profile_id, promo_id, channel_code, touch_ts, touch_type).
+      channel_code is part of the grain — a multi-channel campaign firing e.g. an email AND a push send
+      for the same profile/promo at the same touch_ts are two legit touches, not a duplicate (review M1).
+      profile_id / promo_id / channel_code are nullable, so COALESCE them — else NULL <> NULL would let
+      duplicates slip the guard. The durable campaign_touch_id (ct_id_unique) is the primary row-uniqueness
+      guarantee; this is the business-grain sanity check.'
+    query: "SELECT COALESCE(profile_id, '') AS profile_id, COALESCE(promo_id, '') AS promo_id,\n     \
+      \  COALESCE(channel_code, '') AS channel_code, touch_ts, touch_type, COUNT(*) AS n\nFROM unified_customer_view.campaign_touch\n\
+      GROUP BY COALESCE(profile_id, ''), COALESCE(promo_id, ''), COALESCE(channel_code, ''), touch_ts,\
+      \ touch_type\nHAVING COUNT(*) > 1"
+  - name: ct_pk_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_pk_unique
+    query: 'SELECT campaign_touch_sk, COUNT(*) AS n
+
+      FROM unified_customer_view.campaign_touch
+
+      GROUP BY campaign_touch_sk HAVING COUNT(*) > 1'
+  - name: ct_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Durable business key guard (sibling convention): campaign_touch_id is per INTERACTION
+      EVENT and must be unique at row grain — one row per touch_type, so send/delivery/open/click are
+      distinct touches with distinct ids (a repeated platform message id belongs in external_campaign_id,
+      not here). Also protects ct_activation_job_businesskey_orphan.'
+    query: 'SELECT campaign_touch_id, COUNT(*) AS n
+
+      FROM unified_customer_view.campaign_touch
+
+      GROUP BY campaign_touch_id HAVING COUNT(*) > 1'
+  - name: ct_profile_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_profile_fk_orphan
+    query: 'SELECT t.* FROM unified_customer_view.campaign_touch t
+
+      LEFT JOIN customer.profile p ON t.profile_sk = p.profile_sk
+
+      WHERE t.profile_sk IS NOT NULL AND p.profile_sk IS NULL'
+  - name: ct_profile_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_profile_businesskey_orphan
+    query: "SELECT t.* FROM unified_customer_view.campaign_touch t\nLEFT JOIN (SELECT DISTINCT profile_id\
+      \ FROM customer.profile) p\n  ON t.profile_id = p.profile_id\nWHERE t.profile_id IS NOT NULL AND\
+      \ p.profile_id IS NULL"
+  - name: ct_audience_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_audience_fk_orphan
+    query: 'SELECT t.* FROM unified_customer_view.campaign_touch t
+
+      LEFT JOIN marketing.audience a ON t.audience_sk = a.audience_sk
+
+      WHERE t.audience_sk IS NOT NULL AND a.audience_sk IS NULL'
+  - name: ct_audience_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_audience_businesskey_orphan
+    query: "SELECT t.* FROM unified_customer_view.campaign_touch t\nLEFT JOIN (SELECT DISTINCT audience_id\
+      \ FROM marketing.audience) a\n  ON t.audience_id = a.audience_id\nWHERE t.audience_id IS NOT NULL\
+      \ AND a.audience_id IS NULL"
+  - name: ct_promotion_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_promotion_fk_orphan
+    query: 'SELECT t.* FROM unified_customer_view.campaign_touch t
+
+      LEFT JOIN marketing.promotion pr ON t.promo_sk = pr.promo_sk
+
+      WHERE t.promo_sk IS NOT NULL AND pr.promo_sk IS NULL'
+  - name: ct_promotion_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_promotion_businesskey_orphan
+    query: "SELECT t.* FROM unified_customer_view.campaign_touch t\nLEFT JOIN (SELECT DISTINCT promo_id\
+      \ FROM marketing.promotion) pr\n  ON t.promo_id = pr.promo_id\nWHERE t.promo_id IS NOT NULL AND\
+      \ pr.promo_id IS NULL"
+  - name: ct_activation_job_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_activation_job_fk_orphan
+    query: 'SELECT t.* FROM unified_customer_view.campaign_touch t
+
+      LEFT JOIN unified_customer_view.activation_job j ON t.activation_job_sk = j.activation_job_sk
+
+      WHERE t.activation_job_sk IS NOT NULL AND j.activation_job_sk IS NULL'
+  - name: ct_activation_job_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_activation_job_businesskey_orphan
+    query: "SELECT t.* FROM unified_customer_view.campaign_touch t\nLEFT JOIN (SELECT DISTINCT activation_job_id\
+      \ FROM unified_customer_view.activation_job) j\n  ON t.activation_job_id = j.activation_job_id\n\
+      WHERE t.activation_job_id IS NOT NULL AND j.activation_job_id IS NULL"
+  - name: ct_direction_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_direction_domain
+    query: 'SELECT * FROM unified_customer_view.campaign_touch
+
+      WHERE touch_direction NOT IN (''outbound'', ''inbound'')'
+  - name: ct_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_type_domain
+    query: 'SELECT * FROM unified_customer_view.campaign_touch
+
+      WHERE touch_type NOT IN (''send'', ''delivery'', ''open'', ''click'', ''bounce'', ''unsubscribe'',
+      ''reply'', ''conversion'', ''complaint'')'
+  - name: ct_channel_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_channel_domain
+    query: "SELECT * FROM unified_customer_view.campaign_touch\nWHERE channel_code IS NOT NULL\n  AND\
+      \ channel_code NOT IN ('email', 'sms', 'push', 'direct_mail', 'web', 'in_app', 'call_center', 'in_store')"
+  - name: ct_delivery_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_delivery_status_domain
+    query: "SELECT * FROM unified_customer_view.campaign_touch\nWHERE delivery_status_code IS NOT NULL\n\
+      \  AND delivery_status_code NOT IN ('queued', 'sent', 'delivered', 'bounced', 'failed', 'suppressed')"
+  - name: ct_consent_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ct_consent_status_domain
+    query: "SELECT * FROM unified_customer_view.campaign_touch\nWHERE consent_status IS NOT NULL\n  AND\
+      \ consent_status NOT IN ('granted', 'denied', 'unknown')"
+  - name: ct_touch_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ct_touch_count
+    query: SELECT COUNT(*) AS campaign_touch_count FROM unified_customer_view.campaign_touch
+  - name: ct_campaign_reach
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'The campaign_reach KPI (glossary): distinct customers touched.'
+    query: SELECT COUNT(DISTINCT profile_id) AS campaign_reach FROM unified_customer_view.campaign_touch
+  - name: ct_delivered_to_denied
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'GOVERNANCE SIGNAL (design-gap self-review): this audit fact''s purpose is consent governance,
+      so surface the violation it can capture — outbound CONTACT acts (send / delivery) to a customer
+      whose consent_status was ''denied'' at touch time = a do-not-contact breach recorded in the data.
+      Scoped to the contact acts on purpose: the send/delivery IS the breach; downstream engagement (open/click)
+      and inbound responses (conversion/reply) are consequences of that send, not separate breaches, and
+      counting them would double-count or cross the direction classification (the banner groups conversion
+      as inbound). Metric-severity, not a hard fail: adopter-recorded history to review, not a model defect;
+      a non-zero value warrants investigation.'
+    query: "SELECT COUNT(*) AS delivered_to_denied\nFROM unified_customer_view.campaign_touch\nWHERE touch_direction\
+      \ = 'outbound' AND consent_status = 'denied'\n  AND touch_type IN ('send', 'delivery')"
+  - name: ct_activation_job_audience_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Closed-loop integrity (design-gap self-review): a touch sourced from an activation run
+      must carry that run''s audience. When both campaign_touch.activation_job_id and audience_id are
+      set, they must agree with the referenced activation_job.audience_id — otherwise the touch → job
+      → audience lineage is internally inconsistent.'
+    query: "SELECT t.* FROM unified_customer_view.campaign_touch t\nJOIN unified_customer_view.activation_job\
+      \ j ON t.activation_job_id = j.activation_job_id\nWHERE t.audience_id IS NOT NULL AND j.audience_id\
+      \ IS NOT NULL\n  AND t.audience_id <> j.audience_id"
 - name: customer_profile_snapshot
   physicalName: unified_customer_view.customer_profile_snapshot
   physicalType: table
@@ -378,6 +1393,11 @@ schema:
     logicalType: boolean
     physicalType: BOOLEAN
     description: A valid identifier/contact exists for the channel.
+  - name: is_suppressed_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: A do-not-contact suppression overlay applies to this scope (consent.suppression_indicator);
+      overrides granted consent.
   - name: eligible_flag
     logicalType: boolean
     physicalType: BOOLEAN
@@ -385,8 +1405,8 @@ schema:
   - name: blocking_reason_code
     logicalType: string
     physicalType: STRING
-    description: 'First failing rule when not eligible: consent_denied, withdrawn, preference_opt_out,
-      no_identifier (suppressed reserved).'
+    description: 'First failing rule when not eligible, suppression first: suppressed, withdrawn, consent_denied,
+      preference_opt_out, no_identifier.'
   - name: evaluated_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
@@ -433,6 +1453,15 @@ schema:
     severity: info
     description: Share of customer x purpose x channel rows that are activation-eligible.
     query: 'SELECT ROUND(AVG(CASE WHEN eligible_flag THEN 1.0 ELSE 0.0 END), 4) AS eligible_rate
+
+      FROM unified_customer_view.gold_customer_activation_eligibility_current'
+  - name: ucv_suppression_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'The suppression_rate KPI (glossary): share of purpose x channel rows blocked by a do-not-contact
+      suppression overlay.'
+    query: 'SELECT ROUND(AVG(CASE WHEN is_suppressed_flag THEN 1.0 ELSE 0.0 END), 4) AS suppression_rate
 
       FROM unified_customer_view.gold_customer_activation_eligibility_current'
 - name: gold_unified_customer_360_current
