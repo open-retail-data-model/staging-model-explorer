@@ -312,6 +312,59 @@ schema:
     description: Marketing consent as a DISCOVERABLE ATTRIBUTE (opted_in / opted_out / unknown). NOT the
       legal source of truth (that is canonical-core consent) and never the activation gate — the net gate
       is applied only in UCV gold_activatable_audience_current.
+  - name: interaction_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: 'Clickstream (ADR 0029), LIFETIME grain (unbounded — NOT the RFM observation window):
+      count of ENGAGEMENT touches for this profile (stitched touches only), excluding session bookkeeping
+      verbs (session_start/session_end/app_open). NULL for a purchaser with no stitched touches.'
+  - name: session_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: 'Clickstream, LIFETIME grain (unbounded): distinct sessions (session_id) the profile
+      interacted in.'
+  - name: last_interaction_date
+    logicalType: date
+    physicalType: DATE
+    description: 'Clickstream (lifetime scan): most recent touch date (engagement recency).'
+  - name: avg_digital_dwell_seconds
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Clickstream, LIFETIME grain (unbounded): mean page-dwell seconds over DIGITAL engagement
+      touches (web/mobile_app) only. Restricted to one modality because touchpoint.dwell_seconds is cross-modal
+      (page dwell vs call duration vs visit length are not comparable).'
+  - name: digital_interaction_share
+    logicalType: number
+    physicalType: DOUBLE
+    description: Clickstream channel mix, LIFETIME grain (unbounded — NOT the RFM window; a stale customer
+  - name: in_store_interaction_share
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Clickstream channel mix, LIFETIME grain (unbounded): share of touches in store / kiosk
+      (0..1).'
+  - name: call_center_interaction_share
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Clickstream channel mix, LIFETIME grain (unbounded): share of touches via call center
+      (0..1).'
+  - name: has_search_intent_flag
+    logicalType: integer
+    physicalType: INT
+    description: 'Clickstream intent, LIFETIME grain: 1 if the profile had any search touch (ever), else
+      0.'
+  - name: has_cart_activity_flag
+    logicalType: integer
+    physicalType: INT
+    description: 'Clickstream intent, LIFETIME grain: 1 if the profile had any add_to_cart touch (ever),
+      else 0.'
+  - name: cart_without_checkout_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: 'Clickstream, LIFETIME grain: TRUE if the profile ever added to cart but NEVER reached
+      checkout_start across ALL touches. NOTE: checkout_start is reaching checkout, NOT a completed purchase
+      (touchpoint carries no order-completion signal), and this is lifetime not per-cart/session — a habitual
+      buyer who abandoned one old cart still reads FALSE once they checked out. A per-cart/session rate
+      keyed on cart_id/session_id is a follow-on.'
   - name: account_id
     logicalType: string
     physicalType: STRING

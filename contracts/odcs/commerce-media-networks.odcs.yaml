@@ -2169,7 +2169,9 @@ schema:
 - name: conversion_event
   physicalName: commerce_media_networks.conversion_event
   physicalType: table
-  description: Commerce Media Networks — raw un-attributed commerce/conversion event fact (append-only).
+  description: Commerce Media Networks — paid-attribution measurement projection of the conversion-relevant
+    subset (append-only); the CVR denominator + attributed_outcome FK target. Raw touch occurrence lives
+    in canonical-core interaction.touchpoint (ADR 0029).
   tags:
   - transactional
   authoritativeDefinitions:

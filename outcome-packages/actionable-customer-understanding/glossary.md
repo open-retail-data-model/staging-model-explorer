@@ -41,6 +41,21 @@ Business terms for the Customer Lifetime Value and Behavioral Segmentation use c
 | **Segment membership** (`segment_membership`) | Which customers belong to which segment, as of an evaluation date (append-only snapshots). `membership_status`: realized / existing / exited. Targeting plane only — carries no consent flags. |
 | **Activatable audience** (`gold_activatable_audience_current`, in UCV) | Segment membership intersected with the consent+preference+reachability gate — the reverse-ETL-ready surface of who may actually be contacted per purpose × channel. The one place the three planes combine. |
 
+### Clickstream / interaction traits (ADR 0029)
+
+Derived from the conformed `interaction.touchpoint` fact (stitched, `profile_id`-resolved touches only). Available for purchasers who also have stitched touches (the trait surface is purchaser-grained in v1; widening to zero-order browsers is a named follow-on). **These traits are LIFETIME-grained** — every touch a profile ever made, deliberately NOT the fiscal observation window the RFM/behavioral traits use — so pair them with `last_interaction_date` for recency; bounding them to the RFM window is a deferred follow-on.
+
+| Term | Definition |
+|---|---|
+| **Interaction count** (`interaction_count`) | Count of meaningful engagement touches — excludes session bookkeeping verbs (`session_start` / `session_end` / `app_open`). |
+| **Session count** (`session_count`) | Distinct `session_id` values observed for the customer. |
+| **Last interaction date** (`last_interaction_date`) | Most recent touch `event_date`. |
+| **Average digital dwell** (`avg_digital_dwell_seconds`) | Mean page-dwell seconds over **digital** engagement touches (`web` / `mobile_app`) only. Restricted to one modality because `touchpoint.dwell_seconds` is cross-modal (page dwell vs call duration vs store-visit length are not comparable). |
+| **Channel-mix shares** (`digital_interaction_share`, `in_store_interaction_share`, `call_center_interaction_share`) | Share of the customer's touches on each plane. **Non-exhaustive** — they do NOT sum to 1 (channels like `kiosk` / `direct_mail` are not counted in any of the three). |
+| **Search intent** (`has_search_intent_flag`) | The customer performed at least one `search` touch. |
+| **Cart activity** (`has_cart_activity_flag`) | The customer performed at least one `add_to_cart` touch. |
+| **Cart-without-checkout** (`cart_without_checkout_flag`) | Added to cart but never reached `checkout_start`. **Lifetime-grained** and **checkout-reached, not purchase-confirmed** — a coarse abandonment proxy over all observed touches, not a per-session or per-order signal. |
+
 ## PII handling
 
 The view keys on the customer **surrogate** (`profile_sk`) plus the pseudonymous business key `profile_id`. Raw PII — `loyalty_id`, `household_id`, names, date of birth — is **never** carried here; it stays in the governed `profile` dimension (tagged `dbx_pii_*`). A DQ check (`ltv_no_raw_pii`) and a test assert PII absence on the gold schema.

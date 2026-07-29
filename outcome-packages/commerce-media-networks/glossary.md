@@ -22,7 +22,7 @@ creative, placement, experiment, experiment_cell, delivery_channel, keyword, aud
 | `keyword` | one current version per keyword (SCD2) | no | Search bid keyword an ad group targets (`match_type`, status, bid); enables keyword/query-level reporting. |
 | `audience` | one current version per audience (SCD2) | no | Retail-media targeting segment: type, origin, size estimate, addressability. Single-outcome gold (ADR 0021). |
 | `media_event` | one typed ad event | yes (restricted) | Impression/view/click/play spine (event_type discriminates); MRC/IAB viewability + IVT; nullable experiment link; parent link for click→impression. |
-| `conversion_event` | one commerce event | yes (restricted) | Raw un-attributed conversion (purchase/atc/pdp/visit/signup) — the CVR denominator. |
+| `conversion_event` | one commerce event | yes (restricted) | Paid-attribution measurement projection of the conversion-relevant subset (purchase/atc/pdp/visit/signup) — the clean-room-keyed CVR denominator + `attributed_outcome` FK target. Raw touch occurrence lives in canonical-core `interaction.touchpoint` (ADR 0029); a lineage/dedup reconciliation is a deferred follow-on. |
 | `attributed_outcome` | order-line × method × window × touchpoint | yes (restricted) | Conformed attribution: same-SKU/halo/new-to-brand, click-or-view basis, declared windows; gross + net. |
 | `incrementality_result` | experiment × snapshot × metric × slice | no (supplier-restricted) | Paired treatment/control results: lift, iROAS, CI, p-value, significance. |
 | `campaign_day` | date × brand × campaign × delivery × product × store | no (supplier-safe) | The conformed daily rollup; reconciliation + attribution measures; threshold-suppression flags. |
@@ -41,8 +41,9 @@ creative, placement, experiment, experiment_cell, delivery_channel, keyword, aud
 
 - **One typed event, not many tables** — impression/view/click/play/exposure are `event_type` values on
   `media_event`; a click links to its served impression via `parent_media_event_sk` (CTR / IAB linkage).
-- **Attribution ≠ conversion** — `conversion_event` is the raw un-attributed denominator; `attributed_outcome`
-  credits conversions to touchpoints (many-to-one, multi-touch via `attributed_fraction`).
+- **Attribution ≠ conversion** — `conversion_event` is the paid-attribution measurement projection / un-attributed
+  CVR denominator (the raw touch *occurrence* lives in canonical-core `interaction.touchpoint`, ADR 0029);
+  `attributed_outcome` credits conversions to touchpoints (many-to-one, multi-touch via `attributed_fraction`).
 - **Gross AND net, always separate** — never one opaque money metric.
 - **Same-SKU vs halo** — `same_sku_flag` (advertised SKU/parent family) vs `halo_flag` (same brand/category, IAB).
 - **Incrementality reuse** — nullable `experiment_sk`/`experiment_cell_sk` on the event/conversion/attribution

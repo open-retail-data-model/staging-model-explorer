@@ -15,6 +15,11 @@
       {
         "kind": "consumes",
         "source": "actionable-customer-understanding",
+        "target": "interaction"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
         "target": "order"
       },
       {
@@ -263,6 +268,11 @@
         "id": "equipment",
         "kind": "core",
         "label": "equipment"
+      },
+      {
+        "id": "interaction",
+        "kind": "core",
+        "label": "interaction"
       },
       {
         "id": "inventory",
@@ -3226,6 +3236,539 @@
           "layer": "silver",
           "materialized": true,
           "name": "equipment_reading",
+          "role": "transactional",
+          "scd2": false
+        }
+      ],
+      "use_cases": []
+    },
+    {
+      "checks": [
+        {
+          "column": null,
+          "name": "touchpoint_keys_not_null",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_id_unique",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_pk_unique",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_interaction_type_domain",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_channel_domain",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_source_application_domain",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_consent_domain",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_modality_coherence",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_profile_fk_orphan",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_identity_link_fk_orphan",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_product_fk_orphan",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_store_fk_orphan",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_calendar_coverage",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_profile_pairing",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_single_reporting_currency",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_resolved_needs_profile",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_latency_nonneg",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_dwell_nonneg",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_event_date_matches_timestamp",
+          "severity": "error",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_rowcount",
+          "severity": "metric",
+          "table": "touchpoint"
+        },
+        {
+          "column": null,
+          "name": "touchpoint_resolved_rate",
+          "severity": "metric",
+          "table": "touchpoint"
+        }
+      ],
+      "contract_path": "contracts/odcs/interaction.odcs.yaml",
+      "glossary_path": "canonical-core/interaction/glossary.md",
+      "kind": "core",
+      "name": "interaction",
+      "relationships": [
+        {
+          "child_cols": [
+            "identity_link_sk"
+          ],
+          "child_table": "touchpoint",
+          "declared_fk": true,
+          "parent_cols": [
+            "identity_link_sk"
+          ],
+          "parent_table": "identity_link"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "touchpoint",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "touchpoint",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "touchpoint",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per interaction row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "touchpoint_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the interaction, unique at row grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "touchpoint_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Hashed/tokenized device/cookie/app identifier \u2014 the anonymous digital actor key. Never a raw device id, cookie, or IP (PII, pseudonymized). NULL for offline touches (identity-first).",
+              "enum_values": [],
+              "fk": false,
+              "name": "device_id_hash",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Session/visit grouping key for sessionization (degenerate attribute; vendor-neutral, no PII). NULL for touches with no session (e.g. a single call-center contact).",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.identity_link.identity_link_sk \u2014 the assertion that stitched this device/actor to a profile, if resolved.",
+              "enum_values": [],
+              "fk": true,
+              "name": "identity_link_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable identity-link business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "identity_link_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk (resolved as-of event_date), if the touch is stitched to a known customer.",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous; NULL while the touch is anonymous). Resolved AT INGEST: this fact is append-only, so a touch that was anonymous when written stays profile_id=NULL even after the device is later stitched - late resolution is re-derived at query time by joining device_id_hash through customer.identity_link (touchpoint_resolved_rate is therefore an at-ingest rate, not lifetime).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The kind of touch. Digital: page_view, product_view, search, add_to_cart, remove_from_cart, cart_view, checkout_start, wishlist_add, app_open, session_start, session_end. Offline: store_visit, call_center_contact, kiosk_session, offline_marketing_response, phone_activation.",
+              "enum_values": [
+                "page_view",
+                "product_view",
+                "search",
+                "add_to_cart",
+                "remove_from_cart",
+                "cart_view",
+                "checkout_start",
+                "wishlist_add",
+                "app_open",
+                "session_start",
+                "session_end",
+                "store_visit",
+                "call_center_contact",
+                "kiosk_session",
+                "offline_marketing_response",
+                "phone_activation"
+              ],
+              "fk": false,
+              "name": "interaction_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Channel the touch occurred on (omnichannel discriminator). The coarse MEDIUM. Allowed values: web, mobile_app, in_store, kiosk, call_center, direct_mail, other.",
+              "enum_values": [
+                "web",
+                "mobile_app",
+                "in_store",
+                "kiosk",
+                "call_center",
+                "direct_mail",
+                "other"
+              ],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The specific application / property / data stream the touch came from (degenerate attribute; vendor-neutral, no PII). The SOURCE that pairs with channel_code (the medium), mirroring how a CDP pairs channel with source/data-stream on each event. Allowed values: ios_app, android_app, web_desktop, web_mobile, loyalty_kiosk, in_store_pos, call_center_app, email_platform, other.",
+              "enum_values": [
+                "ios_app",
+                "android_app",
+                "web_desktop",
+                "web_mobile",
+                "loyalty_kiosk",
+                "in_store_pos",
+                "call_center_app",
+                "email_platform",
+                "other"
+              ],
+              "fk": false,
+              "name": "source_application",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Whether the touch is customer-initiated or brand-initiated. Allowed values: inbound, outbound.",
+              "enum_values": [
+                "inbound",
+                "outbound"
+              ],
+              "fk": false,
+              "name": "touch_origin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the touch occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the touch (cluster key). This IS the date_key-role natural key (the same calendar-join role sales.date_key plays), joined to fiscal_calendar.date_key (ISO 8601); it is named event_date for event semantics (ADR 0011 permits role-named stems). Guarded by the touchpoint_calendar_coverage DQ check. No surrogate FK, matching the sales convention.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "When this touch was ingested into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Seconds between event_timestamp and ingest_timestamp (freshness monitoring).",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "FK to product.product_sk (version as-of event_date) \u2014 set for product_view / cart touches.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk \u2014 in-store / kiosk / store-visit context, or the fulfilling store.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Page/screen class for digital touches. Allowed values: home, category, product, search, cart, checkout, account, content, other.",
+              "enum_values": [
+                "home",
+                "category",
+                "product",
+                "search",
+                "cart",
+                "checkout",
+                "account",
+                "content",
+                "other"
+              ],
+              "fk": false,
+              "name": "page_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "De-identified/normalized page path (source contract: no PII, no PII-bearing query params). NULL for offline touches.",
+              "enum_values": [],
+              "fk": false,
+              "name": "page_url",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "De-identified/normalized referrer path (source contract: no PII).",
+              "enum_values": [],
+              "fk": false,
+              "name": "referrer_url",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Shopper search query for search touches (degenerate attribute; vendor-neutral; source contract: de-identified, no PII - a shopper may type a name/email, so ingest must scrub).",
+              "enum_values": [],
+              "fk": false,
+              "name": "search_term_text",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Engagement depth: seconds spent on the touch, if known. CROSS-MODAL by interaction_type - page dwell (digital), call duration (call_center), or visit length (store_visit) - so these are NOT the same unit of comparability. A consumer averaging dwell across interaction_type blends incomparable durations; restrict to one modality (e.g. digital page_view/product_view) for a comparable engagement metric. NULL if not captured.",
+              "enum_values": [],
+              "fk": false,
+              "name": "dwell_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Cart correlation key linking cart touches within a shopping journey (degenerate; no FK).",
+              "enum_values": [],
+              "fk": false,
+              "name": "cart_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Order correlation key when a checkout touch converts (degenerate business key to the order; no surrogate FK, header-grain).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Monetary value the touch carries, if any (e.g. cart value), in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_value_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Reporting/base currency of event_value_amount, ISO 4217 alpha-3 (single-currency by construction).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Consent state at touch time. Allowed values: granted, denied, unknown.",
+              "enum_values": [
+                "granted",
+                "denied",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core conformed omnichannel customer-interaction fact (append-only). The time-series touch class of the two-class CDP shape, online + offline, kept separate from the customer profile.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "touchpoint",
           "role": "transactional",
           "scd2": false
         }
@@ -7591,6 +8134,96 @@
               "type": "STRING"
             },
             {
+              "comment": "Clickstream (ADR 0029), LIFETIME grain (unbounded \u2014 NOT the RFM observation window): count of ENGAGEMENT touches for this profile (stitched touches only), excluding session bookkeeping verbs (session_start/session_end/app_open). NULL for a purchaser with no stitched touches.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interaction_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Clickstream, LIFETIME grain (unbounded): distinct sessions (session_id) the profile interacted in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Clickstream (lifetime scan): most recent touch date (engagement recency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_interaction_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Clickstream, LIFETIME grain (unbounded): mean page-dwell seconds over DIGITAL engagement touches (web/mobile_app) only. Restricted to one modality because touchpoint.dwell_seconds is cross-modal (page dwell vs call duration vs visit length are not comparable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_digital_dwell_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Clickstream channel mix, LIFETIME grain (unbounded \u2014 NOT the RFM window; a stale customer",
+              "enum_values": [],
+              "fk": false,
+              "name": "digital_interaction_share",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Clickstream channel mix, LIFETIME grain (unbounded): share of touches in store / kiosk (0..1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "in_store_interaction_share",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Clickstream channel mix, LIFETIME grain (unbounded): share of touches via call center (0..1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "call_center_interaction_share",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Clickstream intent, LIFETIME grain: 1 if the profile had any search touch (ever), else 0.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_search_intent_flag",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Clickstream intent, LIFETIME grain: 1 if the profile had any add_to_cart touch (ever), else 0.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_cart_activity_flag",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Clickstream, LIFETIME grain: TRUE if the profile ever added to cart but NEVER reached checkout_start across ALL touches. NOTE: checkout_start is reaching checkout, NOT a completed purchase (touchpoint carries no order-completion signal), and this is lifetime not per-cart/session \u2014 a habitual buyer who abandoned one old cart still reads FALSE once they checked out. A per-cart/session rate keyed on cart_id/session_id is a follow-on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cart_without_checkout_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
               "comment": "B2B: durable account key this customer is the PRIMARY CONTACT for. NULL for B2C and for non-primary account members (a full all-contacts roll-up is a follow-up).",
               "enum_values": [],
               "fk": false,
@@ -7648,6 +8281,10 @@
             {
               "table": "product",
               "unit": "product"
+            },
+            {
+              "table": "touchpoint",
+              "unit": "interaction"
             }
           ],
           "layer": "gold",
@@ -7830,6 +8467,7 @@
           "consumes": [
             "calendar",
             "customer",
+            "interaction",
             "order",
             "product"
           ],
@@ -14690,7 +15328,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "Commerce Media Networks \u2014 raw un-attributed commerce/conversion event fact (append-only).",
+          "comment": "Commerce Media Networks \u2014 paid-attribution measurement projection of the conversion-relevant subset (append-only); the CVR denominator + attributed_outcome FK target. Raw touch occurrence lives in canonical-core interaction.touchpoint (ADR 0029).",
           "consumes_tables": [
             {
               "table": "customer_order_line",
