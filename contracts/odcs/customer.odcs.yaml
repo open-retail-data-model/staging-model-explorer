@@ -796,8 +796,18 @@ schema:
     logicalType: string
     physicalType: STRING
     required: false
-    description: 'What the consent governs. Allowed values: marketing_email, marketing_sms, marketing_phone,
-      marketing_postal, data_processing, third_party_sharing, profiling, cookies.'
+    description: 'What the consent governs. third_party_sharing = disclosure of personal information for
+      cross-context behavioral advertising (CCPA/CPRA do-not-SHARE); data_sale = disclosure for monetary
+      or other valuable consideration (CCPA/CPRA do-not-SELL) - the two are legally distinct opt-outs
+      (the mandated link reads Do Not Sell or Share), so they are separate types, not one. Allowed values:
+      marketing_email, marketing_sms, marketing_phone, marketing_postal, data_processing, third_party_sharing,
+      data_sale, profiling, cookies.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: marketing_email, marketing_sms, marketing_phone, marketing_postal,
+        data_processing, third_party_sharing, data_sale, profiling, cookies.'
   - name: consent_status
     logicalType: string
     physicalType: STRING
@@ -848,9 +858,10 @@ schema:
     required: false
     description: 'Why this scope is suppressed (set only when suppression_indicator is TRUE). Two scopes:
       CHANNEL-level reasons block only this consent scope (unsubscribe, hard_bounce, spam_complaint, list_hygiene);
-      PERSON-level reasons block EVERY channel for the profile and the activation gate propagates them
-      across scopes (deceased, fraud, do_not_contact, legal_objection). Allowed values: unsubscribe, hard_bounce,
-      spam_complaint, legal_objection, deceased, fraud, do_not_contact, list_hygiene.'
+      PERSON-level reasons block every plane for the profile (deceased, fraud, do_not_contact, legal_objection)
+      via the shared UCV gold_person_do_not_target_current view, which both the owned activation gate
+      and any paid/non-owned plane consult (ADR 0028). Allowed values: unsubscribe, hard_bounce, spam_complaint,
+      legal_objection, deceased, fraud, do_not_contact, list_hygiene.'
     quality:
     - type: text
       dimension: validity
@@ -925,8 +936,8 @@ schema:
     unit: rows
     description: consent_type_domain
     query: "SELECT * FROM customer.consent\nWHERE consent_type NOT IN ('marketing_email', 'marketing_sms',\
-      \ 'marketing_phone',\n  'marketing_postal', 'data_processing', 'third_party_sharing', 'profiling',\
-      \ 'cookies')"
+      \ 'marketing_phone',\n  'marketing_postal', 'data_processing', 'third_party_sharing', 'data_sale',\
+      \ 'profiling', 'cookies')"
   - name: consent_status_domain
     type: sql
     dimension: accuracy
@@ -955,6 +966,26 @@ schema:
       GROUP BY profile_id, consent_type, COALESCE(jurisdiction_code, '''')
 
       HAVING COUNT(*) > 1'
+  - name: consent_scd2_current_open
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The current version must have an open (NULL) end date; non-current must be closed. (Consent
+      is an SCD2 date-grained master like profile/household/channel_preference; the activation gate now
+      depends on consent SCD2 integrity, so it carries the same guards.)
+    query: "SELECT * FROM customer.consent\nWHERE (is_current = true  AND effective_to_date IS NOT NULL)\n\
+      \   OR (is_current = false AND effective_to_date IS NULL)"
+  - name: consent_scd2_date_order
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: When set, the end date must be strictly after the start date.
+    query: "SELECT * FROM customer.consent\nWHERE effective_to_date IS NOT NULL\n  AND effective_to_date\
+      \ <= effective_from_date"
   - name: consent_suppression_reason_domain
     type: sql
     dimension: accuracy

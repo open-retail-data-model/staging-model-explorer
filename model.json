@@ -929,6 +929,18 @@
         },
         {
           "column": null,
+          "name": "consent_scd2_current_open",
+          "severity": "error",
+          "table": "consent"
+        },
+        {
+          "column": null,
+          "name": "consent_scd2_date_order",
+          "severity": "error",
+          "table": "consent"
+        },
+        {
+          "column": null,
           "name": "consent_suppression_reason_domain",
           "severity": "error",
           "table": "consent"
@@ -1910,8 +1922,18 @@
               "type": "STRING"
             },
             {
-              "comment": "What the consent governs. Allowed values: marketing_email, marketing_sms, marketing_phone, marketing_postal, data_processing, third_party_sharing, profiling, cookies.",
-              "enum_values": [],
+              "comment": "What the consent governs. third_party_sharing = disclosure of personal information for cross-context behavioral advertising (CCPA/CPRA do-not-SHARE); data_sale = disclosure for monetary or other valuable consideration (CCPA/CPRA do-not-SELL) - the two are legally distinct opt-outs (the mandated link reads Do Not Sell or Share), so they are separate types, not one. Allowed values: marketing_email, marketing_sms, marketing_phone, marketing_postal, data_processing, third_party_sharing, data_sale, profiling, cookies.",
+              "enum_values": [
+                "marketing_email",
+                "marketing_sms",
+                "marketing_phone",
+                "marketing_postal",
+                "data_processing",
+                "third_party_sharing",
+                "data_sale",
+                "profiling",
+                "cookies"
+              ],
               "fk": false,
               "name": "consent_type",
               "pii": false,
@@ -1978,7 +2000,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "Why this scope is suppressed (set only when suppression_indicator is TRUE). Two scopes: CHANNEL-level reasons block only this consent scope (unsubscribe, hard_bounce, spam_complaint, list_hygiene); PERSON-level reasons block EVERY channel for the profile and the activation gate propagates them across scopes (deceased, fraud, do_not_contact, legal_objection). Allowed values: unsubscribe, hard_bounce, spam_complaint, legal_objection, deceased, fraud, do_not_contact, list_hygiene.",
+              "comment": "Why this scope is suppressed (set only when suppression_indicator is TRUE). Two scopes: CHANNEL-level reasons block only this consent scope (unsubscribe, hard_bounce, spam_complaint, list_hygiene); PERSON-level reasons block every plane for the profile (deceased, fraud, do_not_contact, legal_objection) via the shared UCV gold_person_do_not_target_current view, which both the owned activation gate and any paid/non-owned plane consult (ADR 0028). Allowed values: unsubscribe, hard_bounce, spam_complaint, legal_objection, deceased, fraud, do_not_contact, list_hygiene.",
               "enum_values": [
                 "unsubscribe",
                 "hard_bounce",
@@ -30525,6 +30547,24 @@
         },
         {
           "column": null,
+          "name": "ucv_eligibility_purpose_domain",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligibility_purpose_channel_pairing",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
+          "name": "ucv_eligibility_person_suppressed_blocked",
+          "severity": "error",
+          "table": "gold_customer_activation_eligibility_current"
+        },
+        {
+          "column": null,
           "name": "ucv_eligible_rate",
           "severity": "metric",
           "table": "gold_customer_activation_eligibility_current"
@@ -30555,9 +30595,33 @@
         },
         {
           "column": null,
+          "name": "uav_no_person_suppressed",
+          "severity": "error",
+          "table": "gold_activatable_audience_current"
+        },
+        {
+          "column": null,
           "name": "uav_activatable_rowcount",
           "severity": "metric",
           "table": "gold_activatable_audience_current"
+        },
+        {
+          "column": null,
+          "name": "dnt_reason_domain",
+          "severity": "error",
+          "table": "gold_person_do_not_target_current"
+        },
+        {
+          "column": null,
+          "name": "dnt_profile_unique",
+          "severity": "error",
+          "table": "gold_person_do_not_target_current"
+        },
+        {
+          "column": null,
+          "name": "dnt_reason_completeness",
+          "severity": "error",
+          "table": "consent"
         },
         {
           "column": null,
@@ -30706,6 +30770,30 @@
         {
           "column": null,
           "name": "aj_match_rate",
+          "severity": "metric",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_job_timestamps_ordered",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_delete_only_exports_nothing",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_consent_implies_suppression",
+          "severity": "error",
+          "table": "activation_job"
+        },
+        {
+          "column": null,
+          "name": "aj_suppression_applied_rate",
           "severity": "metric",
           "table": "activation_job"
         },
@@ -30991,12 +31079,13 @@
               "type": "STRING"
             },
             {
-              "comment": "The marketing purpose a job to this destination must gate on (joins the eligibility gate purpose). NULL = not purpose-constrained (a multi-purpose destination; the aj_destination_purpose_channel_match check does not fire). Allowed values: marketing, personalization, analytics, retail_media, service.",
+              "comment": "The marketing purpose a job to this destination must gate on (joins the eligibility gate purpose). NULL = not purpose-constrained (a multi-purpose destination; the aj_destination_purpose_channel_match check does not fire). Allowed values: marketing, personalization, analytics, retail_media, data_sale, service.",
               "enum_values": [
                 "marketing",
                 "personalization",
                 "analytics",
                 "retail_media",
+                "data_sale",
                 "service"
               ],
               "fk": false,
@@ -31198,12 +31287,13 @@
               "type": "STRING"
             },
             {
-              "comment": "Marketing purpose this activation served \u2014 must match the destination required_consent_purpose. Allowed values: marketing, personalization, analytics, retail_media, service.",
+              "comment": "Processing purpose this activation served \u2014 must match the destination required_consent_purpose. Allowed values: marketing, personalization, analytics, retail_media, data_sale, service.",
               "enum_values": [
                 "marketing",
                 "personalization",
                 "analytics",
                 "retail_media",
+                "data_sale",
                 "service"
               ],
               "fk": false,
@@ -31286,6 +31376,82 @@
               "pii": false,
               "pk": false,
               "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "The write operation this run performed against the destination audience. Allowed values: full_refresh, incremental_upsert, delete_only. delete_only / the delete leg of an upsert is how do-not-sell / DSAR retractions propagate.",
+              "enum_values": [
+                "full_refresh",
+                "incremental_upsert",
+                "delete_only"
+              ],
+              "fk": false,
+              "name": "sync_mode",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Members RETRACTED from the destination this run (do-not-sell / DSAR / newly-suppressed members removed from a prior export) (>= 0). NULL if the run did not retract (e.g. a first full_refresh).",
+              "enum_values": [],
+              "fk": false,
+              "name": "removed_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Exported members the destination ACCEPTED / delivered (>= 0, <= exported_member_count). NULL if the destination reports no accept/reject split.",
+              "enum_values": [],
+              "fk": false,
+              "name": "delivered_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Exported members the destination REJECTED (bad key, provider-side opt-out, format error) (>= 0, <= exported_member_count). NULL if not reported.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rejected_member_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "When the run STARTED executing (UTC, ISO 8601); NULL if not captured. With job_completed_ts gives run duration / freshness.",
+              "enum_values": [],
+              "fk": false,
+              "name": "job_started_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the run FINISHED (UTC, ISO 8601); NULL while in-flight or if not captured.",
+              "enum_values": [],
+              "fk": false,
+              "name": "job_completed_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Three-valued, and the states are distinct (do not conflate FALSE with NULL). TRUE = the eligible slice for this run was produced by the consent gate (gold_activatable_audience_current), which anti-joins the do-not-target view by construction, so TRUE REQUIRES is_suppression_applied_flag = TRUE (enforced by aj_consent_implies_suppression). FALSE = the adopter ASSERTS the gate was NOT the source (a plane the gate does not evaluate; see RECONCILIATION SCOPE) \u2014 the strongest scrutinize-this-run signal. NULL = provenance simply not recorded (unknown), weaker than FALSE but still not gate-attested. Audit consumers should treat FALSE and NULL separately.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_consent_enforced_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if person-level do-not-target suppression (gold_person_do_not_target_current, ADR 0028) was consulted for this run. On non-owned/paid planes this must be TRUE for the run to be compliant with the cross-plane do-not-contact contract.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_suppression_applied_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
             },
             {
               "comment": "The provider-side audience identifier returned by the destination (vendor-neutral, no PII, no member lists).",
@@ -31818,7 +31984,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Activation purpose (e.g. marketing) from the eligibility gate.",
+              "comment": "Activation purpose from the eligibility gate (ADR 0028): marketing, personalization, analytics, retail_media, or data_sale (CCPA do-not-sell).",
               "enum_values": [],
               "fk": false,
               "name": "purpose_code",
@@ -31827,7 +31993,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Channel (email/sms/phone/postal) the customer is eligible on.",
+              "comment": "Owned channel for marketing purposes (email, sms, phone, postal); NULL for the channel-agnostic non-marketing purposes (personalization/analytics/retail_media/data_sale), which activate via a match key at the reverse-ETL boundary.",
               "enum_values": [],
               "fk": false,
               "name": "channel_code",
@@ -31931,7 +32097,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Processing purpose (marketing).",
+              "comment": "Processing purpose derived from consent_type (ADR 0028): marketing, personalization, analytics, retail_media, or data_sale (CCPA do-not-sell).",
               "enum_values": [],
               "fk": false,
               "name": "purpose_code",
@@ -31940,7 +32106,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Channel: email, sms, phone, postal.",
+              "comment": "Owned channel for marketing purposes (email, sms, phone, postal); NULL for the channel-agnostic non-marketing purposes (personalization/analytics/retail_media), which activate via a match key at the reverse-ETL boundary.",
               "enum_values": [],
               "fk": false,
               "name": "channel_code",
@@ -31967,7 +32133,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "Customer has not opted out of this channel in preferences.",
+              "comment": "Customer has not opted out of this channel in preferences. For the channel-agnostic non-marketing purposes (channel NULL) this is vacuously TRUE \u2014 channel preference does not constrain a channel-agnostic purpose (ADR 0028).",
               "enum_values": [],
               "fk": false,
               "name": "preference_allows_flag",
@@ -31976,7 +32142,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "A valid identifier/contact exists for the channel.",
+              "comment": "A valid identifier/contact exists for the channel. For the channel-agnostic non-marketing purposes (personalization/analytics/retail_media, channel NULL) this is vacuously TRUE \u2014 reachability is resolved at the reverse-ETL match-key boundary, not here (ADR 0028).",
               "enum_values": [],
               "fk": false,
               "name": "has_identifier_flag",
@@ -31994,7 +32160,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "Net permission: consent AND preference AND identifier.",
+              "comment": "Net permission: consent AND preference AND identifier. For channel-agnostic non-marketing purposes eligible_flag does NOT imply an owned identifier exists (has_identifier is vacuously TRUE); match-key reachability is resolved downstream.",
               "enum_values": [],
               "fk": false,
               "name": "eligible_flag",
@@ -32021,7 +32187,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "The net-permission gate: \"can I contact this customer for purpose X on channel Y?\" Grain: one row per customer x purpose x channel (x jurisdiction), specifically per EVALUABLE consent decision \u2014 a row exists only where the customer holds a marketing_* consent record. A \"never asked\" customer (no consent on record) is intentionally ABSENT here (neither eligible nor consent_denied): absence means \"no decision to evaluate\", and an activation gate must treat unknown consent as NOT eligible (do not infer eligibility from absence). Combines the THREE distinct governed states the briefs insist must not be collapsed (principle #5): consent (legal permission), preference (soft opt-out / channel), and reachability (a valid identifier/contact for the channel).",
+          "comment": "The net-permission gate: \"can I contact this customer for purpose X on channel Y?\" Grain: one row per customer x purpose x channel (x jurisdiction), specifically per EVALUABLE consent decision \u2014 a row exists only where the customer holds a GATE-MAPPED consent record (the four marketing_* types plus profiling / cookies / third_party_sharing / data_sale; ADR 0028). A \"never asked\" customer (no consent on record) is intentionally ABSENT here (neither eligible nor consent_denied): absence means \"no decision to evaluate\", and an activation gate must treat unknown consent as NOT eligible (do not infer eligibility from absence). Combines the THREE distinct governed states the briefs insist must not be collapsed (principle #5): consent (legal permission), preference (soft opt-out / channel), and reachability (a valid identifier/contact for the channel).",
           "consumes_tables": [
             {
               "table": "address",
@@ -32043,6 +32209,40 @@
           "layer": "gold",
           "materialized": false,
           "name": "gold_customer_activation_eligibility_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable pseudonymous customer key of a profile carrying an active person-level do-not-target suppression; the anti-join key every activation plane consults.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Representative person-level suppression reason at legal-weight priority (legal_objection > deceased > do_not_contact > fraud); read customer.consent for the full set of reasons and scopes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "do_not_target_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "The profile-grain, CHANNEL/PURPOSE/JURISDICTION-agnostic do-not-target set: every profile carrying a PERSON-level suppression on ANY current consent scope. Person-level reasons (deceased, fraud, do_not_contact, legal_objection; a GDPR Art.21 direct-marketing objection) are absolute at the person level, so this view is the SINGLE do-not-target consult for EVERY activation plane: * the OWNED-channel gate (gold_customer_activation_eligibility_current) sources it, and * any NON-OWNED / PAID activation (retail-media / DSP / clean-room onboarding built over ACU segment_membership) that does not resolve people through the owned gate MUST anti-join it before targeting, so a person-suppressed customer cannot be uploaded to a paid destination (the cross-plane closure of ADR 0027's \"blocks every channel\" claim; see ADR 0028). Keyed on the durable profile_id only (no jurisdiction predicate) \u2014 matching ADR 0027's deliberate, fail-safe cross-jurisdiction propagation (over-suppress rather than risk under-suppressing a do-not-contact signal that carries legal weight). No PII is exposed (pseudonymous profile_id only).",
+          "consumes_tables": [
+            {
+              "table": "consent",
+              "unit": "customer"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_person_do_not_target_current",
           "role": "gold",
           "scd2": false
         },

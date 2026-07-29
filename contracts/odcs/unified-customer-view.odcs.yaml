@@ -98,12 +98,13 @@ schema:
     required: false
     description: 'The marketing purpose a job to this destination must gate on (joins the eligibility
       gate purpose). NULL = not purpose-constrained (a multi-purpose destination; the aj_destination_purpose_channel_match
-      check does not fire). Allowed values: marketing, personalization, analytics, retail_media, service.'
+      check does not fire). Allowed values: marketing, personalization, analytics, retail_media, data_sale,
+      service.'
     quality:
     - type: text
       dimension: validity
       severity: error
-      description: 'Allowed values: marketing, personalization, analytics, retail_media, service.'
+      description: 'Allowed values: marketing, personalization, analytics, retail_media, data_sale, service.'
   - name: required_channel
     logicalType: string
     physicalType: STRING
@@ -208,7 +209,7 @@ schema:
     description: ad_required_purpose_domain
     query: "SELECT * FROM unified_customer_view.activation_destination\nWHERE required_consent_purpose\
       \ IS NOT NULL\n  AND required_consent_purpose NOT IN ('marketing', 'personalization', 'analytics',\
-      \ 'retail_media', 'service')"
+      \ 'retail_media', 'data_sale', 'service')"
   - name: ad_required_channel_domain
     type: sql
     dimension: accuracy
@@ -324,13 +325,13 @@ schema:
     logicalType: string
     physicalType: STRING
     required: false
-    description: 'Marketing purpose this activation served — must match the destination required_consent_purpose.
-      Allowed values: marketing, personalization, analytics, retail_media, service.'
+    description: 'Processing purpose this activation served — must match the destination required_consent_purpose.
+      Allowed values: marketing, personalization, analytics, retail_media, data_sale, service.'
     quality:
     - type: text
       dimension: validity
       severity: error
-      description: 'Allowed values: marketing, personalization, analytics, retail_media, service.'
+      description: 'Allowed values: marketing, personalization, analytics, retail_media, data_sale, service.'
   - name: channel_code
     logicalType: string
     physicalType: STRING
@@ -385,6 +386,65 @@ schema:
     required: false
     description: Provider match rate for exported members (0..1); NULL if the destination does not report
       one.
+  - name: sync_mode
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The write operation this run performed against the destination audience. Allowed values:
+      full_refresh, incremental_upsert, delete_only. delete_only / the delete leg of an upsert is how
+      do-not-sell / DSAR retractions propagate.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: full_refresh, incremental_upsert, delete_only.'
+  - name: removed_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Members RETRACTED from the destination this run (do-not-sell / DSAR / newly-suppressed
+      members removed from a prior export) (>= 0). NULL if the run did not retract (e.g. a first full_refresh).
+  - name: delivered_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Exported members the destination ACCEPTED / delivered (>= 0, <= exported_member_count).
+      NULL if the destination reports no accept/reject split.
+  - name: rejected_member_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Exported members the destination REJECTED (bad key, provider-side opt-out, format error)
+      (>= 0, <= exported_member_count). NULL if not reported.
+  - name: job_started_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the run STARTED executing (UTC, ISO 8601); NULL if not captured. With job_completed_ts
+      gives run duration / freshness.
+  - name: job_completed_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the run FINISHED (UTC, ISO 8601); NULL while in-flight or if not captured.
+  - name: is_consent_enforced_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: Three-valued, and the states are distinct (do not conflate FALSE with NULL). TRUE = the
+      eligible slice for this run was produced by the consent gate (gold_activatable_audience_current),
+      which anti-joins the do-not-target view by construction, so TRUE REQUIRES is_suppression_applied_flag
+      = TRUE (enforced by aj_consent_implies_suppression). FALSE = the adopter ASSERTS the gate was NOT
+      the source (a plane the gate does not evaluate; see RECONCILIATION SCOPE) — the strongest scrutinize-this-run
+      signal. NULL = provenance simply not recorded (unknown), weaker than FALSE but still not gate-attested.
+      Audit consumers should treat FALSE and NULL separately.
+  - name: is_suppression_applied_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE if person-level do-not-target suppression (gold_person_do_not_target_current, ADR
+      0028) was consulted for this run. On non-owned/paid planes this must be TRUE for the run to be compliant
+      with the cross-plane do-not-contact contract.
   - name: destination_audience_ref
     logicalType: string
     physicalType: STRING
@@ -542,7 +602,9 @@ schema:
     query: "SELECT * FROM unified_customer_view.activation_job\nWHERE (requested_member_count  IS NOT\
       \ NULL AND requested_member_count  < 0)\n   OR (eligible_member_count   IS NOT NULL AND eligible_member_count\
       \   < 0)\n   OR (blocked_member_count    IS NOT NULL AND blocked_member_count    < 0)\n   OR (exported_member_count\
-      \   IS NOT NULL AND exported_member_count   < 0)"
+      \   IS NOT NULL AND exported_member_count   < 0)\n   OR (removed_member_count    IS NOT NULL AND\
+      \ removed_member_count    < 0)\n   OR (delivered_member_count  IS NOT NULL AND delivered_member_count\
+      \  < 0)\n   OR (rejected_member_count   IS NOT NULL AND rejected_member_count   < 0)"
   - name: aj_counts_monotonic
     type: sql
     dimension: accuracy
@@ -550,11 +612,18 @@ schema:
     mustBe: 0
     unit: rows
     description: 'Consent gate is fail-closed: a job can never export more than eligible, and never eligible
-      more than requested. exported <= eligible <= requested.'
+      more than requested. exported <= eligible <= requested. The destination-side accept/reject split
+      (delivered, rejected) can never exceed what was exported.'
     query: "SELECT * FROM unified_customer_view.activation_job\nWHERE (eligible_member_count IS NOT NULL\
       \ AND requested_member_count IS NOT NULL\n        AND eligible_member_count > requested_member_count)\n\
       \   OR (exported_member_count IS NOT NULL AND eligible_member_count IS NOT NULL\n        AND exported_member_count\
-      \ > eligible_member_count)"
+      \ > eligible_member_count)\n   OR (delivered_member_count IS NOT NULL AND exported_member_count\
+      \ IS NOT NULL\n        AND delivered_member_count > exported_member_count)\n   OR (rejected_member_count\
+      \ IS NOT NULL AND exported_member_count IS NOT NULL\n        AND rejected_member_count > exported_member_count)\n\
+      \   -- delivered + rejected reconcile to exported (activation_job.sql): their sum cannot exceed\
+      \ it.\n   OR (delivered_member_count IS NOT NULL AND rejected_member_count IS NOT NULL\n       \
+      \ AND exported_member_count IS NOT NULL\n        AND delivered_member_count + rejected_member_count\
+      \ > exported_member_count)"
   - name: aj_blocked_reconciles
     type: sql
     dimension: accuracy
@@ -617,6 +686,52 @@ schema:
       toward 0 (review m1).'
     query: "SELECT ROUND(\n  SUM(exported_member_count * match_rate)\n  / NULLIF(SUM(CASE WHEN match_rate\
       \ IS NOT NULL THEN exported_member_count END), 0), 4) AS match_rate\nFROM unified_customer_view.activation_job"
+  - name: aj_job_timestamps_ordered
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Run lifecycle: completion cannot precede start.'
+    query: "SELECT * FROM unified_customer_view.activation_job\nWHERE job_started_ts IS NOT NULL AND job_completed_ts\
+      \ IS NOT NULL\n  AND job_completed_ts < job_started_ts"
+  - name: aj_delete_only_exports_nothing
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A delete_only run retracts members and publishes none, so exported_member_count must
+      be 0/NULL (removed_member_count carries the retraction). Keeps the new sync telemetry as self-consistent
+      as the reconciled counts.
+    query: 'SELECT * FROM unified_customer_view.activation_job
+
+      WHERE sync_mode = ''delete_only'' AND COALESCE(exported_member_count, 0) <> 0'
+  - name: aj_consent_implies_suppression
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Flag-CONSISTENCY only, NOT proof the consult happened: both flags are adopter-supplied,
+      so this cannot verify that the do-not-target anti-join actually ran (ORDM does not run the sync).
+      What it asserts: a run claiming is_consent_enforced_flag=TRUE (eligible slice sourced from gold_activatable_audience_current,
+      which anti-joins the DNT view by construction) must not ALSO claim it did not apply suppression
+      — that pairing is self-contradictory. Reject it.'
+    query: 'SELECT * FROM unified_customer_view.activation_job
+
+      WHERE is_consent_enforced_flag = TRUE AND COALESCE(is_suppression_applied_flag, FALSE) = FALSE'
+  - name: aj_suppression_applied_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: 'Observability for the ADR 0028 cross-plane contract: share of runs that recorded the
+      person-level do-not-target consult (is_suppression_applied_flag). NOT an error gate — the flag is
+      adopter-supplied and the paid-plane obligation cannot be CI-proven — but a low rate surfaces runs
+      that may have skipped the do-not-target anti-join, worth review.'
+    query: 'SELECT ROUND(AVG(CASE WHEN is_suppression_applied_flag THEN 1.0 ELSE 0.0 END), 4) AS suppression_applied_rate
+
+      FROM unified_customer_view.activation_job'
 - name: campaign_touch
   physicalName: unified_customer_view.campaign_touch
   physicalType: table
@@ -1282,11 +1397,14 @@ schema:
   - name: purpose_code
     logicalType: string
     physicalType: STRING
-    description: Activation purpose (e.g. marketing) from the eligibility gate.
+    description: 'Activation purpose from the eligibility gate (ADR 0028): marketing, personalization,
+      analytics, retail_media, or data_sale (CCPA do-not-sell).'
   - name: channel_code
     logicalType: string
     physicalType: STRING
-    description: Channel (email/sms/phone/postal) the customer is eligible on.
+    description: Owned channel for marketing purposes (email, sms, phone, postal); NULL for the channel-agnostic
+      non-marketing purposes (personalization/analytics/retail_media/data_sale), which activate via a
+      match key at the reverse-ETL boundary.
   - name: jurisdiction_code
     logicalType: string
     physicalType: STRING
@@ -1334,6 +1452,19 @@ schema:
     query: 'SELECT * FROM unified_customer_view.gold_activatable_audience_current
 
       WHERE eligible_flag <> TRUE OR eligible_flag IS NULL'
+  - name: uav_no_person_suppressed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'The activation surface must never expose a person-level do-not-target profile (ADR 0028).
+      Belt-and-suspenders with the gate''s own suppression block: this asserts the surface itself is PERSON-LEVEL-DNT-safe
+      on any plane (owned or paid), independent of the gate''s purpose coverage. This is the person-level
+      leg ONLY: a selling/sharing plane must also apply the purpose-level do-not-sell/do-not-share opt-out
+      (leg b); see the segment_membership contract.'
+    query: "SELECT a.* FROM unified_customer_view.gold_activatable_audience_current a\nJOIN unified_customer_view.gold_person_do_not_target_current\
+      \ dnt\n  ON dnt.profile_id = a.profile_id"
   - name: uav_activatable_rowcount
     type: sql
     dimension: accuracy
@@ -1345,11 +1476,12 @@ schema:
   physicalType: view
   description: 'The net-permission gate: "can I contact this customer for purpose X on channel Y?" Grain:
     one row per customer x purpose x channel (x jurisdiction), specifically per EVALUABLE consent decision
-    — a row exists only where the customer holds a marketing_* consent record. A "never asked" customer
-    (no consent on record) is intentionally ABSENT here (neither eligible nor consent_denied): absence
-    means "no decision to evaluate", and an activation gate must treat unknown consent as NOT eligible
-    (do not infer eligibility from absence). Combines the THREE distinct governed states the briefs insist
-    must not be collapsed (principle #5): consent (legal permission), preference (soft opt-out / channel),
+    — a row exists only where the customer holds a GATE-MAPPED consent record (the four marketing_* types
+    plus profiling / cookies / third_party_sharing / data_sale; ADR 0028). A "never asked" customer (no
+    consent on record) is intentionally ABSENT here (neither eligible nor consent_denied): absence means
+    "no decision to evaluate", and an activation gate must treat unknown consent as NOT eligible (do not
+    infer eligibility from absence). Combines the THREE distinct governed states the briefs insist must
+    not be collapsed (principle #5): consent (legal permission), preference (soft opt-out / channel),
     and reachability (a valid identifier/contact for the channel).'
   tags:
   - gold
@@ -1372,11 +1504,14 @@ schema:
   - name: purpose_code
     logicalType: string
     physicalType: STRING
-    description: Processing purpose (marketing).
+    description: 'Processing purpose derived from consent_type (ADR 0028): marketing, personalization,
+      analytics, retail_media, or data_sale (CCPA do-not-sell).'
   - name: channel_code
     logicalType: string
     physicalType: STRING
-    description: 'Channel: email, sms, phone, postal.'
+    description: Owned channel for marketing purposes (email, sms, phone, postal); NULL for the channel-agnostic
+      non-marketing purposes (personalization/analytics/retail_media), which activate via a match key
+      at the reverse-ETL boundary.
   - name: jurisdiction_code
     logicalType: string
     physicalType: STRING
@@ -1388,11 +1523,15 @@ schema:
   - name: preference_allows_flag
     logicalType: boolean
     physicalType: BOOLEAN
-    description: Customer has not opted out of this channel in preferences.
+    description: Customer has not opted out of this channel in preferences. For the channel-agnostic non-marketing
+      purposes (channel NULL) this is vacuously TRUE — channel preference does not constrain a channel-agnostic
+      purpose (ADR 0028).
   - name: has_identifier_flag
     logicalType: boolean
     physicalType: BOOLEAN
-    description: A valid identifier/contact exists for the channel.
+    description: A valid identifier/contact exists for the channel. For the channel-agnostic non-marketing
+      purposes (personalization/analytics/retail_media, channel NULL) this is vacuously TRUE — reachability
+      is resolved at the reverse-ETL match-key boundary, not here (ADR 0028).
   - name: is_suppressed_flag
     logicalType: boolean
     physicalType: BOOLEAN
@@ -1401,7 +1540,9 @@ schema:
   - name: eligible_flag
     logicalType: boolean
     physicalType: BOOLEAN
-    description: 'Net permission: consent AND preference AND identifier.'
+    description: 'Net permission: consent AND preference AND identifier. For channel-agnostic non-marketing
+      purposes eligible_flag does NOT imply an owned identifier exists (has_identifier is vacuously TRUE);
+      match-key reachability is resolved downstream.'
   - name: blocking_reason_code
     logicalType: string
     physicalType: STRING
@@ -1447,6 +1588,48 @@ schema:
     query: "SELECT * FROM unified_customer_view.gold_customer_activation_eligibility_current\nWHERE (eligible_flag\
       \ = TRUE  AND blocking_reason_code IS NOT NULL)\n   OR (eligible_flag = FALSE AND blocking_reason_code\
       \ IS NULL)"
+  - name: ucv_eligibility_purpose_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'The gate purpose must be one of the consent-derived activation purposes (ADR 0028):
+      marketing / personalization / analytics / retail_media / data_sale. service + data_processing are
+      not consent-gated, so they never appear here. Guards the consent_type -> purpose mapping.'
+    query: "SELECT * FROM unified_customer_view.gold_customer_activation_eligibility_current\nWHERE purpose_code\
+      \ IS NULL\n   OR purpose_code NOT IN ('marketing', 'personalization', 'analytics', 'retail_media',\
+      \ 'data_sale')"
+  - name: ucv_eligibility_purpose_channel_pairing
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'The gate is only correct if purpose and channel stay paired (ADR 0028): the marketing
+      purpose is a purpose x owned-channel compound, so it must carry a non-NULL channel_code; the channel-agnostic
+      purposes (personalization / analytics / retail_media / data_sale) must carry a NULL channel_code
+      (they activate via a match key, not an owned email/sms/phone/postal channel). purpose_code and channel_code
+      are derived from consent_type in two parallel CASE expressions, so this asserts the load-bearing
+      invariant that ties them together: if a future edit drifts one branch (a new marketing_* type added
+      to purpose but not channel, or a non-marketing purpose accidentally emitting a channel) the other
+      checks still pass while the consent gate silently mis-gates. Equivalent to (purpose=''marketing'')
+      = (channel NOT NULL).'
+    query: "SELECT * FROM unified_customer_view.gold_customer_activation_eligibility_current\nWHERE (purpose_code\
+      \ =  'marketing' AND channel_code IS NULL)\n   OR (purpose_code <> 'marketing' AND channel_code\
+      \ IS NOT NULL)"
+  - name: ucv_eligibility_person_suppressed_blocked
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Cross-plane do-not-target enforcement (ADR 0028): no profile in the shared do-not-target
+      set may ever resolve eligible on the owned gate. Makes "person-level suppression blocks every plane"
+      a machine-checked invariant, not just prose.'
+    query: "SELECT g.* FROM unified_customer_view.gold_customer_activation_eligibility_current g\nJOIN\
+      \ unified_customer_view.gold_person_do_not_target_current dnt\n  ON dnt.profile_id = g.profile_id\n\
+      WHERE g.eligible_flag = TRUE"
   - name: ucv_eligible_rate
     type: sql
     dimension: accuracy
@@ -1464,6 +1647,61 @@ schema:
     query: 'SELECT ROUND(AVG(CASE WHEN is_suppressed_flag THEN 1.0 ELSE 0.0 END), 4) AS suppression_rate
 
       FROM unified_customer_view.gold_customer_activation_eligibility_current'
+- name: gold_person_do_not_target_current
+  physicalName: unified_customer_view.gold_person_do_not_target_current
+  physicalType: view
+  description: 'The profile-grain, CHANNEL/PURPOSE/JURISDICTION-agnostic do-not-target set: every profile
+    carrying a PERSON-level suppression on ANY current consent scope. Person-level reasons (deceased,
+    fraud, do_not_contact, legal_objection; a GDPR Art.21 direct-marketing objection) are absolute at
+    the person level, so this view is the SINGLE do-not-target consult for EVERY activation plane: * the
+    OWNED-channel gate (gold_customer_activation_eligibility_current) sources it, and * any NON-OWNED
+    / PAID activation (retail-media / DSP / clean-room onboarding built over ACU segment_membership) that
+    does not resolve people through the owned gate MUST anti-join it before targeting, so a person-suppressed
+    customer cannot be uploaded to a paid destination (the cross-plane closure of ADR 0027''s "blocks
+    every channel" claim; see ADR 0028). Keyed on the durable profile_id only (no jurisdiction predicate)
+    — matching ADR 0027''s deliberate, fail-safe cross-jurisdiction propagation (over-suppress rather
+    than risk under-suppressing a do-not-contact signal that carries legal weight). No PII is exposed
+    (pseudonymous profile_id only).'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable pseudonymous customer key of a profile carrying an active person-level do-not-target
+      suppression; the anti-join key every activation plane consults.
+  - name: do_not_target_reason_code
+    logicalType: string
+    physicalType: STRING
+    description: Representative person-level suppression reason at legal-weight priority (legal_objection
+      > deceased > do_not_contact > fraud); read customer.consent for the full set of reasons and scopes.
+  quality:
+  - name: dnt_reason_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The representative reason must be one of the four person-level suppression reasons.
+    query: "SELECT * FROM unified_customer_view.gold_person_do_not_target_current\nWHERE do_not_target_reason_code\
+      \ IS NULL\n   OR do_not_target_reason_code NOT IN ('deceased', 'fraud', 'do_not_contact', 'legal_objection')"
+  - name: dnt_profile_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per profile_id (the view groups by profile_id).
+    query: 'SELECT profile_id FROM unified_customer_view.gold_person_do_not_target_current
+
+      GROUP BY profile_id HAVING COUNT(*) > 1'
 - name: gold_unified_customer_360_current
   physicalName: unified_customer_view.gold_unified_customer_360_current
   physicalType: view
