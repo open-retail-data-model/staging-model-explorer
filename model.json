@@ -409,6 +409,12 @@
         },
         {
           "column": null,
+          "name": "calendar_fiscal_season_matches_period",
+          "severity": "error",
+          "table": "fiscal_calendar"
+        },
+        {
+          "column": null,
           "name": "calendar_week_date_order",
           "severity": "warn",
           "table": "fiscal_calendar"
@@ -588,6 +594,18 @@
               "pii": false,
               "pk": false,
               "type": "INT"
+            },
+            {
+              "comment": "Retail merchandising half-year season derived from fiscal_period: spring for periods 1-6 (fiscal H1), fall for periods 7-12 (fiscal H2). Labels follow the northern-hemisphere retail-season convention; they name the fiscal half, not a local meteorological season. Allowed values: spring, fall.",
+              "enum_values": [
+                "spring",
+                "fall"
+              ],
+              "fk": false,
+              "name": "fiscal_season",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
             },
             {
               "comment": "NRF fiscal week within the fiscal year (1-53).",

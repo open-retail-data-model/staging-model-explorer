@@ -139,6 +139,19 @@ schema:
       dimension: validity
       severity: error
       description: CHECK (fiscal_period IS NULL OR fiscal_period BETWEEN 1 AND 12).
+  - name: fiscal_season
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Retail merchandising half-year season derived from fiscal_period: spring for periods
+      1-6 (fiscal H1), fall for periods 7-12 (fiscal H2). Labels follow the northern-hemisphere retail-season
+      convention; they name the fiscal half, not a local meteorological season. Allowed values: spring,
+      fall.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: spring, fall.'
   - name: fiscal_week
     logicalType: integer
     physicalType: INT
@@ -224,6 +237,18 @@ schema:
     description: 'NRF 4-5-4 bounds: week 1-53, quarter 1-4, period 1-12.'
     query: "SELECT * FROM calendar.fiscal_calendar\nWHERE fiscal_week NOT BETWEEN 1 AND 53\n   OR fiscal_quarter\
       \ NOT BETWEEN 1 AND 4\n   OR fiscal_period NOT BETWEEN 1 AND 12"
+  - name: calendar_fiscal_season_matches_period
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'fiscal_season is derived from fiscal_period: spring = periods 1-6 (H1), fall = 7-12
+      (H2). Catches a season that disagrees with its period (derivation drift), plus any value outside
+      the two-season domain.'
+    query: "SELECT * FROM calendar.fiscal_calendar\nWHERE fiscal_season IS NOT NULL\n  AND ( fiscal_season\
+      \ NOT IN ('spring', 'fall')\n     OR (fiscal_season = 'spring' AND fiscal_period NOT BETWEEN 1 AND\
+      \ 6)\n     OR (fiscal_season = 'fall'   AND fiscal_period NOT BETWEEN 7 AND 12) )"
   - name: calendar_week_date_order
     type: sql
     dimension: accuracy
