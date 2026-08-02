@@ -29,6 +29,21 @@
       },
       {
         "kind": "consumes",
+        "source": "agentic-commerce",
+        "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "agentic-commerce",
+        "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "agentic-commerce",
+        "target": "store"
+      },
+      {
+        "kind": "consumes",
         "source": "balancing-margin-and-volume",
         "target": "calendar"
       },
@@ -8567,13 +8582,1634 @@
       ]
     },
     {
-      "checks": [],
-      "contract_path": null,
-      "glossary_path": null,
+      "checks": [
+        {
+          "column": null,
+          "name": "a2a_session_keys_not_null",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_business_key_unique",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_status_domain",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_communication_channel_domain",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_initiator_type_domain",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_buyer_profile_fk_orphan",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_store_fk_orphan",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_product_fk_orphan",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_completed_timestamp_consistency",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_timestamp_order",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_last_activity_bounds",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_audit_block_present",
+          "severity": "warn",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_initiating_agent_fk_orphan",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_responding_agent_fk_orphan",
+          "severity": "error",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_agents_distinct",
+          "severity": "warn",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_agents_opposite_side",
+          "severity": "warn",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_keys_not_null",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_business_key_unique_current",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_role_domain",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_trust_status_domain",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_role_representation_consistency",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_scd2_current_open",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_scd2_date_order",
+          "severity": "error",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_represented_profile_orphan",
+          "severity": "warn",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_agent_represented_store_orphan",
+          "severity": "warn",
+          "table": "a2a_agent"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_keys_not_null",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_business_key_unique",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_type_domain",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_session_fk_orphan",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_agent_fk_orphan",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_product_fk_orphan",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_single_currency",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_price_currency_paired",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_nonneg",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_sequence_unique",
+          "severity": "warn",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_negotiation_event_single_acceptance",
+          "severity": "error",
+          "table": "a2a_negotiation_event"
+        },
+        {
+          "column": null,
+          "name": "a2a_session_completed_has_acceptance",
+          "severity": "warn",
+          "table": "a2a_session"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_keys_not_null",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_business_key_unique_current",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_status_domain",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_profile_fk_orphan",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_agent_fk_orphan",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_consent_orphan",
+          "severity": "warn",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_single_currency",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_amounts_nonneg",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_limit_within_ceiling",
+          "severity": "warn",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_scd2_current_open",
+          "severity": "error",
+          "table": "a2a_mandate"
+        },
+        {
+          "column": null,
+          "name": "a2a_mandate_scd2_date_order",
+          "severity": "error",
+          "table": "a2a_mandate"
+        }
+      ],
+      "contract_path": "contracts/odcs/agentic-commerce.odcs.yaml",
+      "glossary_path": "outcome-packages/agentic-commerce/glossary.md",
       "kind": "outcome",
       "name": "agentic-commerce",
-      "relationships": [],
-      "tables": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "buyer_profile_sk"
+          ],
+          "child_table": "a2a_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "a2a_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "a2a_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "initiating_agent_sk"
+          ],
+          "child_table": "a2a_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "a2a_agent_sk"
+          ],
+          "parent_table": "a2a_agent"
+        },
+        {
+          "child_cols": [
+            "responding_agent_sk"
+          ],
+          "child_table": "a2a_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "a2a_agent_sk"
+          ],
+          "parent_table": "a2a_agent"
+        },
+        {
+          "child_cols": [
+            "a2a_session_sk"
+          ],
+          "child_table": "a2a_negotiation_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "a2a_session_sk"
+          ],
+          "parent_table": "a2a_session"
+        },
+        {
+          "child_cols": [
+            "a2a_agent_sk"
+          ],
+          "child_table": "a2a_negotiation_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "a2a_agent_sk"
+          ],
+          "parent_table": "a2a_agent"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "a2a_negotiation_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "buyer_profile_sk"
+          ],
+          "child_table": "a2a_mandate",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "a2a_agent_sk"
+          ],
+          "child_table": "a2a_mandate",
+          "declared_fk": true,
+          "parent_cols": [
+            "a2a_agent_sk"
+          ],
+          "parent_table": "a2a_agent"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_agent_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the agent. Stable across SCD2 versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "agent_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Which side the agent acts for. Allowed values: buyer_agent, seller_agent.",
+              "enum_values": [
+                "buyer_agent",
+                "seller_agent"
+              ],
+              "fk": false,
+              "name": "agent_role",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Organization or platform that operates the agent (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "operator_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable customer profile business key the agent represents, when agent_role = buyer_agent. NULL for seller agents. Logical reference (not a UC FK) \u2014 see header.",
+              "enum_values": [],
+              "fk": false,
+              "name": "represented_profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key the agent represents, when agent_role = seller_agent. NULL for buyer agents. Logical reference (not a UC FK) \u2014 see header.",
+              "enum_values": [],
+              "fk": false,
+              "name": "represented_store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "A2A protocol version the agent speaks (free STRING; e.g. 1.0, 2.1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "protocol_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Verification/trust state. Allowed values: unverified, verified, suspended, revoked.",
+              "enum_values": [
+                "unverified",
+                "verified",
+                "suspended",
+                "revoked"
+              ],
+              "fk": false,
+              "name": "trust_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if the agent can complete a transaction without human approval within its mandate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_autonomous",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date this version stopped being effective; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version of this agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the agent record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the agent record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Autonomous agents (buyer-side and seller-side) participating in agent-to-agent commerce sessions. SCD2 dimensional master.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "a2a_agent",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_mandate_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the mandate. Stable across SCD2 versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_mandate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk \u2014 the customer granting the mandate.",
+              "enum_values": [],
+              "fk": true,
+              "name": "buyer_profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the granting customer.",
+              "enum_values": [],
+              "fk": false,
+              "name": "buyer_profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to a2a_agent.a2a_agent_sk \u2014 the buying agent this mandate governs.",
+              "enum_values": [],
+              "fk": true,
+              "name": "a2a_agent_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the governed agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable customer.consent business key authorizing automated purchasing. Logical reference (not a UC FK) \u2014 consent is SCD2 in the core (ADR 0030).",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Maximum cumulative spend the agent may commit under this mandate, in the reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "spend_ceiling_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Maximum value of a single transaction the agent may commit without human approval, in the reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "per_transaction_limit_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "ISO 4217 reporting-currency code for the amount columns. Single reporting currency across the package.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Transaction value at or above which a human must approve. NULL = no human-approval step.",
+              "enum_values": [],
+              "fk": false,
+              "name": "approval_threshold_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Comma-separated product categories the agent may transact in. NULL = unrestricted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "allowed_categories",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Lifecycle status. Allowed values: active, suspended, revoked, expired.",
+              "enum_values": [
+                "active",
+                "suspended",
+                "revoked",
+                "expired"
+              ],
+              "fk": false,
+              "name": "mandate_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date this version stopped being effective; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version of this mandate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the mandate was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the mandate was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Delegated purchasing authority a customer grants to a buying agent \u2014 spend ceiling, per-transaction limit, approval threshold, and allowed categories. SCD2 dimensional master.",
+          "consumes_tables": [
+            {
+              "table": "profile",
+              "unit": "customer"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "a2a_mandate",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_negotiation_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the negotiation event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_negotiation_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to a2a_session.a2a_session_sk \u2014 the session this event occurred in.",
+              "enum_values": [],
+              "fk": true,
+              "name": "a2a_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the parent session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to a2a_agent.a2a_agent_sk \u2014 the agent that emitted this event.",
+              "enum_values": [],
+              "fk": true,
+              "name": "a2a_agent_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the emitting agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product.product_sk \u2014 the product this step concerns, if applicable.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The negotiation step. Allowed values: price_request, offer, counter_offer, acceptance, rejection, availability_check, escalation_to_human.",
+              "enum_values": [
+                "price_request",
+                "offer",
+                "counter_offer",
+                "acceptance",
+                "rejection",
+                "availability_check",
+                "escalation_to_human"
+              ],
+              "fk": false,
+              "name": "event_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Monotonic step number within the session (1 = first event). NOT NULL: it is load-bearing for ordering \u2014 gold_a2a_session_summary anchors first_offer_price via MIN_BY(price, event_sequence) and de-dups the acceptance via ROW_NUMBER() OVER (ORDER BY event_sequence). A NULL would silently misorder replay and the concession anchor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_sequence",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Proposed unit price for this step, normalized to the reporting currency. NULL for non-price events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "proposed_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "ISO 4217 reporting-currency code for proposed_price. Single reporting currency across the package.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Proposed quantity for this step. NULL when not applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "proposed_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "When the event occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When this event was ingested into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Ingest latency = ingest_timestamp - event_timestamp, in seconds.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Originating system or orchestration platform that produced this event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only negotiation event log for agent-to-agent commerce sessions. One row per offer / counter-offer / acceptance / escalation step.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "a2a_negotiation_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_session_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the session (e.g. a UUID issued by the orchestrator).",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk \u2014 the individual the buying agent represents.",
+              "enum_values": [],
+              "fk": true,
+              "name": "buyer_profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the buyer profile. Stable across SCD2 versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "buyer_profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store.store_sk \u2014 the store or channel the selling agent represents.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product.product_sk \u2014 the primary product being negotiated, if applicable.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to a2a_agent.a2a_agent_sk \u2014 the agent that opened the session.",
+              "enum_values": [],
+              "fk": true,
+              "name": "initiating_agent_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the initiating agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "initiating_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to a2a_agent.a2a_agent_sk \u2014 the agent that responded.",
+              "enum_values": [],
+              "fk": true,
+              "name": "responding_agent_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the responding agent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "responding_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Lifecycle status. Allowed values: initiated, negotiating, agreed, completed, abandoned, failed, expired.",
+              "enum_values": [
+                "initiated",
+                "negotiating",
+                "agreed",
+                "completed",
+                "abandoned",
+                "failed",
+                "expired"
+              ],
+              "fk": false,
+              "name": "session_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Communication channel between agents. Allowed values: api, marketplace, direct, voice.",
+              "enum_values": [
+                "api",
+                "marketplace",
+                "direct",
+                "voice"
+              ],
+              "fk": false,
+              "name": "communication_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Which side initiated the session. Allowed values: buyer_agent, seller_agent.",
+              "enum_values": [
+                "buyer_agent",
+                "seller_agent"
+              ],
+              "fk": false,
+              "name": "initiator_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Free-text summary of the session outcome or current state. May contain PII if agents reference customer details.",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_summary",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the session was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "initiated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the most recent interaction occurred (UTC, ISO 8601). Updated on each negotiation event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_activity_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the session concluded (UTC, ISO 8601). NULL if still active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "completed_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system or orchestration platform that produced this session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this session row was last modified in the source system (UTC, ISO 8601). Advances on each in-place status/activity update.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When this row was loaded into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agent-to-agent commerce session tracking for the Agentic Commerce outcome package. One row per A2A negotiation lifecycle between a buying agent (customer) and a selling agent (retailer).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "a2a_session",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "agent_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "agent_role",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "operator_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trust_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sessions_participated",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sessions_completed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "success_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_time_to_completion_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "Per-agent performance scorecard. Attributes each session to the agents on both sides (initiating and responding), then aggregates outcome metrics per agent: how many sessions it took part in, how many completed, its success rate, and average time to completion. Joins the current a2a_agent version for role/operator/trust context. Note: this measures start -> completed (the terminal lifecycle timestamp on the session), NOT start -> acceptance event; agreement (the acceptance event) can precede completion, so this is the wider end-to-end duration, named accordingly.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_a2a_agent_scorecard",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "communication_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sessions_initiated",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reached_negotiating",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reached_agreed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "completed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lost",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "completion_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "The A2A negotiation funnel, aggregated by day x channel x product. Each session is counted once at each stage it reached, so downstream can chart initiated -> negotiated -> agreed -> completed conversion and the loss (abandoned / failed / expired) by cut. Grain: one row per (session_date, communication_channel, product_id). NOTE: product_id is nullable on a2a_session (a session need not name a primary product), so all product-less sessions for a given day x channel collapse into one row with a NULL product_id \u2014 read that NULL bucket as \"no primary product\", not missing data.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_a2a_negotiation_funnel",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "a2a_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "communication_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "initiator_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "buyer_profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "initiating_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "responding_agent_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "initiated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "completed_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "duration_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "counter_offer_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "escalated_to_human",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_offer_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "agreed_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "agreed_quantity",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "agreed_currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_concession_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "One row per A2A session with its negotiation outcome rolled up from the append-only event log: how many steps, the first offer, the final agreed price/quantity (from the acceptance event), whether a human was escalated to, and the buyer/seller/agent context. This is the serving surface for \"what happened in this negotiation and how did it land\".",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_a2a_session_summary",
+          "role": "gold",
+          "scd2": false
+        }
+      ],
       "use_cases": [
         {
           "consumes": [],
@@ -8594,10 +10230,18 @@
           "tables": []
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "product",
+            "store"
+          ],
           "name": "Agent-to-Agent Transactions",
-          "status": "in-progress",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_a2a_session_summary",
+            "gold_a2a_negotiation_funnel",
+            "gold_a2a_agent_scorecard"
+          ]
         }
       ]
     },
