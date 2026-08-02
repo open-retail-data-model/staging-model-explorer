@@ -336,7 +336,11 @@ schema:
   - name: digital_interaction_share
     logicalType: number
     physicalType: DOUBLE
-    description: Clickstream channel mix, LIFETIME grain (unbounded — NOT the RFM window; a stale customer
+    description: 'Clickstream channel mix, LIFETIME grain (unbounded — NOT the RFM window; a stale customer''s
+      mix reads like an active one): share of touches on web / mobile_app (0..1). NOTE: the three interaction_share
+      columns are NON-EXHAUSTIVE named shares (direct_mail and other are not bucketed), so they do not
+      sum to 1 — do not treat them as a partition. A touch with a NULL channel_code counts toward the
+      denominator but no named share (harmless on shipped data — the generator always populates channel_code).'
   - name: in_store_interaction_share
     logicalType: number
     physicalType: DOUBLE

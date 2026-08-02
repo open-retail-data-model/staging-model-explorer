@@ -1,8 +1,8 @@
-# In-Store Equipment Maintenance — Business Glossary
+# Predictive Operations — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-15
+> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-27
 
-Business terms for the In-Store Equipment Maintenance use case of the Predictive Operations outcome package. Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
+Business terms for the Predictive Operations outcome package (In-Store Equipment Maintenance and Store Performance use cases). Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
 
 ## Tables & views
 
@@ -16,8 +16,22 @@ Business terms for the In-Store Equipment Maintenance use case of the Predictive
 | `gold_equipment_health` | One equipment asset (current) | Health dashboard: latest readings, anomaly stats, health score. |
 | `gold_maintenance_effectiveness` | One equipment asset (all time) | Maintenance program effectiveness: PM ratio, MTBF, cost, compliance. |
 | `gold_downtime_impact` | One downtime event | Downtime impact analysis: links outages to inventory/spoilage risk. |
+| `gold_store_operational_risk` | One store (current as_of_date) | Store Operational Risk Score: composite of four domain sub-scores + diagnosis. |
+| `store_risk_score` | One store × as_of_date × score_method (append-only) | Durable snapshot history of the risk score a scoring pipeline writes. |
 
-## Key terms
+## Key terms — Store Performance
+
+| Term | Definition |
+|---|---|
+| **Store Operational Risk Score** | A store-grain index (0-100, higher = riskier) estimating near-term operational/financial deterioration over a declared forward horizon. A transparent, expert-weighted **heuristic index, not a calibrated probability** — ORDM ships no trained model. Composed from four domain sub-scores, blended by visible weights, with non-compensatory escalators. |
+| **Domain sub-score** | A 0-100 risk score for one signal domain (Inventory, Supply-Chain, Sales/Margin, Equipment; Labor and CX deferred). Each raw signal is assigned to exactly one domain (its proximate cause) so the availability→conversion pathway is not double-counted. A missing sub-score is `NULL` and excluded from the composite denominator (missing = unknown, not safe). Note: `sales_margin_risk`'s discount-depth half is normalized against a **cross-store** p95, so it is a *relative* (fleet-comparative) signal, not purely store-local — see design spec §4. |
+| **Non-compensatory scoring** | The composite is not a plain weighted average: a worst-domain floor (any present sub-score ≥ 75 forces ≥ HIGH) and a steep-sales-decline force prevent a strong domain from averaging away a critical one — the blind spot a "102%-of-target but sliding" store exposes. |
+| **Risk tier** | Categorical triage: `UNKNOWN`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`. `UNKNOWN` means no domain sub-score was present (`domains_scored = 0`) so the store is unscored, not low-risk (missing = unknown, not safe); the rest come from thresholds on the score plus the two escalators. |
+| **Top risk domains** | The up-to-3 domains contributing most to the score (the Diagnose step) — the explainability that makes a risk score trustworthy. |
+| **Horizon** | The declared forward assessment horizon (`horizon_days`, 7 in v1) the score is interpreted against — uniform across a snapshot so scores stay comparable. It is a label, not a claim that every input is windowed to 7 days: sub-score observation windows differ by domain (current-state for inventory/supply-chain/equipment, trailing 14-day-vs-prior for sales/margin — see design spec §4.7). Distinct horizons would be separate columns, never mixed in one. |
+| **Score method** | `heuristic` (the shipped deterministic index) or `model` (rows a fitted, model-backed pipeline writes later). Distinguishes what the data model produces from what an adopter's model adds. |
+
+## Key terms — In-Store Equipment Maintenance
 
 | Term | Definition |
 |---|---|
@@ -40,3 +54,5 @@ Business terms for the In-Store Equipment Maintenance use case of the Predictive
 - `store` (canonical-core/store) — conformed store dimension
 - `product` (canonical-core/product) — conformed product dimension (perishable category filter)
 - `inventory_position` (canonical-core/inventory) — daily inventory for spoilage risk assessment
+- `purchase_order_line` (canonical-core/procurement) — PO-line ship-to location, maps supplier risk to store grain (Store Performance)
+- `fiscal_calendar` (canonical-core/calendar) — the `as_of_date` grain conforms to `date_key` (Store Performance)

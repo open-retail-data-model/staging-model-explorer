@@ -30,8 +30,8 @@ creative, placement, experiment, experiment_cell, delivery_channel, keyword, aud
 | `budget_allocation` | allocation × window × level | no | Budget plan (denominator for pacing). |
 | `pacing_snapshot` | snapshot_ts × campaign × ad_group × placement | no | Operational pacing state. |
 | `experiment_assignment_bridge` | assignment_unit × cell | yes (restricted) | Unit→cell assignment; folds incrementality events onto the shared spine. |
-| `store_zone_interval` | store × zone × interval | no (footfall estimate) | Privacy-safe in-store footfall/OTS estimation input (periodic-snapshot fact; footfall is modeled — `aggregated_flag`). |
 | `product_store_day` | product × store × day | no | Availability + POS; in-stock-weighted impression input. |
+| `store_zone_interval` | store × zone × trading date | no (disclosure-controlled aggregate) | **Deprecated exact-name compatibility view.** Reproduces the retired ordered contract from `connected_store_signals.gold_zone_traffic_shared`. New `opportunity_to_see` is NULL pending a governed CMN derivation. |
 | `gold_campaign_performance` | campaign × day | no | ROAS/CTR/CVR/iROAS/viewability KPIs. |
 | `gold_incrementality_readout` | experiment × metric × slice (latest) | no | Lift/iROAS/CI readout. |
 | `gold_pacing_current` | campaign (latest) | no | Current pacing state. |
@@ -118,6 +118,7 @@ multi-model comparison lives in `attributed_outcome`.
 
 UC Metric Views (Databricks overlay); the supplier entitlement ledger + publish snapshots
 (data-sharing-with-suppliers package); Lakebase serving projection of pacing; the remaining channel-specific
-dims (store_zone/screen_player/contract) as full dimensions. The `keyword` (search-targeting) dimension is now
+dims (screen_player/contract) as full dimensions — `store_zone` is no longer deferred, it is a full SCD2
+dimension in `connected-store-signals` (ADR 0033). The `keyword` (search-targeting) dimension is now
 included — `media_event.keyword_sk` + the degenerate `search_term_text` carry query-level reporting, and
 `attributed_outcome.keyword_sk` carries keyword-level ROAS.

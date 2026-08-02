@@ -54,3 +54,35 @@ immutable audit trail. Routes the media-measurement brief.
 
 Builds on: `commerce-media-networks` (`campaign_day`) and `commerce-media-networks` (`advertiser`, `campaign`).
 Deferred: Lakebase serving projections (`api_supplier_campaign_summary`, `api_user_supplier_map`).
+
+## Joint Demand Planning (CPFR)
+
+Collaborative Planning, Forecasting and Replenishment (CPFR): a retailer and its suppliers jointly
+build, submit, reconcile and freeze a **consensus demand forecast** under row-level access control,
+with an immutable agreed snapshot for accountability. Each party submits its own versioned plan; the
+reconciliation view aligns them, an exception queue surfaces disagreement and gaps, and the published
+consensus is frozen so a later restatement never changes what was already agreed. Builds only on the
+canonical core (`supplier`, `product`; fiscal weeks as a degenerate `fiscal_week_id`, no calendar FK); NULL-safe enriches with the Smarter Demand package's
+statistical baseline (no hard dependency).
+
+| Object | Grain | Description |
+|---|---|---|
+| `demand_collaboration` | one version per (principal, supplier, product-scope) | Row-level access + scope anchor: which governance principal collaborates on which supplier's plan (optionally one product), the agreed horizon, and the minimum disclosure threshold. SCD2. |
+| `demand_plan_submission` | (plan cycle × party × supplier × product × week × version) | Each party's versioned demand-forecast submission (retailer plan and supplier plan land as separate rows; latest version wins). |
+| `consensus_forecast_snapshot` | one publish snapshot × supplier × product × week × version | Immutable frozen consensus — the agreed numbers (and each side's number at agreement) at a point in time (audit/dispute). |
+| `gold_joint_demand_plan` | principal × supplier × product × week | Entitled joint plan (row-filter source): latest retailer/supplier submissions + latest consensus, NULL-safe statistical baseline. No person-level data. |
+| `gold_demand_plan_exceptions` | principal × supplier × product × week | The joint-plan rows needing collaborative attention, ranked by demand value at risk. |
+
+| Term | Definition |
+|---|---|
+| **Collaborative forecast (CPFR)** | A demand forecast a retailer and supplier build together, submitting their own plans and agreeing a consensus, rather than each planning in isolation. |
+| **Plan cycle** | A consensus round (e.g. a monthly CPFR cadence) that groups the submissions and the consensus that reconcile within it (`plan_cycle_id`). |
+| **Demand plan submission** | One party's versioned forecast for a supplier × product × fiscal week; a resubmission bumps `submission_version`, and the latest wins in reconciliation. |
+| **Consensus demand** | The agreed joint forecast quantity/value for a supplier × product × week, frozen as an immutable versioned snapshot (`consensus_forecast_snapshot`). |
+| **Plan variance / disagreement** | `plan_variance_pct = (retailer_qty − supplier_qty) / supplier_qty` — how far the two parties' latest plans diverge. |
+| **Consensus lift over baseline** | `consensus_vs_baseline_pct = (consensus_qty − statistical_forecast_qty) / statistical_forecast_qty` — the collaboration's demand signal above the statistical forecast (NULL if the Smarter Demand package is absent). |
+| **Exception** | A plan row raised for attention: a missing party plan, a party disagreement beyond tolerance, or a consensus that diverges materially from the statistical baseline. |
+| **Disclosure threshold** | Minimum demand volume (units) a plan row must reach before it is shared with a partner — a low-volume/materiality floor, **not** a k-anonymity control (the shared rows are already aggregate at supplier × product × week and carry no underlying entity count). A NULL threshold means no floor. |
+
+Builds on: canonical core `supplier`, `product` (fiscal weeks as a degenerate `fiscal_week_id`, no calendar FK). NULL-safe enrichment:
+`smarter-demand-and-inventory-decisions` (`gold_demand_forecast_weekly`) — read-only, no FK.

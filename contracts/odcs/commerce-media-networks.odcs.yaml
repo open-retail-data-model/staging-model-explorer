@@ -5341,119 +5341,6 @@ schema:
     description: psd_store_fk_orphan
     query: SELECT f.* FROM commerce_media_networks.product_store_day f LEFT JOIN store.store d ON f.store_sk
       = d.store_sk WHERE f.store_sk IS NOT NULL AND d.store_sk IS NULL
-- name: store_zone_interval
-  physicalName: commerce_media_networks.store_zone_interval
-  physicalType: table
-  description: Commerce Media Networks — privacy-safe in-store footfall/OTS aggregate.
-  tags:
-  - transactional
-  authoritativeDefinitions:
-  - url: outcome-packages/commerce-media-networks/README.md
-    type: businessDefinition
-  - url: outcome-packages/commerce-media-networks/glossary.md
-    type: businessDefinition
-  - url: docs/data-model-standards.md
-    type: businessDefinition
-  properties:
-  - name: store_zone_interval_sk
-    logicalType: integer
-    physicalType: BIGINT
-    required: true
-    primaryKey: true
-    primaryKeyPosition: 1
-    description: Surrogate key.
-  - name: store_zone_interval_id
-    logicalType: string
-    physicalType: STRING
-    required: true
-    description: Durable natural/business key (grain hash).
-  - name: store_sk
-    logicalType: integer
-    physicalType: BIGINT
-    required: false
-    description: FK to store.store_sk.
-    relationships:
-    - to: store.store_sk
-      type: foreignKey
-      customProperties:
-      - property: toSchema
-        value: store
-      - property: enforced
-        value: false
-  - name: store_id
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: Durable store business key.
-  - name: store_zone_code
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: 'In-store zone code (IAB zone taxonomy: entrance/checkout/aisle/etc.).'
-  - name: interval_start_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
-    required: true
-    description: Interval start (UTC, ISO 8601).
-  - name: interval_date
-    logicalType: date
-    physicalType: DATE
-    required: true
-    description: Business date of the interval (cluster key).
-  - name: interval_minutes
-    logicalType: integer
-    physicalType: INT
-    required: false
-    description: Interval length in minutes.
-  - name: footfall_count
-    logicalType: integer
-    physicalType: BIGINT
-    required: false
-    description: Estimated shopper footfall in the zone during the interval.
-  - name: avg_dwell_seconds
-    logicalType: integer
-    physicalType: INT
-    required: false
-    description: Average dwell time in the zone, seconds.
-  - name: opportunity_to_see
-    logicalType: integer
-    physicalType: BIGINT
-    required: false
-    description: Estimated opportunity-to-see count (OTS).
-  - name: aggregated_flag
-    logicalType: boolean
-    physicalType: BOOLEAN
-    required: false
-    description: TRUE — this is an aggregated, privacy-safe estimate (never person-level).
-  - name: record_source
-    logicalType: string
-    physicalType: STRING
-    required: false
-    description: Originating system of record (vendor-neutral label).
-  - name: load_timestamp
-    logicalType: timestamp
-    physicalType: TIMESTAMP
-    required: false
-    description: When this row was loaded (UTC, ISO 8601).
-  quality:
-  - name: szi_grain_unique
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: szi_grain_unique
-    query: SELECT store_zone_interval_id, COUNT(*) AS n FROM commerce_media_networks.store_zone_interval
-      GROUP BY store_zone_interval_id HAVING COUNT(*) > 1
-  - name: szi_store_fk_orphan
-    type: sql
-    dimension: accuracy
-    severity: error
-    mustBe: 0
-    unit: rows
-    description: szi_store_fk_orphan
-    query: SELECT a.* FROM commerce_media_networks.store_zone_interval a LEFT JOIN store.store s ON a.store_sk
-      = s.store_sk WHERE a.store_sk IS NOT NULL AND s.store_sk IS NULL
 - name: gold_campaign_performance
   physicalName: commerce_media_networks.gold_campaign_performance
   physicalType: view
@@ -5823,3 +5710,77 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+- name: store_zone_interval
+  physicalName: commerce_media_networks.store_zone_interval
+  physicalType: view
+  description: 'DEPRECATED. REMOVAL DATE: 2026-10-31 (the 90-day floor of docs/versioning-policy.md §3,
+    counted from 2026-07-28). A date, not a pointer to the policy: §3.4 requires the header to name one,
+    and "see the policy" sends a developer to a document that names no date either. Migrate shared consumers
+    to ${css_schema}.gold_zone_traffic_shared and operational consumers to ${css_schema}.gold_zone_traffic_current.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/commerce-media-networks/README.md
+    type: businessDefinition
+  - url: outcome-packages/commerce-media-networks/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_zone_interval_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_zone_interval_id
+    logicalType: string
+    physicalType: STRING
+    description: DEPRECATED EXACT-NAME SHIM. New rows use a stable store-zone-day id; migrate to connected_store_signals.gold_zone_traffic_shared.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_code
+    logicalType: string
+    physicalType: STRING
+    description: DEPRECATED EXACT-NAME SHIM. Zone code sourced from the CSS zone-day shared projection.
+  - name: interval_start_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: interval_date
+    logicalType: date
+    physicalType: DATE
+    description: DEPRECATED EXACT-NAME SHIM. CSS trading date for the disclosure-controlled daily row.
+  - name: interval_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: footfall_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: avg_dwell_seconds
+    logicalType: integer
+    physicalType: INT
+  - name: opportunity_to_see
+    logicalType: integer
+    physicalType: BIGINT
+    description: DEPRECATED EXACT-NAME SHIM. NULL for new rows until CMN approves a versioned placement-level
+      OTS derivation; historical values remain in the CMN legacy mapping during migration.
+  - name: aggregated_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  quality:
+  - name: szi_compat_view_readable
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: szi_compat_view_readable
+    query: SELECT * FROM (SELECT COUNT(*) AS n FROM commerce_media_networks.store_zone_interval) WHERE
+      n IS NULL

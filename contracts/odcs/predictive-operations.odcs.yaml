@@ -28,7 +28,7 @@ authoritativeDefinitions:
   type: businessDefinition
 schema:
 - name: maintenance_schedule
-  physicalName: in_store_equipment_maintenance.maintenance_schedule
+  physicalName: predictive_operations.maintenance_schedule
   physicalType: table
   description: Preventive maintenance schedules for in-store equipment (SCD2). Defines recurring maintenance
     tasks and their cadence. Versioned so schedule changes are historically auditable.
@@ -168,7 +168,7 @@ schema:
     description: ms_pk_unique
     query: 'SELECT maintenance_schedule_sk
 
-      FROM in_store_equipment_maintenance.maintenance_schedule
+      FROM predictive_operations.maintenance_schedule
 
       GROUP BY maintenance_schedule_sk
 
@@ -180,7 +180,7 @@ schema:
     mustBe: 0
     unit: rows
     description: ms_scd2_current_open
-    query: 'SELECT * FROM in_store_equipment_maintenance.maintenance_schedule
+    query: 'SELECT * FROM predictive_operations.maintenance_schedule
 
       WHERE is_current = TRUE AND effective_to_date IS NOT NULL'
   - name: ms_scd2_noncurrent_closed
@@ -190,7 +190,7 @@ schema:
     mustBe: 0
     unit: rows
     description: ms_scd2_noncurrent_closed
-    query: 'SELECT * FROM in_store_equipment_maintenance.maintenance_schedule
+    query: 'SELECT * FROM predictive_operations.maintenance_schedule
 
       WHERE is_current = FALSE AND effective_to_date IS NULL'
   - name: ms_scd2_start_before_end
@@ -200,7 +200,7 @@ schema:
     mustBe: 0
     unit: rows
     description: ms_scd2_start_before_end
-    query: 'SELECT * FROM in_store_equipment_maintenance.maintenance_schedule
+    query: 'SELECT * FROM predictive_operations.maintenance_schedule
 
       WHERE effective_to_date IS NOT NULL AND effective_from_date > effective_to_date'
   - name: ms_equipment_fk_orphan
@@ -210,7 +210,7 @@ schema:
     mustBe: 0
     unit: rows
     description: ms_equipment_fk_orphan
-    query: 'SELECT ms.* FROM in_store_equipment_maintenance.maintenance_schedule ms
+    query: 'SELECT ms.* FROM predictive_operations.maintenance_schedule ms
 
       LEFT JOIN equipment.equipment eq ON ms.equipment_sk = eq.equipment_sk
 
@@ -224,7 +224,7 @@ schema:
     description: ms_single_currency
     query: 'SELECT ''maintenance_schedule'' AS table_name, COUNT(DISTINCT currency_code) AS currencies
 
-      FROM in_store_equipment_maintenance.maintenance_schedule
+      FROM predictive_operations.maintenance_schedule
 
       HAVING COUNT(DISTINCT currency_code) > 1 OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) >
       0'
@@ -235,7 +235,7 @@ schema:
     mustBe: 0
     unit: rows
     description: ms_interval_positive
-    query: 'SELECT * FROM in_store_equipment_maintenance.maintenance_schedule
+    query: 'SELECT * FROM predictive_operations.maintenance_schedule
 
       WHERE interval_days <= 0'
   - name: ms_rowcount
@@ -243,7 +243,7 @@ schema:
     dimension: accuracy
     severity: info
     description: ms_rowcount
-    query: SELECT COUNT(*) AS schedule_rows FROM in_store_equipment_maintenance.maintenance_schedule
+    query: SELECT COUNT(*) AS schedule_rows FROM predictive_operations.maintenance_schedule
   - name: ms_overdue_count
     type: sql
     dimension: accuracy
@@ -251,11 +251,305 @@ schema:
     description: ms_overdue_count
     query: 'SELECT COUNT(*) AS overdue_schedules
 
-      FROM in_store_equipment_maintenance.maintenance_schedule
+      FROM predictive_operations.maintenance_schedule
 
       WHERE is_active = TRUE AND next_due_date < CURRENT_DATE()'
+- name: store_risk_score
+  physicalName: predictive_operations.store_risk_score
+  physicalType: table
+  description: Append-only store x as_of_date snapshot of the Store Operational Risk Score (heuristic
+    index) and its per-domain sub-scores. Store Performance use case, Predictive Operations. See ADR 0028.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_risk_score_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: store_risk_score_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the score snapshot at the table grain (store x as_of_date
+      x score_method), e.g. "<store_id>|<as_of_date>|<score_method>". score_method is part of the key
+      so a future model-backed row does not collide with the heuristic row for the same store/date.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk. Carries the CURRENT store version (the gold view scores as-of today);
+      a historical-backfill pipeline should resolve the version effective at as_of_date. Nullable only
+      if an adopter pipeline scores a store absent from the dimension (tolerated by the srs_store_fk_orphan
+      check); the shipped gold view always populates it. Join on the durable store_id, not this per-deployment
+      surrogate.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: as_of_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Snapshot date; conforms to fiscal_calendar.date_key (ISO 8601).
+  - name: horizon_days
+    logicalType: integer
+    physicalType: INT
+    required: true
+    description: Declared forward assessment horizon in days (7 in v1) — the label the score is interpreted
+      against, uniform across a snapshot so scores are comparable. Not a claim every input is windowed
+      to 7 days; sub-score observation windows differ by domain (see design spec §4.7).
+  - name: operational_risk_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Store Operational Risk Score, 0-100, higher = riskier. Heuristic index, NOT a probability.
+  - name: operational_risk_tier
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Risk tier. Allowed values: UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL. UNKNOWN = no domain
+      sub-score was present (domains_scored = 0), so the store is unscored, not low-risk (missing = unknown,
+      not safe).'
+  - name: domains_scored
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: How many domains had a present (non-NULL) sub-score feeding the composite. Max is 4 in
+      v1 (labor + cx are deferred, always NULL); 0 means the store is unscored (tier UNKNOWN).
+  - name: top_risk_domains
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Up-to-3 domains with the largest weighted contribution (the Diagnose step), comma-separated.
+  - name: inventory_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Inventory domain sub-score (from gold_inventory_risk). 0-100 or NULL.
+  - name: supply_chain_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Supply-chain domain sub-score (from gold_procurement_risk). 0-100 or NULL.
+  - name: sales_margin_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Sales/margin domain sub-score (from BMV gold). 0-100 or NULL.
+  - name: equipment_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Equipment domain sub-score (from gold_equipment_health). 0-100 or NULL.
+  - name: labor_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Labor/workforce domain sub-score. DEFERRED — always NULL in v1 (no canonical-core labor
+      domain yet).
+  - name: cx_risk
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Customer-experience domain sub-score. DEFERRED — always NULL in v1 (no CX source yet).
+  - name: score_method
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'How the score was produced. Allowed values: heuristic, model.'
+  - name: model_version
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Version of the model that produced the row when score_method = model; NULL for heuristic
+      rows.
+  - name: predicted_impact_amount
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Estimated business impact (e.g. lost sales) in currency_code. Reserved for a model/adopter
+      pipeline; NULL in the shipped heuristic.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Reporting currency for predicted_impact_amount, ISO 4217 alpha-3; NULL when predicted_impact_amount
+      is NULL.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system or pipeline that produced this score.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: srs_pk_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_pk_unique
+    query: 'SELECT store_risk_score_sk
+
+      FROM predictive_operations.store_risk_score
+
+      GROUP BY store_risk_score_sk
+
+      HAVING COUNT(*) > 1'
+  - name: srs_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Grain is store x as_of_date x score_method; a duplicate is a double-write.
+    query: 'SELECT store_id, as_of_date, score_method
+
+      FROM predictive_operations.store_risk_score
+
+      GROUP BY store_id, as_of_date, score_method
+
+      HAVING COUNT(*) > 1'
+  - name: srs_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_store_fk_orphan
+    query: 'SELECT srs.* FROM predictive_operations.store_risk_score srs
+
+      LEFT JOIN store.store st ON srs.store_sk = st.store_sk
+
+      WHERE st.store_sk IS NULL AND srs.store_sk IS NOT NULL'
+  - name: srs_score_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_score_range
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE operational_risk_score IS NOT NULL AND operational_risk_score NOT BETWEEN 0 AND 100'
+  - name: srs_tier_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_tier_domain
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE operational_risk_tier NOT IN (''UNKNOWN'', ''LOW'', ''MEDIUM'', ''HIGH'', ''CRITICAL'')'
+  - name: srs_method_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_method_domain
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE score_method NOT IN (''heuristic'', ''model'')'
+  - name: srs_subscore_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Every present sub-score must be 0-100.
+    query: "SELECT * FROM predictive_operations.store_risk_score\nWHERE (inventory_risk    IS NOT NULL\
+      \ AND inventory_risk    NOT BETWEEN 0 AND 100)\n   OR (supply_chain_risk IS NOT NULL AND supply_chain_risk\
+      \ NOT BETWEEN 0 AND 100)\n   OR (sales_margin_risk IS NOT NULL AND sales_margin_risk NOT BETWEEN\
+      \ 0 AND 100)\n   OR (equipment_risk    IS NOT NULL AND equipment_risk    NOT BETWEEN 0 AND 100)\n\
+      \   OR (labor_risk        IS NOT NULL AND labor_risk        NOT BETWEEN 0 AND 100)\n   OR (cx_risk\
+      \           IS NOT NULL AND cx_risk           NOT BETWEEN 0 AND 100)"
+  - name: srs_deferred_subscores_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'v1 contract: labor_risk and cx_risk are deferred and must be NULL (ADR 0028).'
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE labor_risk IS NOT NULL OR cx_risk IS NOT NULL'
+  - name: srs_impact_currency_paired
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A predicted impact amount requires a currency, and vice versa.
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE (predicted_impact_amount IS NULL) != (currency_code IS NULL)'
+  - name: srs_impact_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_impact_single_currency
+    query: 'SELECT ''store_risk_score'' AS table_name, COUNT(DISTINCT currency_code) AS currencies
+
+      FROM predictive_operations.store_risk_score
+
+      WHERE currency_code IS NOT NULL
+
+      HAVING COUNT(DISTINCT currency_code) > 1'
+  - name: srs_horizon_positive
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: srs_horizon_positive
+    query: 'SELECT * FROM predictive_operations.store_risk_score
+
+      WHERE horizon_days <= 0'
+  - name: srs_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: srs_rowcount
+    query: SELECT COUNT(*) AS store_risk_score_rows FROM predictive_operations.store_risk_score
+  - name: srs_tier_distribution
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: srs_tier_distribution
+    query: 'SELECT operational_risk_tier, COUNT(*) AS tier_count
+
+      FROM predictive_operations.store_risk_score
+
+      GROUP BY operational_risk_tier'
 - name: work_order
-  physicalName: in_store_equipment_maintenance.work_order
+  physicalName: predictive_operations.work_order
   physicalType: table
   description: Maintenance work order header for in-store equipment. Tracks preventive, corrective, and
     emergency maintenance lifecycle.
@@ -460,7 +754,7 @@ schema:
     description: wo_pk_unique
     query: 'SELECT work_order_sk
 
-      FROM in_store_equipment_maintenance.work_order
+      FROM predictive_operations.work_order
 
       GROUP BY work_order_sk
 
@@ -472,7 +766,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_equipment_fk_orphan
-    query: 'SELECT wo.* FROM in_store_equipment_maintenance.work_order wo
+    query: 'SELECT wo.* FROM predictive_operations.work_order wo
 
       LEFT JOIN equipment.equipment eq ON wo.equipment_sk = eq.equipment_sk
 
@@ -484,7 +778,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_store_fk_orphan
-    query: 'SELECT wo.* FROM in_store_equipment_maintenance.work_order wo
+    query: 'SELECT wo.* FROM predictive_operations.work_order wo
 
       LEFT JOIN store.store st ON wo.store_sk = st.store_sk
 
@@ -496,7 +790,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_completed_has_date
-    query: 'SELECT * FROM in_store_equipment_maintenance.work_order
+    query: 'SELECT * FROM predictive_operations.work_order
 
       WHERE work_order_status = ''completed'' AND completed_date IS NULL'
   - name: wo_completed_after_created
@@ -506,7 +800,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_completed_after_created
-    query: 'SELECT * FROM in_store_equipment_maintenance.work_order
+    query: 'SELECT * FROM predictive_operations.work_order
 
       WHERE completed_date IS NOT NULL AND completed_date < created_date'
   - name: wo_cost_nonnegative
@@ -516,7 +810,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_cost_nonnegative
-    query: 'SELECT * FROM in_store_equipment_maintenance.work_order
+    query: 'SELECT * FROM predictive_operations.work_order
 
       WHERE actual_cost IS NOT NULL AND actual_cost < 0'
   - name: wo_downtime_nonnegative
@@ -526,7 +820,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_downtime_nonnegative
-    query: 'SELECT * FROM in_store_equipment_maintenance.work_order
+    query: 'SELECT * FROM predictive_operations.work_order
 
       WHERE downtime_hours IS NOT NULL AND downtime_hours < 0'
   - name: wo_single_currency
@@ -538,7 +832,7 @@ schema:
     description: wo_single_currency
     query: 'SELECT ''work_order'' AS table_name, COUNT(DISTINCT currency_code) AS currencies
 
-      FROM in_store_equipment_maintenance.work_order
+      FROM predictive_operations.work_order
 
       HAVING COUNT(DISTINCT currency_code) > 1 OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) >
       0'
@@ -549,7 +843,7 @@ schema:
     mustBe: 0
     unit: rows
     description: wo_store_equipment_mismatch
-    query: "SELECT wo.work_order_id, wo.store_sk AS wo_store_sk, eq.store_sk AS eq_store_sk\nFROM in_store_equipment_maintenance.work_order\
+    query: "SELECT wo.work_order_id, wo.store_sk AS wo_store_sk, eq.store_sk AS eq_store_sk\nFROM predictive_operations.work_order\
       \ wo\nJOIN equipment.equipment eq\n  ON eq.equipment_sk = wo.equipment_sk\nWHERE wo.store_sk !=\
       \ eq.store_sk"
   - name: wo_rowcount
@@ -557,7 +851,7 @@ schema:
     dimension: accuracy
     severity: info
     description: wo_rowcount
-    query: SELECT COUNT(*) AS work_order_rows FROM in_store_equipment_maintenance.work_order
+    query: SELECT COUNT(*) AS work_order_rows FROM predictive_operations.work_order
   - name: wo_status_distribution
     type: sql
     dimension: accuracy
@@ -565,7 +859,7 @@ schema:
     description: wo_status_distribution
     query: 'SELECT work_order_status, COUNT(*) AS status_count
 
-      FROM in_store_equipment_maintenance.work_order
+      FROM predictive_operations.work_order
 
       GROUP BY work_order_status'
   - name: wo_type_distribution
@@ -575,7 +869,7 @@ schema:
     description: wo_type_distribution
     query: 'SELECT work_order_type, COUNT(*) AS type_count
 
-      FROM in_store_equipment_maintenance.work_order
+      FROM predictive_operations.work_order
 
       GROUP BY work_order_type'
   - name: wo_open_count
@@ -585,11 +879,11 @@ schema:
     description: wo_open_count
     query: 'SELECT COUNT(*) AS open_work_orders
 
-      FROM in_store_equipment_maintenance.work_order
+      FROM predictive_operations.work_order
 
       WHERE work_order_status IN (''open'', ''in_progress'')'
 - name: work_order_line
-  physicalName: in_store_equipment_maintenance.work_order_line
+  physicalName: predictive_operations.work_order_line
   physicalType: table
   description: 'Work order line items: parts, labor, and service charges for equipment maintenance.'
   tags:
@@ -624,7 +918,7 @@ schema:
       type: foreignKey
       customProperties:
       - property: toSchema
-        value: in_store_equipment_maintenance
+        value: predictive_operations
       - property: enforced
         value: false
   - name: work_order_id
@@ -697,7 +991,7 @@ schema:
     description: wol_pk_unique
     query: 'SELECT work_order_line_sk
 
-      FROM in_store_equipment_maintenance.work_order_line
+      FROM predictive_operations.work_order_line
 
       GROUP BY work_order_line_sk
 
@@ -709,9 +1003,9 @@ schema:
     mustBe: 0
     unit: rows
     description: wol_wo_fk_orphan
-    query: 'SELECT wol.* FROM in_store_equipment_maintenance.work_order_line wol
+    query: 'SELECT wol.* FROM predictive_operations.work_order_line wol
 
-      LEFT JOIN in_store_equipment_maintenance.work_order wo ON wol.work_order_sk = wo.work_order_sk
+      LEFT JOIN predictive_operations.work_order wo ON wol.work_order_sk = wo.work_order_sk
 
       WHERE wo.work_order_sk IS NULL AND wol.work_order_sk IS NOT NULL'
   - name: wol_rowcount
@@ -719,7 +1013,7 @@ schema:
     dimension: accuracy
     severity: info
     description: wol_rowcount
-    query: SELECT COUNT(*) AS work_order_line_rows FROM in_store_equipment_maintenance.work_order_line
+    query: SELECT COUNT(*) AS work_order_line_rows FROM predictive_operations.work_order_line
   - name: wol_type_distribution
     type: sql
     dimension: accuracy
@@ -727,7 +1021,7 @@ schema:
     description: wol_type_distribution
     query: 'SELECT line_type, COUNT(*) AS line_count
 
-      FROM in_store_equipment_maintenance.work_order_line
+      FROM predictive_operations.work_order_line
 
       GROUP BY line_type'
   - name: wol_single_currency
@@ -739,7 +1033,7 @@ schema:
     description: wol_single_currency
     query: 'SELECT ''work_order_line'' AS table_name, COUNT(DISTINCT currency_code) AS currencies
 
-      FROM in_store_equipment_maintenance.work_order_line
+      FROM predictive_operations.work_order_line
 
       HAVING COUNT(DISTINCT currency_code) > 1 OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) >
       0'
@@ -752,13 +1046,13 @@ schema:
     description: wol_wo_currency_match
     query: 'SELECT wol.work_order_line_id, wol.currency_code AS line_currency, wo.currency_code AS wo_currency
 
-      FROM in_store_equipment_maintenance.work_order_line wol
+      FROM predictive_operations.work_order_line wol
 
-      JOIN in_store_equipment_maintenance.work_order wo ON wol.work_order_sk = wo.work_order_sk
+      JOIN predictive_operations.work_order wo ON wol.work_order_sk = wo.work_order_sk
 
       WHERE wol.currency_code != wo.currency_code'
 - name: gold_downtime_impact
-  physicalName: in_store_equipment_maintenance.gold_downtime_impact
+  physicalName: predictive_operations.gold_downtime_impact
   physicalType: view
   description: 'Downtime impact analysis: correlates equipment downtime with product availability and
     potential spoilage exposure. Links refrigeration/cold-chain equipment failures to inventory at risk,
@@ -842,7 +1136,7 @@ schema:
     physicalType: STRING
     description: 'Spoilage risk level for refrigeration: high (>4h), medium (2-4h), low (<2h), none.'
 - name: gold_equipment_health
-  physicalName: in_store_equipment_maintenance.gold_equipment_health
+  physicalName: predictive_operations.gold_equipment_health
   physicalType: view
   description: 'Per-equipment health dashboard: latest reading summary, anomaly counts, current status,
     and a health score (0-100). The primary monitoring surface for store operations teams.'
@@ -955,7 +1249,7 @@ schema:
     mustBe: 0
     unit: rows
     description: health_score_range
-    query: 'SELECT * FROM in_store_equipment_maintenance.gold_equipment_health
+    query: 'SELECT * FROM predictive_operations.gold_equipment_health
 
       WHERE health_score NOT BETWEEN 0 AND 100'
   - name: health_tier_domain
@@ -965,7 +1259,7 @@ schema:
     mustBe: 0
     unit: rows
     description: health_tier_domain
-    query: 'SELECT * FROM in_store_equipment_maintenance.gold_equipment_health
+    query: 'SELECT * FROM predictive_operations.gold_equipment_health
 
       WHERE health_tier NOT IN (''healthy'', ''at_risk'', ''degraded'', ''failed'')'
   - name: health_rowcount
@@ -973,7 +1267,7 @@ schema:
     dimension: accuracy
     severity: info
     description: health_rowcount
-    query: SELECT COUNT(*) AS health_rows FROM in_store_equipment_maintenance.gold_equipment_health
+    query: SELECT COUNT(*) AS health_rows FROM predictive_operations.gold_equipment_health
   - name: health_at_risk_count
     type: sql
     dimension: accuracy
@@ -981,11 +1275,11 @@ schema:
     description: health_at_risk_count
     query: 'SELECT COUNT(*) AS at_risk_or_worse
 
-      FROM in_store_equipment_maintenance.gold_equipment_health
+      FROM predictive_operations.gold_equipment_health
 
       WHERE health_tier IN (''at_risk'', ''degraded'', ''failed'')'
 - name: gold_maintenance_effectiveness
-  physicalName: in_store_equipment_maintenance.gold_maintenance_effectiveness
+  physicalName: predictive_operations.gold_maintenance_effectiveness
   physicalType: view
   description: 'Maintenance program effectiveness per equipment: preventive vs corrective ratio, schedule
     compliance, cost analysis, and MTBF (mean time between failures). Helps operations teams assess whether
@@ -1081,7 +1375,7 @@ schema:
     dimension: accuracy
     severity: info
     description: effectiveness_rowcount
-    query: SELECT COUNT(*) AS effectiveness_rows FROM in_store_equipment_maintenance.gold_maintenance_effectiveness
+    query: SELECT COUNT(*) AS effectiveness_rows FROM predictive_operations.gold_maintenance_effectiveness
   - name: effectiveness_avg_mtbf
     type: sql
     dimension: accuracy
@@ -1089,6 +1383,134 @@ schema:
     description: effectiveness_avg_mtbf
     query: 'SELECT ROUND(AVG(mtbf_days), 1) AS avg_mtbf_days
 
-      FROM in_store_equipment_maintenance.gold_maintenance_effectiveness
+      FROM predictive_operations.gold_maintenance_effectiveness
 
       WHERE mtbf_days IS NOT NULL'
+- name: gold_store_operational_risk
+  physicalName: predictive_operations.gold_store_operational_risk
+  physicalType: view
+  description: 'The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term
+    operational/financial deterioration risk. Composes FOUR sub-scores that already exist in other packages
+    into a single store-grain triage surface plus a per-domain diagnostic breakdown.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key.
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+    description: Display name of the store.
+  - name: region
+    logicalType: string
+    physicalType: STRING
+  - name: district
+    logicalType: string
+    physicalType: STRING
+  - name: as_of_date
+    logicalType: date
+    physicalType: DATE
+    description: Snapshot date the score is computed for (conforms to fiscal_calendar.date_key).
+  - name: horizon_days
+    logicalType: integer
+    physicalType: INT
+    description: Declared forward assessment horizon in days (7 in v1) — a comparability label, not a
+      claim every input is windowed to 7 days; per-domain observation windows differ (see design spec
+      §4.7).
+  - name: operational_risk_score
+    logicalType: number
+    physicalType: DOUBLE
+    description: Store Operational Risk Score, 0-100, higher = riskier. A transparent expert-weighted
+      HEURISTIC INDEX, not a calibrated probability.
+  - name: inventory_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Inventory domain sub-score (0-100): sales-velocity-weighted mean of gold_inventory_risk.stockout_risk_score
+      across the store''s SKUs (weight = trailing_units_sold; plain mean when the store has no velocity).'
+  - name: supply_chain_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: Supply-chain domain sub-score (0-100), spend-weighted supplier risk from gold_procurement_risk
+      for suppliers shipping to the store.
+  - name: sales_margin_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Sales/margin domain sub-score (0-100): recent-vs-prior net-sales decline + discount-depth
+      compression from BMV gold. The discount half is normalized against a cross-store p95, so it is a
+      relative (fleet-comparative) signal — see design spec §4.'
+  - name: equipment_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: Equipment domain sub-score (0-100), criticality-weighted 100 - health_score from gold_equipment_health.
+  - name: labor_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: Labor/workforce domain sub-score. DEFERRED — always NULL in v1 (no canonical-core labor
+      domain yet).
+  - name: cx_risk
+    logicalType: number
+    physicalType: DOUBLE
+    description: Customer-experience domain sub-score. DEFERRED — always NULL in v1 (no CX source yet).
+  - name: domains_scored
+    logicalType: integer
+    physicalType: INT
+    description: How many domains had a present (non-NULL) sub-score feeding the composite. Max is 4 in
+      v1 (labor + cx deferred); 0 means unscored (tier UNKNOWN).
+  - name: operational_risk_tier
+    logicalType: string
+    physicalType: STRING
+    description: 'Risk tier: UNKNOWN (no domain scored, domains_scored = 0), LOW, MEDIUM, HIGH, CRITICAL.
+      Any single present domain going critical, or a steep sales/margin decline, forces at least HIGH.'
+  - name: top_risk_domains
+    logicalType: string
+    physicalType: STRING
+    description: Up-to-3 domains with the largest weighted contribution to the score (the Diagnose step).
+  quality:
+  - name: sor_score_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sor_score_range
+    query: 'SELECT * FROM predictive_operations.gold_store_operational_risk
+
+      WHERE operational_risk_score IS NOT NULL AND operational_risk_score NOT BETWEEN 0 AND 100'
+  - name: sor_tier_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sor_tier_domain
+    query: 'SELECT * FROM predictive_operations.gold_store_operational_risk
+
+      WHERE operational_risk_tier NOT IN (''UNKNOWN'', ''LOW'', ''MEDIUM'', ''HIGH'', ''CRITICAL'')'
+  - name: sor_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: sor_rowcount
+    query: SELECT COUNT(*) AS store_operational_risk_rows FROM predictive_operations.gold_store_operational_risk
+  - name: sor_high_or_worse_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: sor_high_or_worse_count
+    query: 'SELECT COUNT(*) AS high_or_worse_stores
+
+      FROM predictive_operations.gold_store_operational_risk
+
+      WHERE operational_risk_tier IN (''HIGH'', ''CRITICAL'')'
