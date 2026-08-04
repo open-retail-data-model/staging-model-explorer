@@ -1,8 +1,8 @@
 # Data Sharing with Suppliers — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-06-09
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-03
 
-Business terms for the Category Growth use case. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
+Business terms for this package's four use cases — Category Growth, Media Measurement, Joint Demand Planning, and Data Monetization. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
 
 ## Domain Brief — placement decision (Phase 0)
 
@@ -86,3 +86,54 @@ statistical baseline (no hard dependency).
 
 Builds on: canonical core `supplier`, `product` (fiscal weeks as a degenerate `fiscal_week_id`, no calendar FK). NULL-safe enrichment:
 `smarter-demand-and-inventory-decisions` (`gold_demand_forecast_weekly`) — read-only, no FK.
+
+## Data Monetization
+
+Turning the shared data itself into a revenue line: which data products a retailer offers its
+suppliers, who has **licensed** them and on what commercial terms, what they actually
+**consumed**, and what revenue that yielded — with the yield expressed against both the
+contract and the partner's wider retail-media spend. Closes the monetization/billing capability
+deferred in [ADR 0019](../../governance/decisions/0019-media-measurement-in-data-sharing.md).
+Where Media Measurement governs *who may see what* and Joint Demand Planning governs *what we
+plan together*, Data Monetization answers *what that shared data is worth*.
+
+Builds on the canonical core (`supplier`, `calendar`) and this package's own catalog; NULL-safe
+enriches with the Commerce Media Networks package's campaign performance so a supplier
+relationship can be reported as total monetised value (licensed data + media).
+
+| Object | Grain | Description |
+|---|---|---|
+| `data_product` | one version per data product | Catalog of monetizable data products: what exists, how it is delivered, how it is charged, and its published rate card. SCD2, so a re-pricing never rewrites the rate a historical subscription was sold at. |
+| `data_product_subscription` | one version per (principal, data product, supplier-scope) | The licence: which governance principal licensed which product, for which supplier scope, on what negotiated terms (price, committed allowance, term). Row-level access anchor + contract record. SCD2. |
+| `data_share_consumption` | (subscription × data product × usage date) | The meter: what a licensed partner consumed each day and what that consumption billed. Append-only; fiscal period carried as a degenerate key. |
+| `gold_data_product_revenue` | principal × data product × supplier-scope × fiscal period | Entitled data-monetization P&L (row-filter source): licensed terms, metered consumption, revenue, contract utilisation, and the NULL-safe retail-media comparison. No person-level data. |
+| `gold_data_monetization_exceptions` | same, filtered to exceptions | The licence × period rows needing commercial attention, ranked by revenue at risk. |
+
+| Term | Definition |
+|---|---|
+| **Data product** | A named, priced, licensable data asset a retailer offers its suppliers (a measured media report, a joint demand-plan feed, a category benchmark, an audience insight). Described by what it measures, never by a person. |
+| **Rate card vs contracted price** | `data_product.list_price_amount` is the **published** rate; `data_product_subscription.contracted_price_amount` is the **negotiated** rate. The gap is the discount (`contract_discount_pct`). Both are kept so revenue can be reported at either. |
+| **Subscription (licence)** | A grant letting a principal (UC group / account / service principal — not a customer) consume a data product, optionally scoped to one supplier, for a contractual term. A supplier-scoped licence outranks an all-supplier one when both cover the same usage, so consumption bills once. |
+| **Pricing model** | How a product is charged: `subscription_flat` (fixed per period), `per_consumption_unit` (metered), `tiered`, or `revenue_share`. Only `per_consumption_unit` makes a per-unit rate directly comparable to the rate card. |
+| **Consumption unit** | The unit usage is metered in (`query`, `row_scanned`, `report_delivery`, `api_call`). `consumption_units` is always denominated in the product's own unit, so units are only comparable within a product. |
+| **Billable amount** | The money a day of consumption earned, **stored** rather than derived on read: a flat or tiered licence bills the same regardless of units, so units × rate would be wrong for three of the four pricing models. |
+| **Contract utilisation** | `contract_utilisation_pct = consumption_units / contracted_units pro-rated to one fiscal period`. Because `contracted_units` is stated per **billing** period, a quarterly or annual commitment is divided by 3 or 12 before comparison — otherwise a month of usage measured against an annual allowance would understate utilisation twelve-fold. > 1 = ran over the commitment; near 0 = paid for and not used. |
+| **Revenue per consumption unit** | `data_revenue_amount / consumption_units` — the price the partner effectively paid per unit. Compared against the rate card to detect mispriced usage. |
+| **Total monetised value** | `data_revenue_amount + media_spend_net` — the whole commercial value of a supplier relationship for the period. At **row** level this is NULL-propagating (NULL if either component is absent, rather than presenting a partial sum as a total). The **metric view** instead COALESCEs the media term to 0, because only advertiser-scoped licences carry a media signal, so a bare addition would NULL the headline KPI for every other product; read `data_revenue_share_pct` (still NULL without media) to tell whether media contributed. Both sides are assumed to be in the one reporting currency — enforced within this package, conventional across the `commerce-media-networks` boundary (that gold view does not project a currency to check). |
+| **Media allocation** | The advertiser's period retail-media spend is **allocated** across the licence rows sharing that advertiser, by revenue share, so per-row values sum back to the advertiser's actual spend. Fanning the whole total onto every row would double-count `SUM(media_spend_net)`. Same allocation contract as Joint Demand Planning's statistical baseline. |
+| **Revenue at risk** | The money an exception exposes, used to rank the queue: the **contracted price** for an unused licence (what a non-renewal would cost), otherwise the realised revenue. |
+| **Exception** | A licence × period row raised for attention: paid-but-unused, materially under-consumed, consumption beyond the commitment, a term lapsing within 90 days, or a realised unit price diverging materially from the rate card. |
+| **Disclosure threshold** | Minimum consumption volume a period's usage must reach before it is shared with a partner — a low-volume/materiality floor, **not** a k-anonymity control (rows are already aggregate at licence × fiscal period and carry no underlying entity count). Below-floor usage is withheld by **NULLing the usage measures and setting `usage_suppressed_flag`**, not by dropping the row: a licence period that exists stays visible, since a silently missing period is indistinguishable from a licence that was never sold and would under-report the P&L. A NULL threshold means no floor, and a **zero-consumption row is never suppressed** — it reveals only the principal's own inactivity and is precisely the paid-but-unused signal the exception queue exists to raise. |
+| **Withheld vs unused** | `usage_suppressed_flag` distinguishes the two NULL causes: measures are NULL because they were **withheld** (usage happened, below the floor) versus **genuinely unused** (no usage at all). Only the latter is an exception; the exception queue checks the flag first so a suppressed row never raises a false churn alarm. Distinct from `data_share_consumption.threshold_suppressed_flag`, which is set **upstream** on a source usage row and excludes it *before* aggregation; `usage_suppressed_flag` marks an aggregate that was computed and then withheld. |
+| **Effective disclosure floor** | Two levels, most specific wins: the **subscription's** `min_disclosure_threshold` overrides the **data product's** catalog default. A floor is absent only when neither level sets one. |
+
+Builds on: canonical core `supplier`, `calendar` (`fiscal_calendar`, for the fiscal-period spine);
+`commerce-media-networks` (`advertiser`) as the licence's advertiser scope. NULL-safe enrichment:
+`commerce-media-networks` (`gold_campaign_performance`) — read-only, no FK.
+Deferred (logged): invoice/settlement documents — this use case reports revenue **earned**, it
+does not issue or settle invoices, so `data_share_consumption` deliberately carries no invoice
+reference (a billing run groups many usage days onto one invoice line, so that reference belongs
+on a separate invoice-line table keyed to the meter, not as a column on it). Also deferred:
+**revenue-share settlement** — the `revenue_share` pricing model is declarable in the catalog
+but has no modeled revenue path, because its earnings depend on the partner's downstream sales,
+which this model does not observe.

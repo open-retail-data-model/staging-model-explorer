@@ -26338,6 +26338,276 @@
           "name": "jdp_baseline_null_rate",
           "severity": "metric",
           "table": "gold_joint_demand_plan"
+        },
+        {
+          "column": null,
+          "name": "dp_keys_not_null",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_business_key_unique_current",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_scd2_current_open",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_category_domain",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_pricing_model_domain",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_consumption_unit_domain",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_delivery_mode_domain",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_status_domain",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_usage_priced_products_have_unit",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dp_single_currency",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dpsub_keys_not_null",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_business_key_unique_current",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_scope_unique_current",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_subscribed_ts_not_null",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_scd2_current_open",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_data_product_fk_orphan",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_supplier_fk_orphan",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_advertiser_fk_orphan",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_billing_frequency_domain",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_status_domain",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_billing_frequency_recognised",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_term_dates_ordered",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_term_start_not_null",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dpsub_single_currency",
+          "severity": "error",
+          "table": "data_product_subscription"
+        },
+        {
+          "column": null,
+          "name": "dsc_grain_unique",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_keys_not_null",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_subscription_fk_orphan",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_data_product_fk_orphan",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_supplier_fk_orphan",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_access_channel_domain",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_fiscal_period_range",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_measures_non_negative",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_usage_date_in_calendar",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_fiscal_period_matches_usage_date",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dsc_single_currency",
+          "severity": "error",
+          "table": "data_share_consumption"
+        },
+        {
+          "column": null,
+          "name": "dm_cross_table_single_currency",
+          "severity": "error",
+          "table": "data_product"
+        },
+        {
+          "column": null,
+          "name": "dpr_gold_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "dme_gold_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "dpr_media_allocation_reconciles",
+          "severity": "error",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dpr_suppressed_measures_are_withheld",
+          "severity": "error",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dpr_rowcount",
+          "severity": "metric",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dpr_suppression_rate",
+          "severity": "metric",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dpr_media_signal_null_rate",
+          "severity": "metric",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dpr_utilisation_null_rate",
+          "severity": "metric",
+          "table": "gold_data_product_revenue"
+        },
+        {
+          "column": null,
+          "name": "dme_exception_mix",
+          "severity": "metric",
+          "table": "gold_data_monetization_exceptions"
         }
       ],
       "contract_path": "contracts/odcs/data-sharing-with-suppliers.odcs.yaml",
@@ -26454,6 +26724,72 @@
             "product_sk"
           ],
           "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "data_product_sk"
+          ],
+          "child_table": "data_product_subscription",
+          "declared_fk": true,
+          "parent_cols": [
+            "data_product_sk"
+          ],
+          "parent_table": "data_product"
+        },
+        {
+          "child_cols": [
+            "supplier_sk"
+          ],
+          "child_table": "data_product_subscription",
+          "declared_fk": true,
+          "parent_cols": [
+            "supplier_sk"
+          ],
+          "parent_table": "supplier"
+        },
+        {
+          "child_cols": [
+            "advertiser_sk"
+          ],
+          "child_table": "data_product_subscription",
+          "declared_fk": true,
+          "parent_cols": [
+            "advertiser_sk"
+          ],
+          "parent_table": "advertiser"
+        },
+        {
+          "child_cols": [
+            "data_product_subscription_sk"
+          ],
+          "child_table": "data_share_consumption",
+          "declared_fk": true,
+          "parent_cols": [
+            "data_product_subscription_sk"
+          ],
+          "parent_table": "data_product_subscription"
+        },
+        {
+          "child_cols": [
+            "data_product_sk"
+          ],
+          "child_table": "data_share_consumption",
+          "declared_fk": true,
+          "parent_cols": [
+            "data_product_sk"
+          ],
+          "parent_table": "data_product"
+        },
+        {
+          "child_cols": [
+            "supplier_sk"
+          ],
+          "child_table": "data_share_consumption",
+          "declared_fk": true,
+          "parent_cols": [
+            "supplier_sk"
+          ],
+          "parent_table": "supplier"
         }
       ],
       "tables": [
@@ -26654,6 +26990,669 @@
           "layer": "silver",
           "materialized": true,
           "name": "consensus_forecast_snapshot",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the data product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the licensable data product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What kind of data product this is. Allowed values: media_measurement, demand_collaboration, category_benchmark, audience_insight.",
+              "enum_values": [
+                "media_measurement",
+                "demand_collaboration",
+                "category_benchmark",
+                "audience_insight"
+              ],
+              "fk": false,
+              "name": "data_product_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the licensed data reaches the partner. Allowed values: share, api, file_export, dashboard.",
+              "enum_values": [
+                "share",
+                "api",
+                "file_export",
+                "dashboard"
+              ],
+              "fk": false,
+              "name": "delivery_mode",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the product is charged. Allowed values: subscription_flat, per_consumption_unit, tiered, revenue_share. SCOPE NOTE: revenue_share is declarable in the catalog but has no modeled revenue path in this use case \u2014 its earnings depend on downstream sales made BY the licensed partner, which this model does not observe, so no data_share_consumption row can compute a billable_amount for it. Such a product would report consumption with NULL revenue until a share-settlement input is modeled (deferred, with invoicing).",
+              "enum_values": [
+                "subscription_flat",
+                "per_consumption_unit",
+                "tiered",
+                "revenue_share"
+              ],
+              "fk": false,
+              "name": "pricing_model",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Unit metered for usage-based pricing. Allowed values: query, row_scanned, report_delivery, api_call.",
+              "enum_values": [
+                "query",
+                "row_scanned",
+                "report_delivery",
+                "api_call"
+              ],
+              "fk": false,
+              "name": "consumption_unit",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Published list price per billing period (subscription_flat/tiered) or per consumption_unit (per_consumption_unit), reporting/base currency. NULL for revenue_share, which carries no fixed rate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "list_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Amount currency, ISO 4217 alpha-3 (single reporting currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Default minimum aggregation volume a row of this product must reach before it is disclosable \u2014 a low-volume/materiality floor, NOT a k-anonymity control. Overridden per grant by data_product_subscription.min_disclosure_threshold; NULL means NO default floor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_disclosure_threshold",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Catalog lifecycle. Allowed values: draft, published, deprecated, retired.",
+              "enum_values": [
+                "draft",
+                "published",
+                "deprecated",
+                "retired"
+              ],
+              "fk": false,
+              "name": "data_product_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Data Sharing with Suppliers \u2014 catalog of monetizable data products offered to suppliers (rate card, SCD2).",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "data_product",
+          "role": "reference",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_subscription_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the subscription grant.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_subscription_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Governance principal holding the licence (UC group / account / service principal; not a customer identity).",
+              "enum_values": [],
+              "fk": false,
+              "name": "principal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Kind of principal. Allowed values: group, account, service_principal.",
+              "enum_values": [
+                "group",
+                "account",
+                "service_principal"
+              ],
+              "fk": false,
+              "name": "principal_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to data_product.data_product_sk (the licensed product version).",
+              "enum_values": [],
+              "fk": true,
+              "name": "data_product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable data-product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to supplier.supplier_sk when the licence is scoped to one supplier (NULL = every supplier the product covers).",
+              "enum_values": [],
+              "fk": true,
+              "name": "supplier_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable supplier business key; NULL for an all-supplier licence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to commerce-media-networks advertiser.advertiser_sk when the licence is tied to one advertiser (brand) role of the supplier; NULL otherwise. Lets the revenue view align data revenue with that advertiser retail-media spend.",
+              "enum_values": [],
+              "fk": true,
+              "name": "advertiser_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable advertiser business key; NULL when the licence is not advertiser-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "advertiser_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Negotiated price per billing period (or per consumption_unit, per the product pricing_model), reporting/base currency. May differ from data_product.list_price_amount; the gap is the discount.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Committed consumption allowance per billing period, in the product consumption_unit. Metered usage is compared against this to detect an unused or over-run licence. NULL = uncapped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "How often the subscription bills. Allowed values: monthly, quarterly, annual.",
+              "enum_values": [
+                "monthly",
+                "quarterly",
+                "annual"
+              ],
+              "fk": false,
+              "name": "billing_frequency",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Amount currency, ISO 4217 alpha-3 (single reporting currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Contractual term start (business date, distinct from the SCD2 version window).",
+              "enum_values": [],
+              "fk": false,
+              "name": "term_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Contractual term end; NULL for an evergreen/auto-renewing term.",
+              "enum_values": [],
+              "fk": false,
+              "name": "term_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Minimum aggregation volume a row must reach before it is disclosable to this principal \u2014 a low-volume/materiality floor, NOT a k-anonymity control (the shared rows are already aggregate and carry no underlying entity count). Overrides the product default. NULL means NO floor (every entitled row is disclosed regardless of volume).",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_disclosure_threshold",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Licence lifecycle. Allowed values: pending, active, suspended, cancelled, expired.",
+              "enum_values": [
+                "pending",
+                "active",
+                "suspended",
+                "cancelled",
+                "expired"
+              ],
+              "fk": false,
+              "name": "subscription_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this version of the licence was agreed (UTC, ISO 8601). NOT NULL: it is the primary latest-wins ordering key in gold_data_product_revenue, so a NULL would sort a genuine latest version last and silently serve stale commercial terms.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subscribed_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Data Sharing with Suppliers \u2014 data-product subscription licence (row-level access + commercial terms, SCD2).",
+          "consumes_tables": [
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "data_product_subscription",
+          "role": "association",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_share_consumption_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key (grain hash: subscription, product, usage date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_share_consumption_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to data_product_subscription.data_product_subscription_sk (the licence this usage billed under).",
+              "enum_values": [],
+              "fk": true,
+              "name": "data_product_subscription_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable subscription business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_subscription_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Governance principal that consumed the data (denormalized from the subscription so the row filter and usage reporting need no join).",
+              "enum_values": [],
+              "fk": false,
+              "name": "principal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to data_product.data_product_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "data_product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable data-product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to supplier.supplier_sk (the supplier whose data was consumed); NULL when the licence is all-supplier and the usage is not attributable to one.",
+              "enum_values": [],
+              "fk": true,
+              "name": "supplier_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable supplier business key; NULL when not attributable to one supplier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date the consumption occurred (cluster key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "usage_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal year of usage_date (degenerate key; join-compatible with fiscal_calendar.fiscal_year).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_year",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "NRF fiscal period / retail month (1-12) of usage_date (degenerate key; join-compatible with fiscal_calendar.fiscal_period).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "How the data was accessed. Allowed values: share, api, file_export, dashboard.",
+              "enum_values": [
+                "share",
+                "api",
+                "file_export",
+                "dashboard"
+              ],
+              "fk": false,
+              "name": "access_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Metered usage for the day, in the data product consumption_unit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consumption_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Number of billable requests behind consumption_units (reported for transparency; not itself the billing basis).",
+              "enum_values": [],
+              "fk": false,
+              "name": "billed_query_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Money this day of consumption earned, already resolved against the subscription commercial terms. Stored rather than computed: a subscription_flat or tiered licence bills the same regardless of units, so units x rate would be wrong for three of the four pricing models.",
+              "enum_values": [],
+              "fk": false,
+              "name": "billable_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Amount currency, ISO 4217 alpha-3 (single reporting currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if any measure on this SOURCE usage row was threshold-suppressed before it was recorded. Set upstream, at ingestion. Not to be confused with gold_data_product_revenue.usage_suppressed_flag, which is decided IN the gold view when a period aggregate falls below the entitled floor: rows flagged here are excluded before aggregation, whereas that flag marks an aggregate that was computed and then withheld.",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_suppressed_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Data Sharing with Suppliers \u2014 metered data-product consumption and the revenue it billed (append-only).",
+          "consumes_tables": [
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "data_share_consumption",
           "role": "transactional",
           "scd2": false
         },
@@ -27718,6 +28717,532 @@
               "type": "STRING"
             },
             {
+              "comment": "Durable data-product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the licensed data product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Kind of data product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable supplier business key the licence is scoped to; NULL for an all-supplier licence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_scope_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Supplier registered/legal name; NULL for an all-supplier licence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "NRF fiscal year.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_year",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal period (1-12) the exception was raised in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Why the row needs attention. One of: paid_unused_subscription, under_consumed_subscription, over_contracted_consumption, lapsing_term, rate_card_divergence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Licence lifecycle at its latest version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subscription_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Contractual term end; NULL for an evergreen term.",
+              "enum_values": [],
+              "fk": false,
+              "name": "term_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Committed consumption allowance per billing period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Metered consumption in the period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consumption_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Share of the period allowance consumed (pro-rated to one fiscal period).",
+              "enum_values": [],
+              "fk": false,
+              "name": "contract_utilisation_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Negotiated price per billing period, reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Revenue billed from metered consumption in the period, reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_revenue_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Realised price per metered unit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "revenue_per_consumption_unit",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Discount granted off the rate card.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contract_discount_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Most recent usage date in the period; NULL when unused.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_usage_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Money exposed by the exception, used to rank the queue: the contracted price for an unused licence (what a non-renewal would cost), else the realised revenue.",
+              "enum_values": [],
+              "fk": false,
+              "name": "revenue_at_risk",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Amount currency, ISO 4217 alpha-3.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Rank within a principal by revenue_at_risk (1 = highest).",
+              "enum_values": [],
+              "fk": false,
+              "name": "priority_rank",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Data-monetization attention queue over gold_data_product_revenue: the licence \u00d7 period rows a commercial owner should act on, ranked by revenue at risk. An exception is raised when a licence was paid for and not used (the churn signal), when consumption ran materially beyond the contracted allowance (an upsell or an over-run to true up), when a term is about to lapse without renewal, or when the effective price per unit diverges materially from the published rate card. Reads only the entitled revenue view, so it exposes no row a partner could not already see.",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_data_monetization_exceptions",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Governance principal entitled to see this row (row-filter key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "principal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable data-product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the licensed data product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Kind of data product. One of: media_measurement, demand_collaboration, category_benchmark, audience_insight.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_product_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the product is charged. One of: subscription_flat, per_consumption_unit, tiered, revenue_share.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pricing_model",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Unit the consumption_units measure is denominated in. One of: query, row_scanned, report_delivery, api_call.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consumption_unit",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable supplier business key the LICENCE is scoped to; NULL for a licence spanning every supplier the product covers (not the supplier of an individual usage row).",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_scope_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Supplier registered/legal name; NULL for an all-supplier licence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "supplier_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable advertiser business key the licence is tied to (the brand role of the supplier); NULL when not advertiser-scoped. This is the grain the media allocation is computed over.",
+              "enum_values": [],
+              "fk": false,
+              "name": "advertiser_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "NRF fiscal year.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_year",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal period (1-12).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Licence lifecycle at its latest version. One of: active, suspended, expired (pending and cancelled licences are excluded).",
+              "enum_values": [],
+              "fk": false,
+              "name": "subscription_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How often the subscription bills. One of: monthly, quarterly, annual.",
+              "enum_values": [],
+              "fk": false,
+              "name": "billing_frequency",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Contractual term start.",
+              "enum_values": [],
+              "fk": false,
+              "name": "term_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Contractual term end; NULL for an evergreen/auto-renewing term.",
+              "enum_values": [],
+              "fk": false,
+              "name": "term_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Negotiated price per billing period, reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Published rate-card price from the data-product catalog, reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "list_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Committed consumption allowance per BILLING period (not per fiscal period; contract_utilisation_pct pro-rates it).",
+              "enum_values": [],
+              "fk": false,
+              "name": "contracted_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Metered consumption in the period, in the product consumption_unit. NULL when the licence billed no usage that period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consumption_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Number of billable requests behind consumption_units (transparency; not the billing basis).",
+              "enum_values": [],
+              "fk": false,
+              "name": "billed_query_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Revenue billed from metered consumption in the period, reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_revenue_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Amount currency, ISO 4217 alpha-3.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Most recent usage date in the period; NULL when the licence was unused or its usage was suppressed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_usage_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "TRUE when this period had usage but below the entitled disclosure floor (the grant threshold, else the data product default), so the usage measures (and every metric derived from them) are withheld as NULL while the licence row itself remains visible. Distinguishes \"withheld\" from \"genuinely unused\": a row with this flag set must NOT be read as paid-but-unused. Distinct from data_share_consumption.threshold_suppressed_flag, which is set upstream on a SOURCE usage row and excludes it before aggregation; this flag marks an aggregate that was computed and then withheld.",
+              "enum_values": [],
+              "fk": false,
+              "name": "usage_suppressed_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Discount granted off the rate card = (list_price_amount - contracted_price_amount) / list_price_amount.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contract_discount_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Share of the period allowance consumed = consumption_units / (contracted_units pro-rated from the billing frequency to one fiscal period). Greater than 1 means the licence ran over its commitment; near 0 means it was paid for and not used. NULL for an uncapped licence or an unrecognised billing frequency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "contract_utilisation_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Realised price the partner effectively paid per metered unit = data_revenue_amount / consumption_units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "revenue_per_consumption_unit",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "The advertiser retail-media net spend for the period from the Commerce Media Networks package, ALLOCATED to this licence row by its revenue share of the advertiser (so per-row values sum back to the advertiser actual spend, rather than fanning the whole total onto every row). NULL if that package is absent or unpopulated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "media_spend_net",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL"
+            },
+            {
+              "comment": "Total monetised value of the supplier relationship for the period = data_revenue_amount + media_spend_net. NULL-propagating: NULL if either component is absent, rather than presenting a partial sum as a total.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_monetised_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Data revenue as a share of total monetised value. Because the media allocation is revenue-proportional, this is invariant across the licence rows of one advertiser x period \u2014 it is the advertiser-level data share, carried per row so it survives the row filter.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_revenue_share_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "The ENTITLED data-monetization P&L: per principal \u00d7 data product \u00d7 supplier scope \u00d7 fiscal period, the licensed commercial terms, the metered consumption, the revenue it billed, and the yield of that revenue against both the contract and the partner's retail-media spend. This is the row-filter source for partner-facing revenue reporting; pairs with gold_data_monetization_exceptions (the ranked attention queue).",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_data_product_revenue",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Governance principal entitled to see this row (row-filter key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "principal_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
               "comment": "Durable supplier business key.",
               "enum_values": [],
               "fk": false,
@@ -28243,10 +29768,16 @@
           "tables": []
         },
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "supplier"
+          ],
           "name": "Data Monetization",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_data_product_revenue",
+            "gold_data_monetization_exceptions"
+          ]
         },
         {
           "consumes": [
