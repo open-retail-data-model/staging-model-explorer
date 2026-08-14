@@ -34145,6 +34145,90 @@
           "name": "gold_promo_roi_negative_net_count",
           "severity": "metric",
           "table": "gold_promo_roi"
+        },
+        {
+          "column": null,
+          "name": "offer_zone_keys_not_null",
+          "severity": "error",
+          "table": "offer_zone"
+        },
+        {
+          "column": null,
+          "name": "offer_zone_pk_unique",
+          "severity": "error",
+          "table": "offer_zone"
+        },
+        {
+          "column": null,
+          "name": "location_offer_keys_not_null",
+          "severity": "error",
+          "table": "location_offer"
+        },
+        {
+          "column": null,
+          "name": "location_offer_pk_unique",
+          "severity": "error",
+          "table": "location_offer"
+        },
+        {
+          "column": null,
+          "name": "offer_event_keys_not_null",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "offer_event_pk_unique",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "location_offer_dwell_requires_min_dwell",
+          "severity": "error",
+          "table": "location_offer"
+        },
+        {
+          "column": null,
+          "name": "offer_event_suppression_reason_iff_suppressed",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "offer_event_delivery_requires_consent",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "offer_event_redeemed_requires_transaction",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "offer_event_within_offer_window",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "offer_event_location_offer_fk_orphan",
+          "severity": "error",
+          "table": "offer_event"
+        },
+        {
+          "column": null,
+          "name": "gold_location_offer_performance_rate_bounds",
+          "severity": "error",
+          "table": "gold_location_offer_performance"
+        },
+        {
+          "column": null,
+          "name": "gold_zone_engagement_weekly_rate_bounds",
+          "severity": "error",
+          "table": "gold_zone_engagement_weekly"
         }
       ],
       "contract_path": "contracts/odcs/promote-with-purpose.odcs.yaml",
@@ -34184,9 +34268,383 @@
             "store_sk"
           ],
           "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "zone_sk"
+          ],
+          "child_table": "location_offer",
+          "declared_fk": true,
+          "parent_cols": [
+            "zone_sk"
+          ],
+          "parent_table": "offer_zone"
+        },
+        {
+          "child_cols": [
+            "location_offer_sk"
+          ],
+          "child_table": "offer_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "location_offer_sk"
+          ],
+          "parent_table": "location_offer"
         }
       ],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "location_offer_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the location offer.",
+              "enum_values": [],
+              "fk": false,
+              "name": "location_offer_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable promotion business key this offer delivers (logical reference to promotion.promo_id).",
+              "enum_values": [],
+              "fk": false,
+              "name": "promotion_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to offer_zone.zone_sk \u2014 the zone whose trigger fires this offer.",
+              "enum_values": [],
+              "fk": true,
+              "name": "zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "What device signal fires the offer. Common values: geofence_enter, geofence_exit, dwell, beacon_proximity (enum enforced in relationships.sql).",
+              "enum_values": [
+                "geofence_enter",
+                "geofence_exit",
+                "dwell",
+                "beacon_proximity"
+              ],
+              "fk": false,
+              "name": "trigger_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Minimum dwell time in seconds; required only for trigger_type=dwell (asserted in checks.sql), NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_dwell_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Maximum number of times this offer may fire for one customer per day (> 0).",
+              "enum_values": [],
+              "fk": false,
+              "name": "daily_trigger_cap",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Hours after a delivery before the same offer may be delivered again to the same customer (>= 0).",
+              "enum_values": [],
+              "fk": false,
+              "name": "suppression_window_hours",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Delivery channel. Common values: push, sms, email, in_app (enum enforced in relationships.sql).",
+              "enum_values": [
+                "push",
+                "sms",
+                "email",
+                "in_app"
+              ],
+              "fk": false,
+              "name": "channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Offer availability window start (event-time, UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "offer_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Offer availability window end (event-time, UTC); must be after offer_start_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "offer_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Lifecycle state. Common values: draft, active, paused, ended (enum enforced in relationships.sql).",
+              "enum_values": [
+                "draft",
+                "active",
+                "paused",
+                "ended"
+              ],
+              "fk": false,
+              "name": "status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Location-triggered offer definitions (trigger, frequency/suppression rules, channel) for the Location-Based Offers use case.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "location_offer",
+          "role": "reference",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate/durable key for the offer event (system-generated).",
+              "enum_values": [],
+              "fk": false,
+              "name": "offer_event_id",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "FK to location_offer.location_offer_sk \u2014 the offer that fired.",
+              "enum_values": [],
+              "fk": true,
+              "name": "location_offer_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Pseudonymous customer key (logical reference to customer profile.profile_id). No PII, no device id, no location trail.",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key where the event occurred (logical reference to store.store_id).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the event occurred (event-time, UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Event kind. Common values: triggered, suppressed, delivered, opened, redeemed (enum enforced in relationships.sql).",
+              "enum_values": [
+                "triggered",
+                "suppressed",
+                "delivered",
+                "opened",
+                "redeemed"
+              ],
+              "fk": false,
+              "name": "event_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Why a trigger was suppressed; set only when event_type=suppressed, NULL otherwise. Common values: no_consent, daily_cap, quiet_hours, frequency_window (enum enforced in relationships.sql).",
+              "enum_values": [
+                "no_consent",
+                "daily_cap",
+                "quiet_hours",
+                "frequency_window"
+              ],
+              "fk": false,
+              "name": "suppression_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable sales-transaction business key for redemption attribution (logical reference to transaction sales.sales_id); NULL when not a redemption.",
+              "enum_values": [],
+              "fk": false,
+              "name": "transaction_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when marketing consent was verified for this customer at event time; must be TRUE for every delivered/opened/redeemed event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_verified",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            }
+          ],
+          "comment": "Location-based offer delivery/engagement events (pseudonymous keys; consent-verified deliveries) for the Location-Based Offers use case.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "offer_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the zone.",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key this zone is anchored to (logical reference to store.store_id).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Zone geometry kind. Common values: store_radius, polygon, beacon, mall_common_area (enum enforced in relationships.sql).",
+              "enum_values": [
+                "store_radius",
+                "polygon",
+                "beacon",
+                "mall_common_area"
+              ],
+              "fk": false,
+              "name": "zone_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Radius in metres for a store_radius zone; NULL for non-radial zones. When present, must be > 0.",
+              "enum_values": [],
+              "fk": false,
+              "name": "radius_m",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "7-character geohash of the zone centroid (~150 m cell). Coarse BY DESIGN \u2014 the privacy floor; never a precise coordinate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "centroid_geohash7",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SCD2 version start (event-time, UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "SCD2 version end (exclusive); NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "SCD2 current-version indicator (TRUE for the open version).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Timestamp this row was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Timestamp this row was last updated (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "updated_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Defined location zones (membership only; coarse geohash centroid) for the Location-Based Offers use case.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "offer_zone",
+          "role": "master",
+          "scd2": true
+        },
         {
           "columns": [
             {
@@ -34299,6 +34757,152 @@
           "materialized": true,
           "name": "promotion_scope",
           "role": "association",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Offer surrogate (FK to location_offer.location_offer_sk); part of the grain PK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "location_offer_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Store business key; part of the grain PK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": true,
+              "type": "STRING"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal week; part of the grain PK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": true,
+              "type": "INT"
+            },
+            {
+              "comment": "Count of triggered events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trigger_events",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of suppressed events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suppressed_events",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of delivered events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "delivered_events",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of opened events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "opened_events",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of redeemed events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "redemptions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct pseudonymous customers with a delivered event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unique_customers_reached",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "delivered / (delivered + suppressed); bounded 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "delivery_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(9,4)"
+            },
+            {
+              "comment": "opened / delivered; bounded 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "open_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(9,4)"
+            },
+            {
+              "comment": "redemptions / delivered; bounded 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "redemption_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(9,4)"
+            },
+            {
+              "comment": "suppressed / (delivered + suppressed); bounded 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suppression_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(9,4)"
+            },
+            {
+              "comment": "Sum of transaction net_revenue attributed to redeemed events (base currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "attributed_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            }
+          ],
+          "comment": "",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_location_offer_performance",
+          "role": "",
           "scd2": false
         },
         {
@@ -34737,7 +35341,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Promotion business key.",
               "enum_values": [],
               "fk": false,
               "name": "promo_id",
@@ -34746,7 +35350,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Promotion name.",
               "enum_values": [],
               "fk": false,
               "name": "promo_name",
@@ -34755,7 +35359,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Mechanic: TPR / FEATURE / DISPLAY / FEATURE_AND_DISPLAY / BOGO / COUPON / BUNDLE.",
               "enum_values": [],
               "fk": false,
               "name": "promo_type",
@@ -34764,7 +35368,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "OFF_INVOICE / BILL_BACK / SCAN_DOWN / LUMP_SUM.",
               "enum_values": [],
               "fk": false,
               "name": "funding_type",
@@ -34773,7 +35377,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "SUPPLIER / RETAILER / SHARED.",
               "enum_values": [],
               "fk": false,
               "name": "funded_by",
@@ -34782,7 +35386,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Promotion start date.",
               "enum_values": [],
               "fk": false,
               "name": "start_date",
@@ -34791,7 +35395,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Promotion end date.",
               "enum_values": [],
               "fk": false,
               "name": "end_date",
@@ -34800,7 +35404,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Product category \u2014 the drill grain of this view.",
               "enum_values": [],
               "fk": false,
               "name": "category",
@@ -34809,7 +35413,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Units sold on promotion.",
               "enum_values": [],
               "fk": false,
               "name": "promoted_units",
@@ -34818,7 +35422,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Net revenue on promotion.",
               "enum_values": [],
               "fk": false,
               "name": "promoted_revenue",
@@ -34827,7 +35431,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Gross margin on promotion.",
               "enum_values": [],
               "fk": false,
               "name": "promoted_margin",
@@ -34836,7 +35440,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Expected non-promoted units over the promo window (trailing-8-week baseline).",
               "enum_values": [],
               "fk": false,
               "name": "baseline_units",
@@ -34845,7 +35449,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Baseline units valued at normal price.",
               "enum_values": [],
               "fk": false,
               "name": "baseline_revenue",
@@ -34854,7 +35458,7 @@
               "type": "DECIMAL(18, 4)"
             },
             {
-              "comment": "",
+              "comment": "Baseline units valued at normal margin.",
               "enum_values": [],
               "fk": false,
               "name": "baseline_margin",
@@ -34863,7 +35467,7 @@
               "type": "DECIMAL(18, 4)"
             },
             {
-              "comment": "",
+              "comment": "promoted_units - baseline_units (NOT clamped; negative = lost volume).",
               "enum_values": [],
               "fk": false,
               "name": "incremental_units",
@@ -34872,7 +35476,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "promoted_revenue - baseline_revenue.",
               "enum_values": [],
               "fk": false,
               "name": "incremental_revenue",
@@ -34881,7 +35485,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "promoted_margin - baseline_margin.",
               "enum_values": [],
               "fk": false,
               "name": "incremental_margin",
@@ -34890,7 +35494,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Planned trade spend allocated to this category by its share of the promo scope rows (realized actuals not modelled in v1).",
               "enum_values": [],
               "fk": false,
               "name": "trade_spend",
@@ -34899,7 +35503,7 @@
               "type": "DECIMAL"
             },
             {
-              "comment": "",
+              "comment": "incremental_margin / NULLIF(trade_spend, 0); NULL-safe.",
               "enum_values": [],
               "fk": false,
               "name": "roi",
@@ -34908,7 +35512,7 @@
               "type": "DECIMAL"
             },
             {
-              "comment": "",
+              "comment": "Planned incremental unit lift %.",
               "enum_values": [],
               "fk": false,
               "name": "planned_lift_pct",
@@ -34917,7 +35521,7 @@
               "type": "DECIMAL(6, 2)"
             },
             {
-              "comment": "",
+              "comment": "100 x incremental_units / baseline_units.",
               "enum_values": [],
               "fk": false,
               "name": "realized_lift_pct",
@@ -34926,7 +35530,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Lost units on substitute SKUs (same category, not on promo) during the window.",
               "enum_values": [],
               "fk": false,
               "name": "cannibalization_units",
@@ -34935,7 +35539,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Margin lost to cannibalization.",
               "enum_values": [],
               "fk": false,
               "name": "cannibalization_margin",
@@ -34944,7 +35548,7 @@
               "type": "DECIMAL(18, 4)"
             },
             {
-              "comment": "",
+              "comment": "Lost units on promoted SKUs in the N weeks after the promo (pantry loading).",
               "enum_values": [],
               "fk": false,
               "name": "forward_buy_units",
@@ -34953,7 +35557,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Margin lost to forward buy.",
               "enum_values": [],
               "fk": false,
               "name": "forward_buy_margin",
@@ -34962,7 +35566,7 @@
               "type": "DECIMAL(18, 4)"
             },
             {
-              "comment": "",
+              "comment": "incremental_margin - cannibalization_margin - forward_buy_margin (negative = value destroyed).",
               "enum_values": [],
               "fk": false,
               "name": "net_incremental_margin",
@@ -35215,7 +35819,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "FK to product.product_sk (version-specific); resolve to the durable product_id before aggregating (\u00a7A.16).",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -35224,7 +35828,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "FK to store.store_sk (version-specific); resolve to the durable store_id before aggregating (\u00a7A.16).",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -35233,7 +35837,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Globally monotonic week counter across the whole calendar; use for trailing N-week windows.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_index",
@@ -35242,7 +35846,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Total units sold in the week (promoted and non-promoted).",
               "enum_values": [],
               "fk": false,
               "name": "actual_units",
@@ -35251,7 +35855,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Total net revenue in the week (promoted and non-promoted).",
               "enum_values": [],
               "fk": false,
               "name": "actual_revenue",
@@ -35260,7 +35864,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Trailing-8-week non-promoted mean units; NULL if < 4 weeks available.",
               "enum_values": [],
               "fk": false,
               "name": "baseline_units",
@@ -35285,6 +35889,76 @@
           "name": "gold_weekly_baseline",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable zone business key; part of the grain PK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_id",
+              "pii": false,
+              "pk": true,
+              "type": "STRING"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal week; part of the grain PK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_week_id",
+              "pii": false,
+              "pk": true,
+              "type": "INT"
+            },
+            {
+              "comment": "Distinct active location offers with events in this zone-week.",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_offers",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of triggered events in this zone-week.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trigger_events",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct pseudonymous customers engaged in this zone-week.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unique_customers",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "redemptions / triggers; NULL-safe; bounded 0..1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversion_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(9,4)"
+            }
+          ],
+          "comment": "",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_zone_engagement_weekly",
+          "role": "",
+          "scd2": false
         }
       ],
       "use_cases": [
@@ -35304,10 +35978,16 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "transaction"
+          ],
           "name": "Location-Based Offers",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_location_offer_performance",
+            "gold_zone_engagement_weekly"
+          ]
         },
         {
           "consumes": [
