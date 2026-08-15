@@ -37354,6 +37354,42 @@
               "pii": false,
               "pk": false,
               "type": "STRING"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601). Required on reference tables (standard \u00a78).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601). Required on reference tables (standard \u00a78).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
             }
           ],
           "comment": "Location-triggered offer definitions (trigger, frequency/suppression rules, channel) for the Location-Based Offers use case.",
@@ -37367,13 +37403,22 @@
         {
           "columns": [
             {
-              "comment": "Surrogate/durable key for the offer event (system-generated).",
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "offer_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the offer event: the identifier issued by the delivery platform for the trigger/delivery record, carried through unchanged. Not derived, concatenated, or hashed here.",
               "enum_values": [],
               "fk": false,
               "name": "offer_event_id",
               "pii": false,
-              "pk": true,
-              "type": "BIGINT"
+              "pk": false,
+              "type": "STRING"
             },
             {
               "comment": "FK to location_offer.location_offer_sk \u2014 the offer that fired.",
@@ -37457,6 +37502,24 @@
               "pii": false,
               "pk": false,
               "type": "BOOLEAN"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
             }
           ],
           "comment": "Location-based offer delivery/engagement events (pseudonymous keys; consent-verified deliveries) for the Location-Based Offers use case.",
@@ -37529,22 +37592,22 @@
               "type": "STRING"
             },
             {
-              "comment": "SCD2 version start (event-time, UTC).",
+              "comment": "SCD2: inclusive start date this version became effective.",
               "enum_values": [],
               "fk": false,
-              "name": "effective_start_ts",
+              "name": "effective_from_date",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": "DATE"
             },
             {
-              "comment": "SCD2 version end (exclusive); NULL for the current version.",
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
               "enum_values": [],
               "fk": false,
-              "name": "effective_end_ts",
+              "name": "effective_to_date",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": "DATE"
             },
             {
               "comment": "SCD2 current-version indicator (TRUE for the open version).",
@@ -37556,19 +37619,37 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "Timestamp this row was created (UTC, ISO 8601).",
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
               "enum_values": [],
               "fk": false,
-              "name": "created_ts",
+              "name": "created_timestamp",
               "pii": false,
               "pk": false,
               "type": "TIMESTAMP"
             },
             {
-              "comment": "Timestamp this row was last updated (UTC, ISO 8601).",
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
               "enum_values": [],
               "fk": false,
-              "name": "updated_ts",
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
               "pii": false,
               "pk": false,
               "type": "TIMESTAMP"

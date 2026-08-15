@@ -145,6 +145,28 @@ schema:
       dimension: validity
       severity: error
       description: 'Allowed values: draft, active, paused, ended.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601). Required on reference
+      tables (standard §8).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601). Required on reference
+      tables (standard §8).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).
   quality:
   - name: location_offer_keys_not_null
     type: sql
@@ -195,13 +217,20 @@ schema:
   - url: docs/data-model-standards.md
     type: businessDefinition
   properties:
-  - name: offer_event_id
+  - name: offer_event_sk
     logicalType: integer
     physicalType: BIGINT
     required: true
     primaryKey: true
     primaryKeyPosition: 1
-    description: Surrogate/durable key for the offer event (system-generated).
+    description: Surrogate key.
+  - name: offer_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable business key for the offer event: the identifier issued by the delivery platform
+      for the trigger/delivery record, carried through unchanged. Not derived, concatenated, or hashed
+      here.'
   - name: location_offer_sk
     logicalType: integer
     physicalType: BIGINT
@@ -265,6 +294,16 @@ schema:
     required: true
     description: TRUE when marketing consent was verified for this customer at event time; must be TRUE
       for every delivered/opened/redeemed event.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).
   quality:
   - name: offer_event_keys_not_null
     type: sql
@@ -273,8 +312,8 @@ schema:
     mustBe: 0
     unit: rows
     description: offer_event_keys_not_null
-    query: "SELECT * FROM promote_with_purpose.offer_event\nWHERE offer_event_id IS NULL OR location_offer_sk\
-      \ IS NULL\n   OR customer_id IS NULL OR store_id IS NULL"
+    query: "SELECT * FROM promote_with_purpose.offer_event\nWHERE offer_event_sk IS NULL OR offer_event_id\
+      \ IS NULL\n   OR location_offer_sk IS NULL\n   OR customer_id IS NULL OR store_id IS NULL"
   - name: offer_event_pk_unique
     type: sql
     dimension: accuracy
@@ -282,11 +321,11 @@ schema:
     mustBe: 0
     unit: rows
     description: offer_event_pk_unique
-    query: 'SELECT offer_event_id, COUNT(*) AS rows
+    query: 'SELECT offer_event_sk, COUNT(*) AS rows
 
       FROM promote_with_purpose.offer_event
 
-      GROUP BY offer_event_id
+      GROUP BY offer_event_sk
 
       HAVING COUNT(*) > 1'
   - name: offer_event_suppression_reason_iff_suppressed
@@ -396,31 +435,41 @@ schema:
     required: false
     description: 7-character geohash of the zone centroid (~150 m cell). Coarse BY DESIGN — the privacy
       floor; never a precise coordinate.
-  - name: effective_start_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
     required: true
-    description: SCD2 version start (event-time, UTC).
-  - name: effective_end_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
     required: false
-    description: SCD2 version end (exclusive); NULL for the current version.
+    description: 'SCD2: exclusive end date; NULL for the current version.'
   - name: is_current
     logicalType: boolean
     physicalType: BOOLEAN
     required: true
     description: SCD2 current-version indicator (TRUE for the open version).
-  - name: created_ts
+  - name: created_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
-    required: true
-    description: Timestamp this row was created (UTC, ISO 8601).
-  - name: updated_ts
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
-    required: true
-    description: Timestamp this row was last updated (UTC, ISO 8601).
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded into the canonical core (UTC, ISO 8601).
   quality:
   - name: offer_zone_keys_not_null
     type: sql
