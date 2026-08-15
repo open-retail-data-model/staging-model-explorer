@@ -1176,6 +1176,1661 @@ schema:
       \ (\n  SELECT DISTINCT a2a_session_sk\n  FROM agentic_commerce.a2a_negotiation_event\n  WHERE event_type\
       \ = 'acceptance'\n) a ON s.a2a_session_sk = a.a2a_session_sk\nWHERE s.session_status = 'completed'\
       \ AND a.a2a_session_sk IS NULL"
+- name: assistant_turn_event
+  physicalName: agentic_commerce.assistant_turn_event
+  physicalType: table
+  description: Agentic Commerce structured assistant turn/action fact for conversational shopping.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: assistant_turn_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the assistant turn event.
+  - name: assistant_turn_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the assistant turn event.
+  - name: conversation_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to conversation_session.conversation_session_sk.
+    relationships:
+    - to: conversation_session.conversation_session_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: conversation_session_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key for the parent conversational shopping session.
+  - name: discovery_intent_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to discovery_intent_event.discovery_intent_event_sk when this turn captured or used
+      a discovery intent.
+    relationships:
+    - to: discovery_intent_event.discovery_intent_event_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: discovery_intent_event_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable business key for the linked discovery intent event.
+  - name: turn_sequence_number
+    logicalType: integer
+    physicalType: INT
+    required: true
+    description: One-based turn order within the conversation session.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (turn_sequence_number > 0).
+  - name: actor_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Actor responsible for the turn. Allowed values: shopper, assistant, associate, system.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: shopper, assistant, associate, system.'
+  - name: turn_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Structured turn type. Allowed values: intent_capture, recommendation, product_comparison,
+      availability_check, cart_action, handoff, fallback, clarification, other.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: intent_capture, recommendation, product_comparison, availability_check,
+        cart_action, handoff, fallback, clarification, other.'
+  - name: assistant_action_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Structured assistant action. Allowed values: none, search_products, recommend_products,
+      compare_products, check_availability, add_to_cart, handoff_to_associate, answer_question, clarify_intent.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: none, search_products, recommend_products, compare_products, check_availability,
+        add_to_cart, handoff_to_associate, answer_question, clarify_intent.'
+  - name: intent_category
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Turn-local normalized shopper intent category when this turn captured or refined intent;
+      not authoritative over the linked discovery_intent_event (use that row for the session intent of
+      record). Allowed values: product_search, need_based, occasion, problem_solution, compatibility,
+      style_fit, replenishment, comparison, unknown.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: product_search, need_based, occasion, problem_solution, compatibility,
+        style_fit, replenishment, comparison, unknown.'
+  - name: intent_confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Turn-local model confidence that the normalized category reflects the shopper intent,
+      from 0.0 to 1.0; scoped to this turn, not authoritative over the linked discovery_intent_event.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (intent_confidence_score IS NULL OR (intent_confidence_score >= 0.0 AND intent_confidence_score
+        <= 1.0)).
+  - name: is_fallback_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the assistant could not confidently answer or proceed without fallback behavior.
+  - name: is_handoff_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the turn handed the shopper to an associate or other support channel.
+  - name: event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the turn occurred at source (UTC, ISO 8601).
+  - name: event_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the turn event.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ate_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_keys_not_null
+    query: "SELECT * FROM agentic_commerce.assistant_turn_event\nWHERE assistant_turn_event_sk IS NULL\n\
+      \   OR assistant_turn_event_id IS NULL\n   OR conversation_session_id IS NULL\n   OR turn_sequence_number\
+      \ IS NULL\n   OR actor_type IS NULL\n   OR turn_type IS NULL\n   OR event_ts IS NULL\n   OR event_date\
+      \ IS NULL"
+  - name: ate_business_key_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_business_key_unique
+    query: 'SELECT assistant_turn_event_id, COUNT(*) AS n
+
+      FROM agentic_commerce.assistant_turn_event
+
+      GROUP BY assistant_turn_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: ate_turn_sequence_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_turn_sequence_unique
+    query: 'SELECT conversation_session_id, turn_sequence_number, COUNT(*) AS n
+
+      FROM agentic_commerce.assistant_turn_event
+
+      GROUP BY conversation_session_id, turn_sequence_number
+
+      HAVING COUNT(*) > 1'
+  - name: ate_session_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_session_fk_orphan
+    query: "SELECT t.* FROM agentic_commerce.assistant_turn_event t\nLEFT JOIN agentic_commerce.conversation_session\
+      \ s\n  ON t.conversation_session_sk = s.conversation_session_sk\nWHERE t.conversation_session_sk\
+      \ IS NOT NULL\n  AND s.conversation_session_sk IS NULL"
+  - name: ate_session_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_session_businesskey_orphan
+    query: "SELECT t.* FROM agentic_commerce.assistant_turn_event t\nLEFT JOIN agentic_commerce.conversation_session\
+      \ s\n  ON t.conversation_session_id = s.conversation_session_id\nWHERE s.conversation_session_id\
+      \ IS NULL"
+  - name: ate_intent_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_intent_fk_orphan
+    query: "SELECT t.* FROM agentic_commerce.assistant_turn_event t\nLEFT JOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON t.discovery_intent_event_sk = i.discovery_intent_event_sk\nWHERE t.discovery_intent_event_sk\
+      \ IS NOT NULL\n  AND i.discovery_intent_event_sk IS NULL"
+  - name: ate_intent_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_intent_businesskey_orphan
+    query: "SELECT t.* FROM agentic_commerce.assistant_turn_event t\nLEFT JOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON t.discovery_intent_event_id = i.discovery_intent_event_id\nWHERE t.discovery_intent_event_id\
+      \ IS NOT NULL\n  AND i.discovery_intent_event_id IS NULL"
+  - name: ate_intent_session_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: When a turn links a discovery intent, that intent must belong to the SAME conversation
+      session as the turn (turn -> intent -> session equals turn -> session). The redundant grandparent
+      key (conversation_session_sk) is published and joinable, so assert it agrees with the path through
+      the intent.
+    query: "SELECT t.* FROM agentic_commerce.assistant_turn_event t\nJOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON t.discovery_intent_event_sk = i.discovery_intent_event_sk\nWHERE t.discovery_intent_event_sk\
+      \ IS NOT NULL\n  AND t.conversation_session_sk <> i.conversation_session_sk"
+  - name: ate_actor_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_actor_type_domain
+    query: 'SELECT * FROM agentic_commerce.assistant_turn_event
+
+      WHERE actor_type NOT IN (''shopper'', ''assistant'', ''associate'', ''system'')'
+  - name: ate_turn_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_turn_type_domain
+    query: 'SELECT * FROM agentic_commerce.assistant_turn_event
+
+      WHERE turn_type NOT IN (''intent_capture'', ''recommendation'', ''product_comparison'', ''availability_check'',
+      ''cart_action'', ''handoff'', ''fallback'', ''clarification'', ''other'')'
+  - name: ate_action_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_action_type_domain
+    query: 'SELECT * FROM agentic_commerce.assistant_turn_event
+
+      WHERE assistant_action_type NOT IN (''none'', ''search_products'', ''recommend_products'', ''compare_products'',
+      ''check_availability'', ''add_to_cart'', ''handoff_to_associate'', ''answer_question'', ''clarify_intent'')'
+  - name: ate_intent_category_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_intent_category_domain
+    query: "SELECT * FROM agentic_commerce.assistant_turn_event\nWHERE intent_category IS NOT NULL\n \
+      \ AND intent_category NOT IN ('product_search', 'need_based', 'occasion', 'problem_solution', 'compatibility',\
+      \ 'style_fit', 'replenishment', 'comparison', 'unknown')"
+  - name: ate_confidence_score_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_confidence_score_range
+    query: "SELECT * FROM agentic_commerce.assistant_turn_event\nWHERE intent_confidence_score IS NOT\
+      \ NULL\n  AND intent_confidence_score NOT BETWEEN 0 AND 1"
+  - name: ate_event_date_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ate_event_date_consistency
+    query: 'SELECT * FROM agentic_commerce.assistant_turn_event
+
+      WHERE event_date <> CAST(event_ts AS DATE)'
+  - name: ate_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ate_rowcount
+    query: 'SELECT COUNT(*) AS assistant_turn_event_rows
+
+      FROM agentic_commerce.assistant_turn_event'
+- name: conversation_session
+  physicalName: agentic_commerce.conversation_session
+  physicalType: table
+  description: Agentic Commerce append-only privacy-safe conversational shopping session fact.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: conversation_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the conversational shopping session.
+  - name: conversation_session_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the conversational shopping session.
+  - name: profile_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to customer.profile.profile_sk when the shopper is resolved.
+    relationships:
+    - to: profile.profile_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: customer
+      - property: enforced
+        value: false
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable customer business key (pseudonymous). NULL for anonymous sessions.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk when the conversation is scoped to a store/location.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable store business key when store context is known.
+  - name: session_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pseudonymous session identifier from the shopping surface; degenerate, not application
+      state.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: conversation_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pseudonymous conversation identifier; degenerate, not transcript state.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: entry_channel
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Surface where the conversation started. Allowed values: web, mobile_app, kiosk, store_associate,
+      voice, api.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: web, mobile_app, kiosk, store_associate, voice, api.'
+  - name: locale_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Locale/language context for the conversation, e.g. en-US.
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Jurisdiction used for consent/personalization evaluation, ISO 3166-1 alpha-2 when available.
+  - name: started_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the conversation started at source (UTC, ISO 8601).
+  - name: ended_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the conversation ended at source (UTC, ISO 8601). NULL only when still active at
+      the reporting cutoff or unknown.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (ended_ts IS NULL OR ended_ts >= started_ts).
+  - name: started_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date the conversation started.
+  - name: session_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Lifecycle status at the immutable reporting point. Allowed values: active, completed,
+      abandoned, escalated.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, completed, abandoned, escalated.'
+  - name: resolution_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'How the session resolved. Allowed values: product_selected, add_to_cart, purchase, handoff,
+      no_resolution, abandoned.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: product_selected, add_to_cart, purchase, handoff, no_resolution, abandoned.'
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the shopper was eligible for personalized assistance at session start.
+  - name: consent_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Consent state used for personalization at session start. Allowed values: granted, denied,
+      unknown.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: granted, denied, unknown.'
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: cs_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_keys_not_null
+    query: "SELECT * FROM agentic_commerce.conversation_session\nWHERE conversation_session_sk IS NULL\n\
+      \   OR conversation_session_id IS NULL\n   OR started_ts IS NULL\n   OR started_date IS NULL"
+  - name: cs_business_key_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_business_key_unique
+    query: 'SELECT conversation_session_id, COUNT(*) AS n
+
+      FROM agentic_commerce.conversation_session
+
+      GROUP BY conversation_session_id
+
+      HAVING COUNT(*) > 1'
+  - name: cs_conversation_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_conversation_id_unique
+    query: 'SELECT conversation_id, COUNT(*) AS n
+
+      FROM agentic_commerce.conversation_session
+
+      WHERE conversation_id IS NOT NULL
+
+      GROUP BY conversation_id
+
+      HAVING COUNT(*) > 1'
+  - name: cs_profile_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_profile_fk_orphan
+    query: 'SELECT s.* FROM agentic_commerce.conversation_session s
+
+      LEFT JOIN customer.profile p ON s.profile_sk = p.profile_sk
+
+      WHERE s.profile_sk IS NOT NULL AND p.profile_sk IS NULL'
+  - name: cs_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_store_fk_orphan
+    query: 'SELECT s.* FROM agentic_commerce.conversation_session s
+
+      LEFT JOIN store.store st ON s.store_sk = st.store_sk
+
+      WHERE s.store_sk IS NOT NULL AND st.store_sk IS NULL'
+  - name: cs_entry_channel_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_entry_channel_domain
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE entry_channel NOT IN (''web'', ''mobile_app'', ''kiosk'', ''store_associate'', ''voice'',
+      ''api'')'
+  - name: cs_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_status_domain
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE session_status NOT IN (''active'', ''completed'', ''abandoned'', ''escalated'')'
+  - name: cs_resolution_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_resolution_type_domain
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE resolution_type NOT IN (''product_selected'', ''add_to_cart'', ''purchase'', ''handoff'',
+      ''no_resolution'', ''abandoned'')'
+  - name: cs_consent_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_consent_status_domain
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE consent_status NOT IN (''granted'', ''denied'', ''unknown'')'
+  - name: cs_timestamp_order
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_timestamp_order
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE ended_ts IS NOT NULL AND ended_ts < started_ts'
+  - name: cs_status_ended_ts_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Emit-once lifecycle invariant (ADR 0034): a session reported as ''completed'' has an
+      end timestamp, and an ''active'' snapshot has none. ORDM accepts one immutable row per conversation_session_id
+      (cs_business_key_unique) and never a later active->completed correction, so the two states must
+      be internally consistent at the single reporting point. ''abandoned''/''escalated'' may end or not.'
+    query: "SELECT * FROM agentic_commerce.conversation_session\nWHERE (session_status = 'completed' AND\
+      \ ended_ts IS NULL)\n   OR (session_status = 'active' AND ended_ts IS NOT NULL)"
+  - name: cs_status_resolution_coherence
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: 'session_status and resolution_type are overlapping lifecycle signals. Flag the incoherent
+      combinations the glossary rules out: a terminal handoff mirrors ''escalated'', and an abandoned
+      resolution mirrors the ''abandoned'' status. warn, not error: these are producer-conformance signals,
+      not load-blocking integrity, and other status/resolution pairings are legitimately independent (e.g.
+      a session can reach ''completed'' with any of the non-terminal resolutions).'
+    query: "SELECT * FROM agentic_commerce.conversation_session\nWHERE (resolution_type = 'handoff'  \
+      \ AND session_status <> 'escalated')\n   OR (resolution_type = 'abandoned' AND session_status <>\
+      \ 'abandoned')"
+  - name: cs_started_date_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: cs_started_date_consistency
+    query: 'SELECT * FROM agentic_commerce.conversation_session
+
+      WHERE started_date <> CAST(started_ts AS DATE)'
+  - name: cs_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: cs_rowcount
+    query: 'SELECT COUNT(*) AS conversation_session_rows
+
+      FROM agentic_commerce.conversation_session'
+- name: discovery_engagement_event
+  physicalName: agentic_commerce.discovery_engagement_event
+  physicalType: table
+  description: Agentic Commerce engagement fact for organic intent product discovery results.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_engagement_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the discovery engagement event.
+  - name: discovery_engagement_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the engagement event.
+  - name: discovery_result_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to discovery_result_event.discovery_result_event_sk.
+    relationships:
+    - to: discovery_result_event.discovery_result_event_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: discovery_result_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key for the engaged result.
+  - name: discovery_intent_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to discovery_intent_event.discovery_intent_event_sk.
+    relationships:
+    - to: discovery_intent_event.discovery_intent_event_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: discovery_intent_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key for the parent discovery intent event.
+  - name: profile_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to customer.profile.profile_sk when the shopper is resolved.
+    relationships:
+    - to: profile.profile_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: customer
+      - property: enforced
+        value: false
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable customer business key (pseudonymous). NULL for anonymous engagement.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to product.product_sk for the engaged product.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable product business key for the engaged product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk when engagement is store-scoped.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable store business key when engagement is store-scoped.
+  - name: order_line_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to customer_order_line.order_line_sk when engagement converted to a purchase.
+    relationships:
+    - to: customer_order_line.order_line_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: orders
+      - property: enforced
+        value: false
+  - name: order_line_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable order-line business key when purchase attribution is known.
+  - name: order_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Operational order identifier retained as a degenerate attribute.
+  - name: engagement_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Type of engagement. Allowed values: view, select, add_to_cart, purchase, dismiss.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: view, select, add_to_cart, purchase, dismiss.'
+  - name: engagement_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the engagement occurred at source (UTC, ISO 8601).
+  - name: engagement_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the engagement.
+  - name: quantity
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Units associated with the engagement, populated for add-to-cart or purchase events when
+      known.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((quantity IS NULL OR quantity >= 0) AND (net_amount IS NULL OR net_amount >=
+        0.0) AND (attribution_window_minutes IS NULL OR attribution_window_minutes >= 0)).
+  - name: net_amount
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Net purchase amount in the reporting/base currency, populated only for purchase events.
+      Point-of-engagement attribution snapshot; not reconciled against customer_order_line.net_amount
+      even when order_line_sk resolves.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Reporting/base currency for net_amount, ISO 4217 alpha-3.
+  - name: attribution_window_minutes
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Minutes between result production and engagement when known.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: dee_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_keys_not_null
+    query: "SELECT * FROM agentic_commerce.discovery_engagement_event\nWHERE discovery_engagement_event_sk\
+      \ IS NULL\n   OR discovery_engagement_event_id IS NULL\n   OR discovery_result_event_id IS NULL\n\
+      \   OR discovery_intent_event_id IS NULL\n   OR product_id IS NULL\n   OR engagement_type IS NULL\n\
+      \   OR engagement_ts IS NULL\n   OR engagement_date IS NULL"
+  - name: dee_business_key_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_business_key_unique
+    query: 'SELECT discovery_engagement_event_id, COUNT(*) AS n
+
+      FROM agentic_commerce.discovery_engagement_event
+
+      GROUP BY discovery_engagement_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: dee_result_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_result_fk_orphan
+    query: "SELECT e.* FROM agentic_commerce.discovery_engagement_event e\nLEFT JOIN agentic_commerce.discovery_result_event\
+      \ r\n  ON e.discovery_result_event_sk = r.discovery_result_event_sk\nWHERE e.discovery_result_event_sk\
+      \ IS NOT NULL\n  AND r.discovery_result_event_sk IS NULL"
+  - name: dee_result_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_result_businesskey_orphan
+    query: "SELECT e.* FROM agentic_commerce.discovery_engagement_event e\nLEFT JOIN agentic_commerce.discovery_result_event\
+      \ r\n  ON e.discovery_result_event_id = r.discovery_result_event_id\nWHERE r.discovery_result_event_id\
+      \ IS NULL"
+  - name: dee_intent_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_intent_fk_orphan
+    query: "SELECT e.* FROM agentic_commerce.discovery_engagement_event e\nLEFT JOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON e.discovery_intent_event_sk = i.discovery_intent_event_sk\nWHERE e.discovery_intent_event_sk\
+      \ IS NOT NULL\n  AND i.discovery_intent_event_sk IS NULL"
+  - name: dee_result_intent_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The engaged result's parent intent must equal the engagement's own intent (engagement
+      -> result -> intent equals engagement -> intent). Both grandparent keys are published on the row,
+      so assert the redundant intent id agrees with the path through the result rather than trusting them
+      to be set consistently.
+    query: "SELECT e.* FROM agentic_commerce.discovery_engagement_event e\nJOIN agentic_commerce.discovery_result_event\
+      \ r\n  ON e.discovery_result_event_id = r.discovery_result_event_id\nWHERE e.discovery_intent_event_id\
+      \ <> r.discovery_intent_event_id"
+  - name: dee_profile_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_profile_fk_orphan
+    query: 'SELECT e.* FROM agentic_commerce.discovery_engagement_event e
+
+      LEFT JOIN customer.profile p ON e.profile_sk = p.profile_sk
+
+      WHERE e.profile_sk IS NOT NULL AND p.profile_sk IS NULL'
+  - name: dee_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_product_fk_orphan
+    query: 'SELECT e.* FROM agentic_commerce.discovery_engagement_event e
+
+      LEFT JOIN product.product p ON e.product_sk = p.product_sk
+
+      WHERE e.product_sk IS NOT NULL AND p.product_sk IS NULL'
+  - name: dee_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_store_fk_orphan
+    query: 'SELECT e.* FROM agentic_commerce.discovery_engagement_event e
+
+      LEFT JOIN store.store s ON e.store_sk = s.store_sk
+
+      WHERE e.store_sk IS NOT NULL AND s.store_sk IS NULL'
+  - name: dee_order_line_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_order_line_fk_orphan
+    query: 'SELECT e.* FROM agentic_commerce.discovery_engagement_event e
+
+      LEFT JOIN orders.customer_order_line o ON e.order_line_sk = o.order_line_sk
+
+      WHERE e.order_line_sk IS NOT NULL AND o.order_line_sk IS NULL'
+  - name: dee_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_type_domain
+    query: 'SELECT * FROM agentic_commerce.discovery_engagement_event
+
+      WHERE engagement_type NOT IN (''view'', ''select'', ''add_to_cart'', ''purchase'', ''dismiss'')'
+  - name: dee_nonnegative_values
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_nonnegative_values
+    query: "SELECT * FROM agentic_commerce.discovery_engagement_event\nWHERE (quantity IS NOT NULL AND\
+      \ quantity < 0)\n   OR (net_amount IS NOT NULL AND net_amount < 0)\n   OR (attribution_window_minutes\
+      \ IS NOT NULL AND attribution_window_minutes < 0)"
+  - name: dee_purchase_has_amount
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_purchase_has_amount
+    query: "SELECT * FROM agentic_commerce.discovery_engagement_event\nWHERE engagement_type = 'purchase'\n\
+      \  AND (net_amount IS NULL OR currency_code IS NULL)"
+  - name: dee_engagement_date_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_engagement_date_consistency
+    query: 'SELECT * FROM agentic_commerce.discovery_engagement_event
+
+      WHERE engagement_date <> CAST(engagement_ts AS DATE)'
+  - name: dee_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dee_single_currency
+    query: "SELECT 'discovery_engagement_event' AS table_name, COUNT(DISTINCT currency_code) AS currencies\n\
+      FROM agentic_commerce.discovery_engagement_event\nWHERE net_amount IS NOT NULL\nHAVING COUNT(DISTINCT\
+      \ currency_code) > 1\n    OR SUM(CASE WHEN currency_code IS NULL THEN 1 ELSE 0 END) > 0"
+  - name: dee_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: dee_rowcount
+    query: 'SELECT COUNT(*) AS discovery_engagement_event_rows
+
+      FROM agentic_commerce.discovery_engagement_event'
+- name: discovery_intent_event
+  physicalName: agentic_commerce.discovery_intent_event
+  physicalType: table
+  description: Agentic Commerce intent event fact for organic product discovery.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_intent_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the discovery intent event.
+  - name: discovery_intent_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the intent event.
+  - name: conversation_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to conversation_session.conversation_session_sk when the intent is part of a guided
+      shopping conversation.
+    relationships:
+    - to: conversation_session.conversation_session_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: conversation_session_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable conversational shopping session business key when the intent is part of a guided
+      conversation.
+  - name: profile_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to customer.profile.profile_sk when the shopper is resolved.
+    relationships:
+    - to: profile.profile_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: customer
+      - property: enforced
+        value: false
+  - name: profile_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable customer business key (pseudonymous). NULL for anonymous intent.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk when discovery is scoped to a store/location.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable store business key when store context is known.
+  - name: session_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pseudonymous session identifier from the discovery surface; degenerate, not application
+      state.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: conversation_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pseudonymous conversation identifier when the intent came from an agent/chat turn; degenerate,
+      not transcript state.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: discovery_channel
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Surface where intent was captured. Allowed values: web, mobile_app, kiosk, store_associate,
+      voice, api.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: web, mobile_app, kiosk, store_associate, voice, api.'
+  - name: locale_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Locale/language context for the intent, e.g. en-US.
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Jurisdiction used for consent/personalization evaluation, ISO 3166-1 alpha-2 when available.
+  - name: intent_text_hash
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Deterministic hash of the redacted normalized intent text. Raw shopper text is not stored
+      in ORDM.
+    classification: restricted
+    tags:
+    - dbx_pii_identifier
+  - name: intent_category
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Normalized intent category. Allowed values: product_search, need_based, occasion, problem_solution,
+      compatibility, style_fit, replenishment, comparison, unknown.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: product_search, need_based, occasion, problem_solution, compatibility,
+        style_fit, replenishment, comparison, unknown.'
+  - name: intent_confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Model confidence that the normalized category reflects the shopper intent, from 0.0 to
+      1.0.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (intent_confidence_score IS NULL OR (intent_confidence_score >= 0.0 AND intent_confidence_score
+        <= 1.0)).
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the shopper was eligible for personalized ranking at event time.
+  - name: consent_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Consent state used for personalization at event time. Allowed values: granted, denied,
+      unknown.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: granted, denied, unknown.'
+  - name: event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the intent event occurred at source (UTC, ISO 8601).
+  - name: event_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the intent event.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: die_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_keys_not_null
+    query: "SELECT * FROM agentic_commerce.discovery_intent_event\nWHERE discovery_intent_event_sk IS\
+      \ NULL\n   OR discovery_intent_event_id IS NULL\n   OR event_ts IS NULL\n   OR event_date IS NULL"
+  - name: die_business_key_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_business_key_unique
+    query: 'SELECT discovery_intent_event_id, COUNT(*) AS n
+
+      FROM agentic_commerce.discovery_intent_event
+
+      GROUP BY discovery_intent_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: die_session_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_session_fk_orphan
+    query: "SELECT i.* FROM agentic_commerce.discovery_intent_event i\nLEFT JOIN agentic_commerce.conversation_session\
+      \ s\n  ON i.conversation_session_sk = s.conversation_session_sk\nWHERE i.conversation_session_sk\
+      \ IS NOT NULL\n  AND s.conversation_session_sk IS NULL"
+  - name: die_session_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_session_businesskey_orphan
+    query: "SELECT i.* FROM agentic_commerce.discovery_intent_event i\nLEFT JOIN agentic_commerce.conversation_session\
+      \ s\n  ON i.conversation_session_id = s.conversation_session_id\nWHERE i.conversation_session_id\
+      \ IS NOT NULL\n  AND s.conversation_session_id IS NULL"
+  - name: die_profile_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_profile_fk_orphan
+    query: 'SELECT i.* FROM agentic_commerce.discovery_intent_event i
+
+      LEFT JOIN customer.profile p ON i.profile_sk = p.profile_sk
+
+      WHERE i.profile_sk IS NOT NULL AND p.profile_sk IS NULL'
+  - name: die_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_store_fk_orphan
+    query: 'SELECT i.* FROM agentic_commerce.discovery_intent_event i
+
+      LEFT JOIN store.store s ON i.store_sk = s.store_sk
+
+      WHERE i.store_sk IS NOT NULL AND s.store_sk IS NULL'
+  - name: die_channel_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_channel_domain
+    query: 'SELECT * FROM agentic_commerce.discovery_intent_event
+
+      WHERE discovery_channel NOT IN (''web'', ''mobile_app'', ''kiosk'', ''store_associate'', ''voice'',
+      ''api'')'
+  - name: die_intent_category_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_intent_category_domain
+    query: 'SELECT * FROM agentic_commerce.discovery_intent_event
+
+      WHERE intent_category NOT IN (''product_search'', ''need_based'', ''occasion'', ''problem_solution'',
+      ''compatibility'', ''style_fit'', ''replenishment'', ''comparison'', ''unknown'')'
+  - name: die_consent_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_consent_status_domain
+    query: 'SELECT * FROM agentic_commerce.discovery_intent_event
+
+      WHERE consent_status NOT IN (''granted'', ''denied'', ''unknown'')'
+  - name: die_confidence_score_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_confidence_score_range
+    query: "SELECT * FROM agentic_commerce.discovery_intent_event\nWHERE intent_confidence_score IS NOT\
+      \ NULL\n  AND intent_confidence_score NOT BETWEEN 0 AND 1"
+  - name: die_event_date_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: die_event_date_consistency
+    query: 'SELECT * FROM agentic_commerce.discovery_intent_event
+
+      WHERE event_date <> CAST(event_ts AS DATE)'
+  - name: die_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: die_rowcount
+    query: 'SELECT COUNT(*) AS discovery_intent_event_rows
+
+      FROM agentic_commerce.discovery_intent_event'
+- name: discovery_result_event
+  physicalName: agentic_commerce.discovery_result_event
+  physicalType: table
+  description: Agentic Commerce returned product result fact for organic intent product discovery.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_result_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the returned discovery result.
+  - name: discovery_result_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the returned result.
+  - name: discovery_intent_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to discovery_intent_event.discovery_intent_event_sk.
+    relationships:
+    - to: discovery_intent_event.discovery_intent_event_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: agentic_commerce
+      - property: enforced
+        value: false
+  - name: discovery_intent_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable business key for the parent discovery intent event.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to product.product_sk for the returned product.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable product business key for the returned product.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk when result availability is store-scoped.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable store business key when result availability is store-scoped.
+  - name: result_rank
+    logicalType: integer
+    physicalType: INT
+    required: true
+    description: One-based product rank within the returned result set.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (result_rank > 0).
+  - name: retrieval_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Candidate retrieval score, from 0.0 to 1.0 when normalized.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((retrieval_score IS NULL OR (retrieval_score >= 0.0 AND retrieval_score <= 1.0))
+        AND (ranking_score IS NULL OR (ranking_score >= 0.0 AND ranking_score <= 1.0)) AND (personalization_score
+        IS NULL OR (personalization_score >= 0.0 AND personalization_score <= 1.0)) AND (availability_score
+        IS NULL OR (availability_score >= 0.0 AND availability_score <= 1.0))).
+  - name: ranking_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Final ranking score, from 0.0 to 1.0 when normalized.
+  - name: personalization_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Personalization component of the ranking score, from 0.0 to 1.0 when normalized.
+  - name: availability_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Availability component of the ranking score, from 0.0 to 1.0 when normalized.
+  - name: reason_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Primary explainability reason. Allowed values: lexical_match, semantic_match, purchase_affinity,
+      substitute, complement, trending, available_nearby, business_rule.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: lexical_match, semantic_match, purchase_affinity, substitute, complement,
+        trending, available_nearby, business_rule.'
+  - name: is_available_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the result was considered buyable/available at ranking time.
+  - name: units_available
+    logicalType: number
+    physicalType: DECIMAL(12,3)
+    required: false
+    description: Units available at ranking time when known.
+  - name: list_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: List/shelf price shown or used at ranking time, in the reporting/base currency.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Reporting/base currency for price fields, ISO 4217 alpha-3.
+  - name: event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the result was produced at source (UTC, ISO 8601).
+  - name: event_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the result event.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: dre_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_keys_not_null
+    query: "SELECT * FROM agentic_commerce.discovery_result_event\nWHERE discovery_result_event_sk IS\
+      \ NULL\n   OR discovery_result_event_id IS NULL\n   OR discovery_intent_event_id IS NULL\n   OR\
+      \ product_id IS NULL\n   OR result_rank IS NULL\n   OR event_ts IS NULL\n   OR event_date IS NULL"
+  - name: dre_business_key_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_business_key_unique
+    query: 'SELECT discovery_result_event_id, COUNT(*) AS n
+
+      FROM agentic_commerce.discovery_result_event
+
+      GROUP BY discovery_result_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: dre_rank_unique_per_intent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_rank_unique_per_intent
+    query: 'SELECT discovery_intent_event_id, result_rank, COUNT(*) AS n
+
+      FROM agentic_commerce.discovery_result_event
+
+      GROUP BY discovery_intent_event_id, result_rank
+
+      HAVING COUNT(*) > 1'
+  - name: dre_intent_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_intent_fk_orphan
+    query: "SELECT r.* FROM agentic_commerce.discovery_result_event r\nLEFT JOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON r.discovery_intent_event_sk = i.discovery_intent_event_sk\nWHERE r.discovery_intent_event_sk\
+      \ IS NOT NULL\n  AND i.discovery_intent_event_sk IS NULL"
+  - name: dre_intent_businesskey_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_intent_businesskey_orphan
+    query: "SELECT r.* FROM agentic_commerce.discovery_result_event r\nLEFT JOIN agentic_commerce.discovery_intent_event\
+      \ i\n  ON r.discovery_intent_event_id = i.discovery_intent_event_id\nWHERE i.discovery_intent_event_id\
+      \ IS NULL"
+  - name: dre_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_product_fk_orphan
+    query: 'SELECT r.* FROM agentic_commerce.discovery_result_event r
+
+      LEFT JOIN product.product p ON r.product_sk = p.product_sk
+
+      WHERE r.product_sk IS NOT NULL AND p.product_sk IS NULL'
+  - name: dre_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_store_fk_orphan
+    query: 'SELECT r.* FROM agentic_commerce.discovery_result_event r
+
+      LEFT JOIN store.store s ON r.store_sk = s.store_sk
+
+      WHERE r.store_sk IS NOT NULL AND s.store_sk IS NULL'
+  - name: dre_scores_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_scores_range
+    query: "SELECT * FROM agentic_commerce.discovery_result_event\nWHERE (retrieval_score IS NOT NULL\
+      \ AND retrieval_score NOT BETWEEN 0 AND 1)\n   OR (ranking_score IS NOT NULL AND ranking_score NOT\
+      \ BETWEEN 0 AND 1)\n   OR (personalization_score IS NOT NULL AND personalization_score NOT BETWEEN\
+      \ 0 AND 1)\n   OR (availability_score IS NOT NULL AND availability_score NOT BETWEEN 0 AND 1)"
+  - name: dre_reason_code_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_reason_code_domain
+    query: 'SELECT * FROM agentic_commerce.discovery_result_event
+
+      WHERE reason_code NOT IN (''lexical_match'', ''semantic_match'', ''purchase_affinity'', ''substitute'',
+      ''complement'', ''trending'', ''available_nearby'', ''business_rule'')'
+  - name: dre_event_date_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_event_date_consistency
+    query: 'SELECT * FROM agentic_commerce.discovery_result_event
+
+      WHERE event_date <> CAST(event_ts AS DATE)'
+  - name: dre_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: dre_single_currency
+    query: "SELECT 'discovery_result_event' AS table_name, COUNT(DISTINCT currency_code) AS currencies\n\
+      FROM agentic_commerce.discovery_result_event\nWHERE list_price_amount IS NOT NULL\nHAVING COUNT(DISTINCT\
+      \ currency_code) > 1\n    OR SUM(CASE WHEN currency_code IS NULL THEN 1 ELSE 0 END) > 0"
+  - name: dre_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: dre_rowcount
+    query: 'SELECT COUNT(*) AS discovery_result_event_rows
+
+      FROM agentic_commerce.discovery_result_event'
 - name: gold_a2a_agent_scorecard
   physicalName: agentic_commerce.gold_a2a_agent_scorecard
   physicalType: view
@@ -1348,3 +3003,553 @@ schema:
   - name: price_concession_pct
     logicalType: number
     physicalType: DOUBLE
+- name: gold_conversational_shopping_performance
+  physicalName: agentic_commerce.gold_conversational_shopping_performance
+  physicalType: view
+  description: 'KPI-ready aggregate surface for the consolidated Conversational Shopping Assistant use
+    case. Grain: started date x channel x primary intent category x resolution type.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: started_date
+    logicalType: date
+    physicalType: DATE
+  - name: entry_channel
+    logicalType: string
+    physicalType: STRING
+  - name: primary_intent_category
+    logicalType: string
+    physicalType: STRING
+  - name: resolution_type
+    logicalType: string
+    physicalType: STRING
+  - name: conversation_sessions
+    logicalType: integer
+    physicalType: BIGINT
+    description: Count of conversational shopping sessions in the reporting grain.
+  - name: known_customer_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: personalization_eligible_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: selected_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: add_to_cart_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: purchase_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: handoff_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fallback_sessions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: sessions_reaching_discovery
+    logicalType: integer
+    physicalType: BIGINT
+    description: Count of conversational shopping sessions that reached at least one linked discovery
+      intent.
+  - name: purchased_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: purchase_net_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: Reporting/base currency (ISO 4217 alpha-3) for purchase_net_amount; NULL when the grain
+      had no purchases.
+  - name: avg_total_turns
+    logicalType: number
+    physicalType: DOUBLE
+  - name: avg_turns_to_first_discovery
+    logicalType: number
+    physicalType: DOUBLE
+  - name: selection_rate
+    logicalType: number
+    physicalType: DOUBLE
+  - name: add_to_cart_rate
+    logicalType: number
+    physicalType: DOUBLE
+  - name: assisted_conversion_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: Share of conversational shopping sessions that reached a purchase.
+  - name: handoff_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: Share of conversational shopping sessions with an associate or support handoff.
+  - name: fallback_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: Share of conversational shopping sessions with at least one fallback turn.
+  quality:
+  - name: gcsa_performance_rates_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gcsa_performance_rates_range
+    query: "SELECT * FROM agentic_commerce.gold_conversational_shopping_performance\nWHERE (selection_rate\
+      \ IS NOT NULL AND selection_rate NOT BETWEEN 0 AND 1)\n   OR (add_to_cart_rate IS NOT NULL AND add_to_cart_rate\
+      \ NOT BETWEEN 0 AND 1)\n   OR (assisted_conversion_rate IS NOT NULL AND assisted_conversion_rate\
+      \ NOT BETWEEN 0 AND 1)\n   OR (handoff_rate IS NOT NULL AND handoff_rate NOT BETWEEN 0 AND 1)\n\
+      \   OR (fallback_rate IS NOT NULL AND fallback_rate NOT BETWEEN 0 AND 1)"
+- name: gold_conversational_shopping_session
+  physicalName: agentic_commerce.gold_conversational_shopping_session
+  physicalType: view
+  description: Session-level performance surface for Conversational Shopping Assistant. Joins structured
+    session and turn events to discovery outcomes while excluding raw prompt text, hashes, session identifiers,
+    conversation identifiers, and customer IDs from the gold output.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: conversation_session_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable session business key; raw session and conversation identifiers are not exposed.
+  - name: started_date
+    logicalType: date
+    physicalType: DATE
+  - name: started_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: ended_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: entry_channel
+    logicalType: string
+    physicalType: STRING
+    description: Surface where the guided shopping conversation started.
+  - name: locale_code
+    logicalType: string
+    physicalType: STRING
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+  - name: known_customer_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: session_status
+    logicalType: string
+    physicalType: STRING
+  - name: resolution_type
+    logicalType: string
+    physicalType: STRING
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: consent_status
+    logicalType: string
+    physicalType: STRING
+  - name: total_turns
+    logicalType: integer
+    physicalType: BIGINT
+    description: Total structured turns observed in the conversation session.
+  - name: shopper_turns
+    logicalType: integer
+    physicalType: BIGINT
+  - name: assistant_turns
+    logicalType: integer
+    physicalType: BIGINT
+  - name: recommendation_turns
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fallback_turns
+    logicalType: integer
+    physicalType: BIGINT
+    description: Number of turns where fallback behavior was used.
+  - name: handoff_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the session included an associate or support handoff.
+  - name: first_turn_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: last_turn_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: first_discovery_turn_number
+    logicalType: integer
+    physicalType: INT
+  - name: discovery_intent_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: primary_intent_category
+    logicalType: string
+    physicalType: STRING
+    description: Representative intent category for the session based on linked discovery intent events.
+  - name: selected_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: added_to_cart_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: purchased_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: purchased_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: purchase_net_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Net purchase amount attributed to the conversation session, in the reporting/base currency.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: Reporting/base currency (ISO 4217 alpha-3) for purchase_net_amount; NULL when the session
+      had no purchase.
+  quality:
+  - name: gcsa_session_one_row_per_session
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gcsa_session_one_row_per_session
+    query: 'SELECT conversation_session_id, COUNT(*) AS n
+
+      FROM agentic_commerce.gold_conversational_shopping_session
+
+      GROUP BY conversation_session_id
+
+      HAVING COUNT(*) > 1'
+  - name: gcsa_session_nonnegative_measures
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gcsa_session_nonnegative_measures
+    query: "SELECT * FROM agentic_commerce.gold_conversational_shopping_session\nWHERE total_turns < 0\n\
+      \   OR shopper_turns < 0\n   OR assistant_turns < 0\n   OR recommendation_turns < 0\n   OR fallback_turns\
+      \ < 0\n   OR discovery_intent_count < 0\n   OR purchased_units < 0\n   OR purchase_net_amount <\
+      \ 0"
+  - name: gcsa_session_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: gcsa_session_count
+    query: 'SELECT COUNT(*) AS conversational_shopping_session_rows
+
+      FROM agentic_commerce.gold_conversational_shopping_session'
+  - name: gcsa_assisted_conversion_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: gcsa_assisted_conversion_rate
+    query: 'SELECT ROUND(AVG(CASE WHEN purchased_flag THEN 1.0 ELSE 0.0 END), 4) AS assisted_conversion_rate
+
+      FROM agentic_commerce.gold_conversational_shopping_session'
+- name: gold_intent_product_discovery_performance
+  physicalName: agentic_commerce.gold_intent_product_discovery_performance
+  physicalType: view
+  description: Result-level performance surface for Intent Product Discovery. The view joins the intent,
+    ranked product result, product context, and engagement outcomes while excluding raw prompt text, hashes,
+    session identifiers, and customer IDs.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_result_event_id
+    logicalType: string
+    physicalType: STRING
+  - name: discovery_intent_event_id
+    logicalType: string
+    physicalType: STRING
+  - name: intent_date
+    logicalType: date
+    physicalType: DATE
+  - name: intent_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: discovery_channel
+    logicalType: string
+    physicalType: STRING
+  - name: locale_code
+    logicalType: string
+    physicalType: STRING
+  - name: jurisdiction_code
+    logicalType: string
+    physicalType: STRING
+  - name: intent_category
+    logicalType: string
+    physicalType: STRING
+    description: Normalized shopper intent category.
+  - name: intent_confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: known_customer_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the source intent was tied to a resolved customer profile.
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when personalized ranking was allowed at event time.
+  - name: consent_status
+    logicalType: string
+    physicalType: STRING
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_name
+    logicalType: string
+    physicalType: STRING
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: department
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: result_rank
+    logicalType: integer
+    physicalType: INT
+    description: One-based product rank within the returned result set.
+  - name: retrieval_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: ranking_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: personalization_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: availability_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: reason_code
+    logicalType: string
+    physicalType: STRING
+    description: Primary explainability reason for why the product was returned.
+  - name: is_available_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: units_available
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: list_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+  - name: viewed_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: selected_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the returned product received a select engagement.
+  - name: added_to_cart_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the returned product received an add-to-cart engagement.
+  - name: purchased_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when this returned product had any purchase engagement (per-result). Uses a different
+      attribution rule than purchase_net_amount/purchased_units, so a row may be purchased_flag=TRUE yet
+      carry 0 attributed units/amount when the order line was attributed to a sibling result.
+  - name: engagement_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: purchased_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: purchase_net_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Net purchase amount in the reporting/base currency, with each order line attributed to
+      a SINGLE result (deduped to avoid double-counting across sibling results). 0 on a result whose order
+      line was attributed elsewhere even if purchased_flag is TRUE.
+  - name: first_engagement_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: purchase_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  quality:
+  - name: gipdp_rank_positive
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gipdp_rank_positive
+    query: 'SELECT * FROM agentic_commerce.gold_intent_product_discovery_performance
+
+      WHERE result_rank <= 0'
+  - name: gipdp_scores_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gipdp_scores_range
+    query: "SELECT * FROM agentic_commerce.gold_intent_product_discovery_performance\nWHERE (retrieval_score\
+      \ IS NOT NULL AND retrieval_score NOT BETWEEN 0 AND 1)\n   OR (ranking_score IS NOT NULL AND ranking_score\
+      \ NOT BETWEEN 0 AND 1)\n   OR (personalization_score IS NOT NULL AND personalization_score NOT BETWEEN\
+      \ 0 AND 1)\n   OR (availability_score IS NOT NULL AND availability_score NOT BETWEEN 0 AND 1)"
+  - name: gipdp_result_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: gipdp_result_count
+    query: 'SELECT COUNT(*) AS discovery_performance_rows
+
+      FROM agentic_commerce.gold_intent_product_discovery_performance'
+  - name: gipdp_selection_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: gipdp_selection_rate
+    query: 'SELECT ROUND(AVG(CASE WHEN selected_flag THEN 1.0 ELSE 0.0 END), 4) AS selected_result_rate
+
+      FROM agentic_commerce.gold_intent_product_discovery_performance'
+- name: gold_product_discovery_candidate_current
+  physicalName: agentic_commerce.gold_product_discovery_candidate_current
+  physicalType: view
+  description: Current product candidate surface for organic intent product discovery. Combines active
+    product attributes, current list price, and the latest product-store inventory signal when available.
+    This is an analytical serving view, not an operational vector index or application state store. Products
+    without a current inventory signal are retained but are not treated as buyable.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable product business key.
+  - name: gtin
+    logicalType: string
+    physicalType: STRING
+  - name: sku
+    logicalType: string
+    physicalType: STRING
+  - name: style_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_name
+    logicalType: string
+    physicalType: STRING
+    description: Display name of the discoverable product.
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: department
+    logicalType: string
+    physicalType: STRING
+  - name: color
+    logicalType: string
+    physicalType: STRING
+  - name: size
+    logicalType: string
+    physicalType: STRING
+  - name: unit_of_measure
+    logicalType: string
+    physicalType: STRING
+  - name: current_list_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+    description: Current list price amount in the reporting/base currency.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: latest_inventory_date
+    logicalType: date
+    physicalType: DATE
+    description: Latest inventory snapshot date used to determine availability.
+  - name: units_available
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: is_available_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when latest inventory indicates the product is buyable for the store context; FALSE
+      when inventory is missing or unavailable.
+  - name: size_availability_pct
+    logicalType: number
+    physicalType: DECIMAL(5, 4)
+  - name: product_status
+    logicalType: string
+    physicalType: STRING
+  quality:
+  - name: gpd_candidate_one_row_per_product_store
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gpd_candidate_one_row_per_product_store
+    query: 'SELECT product_id, store_id, COUNT(*) AS n
+
+      FROM agentic_commerce.gold_product_discovery_candidate_current
+
+      GROUP BY product_id, store_id
+
+      HAVING COUNT(*) > 1'
+  - name: gpd_candidate_price_nonnegative
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gpd_candidate_price_nonnegative
+    query: "SELECT * FROM agentic_commerce.gold_product_discovery_candidate_current\nWHERE current_list_price_amount\
+      \ IS NOT NULL\n  AND current_list_price_amount < 0"

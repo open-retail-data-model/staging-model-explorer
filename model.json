@@ -35,6 +35,16 @@
       {
         "kind": "consumes",
         "source": "agentic-commerce",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
+        "source": "agentic-commerce",
+        "target": "order"
+      },
+      {
+        "kind": "consumes",
+        "source": "agentic-commerce",
         "target": "product"
       },
       {
@@ -8585,6 +8595,492 @@
       "checks": [
         {
           "column": null,
+          "name": "cs_keys_not_null",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_business_key_unique",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_conversation_id_unique",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_profile_fk_orphan",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_store_fk_orphan",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_entry_channel_domain",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_status_domain",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_resolution_type_domain",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_consent_status_domain",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_timestamp_order",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_status_ended_ts_consistency",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_status_resolution_coherence",
+          "severity": "warn",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_started_date_consistency",
+          "severity": "error",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "cs_rowcount",
+          "severity": "metric",
+          "table": "conversation_session"
+        },
+        {
+          "column": null,
+          "name": "ate_keys_not_null",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_business_key_unique",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_turn_sequence_unique",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_session_fk_orphan",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_session_businesskey_orphan",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_intent_fk_orphan",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_intent_businesskey_orphan",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_intent_session_consistency",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_actor_type_domain",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_turn_type_domain",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_action_type_domain",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_intent_category_domain",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_confidence_score_range",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_event_date_consistency",
+          "severity": "error",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "ate_rowcount",
+          "severity": "metric",
+          "table": "assistant_turn_event"
+        },
+        {
+          "column": null,
+          "name": "die_keys_not_null",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_business_key_unique",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_session_fk_orphan",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_session_businesskey_orphan",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_profile_fk_orphan",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_store_fk_orphan",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_channel_domain",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_intent_category_domain",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_consent_status_domain",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_confidence_score_range",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_event_date_consistency",
+          "severity": "error",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "die_rowcount",
+          "severity": "metric",
+          "table": "discovery_intent_event"
+        },
+        {
+          "column": null,
+          "name": "dre_keys_not_null",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_business_key_unique",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_rank_unique_per_intent",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_intent_fk_orphan",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_intent_businesskey_orphan",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_product_fk_orphan",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_store_fk_orphan",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_scores_range",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_reason_code_domain",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_event_date_consistency",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_single_currency",
+          "severity": "error",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dre_rowcount",
+          "severity": "metric",
+          "table": "discovery_result_event"
+        },
+        {
+          "column": null,
+          "name": "dee_keys_not_null",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_business_key_unique",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_result_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_result_businesskey_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_intent_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_result_intent_consistency",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_profile_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_product_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_store_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_order_line_fk_orphan",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_type_domain",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_nonnegative_values",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_purchase_has_amount",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_engagement_date_consistency",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_single_currency",
+          "severity": "error",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "dee_rowcount",
+          "severity": "metric",
+          "table": "discovery_engagement_event"
+        },
+        {
+          "column": null,
+          "name": "agentic_gold_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "gpd_candidate_one_row_per_product_store",
+          "severity": "error",
+          "table": "gold_product_discovery_candidate_current"
+        },
+        {
+          "column": null,
+          "name": "gpd_candidate_price_nonnegative",
+          "severity": "error",
+          "table": "gold_product_discovery_candidate_current"
+        },
+        {
+          "column": null,
+          "name": "gipdp_rank_positive",
+          "severity": "error",
+          "table": "gold_intent_product_discovery_performance"
+        },
+        {
+          "column": null,
+          "name": "gipdp_scores_range",
+          "severity": "error",
+          "table": "gold_intent_product_discovery_performance"
+        },
+        {
+          "column": null,
+          "name": "gipdp_result_count",
+          "severity": "metric",
+          "table": "gold_intent_product_discovery_performance"
+        },
+        {
+          "column": null,
+          "name": "gipdp_selection_rate",
+          "severity": "metric",
+          "table": "gold_intent_product_discovery_performance"
+        },
+        {
+          "column": null,
+          "name": "gcsa_session_one_row_per_session",
+          "severity": "error",
+          "table": "gold_conversational_shopping_session"
+        },
+        {
+          "column": null,
+          "name": "gcsa_session_nonnegative_measures",
+          "severity": "error",
+          "table": "gold_conversational_shopping_session"
+        },
+        {
+          "column": null,
+          "name": "gcsa_performance_rates_range",
+          "severity": "error",
+          "table": "gold_conversational_shopping_performance"
+        },
+        {
+          "column": null,
+          "name": "gcsa_session_count",
+          "severity": "metric",
+          "table": "gold_conversational_shopping_session"
+        },
+        {
+          "column": null,
+          "name": "gcsa_assisted_conversion_rate",
+          "severity": "metric",
+          "table": "gold_conversational_shopping_session"
+        },
+        {
+          "column": null,
           "name": "a2a_session_keys_not_null",
           "severity": "error",
           "table": "a2a_session"
@@ -8877,6 +9373,182 @@
       "kind": "outcome",
       "name": "agentic-commerce",
       "relationships": [
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "conversation_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "conversation_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "conversation_session_sk"
+          ],
+          "child_table": "assistant_turn_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "conversation_session_sk"
+          ],
+          "parent_table": "conversation_session"
+        },
+        {
+          "child_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "child_table": "assistant_turn_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "parent_table": "discovery_intent_event"
+        },
+        {
+          "child_cols": [
+            "conversation_session_sk"
+          ],
+          "child_table": "discovery_intent_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "conversation_session_sk"
+          ],
+          "parent_table": "conversation_session"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "discovery_intent_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "discovery_intent_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "child_table": "discovery_result_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "parent_table": "discovery_intent_event"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "discovery_result_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "discovery_result_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "discovery_result_event_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "discovery_result_event_sk"
+          ],
+          "parent_table": "discovery_result_event"
+        },
+        {
+          "child_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "discovery_intent_event_sk"
+          ],
+          "parent_table": "discovery_intent_event"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "order_line_sk"
+          ],
+          "child_table": "discovery_engagement_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "order_line_sk"
+          ],
+          "parent_table": "customer_order_line"
+        },
         {
           "child_cols": [
             "buyer_profile_sk"
@@ -9789,6 +10461,1153 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the assistant turn event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assistant_turn_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the assistant turn event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assistant_turn_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to conversation_session.conversation_session_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "conversation_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the parent conversational shopping session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to discovery_intent_event.discovery_intent_event_sk when this turn captured or used a discovery intent.",
+              "enum_values": [],
+              "fk": true,
+              "name": "discovery_intent_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the linked discovery intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "One-based turn order within the conversation session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "turn_sequence_number",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Actor responsible for the turn. Allowed values: shopper, assistant, associate, system.",
+              "enum_values": [
+                "shopper",
+                "assistant",
+                "associate",
+                "system"
+              ],
+              "fk": false,
+              "name": "actor_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Structured turn type. Allowed values: intent_capture, recommendation, product_comparison, availability_check, cart_action, handoff, fallback, clarification, other.",
+              "enum_values": [
+                "intent_capture",
+                "recommendation",
+                "product_comparison",
+                "availability_check",
+                "cart_action",
+                "handoff",
+                "fallback",
+                "clarification",
+                "other"
+              ],
+              "fk": false,
+              "name": "turn_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Structured assistant action. Allowed values: none, search_products, recommend_products, compare_products, check_availability, add_to_cart, handoff_to_associate, answer_question, clarify_intent.",
+              "enum_values": [
+                "none",
+                "search_products",
+                "recommend_products",
+                "compare_products",
+                "check_availability",
+                "add_to_cart",
+                "handoff_to_associate",
+                "answer_question",
+                "clarify_intent"
+              ],
+              "fk": false,
+              "name": "assistant_action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Turn-local normalized shopper intent category when this turn captured or refined intent; not authoritative over the linked discovery_intent_event (use that row for the session intent of record). Allowed values: product_search, need_based, occasion, problem_solution, compatibility, style_fit, replenishment, comparison, unknown.",
+              "enum_values": [
+                "product_search",
+                "need_based",
+                "occasion",
+                "problem_solution",
+                "compatibility",
+                "style_fit",
+                "replenishment",
+                "comparison",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "intent_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Turn-local model confidence that the normalized category reflects the shopper intent, from 0.0 to 1.0; scoped to this turn, not authoritative over the linked discovery_intent_event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when the assistant could not confidently answer or proceed without fallback behavior.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_fallback_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the turn handed the shopper to an associate or other support channel.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_handoff_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the turn occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the turn event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agentic Commerce structured assistant turn/action fact for conversational shopping.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "assistant_turn_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the conversational shopping session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_session_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the conversational shopping session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk when the shopper is resolved.",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous). NULL for anonymous sessions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk when the conversation is scoped to a store/location.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key when store context is known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pseudonymous session identifier from the shopping surface; degenerate, not application state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pseudonymous conversation identifier; degenerate, not transcript state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Surface where the conversation started. Allowed values: web, mobile_app, kiosk, store_associate, voice, api.",
+              "enum_values": [
+                "web",
+                "mobile_app",
+                "kiosk",
+                "store_associate",
+                "voice",
+                "api"
+              ],
+              "fk": false,
+              "name": "entry_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Locale/language context for the conversation, e.g. en-US.",
+              "enum_values": [],
+              "fk": false,
+              "name": "locale_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Jurisdiction used for consent/personalization evaluation, ISO 3166-1 alpha-2 when available.",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the conversation started at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the conversation ended at source (UTC, ISO 8601). NULL only when still active at the reporting cutoff or unknown.",
+              "enum_values": [],
+              "fk": false,
+              "name": "ended_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date the conversation started.",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Lifecycle status at the immutable reporting point. Allowed values: active, completed, abandoned, escalated.",
+              "enum_values": [
+                "active",
+                "completed",
+                "abandoned",
+                "escalated"
+              ],
+              "fk": false,
+              "name": "session_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the session resolved. Allowed values: product_selected, add_to_cart, purchase, handoff, no_resolution, abandoned.",
+              "enum_values": [
+                "product_selected",
+                "add_to_cart",
+                "purchase",
+                "handoff",
+                "no_resolution",
+                "abandoned"
+              ],
+              "fk": false,
+              "name": "resolution_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the shopper was eligible for personalized assistance at session start.",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Consent state used for personalization at session start. Allowed values: granted, denied, unknown.",
+              "enum_values": [
+                "granted",
+                "denied",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agentic Commerce append-only privacy-safe conversational shopping session fact.",
+          "consumes_tables": [
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "conversation_session",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the discovery engagement event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_engagement_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the engagement event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_engagement_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to discovery_result_event.discovery_result_event_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "discovery_result_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the engaged result.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_result_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to discovery_intent_event.discovery_intent_event_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "discovery_intent_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the parent discovery intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk when the shopper is resolved.",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous). NULL for anonymous engagement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk for the engaged product.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key for the engaged product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk when engagement is store-scoped.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key when engagement is store-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer_order_line.order_line_sk when engagement converted to a purchase.",
+              "enum_values": [],
+              "fk": true,
+              "name": "order_line_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable order-line business key when purchase attribution is known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_line_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Operational order identifier retained as a degenerate attribute.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Type of engagement. Allowed values: view, select, add_to_cart, purchase, dismiss.",
+              "enum_values": [
+                "view",
+                "select",
+                "add_to_cart",
+                "purchase",
+                "dismiss"
+              ],
+              "fk": false,
+              "name": "engagement_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the engagement occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "engagement_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the engagement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "engagement_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Units associated with the engagement, populated for add-to-cart or purchase events when known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Net purchase amount in the reporting/base currency, populated only for purchase events. Point-of-engagement attribution snapshot; not reconciled against customer_order_line.net_amount even when order_line_sk resolves.",
+              "enum_values": [],
+              "fk": false,
+              "name": "net_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Reporting/base currency for net_amount, ISO 4217 alpha-3.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Minutes between result production and engagement when known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "attribution_window_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agentic Commerce engagement fact for organic intent product discovery results.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "discovery_engagement_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the discovery intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to conversation_session.conversation_session_sk when the intent is part of a guided shopping conversation.",
+              "enum_values": [],
+              "fk": true,
+              "name": "conversation_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable conversational shopping session business key when the intent is part of a guided conversation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk when the shopper is resolved.",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable customer business key (pseudonymous). NULL for anonymous intent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk when discovery is scoped to a store/location.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key when store context is known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pseudonymous session identifier from the discovery surface; degenerate, not application state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pseudonymous conversation identifier when the intent came from an agent/chat turn; degenerate, not transcript state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Surface where intent was captured. Allowed values: web, mobile_app, kiosk, store_associate, voice, api.",
+              "enum_values": [
+                "web",
+                "mobile_app",
+                "kiosk",
+                "store_associate",
+                "voice",
+                "api"
+              ],
+              "fk": false,
+              "name": "discovery_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Locale/language context for the intent, e.g. en-US.",
+              "enum_values": [],
+              "fk": false,
+              "name": "locale_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Jurisdiction used for consent/personalization evaluation, ISO 3166-1 alpha-2 when available.",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Deterministic hash of the redacted normalized intent text. Raw shopper text is not stored in ORDM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_text_hash",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Normalized intent category. Allowed values: product_search, need_based, occasion, problem_solution, compatibility, style_fit, replenishment, comparison, unknown.",
+              "enum_values": [
+                "product_search",
+                "need_based",
+                "occasion",
+                "problem_solution",
+                "compatibility",
+                "style_fit",
+                "replenishment",
+                "comparison",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "intent_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Model confidence that the normalized category reflects the shopper intent, from 0.0 to 1.0.",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when the shopper was eligible for personalized ranking at event time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Consent state used for personalization at event time. Allowed values: granted, denied, unknown.",
+              "enum_values": [
+                "granted",
+                "denied",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the intent event occurred at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agentic Commerce intent event fact for organic product discovery.",
+          "consumes_tables": [
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "discovery_intent_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the returned discovery result.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_result_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the returned result.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_result_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to discovery_intent_event.discovery_intent_event_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "discovery_intent_event_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the parent discovery intent event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk for the returned product.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key for the returned product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk when result availability is store-scoped.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key when result availability is store-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "One-based product rank within the returned result set.",
+              "enum_values": [],
+              "fk": false,
+              "name": "result_rank",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Candidate retrieval score, from 0.0 to 1.0 when normalized.",
+              "enum_values": [],
+              "fk": false,
+              "name": "retrieval_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Final ranking score, from 0.0 to 1.0 when normalized.",
+              "enum_values": [],
+              "fk": false,
+              "name": "ranking_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Personalization component of the ranking score, from 0.0 to 1.0 when normalized.",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Availability component of the ranking score, from 0.0 to 1.0 when normalized.",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Primary explainability reason. Allowed values: lexical_match, semantic_match, purchase_affinity, substitute, complement, trending, available_nearby, business_rule.",
+              "enum_values": [
+                "lexical_match",
+                "semantic_match",
+                "purchase_affinity",
+                "substitute",
+                "complement",
+                "trending",
+                "available_nearby",
+                "business_rule"
+              ],
+              "fk": false,
+              "name": "reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the result was considered buyable/available at ranking time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_available_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Units available at ranking time when known.",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_available",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "List/shelf price shown or used at ranking time, in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "list_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Reporting/base currency for price fields, ISO 4217 alpha-3.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the result was produced at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the result event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Agentic Commerce returned product result fact for organic intent product discovery.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "discovery_result_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "",
               "enum_values": [],
               "fk": false,
@@ -10208,26 +12027,1144 @@
           "name": "gold_a2a_session_summary",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "entry_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_intent_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolution_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Count of conversational shopping sessions in the reporting grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_customer_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_eligible_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "selected_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "add_to_cart_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "handoff_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fallback_sessions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of conversational shopping sessions that reached at least one linked discovery intent.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sessions_reaching_discovery",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchased_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_net_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Reporting/base currency (ISO 4217 alpha-3) for purchase_net_amount; NULL when the grain had no purchases.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_total_turns",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_turns_to_first_discovery",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "selection_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "add_to_cart_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Share of conversational shopping sessions that reached a purchase.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assisted_conversion_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Share of conversational shopping sessions with an associate or support handoff.",
+              "enum_values": [],
+              "fk": false,
+              "name": "handoff_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Share of conversational shopping sessions with at least one fallback turn.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fallback_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "KPI-ready aggregate surface for the consolidated Conversational Shopping Assistant use case. Grain: started date x channel x primary intent category x resolution type.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_conversational_shopping_performance",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable session business key; raw session and conversation identifiers are not exposed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "conversation_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "ended_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Surface where the guided shopping conversation started.",
+              "enum_values": [],
+              "fk": false,
+              "name": "entry_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "locale_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_customer_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolution_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Total structured turns observed in the conversation session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_turns",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "shopper_turns",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "assistant_turns",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_turns",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Number of turns where fallback behavior was used.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fallback_turns",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "TRUE when the session included an associate or support handoff.",
+              "enum_values": [],
+              "fk": false,
+              "name": "handoff_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_turn_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_turn_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_discovery_turn_number",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Representative intent category for the session based on linked discovery intent events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_intent_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "selected_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "added_to_cart_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchased_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchased_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Net purchase amount attributed to the conversation session, in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_net_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Reporting/base currency (ISO 4217 alpha-3) for purchase_net_amount; NULL when the session had no purchase.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Session-level performance surface for Conversational Shopping Assistant. Joins structured session and turn events to discovery outcomes while excluding raw prompt text, hashes, session identifiers, conversation identifiers, and customer IDs from the gold output.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_conversational_shopping_session",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_result_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_intent_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "discovery_channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "locale_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "jurisdiction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Normalized shopper intent category.",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "intent_confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when the source intent was tied to a resolved customer profile.",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_customer_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when personalized ranking was allowed at event time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_eligible_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "consent_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "One-based product rank within the returned result set.",
+              "enum_values": [],
+              "fk": false,
+              "name": "result_rank",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "retrieval_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "ranking_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "personalization_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Primary explainability reason for why the product was returned.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_available_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_available",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "list_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "viewed_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the returned product received a select engagement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "selected_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the returned product received an add-to-cart engagement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "added_to_cart_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when this returned product had any purchase engagement (per-result). Uses a different attribution rule than purchase_net_amount/purchased_units, so a row may be purchased_flag=TRUE yet carry 0 attributed units/amount when the order line was attributed to a sibling result.",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchased_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "engagement_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchased_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Net purchase amount in the reporting/base currency, with each order line attributed to a SINGLE result (deduped to avoid double-counting across sibling results). 0 on a result whose order line was attributed elsewhere even if purchased_flag is TRUE.",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_net_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_engagement_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Result-level performance surface for Intent Product Discovery. The view joins the intent, ranked product result, product context, and engagement outcomes while excluding raw prompt text, hashes, session identifiers, and customer IDs.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_intent_product_discovery_performance",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "gtin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sku",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "style_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the discoverable product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "color",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "size",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_of_measure",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current list price amount in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_list_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Latest inventory snapshot date used to determine availability.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_inventory_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_available",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "TRUE when latest inventory indicates the product is buyable for the store context; FALSE when inventory is missing or unavailable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_available_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "size_availability_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Current product candidate surface for organic intent product discovery. Combines active product attributes, current list price, and the latest product-store inventory signal when available. This is an analytical serving view, not an operational vector index or application state store. Products without a current inventory signal are retained but are not treated as buyable.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "product_price",
+              "unit": "product"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_product_discovery_candidate_current",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
         {
-          "consumes": [],
-          "name": "Shopping Assistant",
-          "status": "in-progress",
-          "tables": []
-        },
-        {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "inventory",
+            "order",
+            "product",
+            "store"
+          ],
           "name": "Intent Product Discovery",
-          "status": "in-progress",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_product_discovery_candidate_current",
+            "gold_intent_product_discovery_performance"
+          ]
         },
         {
-          "consumes": [],
-          "name": "Conversational Shopping",
-          "status": "in-progress",
-          "tables": []
+          "consumes": [
+            "customer",
+            "order",
+            "product",
+            "store"
+          ],
+          "name": "Conversational Shopping Assistant",
+          "status": "done",
+          "tables": [
+            "gold_conversational_shopping_session",
+            "gold_conversational_shopping_performance"
+          ]
         },
         {
           "consumes": [
