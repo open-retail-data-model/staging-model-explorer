@@ -149,14 +149,12 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
-    description: When the record was created in the source system (UTC, ISO 8601). Required on reference
-      tables (standard §8).
+    description: When the record was created in the source system (UTC, ISO 8601).
   - name: source_updated_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
-    description: When the record was last modified in the source system (UTC, ISO 8601). Required on reference
-      tables (standard §8).
+    description: When the record was last modified in the source system (UTC, ISO 8601).
   - name: record_source
     logicalType: string
     physicalType: STRING
@@ -166,7 +164,7 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
-    description: Timestamp this row was loaded into the canonical core (UTC, ISO 8601).
+    description: When this row was loaded into the canonical core (UTC, ISO 8601).
   quality:
   - name: location_offer_keys_not_null
     type: sql
@@ -363,7 +361,7 @@ schema:
     mustBe: 0
     unit: rows
     description: event_ts must fall inside the joined offer's [offer_start_ts, offer_end_ts].
-    query: "SELECT e.offer_event_id\nFROM promote_with_purpose.offer_event e\nJOIN promote_with_purpose.location_offer\
+    query: "SELECT e.offer_event_sk\nFROM promote_with_purpose.offer_event e\nJOIN promote_with_purpose.location_offer\
       \ lo\n  ON e.location_offer_sk = lo.location_offer_sk\nWHERE e.event_ts < lo.offer_start_ts OR e.event_ts\
       \ > lo.offer_end_ts"
   - name: offer_event_location_offer_fk_orphan
@@ -373,7 +371,7 @@ schema:
     mustBe: 0
     unit: rows
     description: Explicit referential-integrity check on the declared FK (offer_event -> location_offer).
-    query: "SELECT e.offer_event_id\nFROM promote_with_purpose.offer_event e\nLEFT JOIN promote_with_purpose.location_offer\
+    query: "SELECT e.offer_event_sk\nFROM promote_with_purpose.offer_event e\nLEFT JOIN promote_with_purpose.location_offer\
       \ lo\n  ON e.location_offer_sk = lo.location_offer_sk\nWHERE lo.location_offer_sk IS NULL"
 - name: offer_zone
   physicalName: promote_with_purpose.offer_zone
@@ -449,7 +447,7 @@ schema:
     logicalType: boolean
     physicalType: BOOLEAN
     required: true
-    description: SCD2 current-version indicator (TRUE for the open version).
+    description: 'SCD2: TRUE for the currently active version.'
   - name: created_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP

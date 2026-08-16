@@ -37356,7 +37356,7 @@
               "type": "STRING"
             },
             {
-              "comment": "When the record was created in the source system (UTC, ISO 8601). Required on reference tables (standard \u00a78).",
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
               "enum_values": [],
               "fk": false,
               "name": "created_timestamp",
@@ -37365,7 +37365,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "When the record was last modified in the source system (UTC, ISO 8601). Required on reference tables (standard \u00a78).",
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
               "enum_values": [],
               "fk": false,
               "name": "source_updated_timestamp",
@@ -37383,7 +37383,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Timestamp this row was loaded into the canonical core (UTC, ISO 8601).",
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
               "enum_values": [],
               "fk": false,
               "name": "load_timestamp",
@@ -37412,7 +37412,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Durable business key for the offer event: the identifier issued by the delivery platform for the trigger/delivery record, carried through unchanged. Not derived, concatenated, or hashed here.",
+              "comment": "Durable event key assigned by the emitting system (ULID/UUID); the idempotency key for replay and de-duplication.",
               "enum_values": [],
               "fk": false,
               "name": "offer_event_id",
@@ -37610,7 +37610,7 @@
               "type": "DATE"
             },
             {
-              "comment": "SCD2 current-version indicator (TRUE for the open version).",
+              "comment": "SCD2: TRUE for the currently active version.",
               "enum_values": [],
               "fk": false,
               "name": "is_current",
