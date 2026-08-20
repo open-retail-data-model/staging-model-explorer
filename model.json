@@ -135,6 +135,16 @@
       {
         "kind": "consumes",
         "source": "connected-store-signals",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
+        "source": "connected-store-signals",
+        "target": "logistics"
+      },
+      {
+        "kind": "consumes",
+        "source": "connected-store-signals",
         "target": "product"
       },
       {
@@ -23886,9 +23896,195 @@
         },
         {
           "column": null,
+          "name": "sd_store_fk_orphan",
+          "severity": "error",
+          "table": "sensor_device"
+        },
+        {
+          "column": null,
+          "name": "sd_deployment_fk_orphan",
+          "severity": "error",
+          "table": "sensor_device"
+        },
+        {
+          "column": null,
           "name": "sd_equipment_fk_orphan",
           "severity": "error",
           "table": "sensor_device"
+        },
+        {
+          "column": null,
+          "name": "ti_grain_unique",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "ti_sk_collision",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "ti_keys_not_null",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "ti_identity_contract",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "ti_product_fk_orphan",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "ti_product_gtin_agreement",
+          "severity": "error",
+          "table": "tagged_item"
+        },
+        {
+          "column": null,
+          "name": "rcs_grain_unique",
+          "severity": "error",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rcs_keys_not_null",
+          "severity": "error",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rcs_durable_id_wellformed",
+          "severity": "error",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rcs_fk_orphan",
+          "severity": "error",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rcs_zero_events",
+          "severity": "warn",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rcs_calendar_orphan",
+          "severity": "error",
+          "table": "rfid_count_session"
+        },
+        {
+          "column": null,
+          "name": "rre_grain_unique",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_sk_collision",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_durable_id_wellformed",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_registration_pairing",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_fk_orphan",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_calendar_orphan",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_session_integrity",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_header_before_event",
+          "severity": "warn",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_zone_source_honesty",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_directionality_consistent",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_retail_sold_context",
+          "severity": "warn",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_event_not_future",
+          "severity": "error",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_before_commission",
+          "severity": "warn",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_post_kill_reads",
+          "severity": "metric",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_unregistered_epc_rate",
+          "severity": "warn",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rre_delivery_quality",
+          "severity": "metric",
+          "table": "rfid_read_event"
+        },
+        {
+          "column": null,
+          "name": "rfid_append_only_schema",
+          "severity": "error",
+          "table": ""
         },
         {
           "column": null,
@@ -24039,6 +24235,132 @@
           "name": "css_zone_traffic_grain",
           "severity": "error",
           "table": "gold_zone_traffic_current"
+        },
+        {
+          "column": null,
+          "name": "ac_grain_unique",
+          "severity": "error",
+          "table": "actuator_capability"
+        },
+        {
+          "column": null,
+          "name": "ac_keys_not_null",
+          "severity": "error",
+          "table": "actuator_capability"
+        },
+        {
+          "column": null,
+          "name": "ac_single_current",
+          "severity": "error",
+          "table": "actuator_capability"
+        },
+        {
+          "column": null,
+          "name": "ac_device_fk_orphan",
+          "severity": "error",
+          "table": "actuator_capability"
+        },
+        {
+          "column": null,
+          "name": "ac_equipment_fk_orphan",
+          "severity": "error",
+          "table": "actuator_capability"
+        },
+        {
+          "column": null,
+          "name": "er_grain_unique",
+          "severity": "error",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "er_keys_not_null",
+          "severity": "error",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "er_single_current",
+          "severity": "error",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "er_device_fk_orphan",
+          "severity": "error",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "aa_grain_unique",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "aa_keys_not_null",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "aa_single_current",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "aa_rule_fk_orphan",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "aa_actuator_fk_orphan",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "aa_actuator_target_consistent",
+          "severity": "error",
+          "table": "automation_action"
+        },
+        {
+          "column": null,
+          "name": "el_grain_unique",
+          "severity": "error",
+          "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "el_keys_not_null",
+          "severity": "error",
+          "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "el_action_fk_orphan",
+          "severity": "error",
+          "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "el_actuator_fk_orphan",
+          "severity": "error",
+          "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "el_rule_fk_orphan",
+          "severity": "error",
+          "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "el_interval_fk_orphan",
+          "severity": "error",
+          "table": "execution_log"
         }
       ],
       "contract_path": "contracts/odcs/connected-store-signals.odcs.yaml",
@@ -24136,6 +24458,127 @@
         },
         {
           "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "tagged_item",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "rfid_count_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "primary_sensor_device_sk"
+          ],
+          "child_table": "rfid_count_session",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "tagged_item_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "tagged_item_sk"
+          ],
+          "parent_table": "tagged_item"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_zone_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_zone_sk"
+          ],
+          "parent_table": "store_zone"
+        },
+        {
+          "child_cols": [
+            "sensor_device_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "sensing_deployment_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensing_deployment_sk"
+          ],
+          "parent_table": "sensing_deployment"
+        },
+        {
+          "child_cols": [
+            "rfid_count_session_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "rfid_count_session_sk"
+          ],
+          "parent_table": "rfid_count_session"
+        },
+        {
+          "child_cols": [
+            "shipment_line_sk"
+          ],
+          "child_table": "rfid_read_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "shipment_line_sk"
+          ],
+          "parent_table": "shipment_line"
+        },
+        {
+          "child_cols": [
             "store_sk"
           ],
           "child_table": "sensor_report_interval",
@@ -24210,9 +24653,877 @@
             "sensor_report_interval_sk"
           ],
           "parent_table": "sensor_report_interval"
+        },
+        {
+          "child_cols": [
+            "sensor_device_sk"
+          ],
+          "child_table": "actuator_capability",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "equipment_sk"
+          ],
+          "child_table": "actuator_capability",
+          "declared_fk": true,
+          "parent_cols": [
+            "equipment_sk"
+          ],
+          "parent_table": "equipment"
+        },
+        {
+          "child_cols": [
+            "sensor_device_sk"
+          ],
+          "child_table": "evaluation_rule",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "evaluation_rule_sk"
+          ],
+          "child_table": "automation_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "evaluation_rule_sk"
+          ],
+          "parent_table": "evaluation_rule"
+        },
+        {
+          "child_cols": [
+            "actuator_capability_sk"
+          ],
+          "child_table": "automation_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "actuator_capability_sk"
+          ],
+          "parent_table": "actuator_capability"
+        },
+        {
+          "child_cols": [
+            "automation_action_sk"
+          ],
+          "child_table": "execution_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "automation_action_sk"
+          ],
+          "parent_table": "automation_action"
+        },
+        {
+          "child_cols": [
+            "actuator_capability_sk"
+          ],
+          "child_table": "execution_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "actuator_capability_sk"
+          ],
+          "parent_table": "actuator_capability"
+        },
+        {
+          "child_cols": [
+            "evaluation_rule_sk"
+          ],
+          "child_table": "execution_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "evaluation_rule_sk"
+          ],
+          "parent_table": "evaluation_rule"
+        },
+        {
+          "child_cols": [
+            "sensor_report_interval_sk"
+          ],
+          "child_table": "execution_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_report_interval_sk"
+          ],
+          "parent_table": "sensor_report_interval"
         }
       ],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_capability_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the actuator capability. Stable across SCD2 versions and across firmware upgrades.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_capability_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to sensor_device.sensor_device_sk -- the device that exposes this command surface. The device_role of that device is actuate or both.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable device id. The SCD2-safe join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to equipment.equipment_sk when the actuator controls a maintained asset. NULL for ambient or digital-only actuation.",
+              "enum_values": [],
+              "fk": true,
+              "name": "equipment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable equipment business key. NULL for ambient or digital-only actuation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What the actuator can be commanded to do. Allowed values: toggle_power, set_level, set_setpoint, open_close, dispense, display_message, reset.",
+              "enum_values": [
+                "toggle_power",
+                "set_level",
+                "set_setpoint",
+                "open_close",
+                "dispense",
+                "display_message",
+                "reset"
+              ],
+              "fk": false,
+              "name": "command_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable bound on a valid command payload for this actuator, e.g. \"0,1\" for a toggle or \"2.0,8.0\" for a setpoint in the device native unit. Free text: the shape varies by command_type, so it is a documented contract rather than a typed range.",
+              "enum_values": [],
+              "fk": false,
+              "name": "acceptable_value_range",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "QUDT unit IRI for a set_level / set_setpoint command value, e.g. http://qudt.org/vocab/unit/DEG_C. NULL for dimensionless commands such as toggle_power.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_iri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "UN/CEFACT Recommendation 20 common code for the command unit, e.g. CEL. The interchange form of unit_iri.",
+              "enum_values": [],
+              "fk": false,
+              "name": "uom_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Allowed values: active, inactive, faulty, maintenance, decommissioned.",
+              "enum_values": [
+                "active",
+                "inactive",
+                "faulty",
+                "maintenance",
+                "decommissioned"
+              ],
+              "fk": false,
+              "name": "actuator_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the actuator capability became available.",
+              "enum_values": [],
+              "fk": false,
+              "name": "installed_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "When the actuator was removed. NULL while in service.",
+              "enum_values": [],
+              "fk": false,
+              "name": "decommissioned_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals -- actuator command-surface registry (SCD2). The active-control capability of a sensor_device; completes the automation loop with evaluation_rule, automation_action and execution_log.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "actuator_capability",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "automation_action_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the action. Stable across SCD2 versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "automation_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to evaluation_rule.evaluation_rule_sk -- the rule whose firing triggers this action.",
+              "enum_values": [],
+              "fk": true,
+              "name": "evaluation_rule_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable rule id. The SCD2-safe join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What kind of action this is. Allowed values: system_command, notification, webhook, ticket, log_only.",
+              "enum_values": [
+                "system_command",
+                "notification",
+                "webhook",
+                "ticket",
+                "log_only"
+              ],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The kind of thing the action targets -- the discriminator of a polymorphic reference (standards \u00a7A.5). Allowed values: actuator, role, person, external_system, none.",
+              "enum_values": [
+                "actuator",
+                "role",
+                "person",
+                "external_system",
+                "none"
+              ],
+              "fk": false,
+              "name": "target_entity_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the target, interpreted per target_entity_type. For target_entity_type = actuator this is the actuator_capability_id and actuator_capability_sk carries the typed FK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_entity_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to actuator_capability.actuator_capability_sk when target_entity_type = actuator. NULL for non-actuator targets.",
+              "enum_values": [],
+              "fk": true,
+              "name": "actuator_capability_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable actuator id. The SCD2-safe join key. NULL for non-actuator targets.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_capability_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Templated command or message payload sent when the action fires, e.g. {\"command\": \"start_cooling\", \"power_level\": \"max\"}. A template, not a rendered instance -- the rendered form is on execution_log.response_payload.",
+              "enum_values": [],
+              "fk": false,
+              "name": "payload_template",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if the action is live. A disabled action leaves its rule firing but takes no effect.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_enabled",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals -- intent definition for the automation loop (SCD2). What happens when an evaluation_rule fires; realised runs are recorded append-only in execution_log.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "automation_action",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the rule. Stable across SCD2 versions as the threshold is retuned.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to sensor_device.sensor_device_sk -- the observing device whose readings this rule evaluates. NULL for a rule that evaluates a cross-device aggregate.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable device id. The SCD2-safe join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable rule name, e.g. \"Vaccine fridge over 8C for 10 minutes\".",
+              "enum_values": [],
+              "fk": false,
+              "name": "rule_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "GS1 CBV sensor-property CURIE the rule watches, matching sensor_report_interval.report_type. Allowed values: gs1:Count, gs1:Temperature, gs1:RelativeHumidity, gs1:Power, gs1:Energy, gs1:Mass, gs1:Illuminance, gs1:VolumeFraction.",
+              "enum_values": [
+                "gs1:Count",
+                "gs1:Temperature",
+                "gs1:RelativeHumidity",
+                "gs1:Power",
+                "gs1:Energy",
+                "gs1:Mass",
+                "gs1:Illuminance",
+                "gs1:VolumeFraction"
+              ],
+              "fk": false,
+              "name": "report_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Comparison applied to the observed value. Allowed values: greater_than, greater_than_or_equal, less_than, less_than_or_equal, equal, not_equal, outside_range, inside_range.",
+              "enum_values": [
+                "greater_than",
+                "greater_than_or_equal",
+                "less_than",
+                "less_than_or_equal",
+                "equal",
+                "not_equal",
+                "outside_range",
+                "inside_range"
+              ],
+              "fk": false,
+              "name": "condition_operator",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Threshold the observed value is compared against, in the rule unit. NULL for a purely categorical rule. DOUBLE, not DECIMAL: this is a non-monetary continuous physical quantity (temperature, humidity, power) compared directly against sensor_report_interval.value, which is DOUBLE -- matching the two avoids precision/comparison surprises, and DECIMAL(18,x) is reserved for stored money (standards \u00a7A.6).",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value_numeric",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Upper bound for the inside_range / outside_range operators; NULL otherwise. threshold_value_numeric is the lower bound in that case. DOUBLE for the same reason as threshold_value_numeric.",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value_upper",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "QUDT unit IRI for the threshold, e.g. http://qudt.org/vocab/unit/DEG_C. NULL for a dimensionless (count) rule.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_iri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "UN/CEFACT Recommendation 20 common code for the threshold unit, e.g. CEL. The interchange form of unit_iri.",
+              "enum_values": [],
+              "fk": false,
+              "name": "uom_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Sustained-breach window in seconds: the condition must hold this long before the rule fires, which debounces a single transient reading. 0 means fire on the first breaching observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "time_window_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Operational severity of a breach. Allowed values: info, warning, critical.",
+              "enum_values": [
+                "info",
+                "warning",
+                "critical"
+              ],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if the rule is live. Replaces the source CHAR(1) Y/N flag with a native BOOLEAN per strict-typing (standards \u00a7A.6).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_enabled",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals -- threshold framework for the automation loop (SCD2). A standing condition on a sensor observed property that fires automation_action rows.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "evaluation_rule",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the execution event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "execution_log_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the execution event, from the source automation platform. Identifies the FIRING (the action that ran against its triggering observation), not merely the observation -- one breaching interval can fire several actions, so a key scoped to the interval alone would collide and defeat the one-row-per-firing grain (el_grain_unique).",
+              "enum_values": [],
+              "fk": false,
+              "name": "execution_log_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to automation_action.automation_action_sk -- the action version that fired. NULL when the action has been retired (the log row outlives it).",
+              "enum_values": [],
+              "fk": true,
+              "name": "automation_action_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable action id. The SCD2-safe join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "automation_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to actuator_capability.actuator_capability_sk -- the actuator the command hit. NULL for a non-actuator action (notification, webhook) or a retired actuator.",
+              "enum_values": [],
+              "fk": true,
+              "name": "actuator_capability_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable actuator id. The SCD2-safe join key. NULL for non-actuator actions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_capability_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to evaluation_rule.evaluation_rule_sk -- the rule version whose breach triggered this run. Denormalised onto the fact so \"which rule caused this action\" survives the retirement of automation_action.",
+              "enum_values": [],
+              "fk": true,
+              "name": "evaluation_rule_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable rule id. The SCD2-safe join key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to sensor_report_interval.sensor_report_interval_sk -- the reading interval that breached the rule, closing the loop back to the observation that caused the action. NULL if the trigger was not a single canonical interval.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_report_interval_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "When the action fired (UTC, ISO 8601). The ordering key for the ledger.",
+              "enum_values": [],
+              "fk": false,
+              "name": "triggered_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Outcome of the run. Allowed values: success, failure, pending, timeout, skipped.",
+              "enum_values": [
+                "success",
+                "failure",
+                "pending",
+                "timeout",
+                "skipped"
+              ],
+              "fk": false,
+              "name": "execution_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Rendered response from the target, e.g. {\"status_code\": 200, \"message\": \"Actuator triggered successfully\"}. The realised counterpart to automation_action.payload_template.",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_payload",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Milliseconds between the triggering observation and this execution. Feeds automation responsiveness monitoring.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_ms",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals -- append-only audit ledger of realised automation firings. Closes the sense -> evaluate -> act loop back to the observation that triggered it.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "execution_log",
+          "role": "transactional",
+          "scd2": false
+        },
         {
           "columns": [
             {
@@ -24598,6 +25909,626 @@
           "layer": "silver",
           "materialized": true,
           "name": "foot_traffic_interval_detail",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the bounded RFID count session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable key: store_id|source_session_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source session identifier. For fixed windows without one: count_method|primary sensor_device_id or _ALL|unix_timestamp(started_at_ts).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nullable FK to the initiating or primary sensor_device version. The complete device set derives from events.",
+              "enum_values": [],
+              "fk": true,
+              "name": "primary_sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable id of the initiating or primary device.",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "RFID count method. Allowed values: handheld_sweep, fixed_window, robot_sweep.",
+              "enum_values": [
+                "handheld_sweep",
+                "fixed_window",
+                "robot_sweep"
+              ],
+              "fk": false,
+              "name": "count_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Representable scope claim. full_store has a derivable zone plan; partial makes no plan claim.",
+              "enum_values": [
+                "full_store",
+                "partial"
+              ],
+              "fk": false,
+              "name": "scope_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Session start as a UTC instant.",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Session end as a UTC instant.",
+              "enum_values": [],
+              "fk": false,
+              "name": "ended_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "IANA store timezone used to derive trading_date and hour_of_day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_timezone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store UTC offset in minutes at started_at_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "utc_offset_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "SMALLINT"
+            },
+            {
+              "comment": "Business date of the session start; logical join to fiscal_calendar.date_key, enforced by rcs_calendar_orphan.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Store-local hour at session start, 0 through 23.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hour_of_day",
+              "pii": false,
+              "pk": false,
+              "type": "TINYINT"
+            },
+            {
+              "comment": "Optional pointer to the source session manifest in Bronze.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the session header arrived in the lakehouse (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals bounded RFID count-session header; coverage and census are derived from linked read events.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "rfid_count_session",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate join key: xxhash64(rfid_read_event_id). The durable id is authoritative and collision-guarded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_read_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable grain key: tagged_item_id|unix_timestamp(event_ts)|sensor_device_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_read_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nullable FK to tagged_item. NULL only for an explicitly unregistered EPC.",
+              "enum_values": [],
+              "fk": true,
+              "name": "tagged_item_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed EPC Pure Identity URI, including for unregistered EPCs.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the observed EPC has no commissioned tagged_item registry row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_unregistered_epc",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Product version resolved at write. NULL only for an unregistered or unresolved EPC.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key resolved at write.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect at event time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the event-level read-point zone version.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable event-level read-point zone id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the reader device version in effect at event time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable reader device business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the governing sensing deployment version.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensing_deployment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable sensing deployment business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensing_deployment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nullable FK to rfid_count_session for count-bound reads.",
+              "enum_values": [],
+              "fk": true,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable count-session key. NULL for free reads.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nullable FK to shipment_line when a receiving read carries an EPCIS business-transaction association.",
+              "enum_values": [],
+              "fk": true,
+              "name": "shipment_line_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable shipment-line business key. NULL for reads outside a receiving association.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shipment_line_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business event time as a UTC instant.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "First raw ping in the upstream collapse window (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_seen_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Last raw ping in the upstream collapse window (UTC); its business context wins.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_seen_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "IANA store timezone used to derive local business fields.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_timezone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store UTC offset in minutes at event_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "utc_offset_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "SMALLINT"
+            },
+            {
+              "comment": "Business date of event_ts. Logical join to fiscal_calendar.date_key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Store-local event hour, 0 through 23.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hour_of_day",
+              "pii": false,
+              "pk": false,
+              "type": "TINYINT"
+            },
+            {
+              "comment": "Full GS1 CBV business-step URI from the supported RFID subset.",
+              "enum_values": [
+                "https://ref.gs1.org/cbv/BizStep-commissioning",
+                "https://ref.gs1.org/cbv/BizStep-receiving",
+                "https://ref.gs1.org/cbv/BizStep-stocking",
+                "https://ref.gs1.org/cbv/BizStep-storing",
+                "https://ref.gs1.org/cbv/BizStep-retail_selling",
+                "https://ref.gs1.org/cbv/BizStep-cycle_counting",
+                "https://ref.gs1.org/cbv/BizStep-stock_taking",
+                "https://ref.gs1.org/cbv/BizStep-shipping",
+                "https://ref.gs1.org/cbv/BizStep-staging_outbound",
+                "https://ref.gs1.org/cbv/BizStep-inspecting",
+                "https://ref.gs1.org/cbv/BizStep-killing",
+                "https://ref.gs1.org/cbv/BizStep-decommissioning"
+              ],
+              "fk": false,
+              "name": "biz_step_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Full GS1 CBV disposition URI from the supported RFID subset.",
+              "enum_values": [
+                "https://ref.gs1.org/cbv/Disp-sellable_accessible",
+                "https://ref.gs1.org/cbv/Disp-sellable_not_accessible",
+                "https://ref.gs1.org/cbv/Disp-in_transit",
+                "https://ref.gs1.org/cbv/Disp-retail_sold",
+                "https://ref.gs1.org/cbv/Disp-damaged",
+                "https://ref.gs1.org/cbv/Disp-expired",
+                "https://ref.gs1.org/cbv/Disp-recalled",
+                "https://ref.gs1.org/cbv/Disp-stolen",
+                "https://ref.gs1.org/cbv/Disp-unavailable",
+                "https://ref.gs1.org/cbv/Disp-unknown"
+              ],
+              "fk": false,
+              "name": "disposition_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the read-point zone was resolved: device_placement, operator_declared, platform_localization.",
+              "enum_values": [
+                "device_placement",
+                "operator_declared",
+                "platform_localization"
+              ],
+              "fk": false,
+              "name": "zone_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed movement direction: in, out, unknown, not_applicable.",
+              "enum_values": [
+                "in",
+                "out",
+                "unknown",
+                "not_applicable"
+              ],
+              "fk": false,
+              "name": "direction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Directional attribution confidence in [0,1]. NULL when direction is not applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "direction_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Confidence in assigning the RF read to the stated read point, in [0,1].",
+              "enum_values": [],
+              "fk": false,
+              "name": "attribution_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when RF bleed makes location attribution suspect; excluded from presence gold.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_stray_suspect",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Winning reader antenna identifier; provenance detail, not a separate registry.",
+              "enum_values": [],
+              "fk": false,
+              "name": "antenna_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Number of raw RF pings collapsed into this visibility event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "read_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Duplicate source deliveries suppressed for this event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "duplicate_delivery_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Peak received signal strength in dBm across collapsed pings.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rssi_peak_dbm",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Pointer to raw RF-ping evidence in Bronze.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the event arrived in the lakehouse (UTC); may be much later than event_ts for offline readers.",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals append-only EPCIS ObjectEvent-shaped RFID visibility fact at EPC \u00d7 reader \u00d7 second grain.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "rfid_read_event",
           "role": "transactional",
           "scd2": false
         },
@@ -25289,6 +27220,15 @@
               "type": "BOOLEAN"
             },
             {
+              "comment": "TRUE for a reader mounted on a moving handheld or robotic platform. Mobile readers resolve event zones from operator declaration or platform localization, not installed device placement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_mobile_platform",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
               "comment": "Hardware detection ceiling, where the vendor publishes one. A peak at this value is capped, not exact.",
               "enum_values": [],
               "fk": false,
@@ -25591,7 +27531,7 @@
         {
           "columns": [
             {
-              "comment": "Surrogate key: xxhash64(sensor_report_interval_id). NOT an identity column -- see ADR 0028. The durable _id is the authoritative key; this is a join convenience guarded by sri_sk_collision.",
+              "comment": "Surrogate key: xxhash64(sensor_report_interval_id). NOT an identity column -- see ADR 0028, Hash surrogate keys for high-volume gold event facts. The durable _id is the authoritative key; this is a join convenience guarded by sri_sk_collision.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_report_interval_sk",
@@ -26494,6 +28434,771 @@
         {
           "columns": [
             {
+              "comment": "Surrogate join key: xxhash64(tagged_item_id). The durable id remains authoritative; guarded by ti_sk_collision.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable serialized-item key, valued as a GS1 EPC Pure Identity URI such as urn:epc:id:sgtin:0614141.107346.2017.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "EPC identity scheme. Allowed values: sgtin, grai.",
+              "enum_values": [
+                "sgtin",
+                "grai"
+              ],
+              "fk": false,
+              "name": "epc_scheme",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "GTIN decomposed from an SGTIN EPC. NULL for schemes without a GTIN component.",
+              "enum_values": [],
+              "fk": false,
+              "name": "gtin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Serialized-unit component of an SGTIN EPC. Required for epc_scheme = sgtin.",
+              "enum_values": [],
+              "fk": false,
+              "name": "serial_number",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current physical RFID tag-chip identifier in hexadecimal. Carrier evidence, not serialized-item identity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_tid_hex",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the product version resolved when the item was commissioned. NULL when the EPC cannot be resolved to a product.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key. Retained with product_sk for portable joins.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional source lot identifier for fresh or regulated categories; not a conformed lot entity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lot_number",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional item expiry date for fresh or regulated categories.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expiry_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Current tag privacy state. Allowed values: active, protected, killed, detached.",
+              "enum_values": [
+                "active",
+                "protected",
+                "killed",
+                "detached"
+              ],
+              "fk": false,
+              "name": "tag_privacy_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "UTC instant when this EPC was commissioned for the serialized item.",
+              "enum_values": [],
+              "fk": false,
+              "name": "commissioned_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "UTC instant when this EPC left active service. NULL while active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "decommissioned_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the registry record was created in the source system (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the Type 1 registry row was last changed in the source system (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals serialized-item registry: EPC identity, product resolution, current carrier and tag privacy state.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "tagged_item",
+          "role": "master",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "count_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "scope_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "started_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "ended_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "duration_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Active non-site zones derived at session start for full_store sessions; NULL for partial scope.",
+              "enum_values": [],
+              "fk": false,
+              "name": "planned_zones",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zones_covered",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zones_missed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed zones divided by derived planned zones for full_store sessions only.",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_coverage_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_observed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "devices_observed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per RFID count session. full_store plans derive from active non-site zones at session start; partial sessions make no plan claim.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_count_session_summary",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable store business key of the device that fired the loop.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the zone the observing device is installed in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the observing device whose reading breached the rule, resolved from the triggering interval version-in-effect. This is the device that CAUSED the firing.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Kind of device that triggered the firing, e.g. temperature for the cold-chain excursion loop.",
+              "enum_values": [],
+              "fk": false,
+              "name": "device_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "device_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the firing. Identifies the action-that-ran-against-its-triggering-observation, not merely the observation -- one breaching interval can fire several actions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "execution_log_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the action fired (UTC). The ledger ordering key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "triggered_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the breach that fired the loop, from the triggering interval; the firing date is the fallback when the trigger was not a canonical interval. The day-grain key for rollups.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Outcome of the firing: success, failure, pending, timeout or skipped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "execution_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Milliseconds from the breaching observation to the firing. Automation RESPONSE latency, NOT ingest latency -- do not compare it to sensor_report_interval.latency_seconds.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_ms",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "fast (<= 250 ms), normal (<= 1000 ms), slow (> 1000 ms), or unknown. A responsiveness band, not a data-quality one.",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_latency_band",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_payload",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "automation_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What kind of action fired: system_command, notification, webhook, ticket or log_only. One breach can fan out to several action types.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The kind of thing the action targeted -- actuator, role, person or external_system. Only the actuator target carries a typed actuator FK (\u00a7A.5).",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_entity_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the target, interpreted per target_entity_type.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_entity_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if the action version that fired was live. A disabled action leaves its rule firing but takes no effect.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_is_enabled",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "payload_template",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the rule whose breach fired the action.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Human-readable rule name, e.g. an over-temperature excursion on a named device.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rule_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "GS1 CBV property the rule watches, e.g. gs1:Temperature. Shared vocabulary with sensor_report_interval.report_type.",
+              "enum_values": [],
+              "fk": false,
+              "name": "report_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "condition_operator",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Operational severity of the breach: info, warning or critical.",
+              "enum_values": [],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The threshold the observed value was compared against, in the rule unit, AS OF the firing. DOUBLE, matching sensor_report_interval.value (\u00a7A.6).",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value_numeric",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value_upper",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "time_window_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rule_uom_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the actuator the command hit. NULL for non-actuator actions or a retired actuator.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_capability_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What the actuator was commanded to do, e.g. toggle_power. NULL for a non-actuator action such as a notification.",
+              "enum_values": [],
+              "fk": false,
+              "name": "command_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuator_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable business key of the asset the actuator drives, e.g. the refrigeration unit. NULL for ambient or digital-only actuation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The reading interval that breached the rule, closing the loop back to the observation. NULL if the trigger was not a single canonical interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_report_interval_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_report_interval_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The observed value that breached the rule, in breach_uom. For the cold-chain loop this is the temperature that exceeded the limit.",
+              "enum_values": [],
+              "fk": false,
+              "name": "breach_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "breach_uom",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Signed difference of breach_value from threshold_value_numeric, in the rule unit. Positive means above threshold -- how far past the limit the reading was. A cross-operator magnitude is left to the consumer.",
+              "enum_values": [],
+              "fk": false,
+              "name": "breach_margin",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per realised automation firing (one execution_log row), decorated with the action that ran, the rule that fired it, the actuator it hit (when the target is a device), the observing device, and the sensor_report_interval whose reading breached the threshold. This is the consumable that makes the sense -> evaluate -> act -> log loop READ AS BUILT: it is the one row a responder, an auditor and a reliability review all read, closing the loop from the firing back to the observation that caused it.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_css_automation_response",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "",
               "enum_values": [],
               "fk": false,
@@ -26518,7 +29223,7 @@
               "name": "trading_date",
               "pii": false,
               "pk": false,
-              "type": "DATE"
+              "type": ""
             },
             {
               "comment": "",
@@ -26527,7 +29232,7 @@
               "name": "report_type",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "",
@@ -26536,7 +29241,7 @@
               "name": "aggregation_level",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "",
@@ -26554,7 +29259,7 @@
               "name": "sensor_device_sk",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "How the device senses. Drives both the accuracy and the privacy profile.",
@@ -26626,7 +29331,7 @@
               "name": "intervals_reported",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26635,7 +29340,7 @@
               "name": "observations_expected",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26644,7 +29349,7 @@
               "name": "observations_received",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "1 - (observations_received / observations_expected). The primary fleet KPI. Re-aggregate it by summing the two component columns, never by averaging this ratio: an average lets a device expecting 4 observations outvote one expecting 400, which understates a fleet-wide outage.",
@@ -26653,7 +29358,7 @@
               "name": "missing_observation_rate",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "",
@@ -26662,7 +29367,7 @@
               "name": "avg_uptime_ratio",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "",
@@ -26671,7 +29376,7 @@
               "name": "avg_coverage_ratio",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "Count of intervals whose measurement was valid. Retained with invalid_intervals so valid-interval share can be re-aggregated from summed components.",
@@ -26680,7 +29385,7 @@
               "name": "valid_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26689,7 +29394,7 @@
               "name": "valid_interval_share",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "",
@@ -26698,7 +29403,7 @@
               "name": "invalid_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26707,7 +29412,7 @@
               "name": "imputed_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Intervals with a MEASURED zero, as distinct from an absent row. Most vendors emit no row for either a zero-traffic interval or an offline sensor, which makes the two indistinguishable without this.",
@@ -26716,7 +29421,7 @@
               "name": "observed_zero_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Intervals that hit the hardware detection ceiling. A capped peak is NOT an exact peak.",
@@ -26725,7 +29430,7 @@
               "name": "capped_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Intervals that landed after their window closed. These feeds are NOT append-only; vendors document data arriving hours or days late.",
@@ -26734,7 +29439,7 @@
               "name": "late_arrived_intervals",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Delivered source messages marked as buffered or historical.",
@@ -26743,7 +29448,7 @@
               "name": "historical_message_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Delivered source messages marked bad or stale by the source.",
@@ -26752,7 +29457,7 @@
               "name": "bad_quality_message_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26761,7 +29466,7 @@
               "name": "max_restatement_version",
               "pii": false,
               "pk": false,
-              "type": "INT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26770,7 +29475,7 @@
               "name": "last_interval_end_ts",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": ""
             },
             {
               "comment": "",
@@ -26779,7 +29484,7 @@
               "name": "last_ingest_ts",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": ""
             },
             {
               "comment": "",
@@ -26788,7 +29493,7 @@
               "name": "avg_latency_seconds",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "",
@@ -26797,7 +29502,7 @@
               "name": "max_latency_seconds",
               "pii": false,
               "pk": false,
-              "type": "INT"
+              "type": ""
             },
             {
               "comment": "Minutes since this device last landed data.",
@@ -26824,7 +29529,7 @@
               "name": "session_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "TRUE when more than one source session appears in the device-day.",
@@ -26842,7 +29547,7 @@
               "name": "source_message_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Source messages inferred missing within source sessions, summed from interval-level summaries.",
@@ -26851,7 +29556,7 @@
               "name": "sequence_gap_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "Duplicate source-message deliveries, summed independently from sequence gaps.",
@@ -26860,7 +29565,7 @@
               "name": "duplicate_delivery_count",
               "pii": false,
               "pk": false,
-              "type": "BIGINT"
+              "type": ""
             },
             {
               "comment": "",
@@ -26991,6 +29696,10 @@
               "unit": "product"
             },
             {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
               "table": "store",
               "unit": "store"
             }
@@ -26998,6 +29707,1138 @@
           "layer": "gold",
           "materialized": false,
           "name": "gold_css_device_health",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_end_local_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "EOD inventory snapshot date used for the comparison. Sessions ending 00:00-02:59 local reconcile to the preceding local date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciliation_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "scope_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "aligned_eod only for full-store sessions closing in the declared EOD window; every other row is misaligned.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciliation_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Distinct active serialized units observed for the store-product in the eligibility lookback.",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_tagged_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "book_units_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "absolute_unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Observed-versus-EOD-book agreement for aligned_eod rows only; NULL for misaligned sessions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_accuracy_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Agreement evidence for misaligned sessions; it must not be labeled inventory accuracy.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_to_book_agreement_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when an aligned eligible product has positive EOD book stock and zero observed units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_phantom_stock",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_record_inaccuracy",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciled_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: count session \u00d7 store \u00d7 product \u00d7 session trading date. Only full-store sessions closing in the reference EOD alignment window (20:00-02:59 local) receive the `aligned_eod` basis and inventory-accuracy label. Other sessions expose observed-to-book agreement only. `reconciliation_date` is the EOD inventory snapshot date. For sessions ending between 00:00 and 02:59 local it is the preceding local calendar date; it is deliberately distinct from the session's declared `trading_date`. RFID eligibility is a documented heuristic: an active commissioned item for the product was observed at the store during the preceding 90 days.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_accuracy_daily",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Daily EOD snapshot date at the one-row-per-store/product/date/basis metric-support grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciliation_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciliation_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Latest session selected within the store, product, reconciliation date, and basis.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "session_end_local_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "scope_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_tagged_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "book_units_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "absolute_unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_accuracy_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_to_book_agreement_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_phantom_stock",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_record_inaccuracy",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciled_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: store \u00d7 product \u00d7 reconciliation date \u00d7 reconciliation basis. Session-grain evidence remains in gold_inventory_accuracy_daily. This projection selects the latest reconciliation within each daily basis so repeated counts do not repeat the same EOD book quantity in additive metric-view measures.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_inventory_accuracy_daily_latest",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensing_deployment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensing_deployment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_ingest_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_biz_step_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Latest attributed disposition, except that a recalled disposition persists until an explicit release mechanism is modeled.",
+              "enum_values": [],
+              "fk": false,
+              "name": "derived_disposition_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_direction_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "attribution_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "How the latest read point was resolved: fixed device placement, operator declaration, or mobile-platform localization.",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_mobile_platform",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Configured freshness window selected from the latest reader platform; starter defaults are 120 minutes fixed and 1440 minutes mobile.",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_window_minutes",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_age_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "present, absent, unavailable, or stale. Stray-suspect reads never drive this state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "derived_presence_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "recalled_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per serialized item (durable tagged_item_id). Stray-suspect reads never drive state. A recall is persistent until a future explicit release mechanism is modeled; ordinary dispositions use the latest event. Reference freshness windows are 120 minutes for fixed readers and 24 hours for mobile sweeps. Adopters may tighten them without changing the event contract. The evaluation clock defaults to wall clock; historical demos may explicitly evaluate at the RFID event-time maximum under ADR 0038 without rewriting history.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_item_current_state",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "read_event_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "distinct_items_read",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unregistered_read_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "stray_read_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_ping_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "duplicate_delivery_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_attribution_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "arrival_lag_seconds_p95",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "latest_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_age_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: store \u00d7 product \u00d7 trading date. Count fields remain additive inputs for visibility-quality rates; average confidence, percentile lag, and freshness are explicitly non-additive diagnostics at this daily grain. RFID freshness uses ADR 0038's resolved item-presence evaluation clock so its freshness_age_minutes and fresh_as_of_ts agree with gold_item_current_state.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_item_visibility_daily",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "linked_shipment supports over/short verification; unlinked_window_evidence is evidence only and is never guessed onto a shipment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "verification_tier",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Shipment-line quantity for linked evidence; NULL for unlinked receiving windows.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_units",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "comment": "Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store \u00d7 product \u00d7 day evidence and are never guessed onto overlapping shipments.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_receiving_verification",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_oos_candidate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "reconciliation_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "eligible_tagged_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "book_units_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "absolute_unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "candidate_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "candidate_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_quality_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "evidence_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one store \u00d7 product \u00d7 reconciliation date with latest aligned phantom-stock evidence. These are investigation candidates, not stockout episodes: no end date, duration, misplaced cause, or shrinkage cause is inferred. The SDI detection-method enum does not yet admit `rfid`, so this view remains read-only until that separately owned change is approved.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_rfid_oos_candidates",
           "role": "gold",
           "scd2": false
         },
@@ -28049,6 +31890,460 @@
               "comment": "",
               "enum_values": [],
               "fk": false,
+              "name": "unaccounted_exit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "tagged_item_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "exit_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "direction_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "attribution_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "disposition_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "biz_step_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Item-state reason only. This view contains no person, basket, receipt, loyalty, payment, or video link.",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "GRAIN: one item exit event. No person, basket, transaction or video linkage.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_unaccounted_exits",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_sales_floor",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_counted_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_since_last_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Configured reference cadence for RFID count sessions; the starter default is seven days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "target_cadence_days",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_overdue",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Configured wall-clock lookback used by count_sessions_in_lookback; the starter default is 30 days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "count_lookback_days",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Distinct RFID count sessions observed within count_lookback_days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "count_sessions_in_lookback",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "lifetime_units_observed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one current store zone. Cadence and recent-session lookback are adopter policy inputs; starter defaults are seven and 30 days, respectively. ADR 0038 intentionally keeps count-coverage calculations on wall clock; the historical-demo item-presence clock does not apply to this operational cadence.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_zone_count_coverage",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_present",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oldest_supporting_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "newest_supporting_event_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_freshness_age_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 zone \u00d7 product for fresh, attributed item state.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "shipment_line",
+              "unit": "logistics"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_zone_item_presence_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
               "name": "store_id",
               "pii": false,
               "pk": false,
@@ -28993,6 +33288,7 @@
           "consumes": [
             "calendar",
             "equipment",
+            "logistics",
             "product",
             "store",
             "transaction"
@@ -29009,16 +33305,40 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "equipment",
+            "product",
+            "store"
+          ],
           "name": "IoT Sensor Monitoring",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_css_automation_response"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "equipment",
+            "inventory",
+            "logistics",
+            "product",
+            "store"
+          ],
           "name": "RFID Tracking",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_item_current_state",
+            "gold_zone_item_presence_current",
+            "gold_item_visibility_daily",
+            "gold_inventory_accuracy_daily",
+            "gold_inventory_accuracy_daily_latest",
+            "gold_count_session_summary",
+            "gold_zone_count_coverage",
+            "gold_receiving_verification",
+            "gold_rfid_oos_candidates",
+            "gold_unaccounted_exits",
+            "gold_css_device_health"
+          ]
         },
         {
           "consumes": [],

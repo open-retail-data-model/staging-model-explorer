@@ -226,9 +226,8 @@ schema:
     logicalType: string
     physicalType: STRING
     required: true
-    description: 'Durable business key for the offer event: the identifier issued by the delivery platform
-      for the trigger/delivery record, carried through unchanged. Not derived, concatenated, or hashed
-      here.'
+    description: Durable event key assigned by the emitting system (ULID/UUID); the idempotency key for
+      replay and de-duplication.
   - name: location_offer_sk
     logicalType: integer
     physicalType: BIGINT

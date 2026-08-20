@@ -27,6 +27,814 @@ authoritativeDefinitions:
 - url: docs/data-model-standards.md
   type: businessDefinition
 schema:
+- name: actuator_capability
+  physicalName: connected_store_signals.actuator_capability
+  physicalType: table
+  description: Connected Store Signals -- actuator command-surface registry (SCD2). The active-control
+    capability of a sensor_device; completes the automation loop with evaluation_rule, automation_action
+    and execution_log.
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: actuator_capability_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: actuator_capability_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the actuator capability. Stable across SCD2 versions
+      and across firmware upgrades.
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to sensor_device.sensor_device_sk -- the device that exposes this command surface.
+      The device_role of that device is actuate or both.
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable device id. The SCD2-safe join key.
+  - name: equipment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to equipment.equipment_sk when the actuator controls a maintained asset. NULL for
+      ambient or digital-only actuation.
+    relationships:
+    - to: equipment.equipment_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: equipment
+      - property: enforced
+        value: false
+  - name: equipment_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable equipment business key. NULL for ambient or digital-only actuation.
+  - name: command_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'What the actuator can be commanded to do. Allowed values: toggle_power, set_level, set_setpoint,
+      open_close, dispense, display_message, reset.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: toggle_power, set_level, set_setpoint, open_close, dispense, display_message,
+        reset.'
+  - name: acceptable_value_range
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Human-readable bound on a valid command payload for this actuator, e.g. "0,1" for a
+      toggle or "2.0,8.0" for a setpoint in the device native unit. Free text: the shape varies by command_type,
+      so it is a documented contract rather than a typed range.'
+  - name: unit_iri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: QUDT unit IRI for a set_level / set_setpoint command value, e.g. http://qudt.org/vocab/unit/DEG_C.
+      NULL for dimensionless commands such as toggle_power.
+  - name: uom_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: UN/CEFACT Recommendation 20 common code for the command unit, e.g. CEL. The interchange
+      form of unit_iri.
+  - name: actuator_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Allowed values: active, inactive, faulty, maintenance, decommissioned.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, inactive, faulty, maintenance, decommissioned.'
+  - name: installed_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: When the actuator capability became available.
+  - name: decommissioned_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: When the actuator was removed. NULL while in service.
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ac_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ac_grain_unique
+    query: SELECT actuator_capability_id, effective_from_date, COUNT(*) AS n FROM connected_store_signals.actuator_capability
+      GROUP BY actuator_capability_id, effective_from_date HAVING COUNT(*) > 1
+  - name: ac_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ac_keys_not_null
+    query: SELECT * FROM connected_store_signals.actuator_capability WHERE actuator_capability_sk IS NULL
+      OR actuator_capability_id IS NULL OR effective_from_date IS NULL OR is_current IS NULL
+  - name: ac_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ac_single_current
+    query: SELECT actuator_capability_id, COUNT(*) AS n FROM connected_store_signals.actuator_capability
+      WHERE is_current = TRUE GROUP BY actuator_capability_id HAVING COUNT(*) > 1
+  - name: ac_device_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ac_device_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.actuator_capability a LEFT JOIN connected_store_signals.sensor_device
+      d ON a.sensor_device_sk = d.sensor_device_sk WHERE a.sensor_device_sk IS NOT NULL AND d.sensor_device_sk
+      IS NULL
+  - name: ac_equipment_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ac_equipment_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.actuator_capability a LEFT JOIN equipment.equipment
+      e ON a.equipment_sk = e.equipment_sk WHERE a.equipment_sk IS NOT NULL AND e.equipment_sk IS NULL
+- name: automation_action
+  physicalName: connected_store_signals.automation_action
+  physicalType: table
+  description: Connected Store Signals -- intent definition for the automation loop (SCD2). What happens
+    when an evaluation_rule fires; realised runs are recorded append-only in execution_log.
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: automation_action_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: automation_action_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the action. Stable across SCD2 versions.
+  - name: evaluation_rule_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to evaluation_rule.evaluation_rule_sk -- the rule whose firing triggers this action.
+    relationships:
+    - to: evaluation_rule.evaluation_rule_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable rule id. The SCD2-safe join key.
+  - name: action_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'What kind of action this is. Allowed values: system_command, notification, webhook,
+      ticket, log_only.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: system_command, notification, webhook, ticket, log_only.'
+  - name: target_entity_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'The kind of thing the action targets -- the discriminator of a polymorphic reference
+      (standards §A.5). Allowed values: actuator, role, person, external_system, none.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: actuator, role, person, external_system, none.'
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((target_entity_type = 'actuator' AND actuator_capability_sk IS NOT NULL) OR
+        (COALESCE(target_entity_type, 'none') <> 'actuator' AND actuator_capability_sk IS NULL)).
+  - name: target_entity_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable id of the target, interpreted per target_entity_type. For target_entity_type
+      = actuator this is the actuator_capability_id and actuator_capability_sk carries the typed FK.
+  - name: actuator_capability_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to actuator_capability.actuator_capability_sk when target_entity_type = actuator.
+      NULL for non-actuator targets.
+    relationships:
+    - to: actuator_capability.actuator_capability_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: actuator_capability_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable actuator id. The SCD2-safe join key. NULL for non-actuator targets.
+  - name: payload_template
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Templated command or message payload sent when the action fires, e.g. {"command": "start_cooling",
+      "power_level": "max"}. A template, not a rendered instance -- the rendered form is on execution_log.response_payload.'
+  - name: is_enabled
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE if the action is live. A disabled action leaves its rule firing but takes no effect.
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: aa_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_grain_unique
+    query: SELECT automation_action_id, effective_from_date, COUNT(*) AS n FROM connected_store_signals.automation_action
+      GROUP BY automation_action_id, effective_from_date HAVING COUNT(*) > 1
+  - name: aa_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_keys_not_null
+    query: SELECT * FROM connected_store_signals.automation_action WHERE automation_action_sk IS NULL
+      OR automation_action_id IS NULL OR effective_from_date IS NULL OR is_current IS NULL
+  - name: aa_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_single_current
+    query: SELECT automation_action_id, COUNT(*) AS n FROM connected_store_signals.automation_action WHERE
+      is_current = TRUE GROUP BY automation_action_id HAVING COUNT(*) > 1
+  - name: aa_rule_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_rule_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.automation_action a LEFT JOIN connected_store_signals.evaluation_rule
+      r ON a.evaluation_rule_sk = r.evaluation_rule_sk WHERE a.evaluation_rule_sk IS NOT NULL AND r.evaluation_rule_sk
+      IS NULL
+  - name: aa_actuator_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_actuator_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.automation_action a LEFT JOIN connected_store_signals.actuator_capability
+      c ON a.actuator_capability_sk = c.actuator_capability_sk WHERE a.actuator_capability_sk IS NOT NULL
+      AND c.actuator_capability_sk IS NULL
+  - name: aa_actuator_target_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: aa_actuator_target_consistent
+    query: "SELECT * FROM connected_store_signals.automation_action\nWHERE (target_entity_type = 'actuator'\
+      \ AND actuator_capability_sk IS NULL)\n   OR (COALESCE(target_entity_type, 'none') <> 'actuator'\
+      \ AND actuator_capability_sk IS NOT NULL)"
+- name: evaluation_rule
+  physicalName: connected_store_signals.evaluation_rule
+  physicalType: table
+  description: Connected Store Signals -- threshold framework for the automation loop (SCD2). A standing
+    condition on a sensor observed property that fires automation_action rows.
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: evaluation_rule_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the rule. Stable across SCD2 versions as the threshold
+      is retuned.
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to sensor_device.sensor_device_sk -- the observing device whose readings this rule
+      evaluates. NULL for a rule that evaluates a cross-device aggregate.
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable device id. The SCD2-safe join key.
+  - name: rule_name
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Human-readable rule name, e.g. "Vaccine fridge over 8C for 10 minutes".
+  - name: report_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'GS1 CBV sensor-property CURIE the rule watches, matching sensor_report_interval.report_type.
+      Allowed values: gs1:Count, gs1:Temperature, gs1:RelativeHumidity, gs1:Power, gs1:Energy, gs1:Mass,
+      gs1:Illuminance, gs1:VolumeFraction.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: gs1:Count, gs1:Temperature, gs1:RelativeHumidity, gs1:Power, gs1:Energy,
+        gs1:Mass, gs1:Illuminance, gs1:VolumeFraction.'
+  - name: condition_operator
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Comparison applied to the observed value. Allowed values: greater_than, greater_than_or_equal,
+      less_than, less_than_or_equal, equal, not_equal, outside_range, inside_range.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: greater_than, greater_than_or_equal, less_than, less_than_or_equal,
+        equal, not_equal, outside_range, inside_range.'
+  - name: threshold_value_numeric
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: 'Threshold the observed value is compared against, in the rule unit. NULL for a purely
+      categorical rule. DOUBLE, not DECIMAL: this is a non-monetary continuous physical quantity (temperature,
+      humidity, power) compared directly against sensor_report_interval.value, which is DOUBLE -- matching
+      the two avoids precision/comparison surprises, and DECIMAL(18,x) is reserved for stored money (standards
+      §A.6).'
+  - name: threshold_value_upper
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Upper bound for the inside_range / outside_range operators; NULL otherwise. threshold_value_numeric
+      is the lower bound in that case. DOUBLE for the same reason as threshold_value_numeric.
+  - name: unit_iri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: QUDT unit IRI for the threshold, e.g. http://qudt.org/vocab/unit/DEG_C. NULL for a dimensionless
+      (count) rule.
+  - name: uom_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: UN/CEFACT Recommendation 20 common code for the threshold unit, e.g. CEL. The interchange
+      form of unit_iri.
+  - name: time_window_seconds
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: 'Sustained-breach window in seconds: the condition must hold this long before the rule
+      fires, which debounces a single transient reading. 0 means fire on the first breaching observation.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (time_window_seconds IS NULL OR time_window_seconds >= 0).
+  - name: severity
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Operational severity of a breach. Allowed values: info, warning, critical.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: info, warning, critical.'
+  - name: is_enabled
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE if the rule is live. Replaces the source CHAR(1) Y/N flag with a native BOOLEAN
+      per strict-typing (standards §A.6).
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: er_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: er_grain_unique
+    query: SELECT evaluation_rule_id, effective_from_date, COUNT(*) AS n FROM connected_store_signals.evaluation_rule
+      GROUP BY evaluation_rule_id, effective_from_date HAVING COUNT(*) > 1
+  - name: er_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: er_keys_not_null
+    query: SELECT * FROM connected_store_signals.evaluation_rule WHERE evaluation_rule_sk IS NULL OR evaluation_rule_id
+      IS NULL OR effective_from_date IS NULL OR is_current IS NULL
+  - name: er_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: er_single_current
+    query: SELECT evaluation_rule_id, COUNT(*) AS n FROM connected_store_signals.evaluation_rule WHERE
+      is_current = TRUE GROUP BY evaluation_rule_id HAVING COUNT(*) > 1
+  - name: er_device_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: er_device_fk_orphan
+    query: SELECT r.* FROM connected_store_signals.evaluation_rule r LEFT JOIN connected_store_signals.sensor_device
+      d ON r.sensor_device_sk = d.sensor_device_sk WHERE r.sensor_device_sk IS NOT NULL AND d.sensor_device_sk
+      IS NULL
+- name: execution_log
+  physicalName: connected_store_signals.execution_log
+  physicalType: table
+  description: Connected Store Signals -- append-only audit ledger of realised automation firings. Closes
+    the sense -> evaluate -> act loop back to the observation that triggered it.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: execution_log_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the execution event.
+  - name: execution_log_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the execution event, from the source automation platform.
+      Identifies the FIRING (the action that ran against its triggering observation), not merely the observation
+      -- one breaching interval can fire several actions, so a key scoped to the interval alone would
+      collide and defeat the one-row-per-firing grain (el_grain_unique).
+  - name: automation_action_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to automation_action.automation_action_sk -- the action version that fired. NULL when
+      the action has been retired (the log row outlives it).
+    relationships:
+    - to: automation_action.automation_action_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: automation_action_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable action id. The SCD2-safe join key.
+  - name: actuator_capability_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to actuator_capability.actuator_capability_sk -- the actuator the command hit. NULL
+      for a non-actuator action (notification, webhook) or a retired actuator.
+    relationships:
+    - to: actuator_capability.actuator_capability_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: actuator_capability_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable actuator id. The SCD2-safe join key. NULL for non-actuator actions.
+  - name: evaluation_rule_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to evaluation_rule.evaluation_rule_sk -- the rule version whose breach triggered this
+      run. Denormalised onto the fact so "which rule caused this action" survives the retirement of automation_action.
+    relationships:
+    - to: evaluation_rule.evaluation_rule_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable rule id. The SCD2-safe join key.
+  - name: sensor_report_interval_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to sensor_report_interval.sensor_report_interval_sk -- the reading interval that breached
+      the rule, closing the loop back to the observation that caused the action. NULL if the trigger was
+      not a single canonical interval.
+    relationships:
+    - to: sensor_report_interval.sensor_report_interval_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: triggered_at_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the action fired (UTC, ISO 8601). The ordering key for the ledger.
+  - name: execution_status
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Outcome of the run. Allowed values: success, failure, pending, timeout, skipped.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: success, failure, pending, timeout, skipped.'
+  - name: response_payload
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Rendered response from the target, e.g. {"status_code": 200, "message": "Actuator triggered
+      successfully"}. The realised counterpart to automation_action.payload_template.'
+  - name: latency_ms
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Milliseconds between the triggering observation and this execution. Feeds automation
+      responsiveness monitoring.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (latency_ms IS NULL OR latency_ms >= 0).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: el_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_grain_unique
+    query: SELECT execution_log_id, COUNT(*) AS n FROM connected_store_signals.execution_log GROUP BY
+      execution_log_id HAVING COUNT(*) > 1
+  - name: el_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_keys_not_null
+    query: SELECT * FROM connected_store_signals.execution_log WHERE execution_log_sk IS NULL OR execution_log_id
+      IS NULL OR triggered_at_timestamp IS NULL OR execution_status IS NULL
+  - name: el_action_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_action_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.execution_log l LEFT JOIN connected_store_signals.automation_action
+      a ON l.automation_action_sk = a.automation_action_sk WHERE l.automation_action_sk IS NOT NULL AND
+      a.automation_action_sk IS NULL
+  - name: el_actuator_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_actuator_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.execution_log l LEFT JOIN connected_store_signals.actuator_capability
+      c ON l.actuator_capability_sk = c.actuator_capability_sk WHERE l.actuator_capability_sk IS NOT NULL
+      AND c.actuator_capability_sk IS NULL
+  - name: el_rule_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_rule_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.execution_log l LEFT JOIN connected_store_signals.evaluation_rule
+      r ON l.evaluation_rule_sk = r.evaluation_rule_sk WHERE l.evaluation_rule_sk IS NOT NULL AND r.evaluation_rule_sk
+      IS NULL
+  - name: el_interval_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: el_interval_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.execution_log l LEFT JOIN connected_store_signals.sensor_report_interval
+      f ON l.sensor_report_interval_sk = f.sensor_report_interval_sk WHERE l.sensor_report_interval_sk
+      IS NOT NULL AND f.sensor_report_interval_sk IS NULL
 - name: foot_traffic_interval_detail
   physicalName: connected_store_signals.foot_traffic_interval_detail
   physicalType: table
@@ -354,6 +1162,767 @@ schema:
     query: SELECT t.* FROM connected_store_signals.foot_traffic_interval_detail t LEFT JOIN connected_store_signals.sensor_report_interval
       f ON t.sensor_report_interval_sk = f.sensor_report_interval_sk WHERE f.sensor_report_interval_sk
       IS NULL
+- name: rfid_count_session
+  physicalName: connected_store_signals.rfid_count_session
+  physicalType: table
+  description: Connected Store Signals bounded RFID count-session header; coverage and census are derived
+    from linked read events.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the bounded RFID count session.
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable key: store_id|source_session_id.'
+  - name: source_session_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Source session identifier. For fixed windows without one: count_method|primary sensor_device_id
+      or _ALL|unix_timestamp(started_at_ts).'
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to store.store_sk.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: primary_sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Nullable FK to the initiating or primary sensor_device version. The complete device set
+      derives from events.
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: primary_sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable id of the initiating or primary device.
+  - name: count_method
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'RFID count method. Allowed values: handheld_sweep, fixed_window, robot_sweep.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: handheld_sweep, fixed_window, robot_sweep.'
+  - name: scope_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Representable scope claim. full_store has a derivable zone plan; partial makes no plan
+      claim.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: full_store, partial.'
+  - name: started_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Session start as a UTC instant.
+  - name: ended_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Session end as a UTC instant.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (ended_at_ts >= started_at_ts).
+  - name: store_timezone
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: IANA store timezone used to derive trading_date and hour_of_day.
+  - name: utc_offset_minutes
+    logicalType: integer
+    physicalType: SMALLINT
+    required: true
+    description: Store UTC offset in minutes at started_at_ts.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of the session start; logical join to fiscal_calendar.date_key, enforced
+      by rcs_calendar_orphan.
+  - name: hour_of_day
+    logicalType: integer
+    physicalType: TINYINT
+    required: false
+    description: Store-local hour at session start, 0 through 23.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (hour_of_day IS NULL OR hour_of_day BETWEEN 0 AND 23).
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Optional pointer to the source session manifest in Bronze.
+  - name: ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the session header arrived in the lakehouse (UTC).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC).
+  quality:
+  - name: rcs_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rcs_grain_unique
+    query: 'SELECT rfid_count_session_id, COUNT(*) AS n
+
+      FROM connected_store_signals.rfid_count_session
+
+      GROUP BY rfid_count_session_id
+
+      HAVING COUNT(*) > 1'
+  - name: rcs_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rcs_keys_not_null
+    query: 'SELECT *
+
+      FROM connected_store_signals.rfid_count_session
+
+      WHERE rfid_count_session_sk IS NULL OR rfid_count_session_id IS NULL'
+  - name: rcs_durable_id_wellformed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rcs_durable_id_wellformed
+    query: 'SELECT *
+
+      FROM connected_store_signals.rfid_count_session
+
+      WHERE rfid_count_session_id <> concat(store_id, ''|'', source_session_id)'
+  - name: rcs_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rcs_fk_orphan
+    query: "SELECT s.*\nFROM connected_store_signals.rfid_count_session s\nLEFT JOIN store.store st ON\
+      \ s.store_sk = st.store_sk\nLEFT JOIN connected_store_signals.sensor_device d\n  ON s.primary_sensor_device_sk\
+      \ = d.sensor_device_sk\nWHERE st.store_sk IS NULL\n   OR st.store_id <> s.store_id\n   OR (s.primary_sensor_device_sk\
+      \ IS NULL) <> (s.primary_sensor_device_id IS NULL)\n   OR (s.primary_sensor_device_sk IS NOT NULL\
+      \ AND (\n         d.sensor_device_sk IS NULL OR d.sensor_device_id <> s.primary_sensor_device_id\n\
+      \       ))"
+  - name: rcs_zero_events
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: rcs_zero_events
+    query: "SELECT s.rfid_count_session_id, s.store_id, s.ended_at_ts\nFROM connected_store_signals.rfid_count_session\
+      \ s\nLEFT JOIN connected_store_signals.rfid_read_event e\n  ON s.rfid_count_session_sk = e.rfid_count_session_sk\n\
+      GROUP BY s.rfid_count_session_id, s.store_id, s.ended_at_ts\nHAVING COUNT(e.rfid_read_event_sk)\
+      \ = 0"
+  - name: rcs_calendar_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rcs_calendar_orphan
+    query: "SELECT s.rfid_count_session_id, s.trading_date\nFROM connected_store_signals.rfid_count_session\
+      \ s\nLEFT JOIN calendar.fiscal_calendar c\n  ON s.trading_date = c.date_key\nWHERE c.date_key IS\
+      \ NULL"
+- name: rfid_read_event
+  physicalName: connected_store_signals.rfid_read_event
+  physicalType: table
+  description: Connected Store Signals append-only EPCIS ObjectEvent-shaped RFID visibility fact at EPC
+    × reader × second grain.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: rfid_read_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: 'Surrogate join key: xxhash64(rfid_read_event_id). The durable id is authoritative and
+      collision-guarded.'
+  - name: rfid_read_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable grain key: tagged_item_id|unix_timestamp(event_ts)|sensor_device_id.'
+  - name: tagged_item_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Nullable FK to tagged_item. NULL only for an explicitly unregistered EPC.
+    relationships:
+    - to: tagged_item.tagged_item_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: tagged_item_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Observed EPC Pure Identity URI, including for unregistered EPCs.
+  - name: is_unregistered_epc
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when the observed EPC has no commissioned tagged_item registry row.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Product version resolved at write. NULL only for an unregistered or unresolved EPC.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable product business key resolved at write.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect at event time.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the event-level read-point zone version.
+    relationships:
+    - to: store_zone.store_zone_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable event-level read-point zone id.
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the reader device version in effect at event time.
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable reader device business key.
+  - name: sensing_deployment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the governing sensing deployment version.
+    relationships:
+    - to: sensing_deployment.sensing_deployment_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensing_deployment_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable sensing deployment business key.
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Nullable FK to rfid_count_session for count-bound reads.
+    relationships:
+    - to: rfid_count_session.rfid_count_session_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable count-session key. NULL for free reads.
+  - name: shipment_line_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Nullable FK to shipment_line when a receiving read carries an EPCIS business-transaction
+      association.
+    relationships:
+    - to: shipment_line.shipment_line_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: logistics
+      - property: enforced
+        value: false
+  - name: shipment_line_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable shipment-line business key. NULL for reads outside a receiving association.
+  - name: event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Business event time as a UTC instant.
+  - name: first_seen_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: First raw ping in the upstream collapse window (UTC).
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (first_seen_ts <= event_ts AND event_ts <= last_seen_ts).
+  - name: last_seen_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Last raw ping in the upstream collapse window (UTC); its business context wins.
+  - name: store_timezone
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: IANA store timezone used to derive local business fields.
+  - name: utc_offset_minutes
+    logicalType: integer
+    physicalType: SMALLINT
+    required: true
+    description: Store UTC offset in minutes at event_ts.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of event_ts. Logical join to fiscal_calendar.date_key.
+  - name: hour_of_day
+    logicalType: integer
+    physicalType: TINYINT
+    required: false
+    description: Store-local event hour, 0 through 23.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (hour_of_day IS NULL OR hour_of_day BETWEEN 0 AND 23).
+  - name: biz_step_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Full GS1 CBV business-step URI from the supported RFID subset.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: https://ref.gs1.org/cbv/BizStep-commissioning, https://ref.gs1.org/cbv/BizStep-receiving,
+        https://ref.gs1.org/cbv/BizStep-stocking, https://ref.gs1.org/cbv/BizStep-storing, https://ref.gs1.org/cbv/BizStep-retail_selling,
+        https://ref.gs1.org/cbv/BizStep-cycle_counting, https://ref.gs1.org/cbv/BizStep-stock_taking,
+        https://ref.gs1.org/cbv/BizStep-shipping, https://ref.gs1.org/cbv/BizStep-staging_outbound, https://ref.gs1.org/cbv/BizStep-inspecting,
+        https://ref.gs1.org/cbv/BizStep-killing, https://ref.gs1.org/cbv/BizStep-decommissioning.'
+  - name: disposition_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Full GS1 CBV disposition URI from the supported RFID subset.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: https://ref.gs1.org/cbv/Disp-sellable_accessible, https://ref.gs1.org/cbv/Disp-sellable_not_accessible,
+        https://ref.gs1.org/cbv/Disp-in_transit, https://ref.gs1.org/cbv/Disp-retail_sold, https://ref.gs1.org/cbv/Disp-damaged,
+        https://ref.gs1.org/cbv/Disp-expired, https://ref.gs1.org/cbv/Disp-recalled, https://ref.gs1.org/cbv/Disp-stolen,
+        https://ref.gs1.org/cbv/Disp-unavailable, https://ref.gs1.org/cbv/Disp-unknown.'
+  - name: zone_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'How the read-point zone was resolved: device_placement, operator_declared, platform_localization.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: device_placement, operator_declared, platform_localization.'
+  - name: direction_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Observed movement direction: in, out, unknown, not_applicable.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: in, out, unknown, not_applicable.'
+  - name: direction_confidence
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Directional attribution confidence in [0,1]. NULL when direction is not applicable.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((direction_confidence IS NULL OR direction_confidence BETWEEN 0 AND 1) AND attribution_confidence
+        BETWEEN 0 AND 1).
+  - name: attribution_confidence
+    logicalType: number
+    physicalType: DOUBLE
+    required: true
+    description: Confidence in assigning the RF read to the stated read point, in [0,1].
+  - name: is_stray_suspect
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when RF bleed makes location attribution suspect; excluded from presence gold.
+  - name: antenna_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Winning reader antenna identifier; provenance detail, not a separate registry.
+  - name: read_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: Number of raw RF pings collapsed into this visibility event.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (read_count > 0 AND (duplicate_delivery_count IS NULL OR duplicate_delivery_count
+        >= 0)).
+  - name: duplicate_delivery_count
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Duplicate source deliveries suppressed for this event.
+  - name: rssi_peak_dbm
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Peak received signal strength in dBm across collapsed pings.
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pointer to raw RF-ping evidence in Bronze.
+  - name: ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the event arrived in the lakehouse (UTC); may be much later than event_ts for offline
+      readers.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC).
+  quality:
+  - name: rre_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_grain_unique
+    query: 'SELECT rfid_read_event_id, COUNT(*) AS n
+
+      FROM connected_store_signals.rfid_read_event
+
+      GROUP BY rfid_read_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: rre_sk_collision
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_sk_collision
+    query: 'SELECT rfid_read_event_sk, COUNT(DISTINCT rfid_read_event_id) AS durable_id_count
+
+      FROM connected_store_signals.rfid_read_event
+
+      GROUP BY rfid_read_event_sk
+
+      HAVING COUNT(DISTINCT rfid_read_event_id) > 1'
+  - name: rre_durable_id_wellformed
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_durable_id_wellformed
+    query: "SELECT *\nFROM connected_store_signals.rfid_read_event\nWHERE rfid_read_event_id <>\n    \
+      \  concat(tagged_item_id, '|', unix_timestamp(event_ts), '|', sensor_device_id)"
+  - name: rre_registration_pairing
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_registration_pairing
+    query: "SELECT e.*\nFROM connected_store_signals.rfid_read_event e\nLEFT JOIN connected_store_signals.tagged_item\
+      \ i\n  ON e.tagged_item_sk = i.tagged_item_sk\nWHERE (e.is_unregistered_epc = TRUE AND (\n     \
+      \    e.tagged_item_sk IS NOT NULL OR e.product_sk IS NOT NULL OR e.product_id IS NOT NULL\n    \
+      \   ))\n   OR (e.is_unregistered_epc = FALSE AND (\n         e.tagged_item_sk IS NULL\n        \
+      \ OR i.tagged_item_sk IS NULL\n         OR (e.product_sk IS NULL) <> (e.product_id IS NULL)\n  \
+      \       OR (i.epc_scheme = 'sgtin' AND (\n              e.product_sk IS NULL\n              OR e.product_sk\
+      \ <> i.product_sk\n              OR e.product_id <> i.product_id\n            ))\n       ))"
+  - name: rre_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_fk_orphan
+    query: "SELECT e.*\nFROM connected_store_signals.rfid_read_event e\nLEFT JOIN connected_store_signals.tagged_item\
+      \ i ON e.tagged_item_sk = i.tagged_item_sk\nLEFT JOIN product.product p ON e.product_sk = p.product_sk\n\
+      LEFT JOIN store.store st ON e.store_sk = st.store_sk\nLEFT JOIN connected_store_signals.store_zone\
+      \ z ON e.store_zone_sk = z.store_zone_sk\nLEFT JOIN connected_store_signals.sensor_device d ON e.sensor_device_sk\
+      \ = d.sensor_device_sk\nLEFT JOIN connected_store_signals.sensing_deployment dep\n  ON e.sensing_deployment_sk\
+      \ = dep.sensing_deployment_sk\nLEFT JOIN connected_store_signals.rfid_count_session s\n  ON e.rfid_count_session_sk\
+      \ = s.rfid_count_session_sk\nLEFT JOIN logistics.shipment_line sl\n  ON e.shipment_line_sk = sl.shipment_line_sk\n\
+      WHERE (e.tagged_item_sk IS NOT NULL AND (\n         i.tagged_item_sk IS NULL OR i.tagged_item_id\
+      \ <> e.tagged_item_id\n       ))\n   OR (e.product_sk IS NOT NULL AND (\n         p.product_sk IS\
+      \ NULL OR p.product_id <> e.product_id\n       ))\n   OR st.store_sk IS NULL OR st.store_id <> e.store_id\n\
+      \   OR z.store_zone_sk IS NULL OR z.store_zone_id <> e.store_zone_id\n   OR d.sensor_device_sk IS\
+      \ NULL OR d.sensor_device_id <> e.sensor_device_id\n   OR dep.sensing_deployment_sk IS NULL\n  \
+      \ OR dep.sensing_deployment_id <> e.sensing_deployment_id\n   OR (e.rfid_count_session_sk IS NULL)\
+      \ <> (e.rfid_count_session_id IS NULL)\n   OR (e.rfid_count_session_sk IS NOT NULL AND (\n     \
+      \    s.rfid_count_session_sk IS NULL\n         OR s.rfid_count_session_id <> e.rfid_count_session_id\n\
+      \         OR s.store_id <> e.store_id\n       ))\n   OR (e.shipment_line_sk IS NULL) <> (e.shipment_line_id\
+      \ IS NULL)\n   OR (e.shipment_line_sk IS NOT NULL AND (\n         sl.shipment_line_sk IS NULL\n\
+      \         OR sl.shipment_line_id <> e.shipment_line_id\n         OR sl.product_id <> e.product_id\n\
+      \       ))"
+  - name: rre_calendar_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_calendar_orphan
+    query: "SELECT e.rfid_read_event_id, e.trading_date\nFROM connected_store_signals.rfid_read_event\
+      \ e\nLEFT JOIN calendar.fiscal_calendar c\n  ON e.trading_date = c.date_key\nWHERE c.date_key IS\
+      \ NULL"
+  - name: rre_session_integrity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_session_integrity
+    query: "SELECT e.rfid_read_event_id, e.rfid_count_session_id\nFROM connected_store_signals.rfid_read_event\
+      \ e\nJOIN connected_store_signals.rfid_count_session s\n  ON e.rfid_count_session_sk = s.rfid_count_session_sk\n\
+      WHERE e.store_id <> s.store_id\n   OR e.event_ts < s.started_at_ts - INTERVAL 5 MINUTES\n   OR e.event_ts\
+      \ > s.ended_at_ts + INTERVAL 5 MINUTES"
+  - name: rre_header_before_event
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: rre_header_before_event
+    query: "SELECT e.rfid_read_event_id, e.ingest_timestamp, s.ingest_timestamp AS session_ingest_timestamp\n\
+      FROM connected_store_signals.rfid_read_event e\nJOIN connected_store_signals.rfid_count_session\
+      \ s\n  ON e.rfid_count_session_sk = s.rfid_count_session_sk\nWHERE s.ingest_timestamp IS NOT NULL\n\
+      \  AND e.ingest_timestamp < s.ingest_timestamp"
+  - name: rre_zone_source_honesty
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_zone_source_honesty
+    query: "SELECT e.rfid_read_event_id, e.zone_source, d.is_mobile_platform\nFROM connected_store_signals.rfid_read_event\
+      \ e\nJOIN connected_store_signals.sensor_device d ON e.sensor_device_sk = d.sensor_device_sk\nWHERE\
+      \ (d.is_mobile_platform = TRUE\n       AND e.zone_source NOT IN ('operator_declared', 'platform_localization'))\n\
+      \   OR (COALESCE(d.is_mobile_platform, FALSE) = FALSE\n       AND e.zone_source <> 'device_placement')"
+  - name: rre_directionality_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_directionality_consistent
+    query: "SELECT e.rfid_read_event_id, e.direction_code, e.direction_confidence\nFROM connected_store_signals.rfid_read_event\
+      \ e\nJOIN connected_store_signals.sensor_device d ON e.sensor_device_sk = d.sensor_device_sk\nWHERE\
+      \ COALESCE(d.is_directional, FALSE) = FALSE\n  AND (e.direction_code <> 'not_applicable' OR e.direction_confidence\
+      \ IS NOT NULL)"
+  - name: rre_retail_sold_context
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: rre_retail_sold_context
+    query: "SELECT e.rfid_read_event_id, e.store_zone_id, z.zone_code, z.zone_type\nFROM connected_store_signals.rfid_read_event\
+      \ e\nLEFT JOIN connected_store_signals.store_zone z\n  ON e.store_zone_sk = z.store_zone_sk\nWHERE\
+      \ e.disposition_uri = 'https://ref.gs1.org/cbv/Disp-retail_sold'\n  AND NOT (\n    lower(COALESCE(z.zone_code,\
+      \ '')) = 'checkout'\n    OR z.zone_type IN ('entrance', 'perimeter')\n  )"
+  - name: rre_event_not_future
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: rre_event_not_future
+    query: 'SELECT *
+
+      FROM connected_store_signals.rfid_read_event
+
+      WHERE event_ts > current_timestamp() + INTERVAL 5 MINUTES'
+  - name: rre_before_commission
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: rre_before_commission
+    query: 'SELECT e.rfid_read_event_id, e.event_ts, i.commissioned_at_ts
+
+      FROM connected_store_signals.rfid_read_event e
+
+      JOIN connected_store_signals.tagged_item i ON e.tagged_item_sk = i.tagged_item_sk
+
+      WHERE e.event_ts < i.commissioned_at_ts'
+  - name: rre_post_kill_reads
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: rre_post_kill_reads
+    query: "WITH killed AS (\n  SELECT tagged_item_id, MIN(event_ts) AS killed_at_ts\n  FROM connected_store_signals.rfid_read_event\n\
+      \  WHERE biz_step_uri = 'https://ref.gs1.org/cbv/BizStep-killing'\n  GROUP BY tagged_item_id\n)\n\
+      SELECT e.store_id, e.tagged_item_id, COUNT(*) AS post_kill_read_count\nFROM connected_store_signals.rfid_read_event\
+      \ e\nJOIN killed k ON e.tagged_item_id = k.tagged_item_id\nWHERE e.event_ts > k.killed_at_ts\nGROUP\
+      \ BY e.store_id, e.tagged_item_id"
+  - name: rre_unregistered_epc_rate
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: rre_unregistered_epc_rate
+    query: "SELECT store_id, trading_date,\n       SUM(CASE WHEN is_unregistered_epc THEN 1 ELSE 0 END)\
+      \ / NULLIF(COUNT(*), 0) AS unregistered_epc_rate\nFROM connected_store_signals.rfid_read_event\n\
+      GROUP BY store_id, trading_date\nHAVING SUM(CASE WHEN is_unregistered_epc THEN 1 ELSE 0 END) / NULLIF(COUNT(*),\
+      \ 0) > 0.05"
+  - name: rre_delivery_quality
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: rre_delivery_quality
+    query: "SELECT store_id, trading_date,\n       SUM(COALESCE(duplicate_delivery_count, 0)) AS duplicate_deliveries,\n\
+      \       percentile_approx(timestampdiff(SECOND, event_ts, ingest_timestamp), 0.95) AS arrival_lag_seconds_p95\n\
+      FROM connected_store_signals.rfid_read_event\nGROUP BY store_id, trading_date"
 - name: sensing_deployment
   physicalName: connected_store_signals.sensing_deployment
   physicalType: table
@@ -1070,6 +2639,12 @@ schema:
     physicalType: BOOLEAN
     required: false
     description: TRUE if the device reports occupancy directly rather than by entry/exit balance.
+  - name: is_mobile_platform
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE for a reader mounted on a moving handheld or robotic platform. Mobile readers resolve
+      event zones from operator declaration or platform localization, not installed device placement.
   - name: detection_limit_count
     logicalType: integer
     physicalType: INT
@@ -1348,6 +2923,25 @@ schema:
     query: SELECT d.* FROM connected_store_signals.sensor_device d LEFT JOIN connected_store_signals.store_zone
       z ON d.store_zone_sk = z.store_zone_sk WHERE d.store_zone_sk IS NOT NULL AND z.store_zone_sk IS
       NULL
+  - name: sd_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sd_store_fk_orphan
+    query: SELECT d.* FROM connected_store_signals.sensor_device d LEFT JOIN store.store s ON d.store_sk
+      = s.store_sk WHERE d.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: sd_deployment_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sd_deployment_fk_orphan
+    query: SELECT d.* FROM connected_store_signals.sensor_device d LEFT JOIN connected_store_signals.sensing_deployment
+      sd ON d.sensing_deployment_sk = sd.sensing_deployment_sk WHERE d.sensing_deployment_sk IS NOT NULL
+      AND sd.sensing_deployment_sk IS NULL
   - name: sd_equipment_fk_orphan
     type: sql
     dimension: accuracy
@@ -1380,7 +2974,8 @@ schema:
     primaryKey: true
     primaryKeyPosition: 1
     description: 'Surrogate key: xxhash64(sensor_report_interval_id). NOT an identity column -- see ADR
-      0028. The durable _id is the authoritative key; this is a join convenience guarded by sri_sk_collision.'
+      0028, Hash surrogate keys for high-volume gold event facts. The durable _id is the authoritative
+      key; this is a join convenience guarded by sri_sk_collision.'
   - name: sensor_report_interval_id
     logicalType: string
     physicalType: STRING
@@ -2440,6 +4035,465 @@ schema:
     description: sz_store_fk_orphan
     query: SELECT z.* FROM connected_store_signals.store_zone z LEFT JOIN store.store s ON z.store_sk
       = s.store_sk WHERE z.store_sk IS NOT NULL AND s.store_sk IS NULL
+- name: tagged_item
+  physicalName: connected_store_signals.tagged_item
+  physicalType: table
+  description: 'Connected Store Signals serialized-item registry: EPC identity, product resolution, current
+    carrier and tag privacy state.'
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: tagged_item_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: 'Surrogate join key: xxhash64(tagged_item_id). The durable id remains authoritative;
+      guarded by ti_sk_collision.'
+  - name: tagged_item_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable serialized-item key, valued as a GS1 EPC Pure Identity URI such as urn:epc:id:sgtin:0614141.107346.2017.
+  - name: epc_scheme
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'EPC identity scheme. Allowed values: sgtin, grai.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: sgtin, grai.'
+  - name: gtin
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: GTIN decomposed from an SGTIN EPC. NULL for schemes without a GTIN component.
+  - name: serial_number
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Serialized-unit component of an SGTIN EPC. Required for epc_scheme = sgtin.
+  - name: current_tid_hex
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Current physical RFID tag-chip identifier in hexadecimal. Carrier evidence, not serialized-item
+      identity.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the product version resolved when the item was commissioned. NULL when the EPC
+      cannot be resolved to a product.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable product business key. Retained with product_sk for portable joins.
+  - name: lot_number
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Optional source lot identifier for fresh or regulated categories; not a conformed lot
+      entity.
+  - name: expiry_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: Optional item expiry date for fresh or regulated categories.
+  - name: tag_privacy_state
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Current tag privacy state. Allowed values: active, protected, killed, detached.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, protected, killed, detached.'
+  - name: commissioned_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: UTC instant when this EPC was commissioned for the serialized item.
+  - name: decommissioned_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: UTC instant when this EPC left active service. NULL while active.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (decommissioned_at_ts IS NULL OR decommissioned_at_ts >= commissioned_at_ts).
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the registry record was created in the source system (UTC).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the Type 1 registry row was last changed in the source system (UTC).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC).
+  quality:
+  - name: ti_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_grain_unique
+    query: 'SELECT tagged_item_id, COUNT(*) AS n
+
+      FROM connected_store_signals.tagged_item
+
+      GROUP BY tagged_item_id
+
+      HAVING COUNT(*) > 1'
+  - name: ti_sk_collision
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_sk_collision
+    query: 'SELECT tagged_item_sk, COUNT(DISTINCT tagged_item_id) AS durable_id_count
+
+      FROM connected_store_signals.tagged_item
+
+      GROUP BY tagged_item_sk
+
+      HAVING COUNT(DISTINCT tagged_item_id) > 1'
+  - name: ti_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_keys_not_null
+    query: 'SELECT *
+
+      FROM connected_store_signals.tagged_item
+
+      WHERE tagged_item_sk IS NULL OR tagged_item_id IS NULL'
+  - name: ti_identity_contract
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_identity_contract
+    query: "SELECT *\nFROM connected_store_signals.tagged_item\nWHERE (epc_scheme = 'sgtin' AND (\n  \
+      \       tagged_item_id NOT LIKE 'urn:epc:id:sgtin:%'\n         OR serial_number IS NULL\n      \
+      \   OR gtin IS NULL\n         OR product_sk IS NULL\n         OR product_id IS NULL\n       ))\n\
+      \   OR (epc_scheme = 'grai' AND tagged_item_id NOT LIKE 'urn:epc:id:grai:%')"
+  - name: ti_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_product_fk_orphan
+    query: "SELECT i.*\nFROM connected_store_signals.tagged_item i\nLEFT JOIN product.product p ON i.product_sk\
+      \ = p.product_sk\nWHERE i.product_sk IS NOT NULL\n  AND p.product_sk IS NULL"
+  - name: ti_product_gtin_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ti_product_gtin_agreement
+    query: "SELECT i.tagged_item_id, i.gtin AS item_gtin, p.gtin AS product_gtin\nFROM connected_store_signals.tagged_item\
+      \ i\nJOIN product.product p ON i.product_sk = p.product_sk\nWHERE i.gtin IS NOT NULL\n  AND p.gtin\
+      \ IS NOT NULL\n  AND i.gtin <> p.gtin"
+- name: gold_count_session_summary
+  physicalName: connected_store_signals.gold_count_session_summary
+  physicalType: view
+  description: 'GRAIN: one row per RFID count session. full_store plans derive from active non-site zones
+    at session start; partial sessions make no plan claim.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+  - name: source_session_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: primary_sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: primary_sensor_device_id
+    logicalType: string
+    physicalType: STRING
+  - name: count_method
+    logicalType: string
+    physicalType: STRING
+  - name: scope_type
+    logicalType: string
+    physicalType: STRING
+  - name: started_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: ended_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: duration_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: planned_zones
+    logicalType: integer
+    physicalType: BIGINT
+    description: Active non-site zones derived at session start for full_store sessions; NULL for partial
+      scope.
+  - name: zones_covered
+    logicalType: integer
+    physicalType: BIGINT
+  - name: zones_missed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: zone_coverage_rate
+    logicalType: number
+    physicalType: DOUBLE
+    description: Observed zones divided by derived planned zones for full_store sessions only.
+  - name: units_observed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: devices_observed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: first_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: last_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_css_automation_response
+  physicalName: connected_store_signals.gold_css_automation_response
+  physicalType: view
+  description: 'GRAIN: one row per realised automation firing (one execution_log row), decorated with
+    the action that ran, the rule that fired it, the actuator it hit (when the target is a device), the
+    observing device, and the sensor_report_interval whose reading breached the threshold. This is the
+    consumable that makes the sense -> evaluate -> act -> log loop READ AS BUILT: it is the one row a
+    responder, an auditor and a reliability review all read, closing the loop from the firing back to
+    the observation that caused it.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key of the device that fired the loop.
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the zone the observing device is installed in.
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the observing device whose reading breached the rule, resolved from the
+      triggering interval version-in-effect. This is the device that CAUSED the firing.
+  - name: device_type
+    logicalType: string
+    physicalType: STRING
+    description: Kind of device that triggered the firing, e.g. temperature for the cold-chain excursion
+      loop.
+  - name: device_status
+    logicalType: string
+    physicalType: STRING
+  - name: execution_log_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the firing. Identifies the action-that-ran-against-its-triggering-observation,
+      not merely the observation -- one breaching interval can fire several actions.
+  - name: triggered_at_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: When the action fired (UTC). The ledger ordering key.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    description: Business date of the breach that fired the loop, from the triggering interval; the firing
+      date is the fallback when the trigger was not a canonical interval. The day-grain key for rollups.
+  - name: execution_status
+    logicalType: string
+    physicalType: STRING
+    description: 'Outcome of the firing: success, failure, pending, timeout or skipped.'
+  - name: latency_ms
+    logicalType: integer
+    physicalType: BIGINT
+    description: Milliseconds from the breaching observation to the firing. Automation RESPONSE latency,
+      NOT ingest latency -- do not compare it to sensor_report_interval.latency_seconds.
+  - name: response_latency_band
+    logicalType: string
+    physicalType: STRING
+    description: fast (<= 250 ms), normal (<= 1000 ms), slow (> 1000 ms), or unknown. A responsiveness
+      band, not a data-quality one.
+  - name: response_payload
+    logicalType: string
+    physicalType: STRING
+  - name: automation_action_id
+    logicalType: string
+    physicalType: STRING
+  - name: action_type
+    logicalType: string
+    physicalType: STRING
+    description: 'What kind of action fired: system_command, notification, webhook, ticket or log_only.
+      One breach can fan out to several action types.'
+  - name: target_entity_type
+    logicalType: string
+    physicalType: STRING
+    description: The kind of thing the action targeted -- actuator, role, person or external_system. Only
+      the actuator target carries a typed actuator FK (§A.5).
+  - name: target_entity_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the target, interpreted per target_entity_type.
+  - name: action_is_enabled
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE if the action version that fired was live. A disabled action leaves its rule firing
+      but takes no effect.
+  - name: payload_template
+    logicalType: string
+    physicalType: STRING
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the rule whose breach fired the action.
+  - name: rule_name
+    logicalType: string
+    physicalType: STRING
+    description: Human-readable rule name, e.g. an over-temperature excursion on a named device.
+  - name: report_type
+    logicalType: string
+    physicalType: STRING
+    description: GS1 CBV property the rule watches, e.g. gs1:Temperature. Shared vocabulary with sensor_report_interval.report_type.
+  - name: condition_operator
+    logicalType: string
+    physicalType: STRING
+  - name: severity
+    logicalType: string
+    physicalType: STRING
+    description: 'Operational severity of the breach: info, warning or critical.'
+  - name: threshold_value_numeric
+    logicalType: number
+    physicalType: DOUBLE
+    description: The threshold the observed value was compared against, in the rule unit, AS OF the firing.
+      DOUBLE, matching sensor_report_interval.value (§A.6).
+  - name: threshold_value_upper
+    logicalType: number
+    physicalType: DOUBLE
+  - name: time_window_seconds
+    logicalType: integer
+    physicalType: INT
+  - name: rule_uom_code
+    logicalType: string
+    physicalType: STRING
+  - name: actuator_capability_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the actuator the command hit. NULL for non-actuator actions or a retired
+      actuator.
+  - name: command_type
+    logicalType: string
+    physicalType: STRING
+    description: What the actuator was commanded to do, e.g. toggle_power. NULL for a non-actuator action
+      such as a notification.
+  - name: actuator_status
+    logicalType: string
+    physicalType: STRING
+  - name: equipment_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable business key of the asset the actuator drives, e.g. the refrigeration unit. NULL
+      for ambient or digital-only actuation.
+  - name: sensor_report_interval_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: The reading interval that breached the rule, closing the loop back to the observation.
+      NULL if the trigger was not a single canonical interval.
+  - name: sensor_report_interval_id
+    logicalType: string
+    physicalType: STRING
+  - name: breach_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: The observed value that breached the rule, in breach_uom. For the cold-chain loop this
+      is the temperature that exceeded the limit.
+  - name: breach_uom
+    logicalType: string
+    physicalType: STRING
+  - name: interval_end_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: breach_margin
+    logicalType: number
+    physicalType: DOUBLE
+    description: Signed difference of breach_value from threshold_value_numeric, in the rule unit. Positive
+      means above threshold -- how far past the limit the reading was. A cross-operator magnitude is left
+      to the consumer.
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
 - name: gold_css_device_health
   physicalName: connected_store_signals.gold_css_device_health
   physicalType: view
@@ -2463,20 +4517,12 @@ schema:
     description: The dimension that lets ONE view serve the whole estate. IoT, RFID and Smart Shelf add
       rows here, not new views.
   - name: trading_date
-    logicalType: date
-    physicalType: DATE
   - name: report_type
-    logicalType: string
-    physicalType: STRING
   - name: aggregation_level
-    logicalType: string
-    physicalType: STRING
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
   - name: sensor_device_sk
-    logicalType: integer
-    physicalType: BIGINT
   - name: sensing_technology
     logicalType: string
     physicalType: STRING
@@ -2502,78 +4548,38 @@ schema:
     logicalType: boolean
     physicalType: BOOLEAN
   - name: intervals_reported
-    logicalType: integer
-    physicalType: BIGINT
   - name: observations_expected
-    logicalType: integer
-    physicalType: BIGINT
   - name: observations_received
-    logicalType: integer
-    physicalType: BIGINT
   - name: missing_observation_rate
-    logicalType: number
-    physicalType: DOUBLE
     description: '1 - (observations_received / observations_expected). The primary fleet KPI. Re-aggregate
       it by summing the two component columns, never by averaging this ratio: an average lets a device
       expecting 4 observations outvote one expecting 400, which understates a fleet-wide outage.'
   - name: avg_uptime_ratio
-    logicalType: number
-    physicalType: DOUBLE
   - name: avg_coverage_ratio
-    logicalType: number
-    physicalType: DOUBLE
   - name: valid_intervals
-    logicalType: integer
-    physicalType: BIGINT
     description: Count of intervals whose measurement was valid. Retained with invalid_intervals so valid-interval
       share can be re-aggregated from summed components.
   - name: valid_interval_share
-    logicalType: number
-    physicalType: DOUBLE
   - name: invalid_intervals
-    logicalType: integer
-    physicalType: BIGINT
   - name: imputed_intervals
-    logicalType: integer
-    physicalType: BIGINT
   - name: observed_zero_intervals
-    logicalType: integer
-    physicalType: BIGINT
     description: Intervals with a MEASURED zero, as distinct from an absent row. Most vendors emit no
       row for either a zero-traffic interval or an offline sensor, which makes the two indistinguishable
       without this.
   - name: capped_intervals
-    logicalType: integer
-    physicalType: BIGINT
     description: Intervals that hit the hardware detection ceiling. A capped peak is NOT an exact peak.
   - name: late_arrived_intervals
-    logicalType: integer
-    physicalType: BIGINT
     description: Intervals that landed after their window closed. These feeds are NOT append-only; vendors
       document data arriving hours or days late.
   - name: historical_message_count
-    logicalType: integer
-    physicalType: BIGINT
     description: Delivered source messages marked as buffered or historical.
   - name: bad_quality_message_count
-    logicalType: integer
-    physicalType: BIGINT
     description: Delivered source messages marked bad or stale by the source.
   - name: max_restatement_version
-    logicalType: integer
-    physicalType: INT
   - name: last_interval_end_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
   - name: last_ingest_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
   - name: avg_latency_seconds
-    logicalType: number
-    physicalType: DOUBLE
   - name: max_latency_seconds
-    logicalType: integer
-    physicalType: INT
   - name: feed_age_minutes
     logicalType: integer
     physicalType: INT
@@ -2583,23 +4589,15 @@ schema:
     physicalType: STRING
     description: fresh (<= 60 min), delayed (<= 6 hr), stale (> 6 hr).
   - name: session_count
-    logicalType: integer
-    physicalType: BIGINT
     description: Distinct source_session_id values in the device-day.
   - name: had_session_restart
     logicalType: boolean
     physicalType: BOOLEAN
     description: TRUE when more than one source session appears in the device-day.
   - name: source_message_count
-    logicalType: integer
-    physicalType: BIGINT
   - name: sequence_gap_count
-    logicalType: integer
-    physicalType: BIGINT
     description: Source messages inferred missing within source sessions, summed from interval-level summaries.
   - name: duplicate_delivery_count
-    logicalType: integer
-    physicalType: BIGINT
     description: Duplicate source-message deliveries, summed independently from sequence gaps.
   - name: calibration_valid_to
     logicalType: date
@@ -2667,6 +4665,439 @@ schema:
       GROUP BY sensor_device_sk, trading_date, report_type, aggregation_level
 
       HAVING COUNT(*) > 1'
+- name: gold_inventory_accuracy_daily
+  physicalName: connected_store_signals.gold_inventory_accuracy_daily
+  physicalType: view
+  description: 'GRAIN: count session × store × product × session trading date. Only full-store sessions
+    closing in the reference EOD alignment window (20:00-02:59 local) receive the `aligned_eod` basis
+    and inventory-accuracy label. Other sessions expose observed-to-book agreement only. `reconciliation_date`
+    is the EOD inventory snapshot date. For sessions ending between 00:00 and 02:59 local it is the preceding
+    local calendar date; it is deliberately distinct from the session''s declared `trading_date`. RFID
+    eligibility is a documented heuristic: an active commissioned item for the product was observed at
+    the store during the preceding 90 days.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: session_end_local_date
+  - name: reconciliation_date
+    description: EOD inventory snapshot date used for the comparison. Sessions ending 00:00-02:59 local
+      reconcile to the preceding local date.
+  - name: department
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: scope_type
+    logicalType: string
+    physicalType: STRING
+  - name: reconciliation_basis
+    logicalType: string
+    physicalType: STRING
+    description: aligned_eod only for full-store sessions closing in the declared EOD window; every other
+      row is misaligned.
+  - name: eligible_tagged_units
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct active serialized units observed for the store-product in the eligibility lookback.
+  - name: observed_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: book_units_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: absolute_unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: inventory_accuracy_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Observed-versus-EOD-book agreement for aligned_eod rows only; NULL for misaligned sessions.
+  - name: observed_to_book_agreement_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Agreement evidence for misaligned sessions; it must not be labeled inventory accuracy.
+  - name: is_phantom_stock
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when an aligned eligible product has positive EOD book stock and zero observed units.
+  - name: is_record_inaccuracy
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: reconciled_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_inventory_accuracy_daily_latest
+  physicalName: connected_store_signals.gold_inventory_accuracy_daily_latest
+  physicalType: view
+  description: 'GRAIN: store × product × reconciliation date × reconciliation basis. Session-grain evidence
+    remains in gold_inventory_accuracy_daily. This projection selects the latest reconciliation within
+    each daily basis so repeated counts do not repeat the same EOD book quantity in additive metric-view
+    measures.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: reconciliation_date
+    description: Daily EOD snapshot date at the one-row-per-store/product/date/basis metric-support grain.
+  - name: reconciliation_basis
+    logicalType: string
+    physicalType: STRING
+  - name: department
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: subcategory
+    logicalType: string
+    physicalType: STRING
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+    description: Latest session selected within the store, product, reconciliation date, and basis.
+  - name: session_trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: session_end_local_date
+  - name: scope_type
+    logicalType: string
+    physicalType: STRING
+  - name: eligible_tagged_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observed_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: book_units_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: absolute_unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: inventory_accuracy_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: observed_to_book_agreement_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: is_phantom_stock
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_record_inaccuracy
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: reconciled_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_item_current_state
+  physicalName: connected_store_signals.gold_item_current_state
+  physicalType: view
+  description: 'GRAIN: one row per serialized item (durable tagged_item_id). Stray-suspect reads never
+    drive state. A recall is persistent until a future explicit release mechanism is modeled; ordinary
+    dispositions use the latest event. Reference freshness windows are 120 minutes for fixed readers and
+    24 hours for mobile sweeps. Adopters may tighten them without changing the event contract. The evaluation
+    clock defaults to wall clock; historical demos may explicitly evaluate at the RFID event-time maximum
+    under ADR 0038 without rewriting history.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: tagged_item_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: tagged_item_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+  - name: sensing_deployment_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: sensing_deployment_id
+    logicalType: string
+    physicalType: STRING
+  - name: latest_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: latest_ingest_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: latest_biz_step_uri
+    logicalType: string
+    physicalType: STRING
+  - name: derived_disposition_uri
+    logicalType: string
+    physicalType: STRING
+    description: Latest attributed disposition, except that a recalled disposition persists until an explicit
+      release mechanism is modeled.
+  - name: latest_direction_code
+    logicalType: string
+    physicalType: STRING
+  - name: attribution_confidence
+    logicalType: number
+    physicalType: DOUBLE
+  - name: zone_source
+    logicalType: string
+    physicalType: STRING
+    description: 'How the latest read point was resolved: fixed device placement, operator declaration,
+      or mobile-platform localization.'
+  - name: is_mobile_platform
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: freshness_window_minutes
+    description: Configured freshness window selected from the latest reader platform; starter defaults
+      are 120 minutes fixed and 1440 minutes mobile.
+  - name: freshness_age_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: derived_presence_state
+    logicalType: string
+    physicalType: STRING
+    description: present, absent, unavailable, or stale. Stray-suspect reads never drive this state.
+  - name: recalled_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_item_visibility_daily
+  physicalName: connected_store_signals.gold_item_visibility_daily
+  physicalType: view
+  description: 'GRAIN: store × product × trading date. Count fields remain additive inputs for visibility-quality
+    rates; average confidence, percentile lag, and freshness are explicitly non-additive diagnostics at
+    this daily grain. RFID freshness uses ADR 0038''s resolved item-presence evaluation clock so its freshness_age_minutes
+    and fresh_as_of_ts agree with gold_item_current_state.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: read_event_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: distinct_items_read
+    logicalType: integer
+    physicalType: BIGINT
+  - name: unregistered_read_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: stray_read_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: raw_ping_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: duplicate_delivery_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: avg_attribution_confidence
+    logicalType: number
+    physicalType: DOUBLE
+  - name: arrival_lag_seconds_p95
+    logicalType: number
+    physicalType: DOUBLE
+  - name: latest_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: freshness_age_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_receiving_verification
+  physicalName: connected_store_signals.gold_receiving_verification
+  physicalType: view
+  description: Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store ×
+    product × day evidence and are never guessed onto overlapping shipments.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: verification_tier
+    description: linked_shipment supports over/short verification; unlinked_window_evidence is evidence
+      only and is never guessed onto a shipment.
+  - name: expected_units
+    description: Shipment-line quantity for linked evidence; NULL for unlinked receiving windows.
+- name: gold_rfid_oos_candidates
+  physicalName: connected_store_signals.gold_rfid_oos_candidates
+  physicalType: view
+  description: 'GRAIN: one store × product × reconciliation date with latest aligned phantom-stock evidence.
+    These are investigation candidates, not stockout episodes: no end date, duration, misplaced cause,
+    or shrinkage cause is inferred. The SDI detection-method enum does not yet admit `rfid`, so this view
+    remains read-only until that separately owned change is approved.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: rfid_oos_candidate_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: reconciliation_date
+  - name: rfid_count_session_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: rfid_count_session_id
+    logicalType: string
+    physicalType: STRING
+  - name: eligible_tagged_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observed_units
+    logicalType: integer
+    physicalType: BIGINT
+  - name: book_units_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: absolute_unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: detection_method
+    logicalType: string
+    physicalType: STRING
+  - name: candidate_reason
+    logicalType: string
+    physicalType: STRING
+  - name: candidate_severity
+    logicalType: string
+    physicalType: STRING
+  - name: data_quality_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: evidence_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
 - name: gold_store_traffic_daily_current
   physicalName: connected_store_signals.gold_store_traffic_daily_current
   physicalType: view
@@ -3154,6 +5585,179 @@ schema:
     query: "SELECT g.store_id, g.trading_date, COUNT(DISTINCT s.currency_code) AS currencies\nFROM connected_store_signals.gold_traffic_sales_productivity_current\
       \ g\nJOIN transaction.sales s\n  ON g.store_id = s.store_id AND g.trading_date = s.date_key\nGROUP\
       \ BY g.store_id, g.trading_date\nHAVING COUNT(DISTINCT s.currency_code) > 1"
+- name: gold_unaccounted_exits
+  physicalName: connected_store_signals.gold_unaccounted_exits
+  physicalType: view
+  description: 'GRAIN: one item exit event. No person, basket, transaction or video linkage.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: unaccounted_exit_id
+    logicalType: string
+    physicalType: STRING
+  - name: tagged_item_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: tagged_item_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+  - name: exit_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: direction_confidence
+    logicalType: number
+    physicalType: DOUBLE
+  - name: attribution_confidence
+    logicalType: number
+    physicalType: DOUBLE
+  - name: disposition_uri
+    logicalType: string
+    physicalType: STRING
+  - name: biz_step_uri
+    logicalType: string
+    physicalType: STRING
+  - name: exception_reason
+    logicalType: string
+    physicalType: STRING
+    description: Item-state reason only. This view contains no person, basket, receipt, loyalty, payment,
+      or video link.
+- name: gold_zone_count_coverage
+  physicalName: connected_store_signals.gold_zone_count_coverage
+  physicalType: view
+  description: 'GRAIN: one current store zone. Cadence and recent-session lookback are adopter policy
+    inputs; starter defaults are seven and 30 days, respectively. ADR 0038 intentionally keeps count-coverage
+    calculations on wall clock; the historical-demo item-presence clock does not apply to this operational
+    cadence.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: zone_code
+    logicalType: string
+    physicalType: STRING
+  - name: zone_name
+    logicalType: string
+    physicalType: STRING
+  - name: zone_type
+    logicalType: string
+    physicalType: STRING
+  - name: is_sales_floor
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: last_counted_date
+    logicalType: date
+    physicalType: DATE
+  - name: days_since_last_count
+    logicalType: integer
+    physicalType: INT
+  - name: target_cadence_days
+    description: Configured reference cadence for RFID count sessions; the starter default is seven days.
+  - name: is_overdue
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: count_lookback_days
+    description: Configured wall-clock lookback used by count_sessions_in_lookback; the starter default
+      is 30 days.
+  - name: count_sessions_in_lookback
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct RFID count sessions observed within count_lookback_days.
+  - name: lifetime_units_observed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_zone_item_presence_current
+  physicalName: connected_store_signals.gold_zone_item_presence_current
+  physicalType: view
+  description: 'GRAIN: one row per store × zone × product for fresh, attributed item state.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: units_present
+    logicalType: integer
+    physicalType: BIGINT
+  - name: oldest_supporting_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: newest_supporting_event_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: max_freshness_age_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
 - name: gold_zone_traffic_current
   physicalName: connected_store_signals.gold_zone_traffic_current
   physicalType: view

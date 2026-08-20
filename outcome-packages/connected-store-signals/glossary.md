@@ -1,6 +1,6 @@
 # Connected Store Signals — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-28
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-19
 
 Business terms for the Connected Store Signals outcome package. Vendor-neutral; follows the
 ORDM [data model standards](../../docs/data-model-standards.md).
@@ -25,16 +25,38 @@ sum without checking `aggregation_level`**.
 | `sensor_device` | One version per device (SCD2) | Physical device registry, anchored on Brick Schema 1.4.4 + QUDT, with BACnet / OPC UA / Sparkplug identity and calibration metrology. |
 | `sensor_report_interval` | One report type × subject namespace × canonical interval × level × device | Narrow EPCIS-shaped interval envelope. Every modeled series is non-overlapping; alternate vendor rollups stay outside the additive fact. |
 | `foot_traffic_interval_detail` | One row per `gs1:Count` envelope | One-to-one traffic, counting-convention, staff, occupancy, and dwell extension. |
+| `actuator_capability` | One version per actuator (SCD2) | The active-control command surface of a `sensor_device` (role `actuate`/`both`). What a device can be commanded to do. |
+| `evaluation_rule` | One version per rule (SCD2) | Standing threshold on a sensor observed property (shares the GS1 CBV `report_type` vocabulary) that fires actions when breached for `time_window_seconds`. |
+| `automation_action` | One version per action (SCD2) | The intent: what happens when a rule fires. Polymorphic target (`actuator`/`role`/`person`/`external_system`), with a typed FK on the actuator case. |
+| `execution_log` | One row per realised firing (append-only) | Audit ledger of automation runs: status, response, latency, and the interval that triggered it. |
+| `tagged_item` | One serialized EPC identity | Type 1 registry of EPC identity, resolved product, current carrier, and tag privacy state. |
+| `rfid_count_session` | One bounded count session | Header for a fixed, handheld, or robot count with an honest `full_store` or `partial` scope claim. |
+| `rfid_read_event` | One EPC × reader × UTC second | Append-only, upstream-deduplicated visibility event; raw RF pings stay in Bronze. |
+| `gold_item_current_state` | One serialized item | Latest attributed state, persistent recall, disposition, presence, and method-specific freshness. |
+| `gold_zone_item_presence_current` | One store × zone × product | Fresh serialized units currently attributed as present. |
+| `gold_item_visibility_daily` | One store × product × trading date | Additive read-quality counts plus non-additive daily confidence, lag, and freshness diagnostics. |
+| `gold_inventory_accuracy_daily` | One session × store × product × session trading date | Basis-aware observed-versus-EOD-book reconciliation over RFID-eligible products, with an explicit EOD `reconciliation_date`. |
+| `gold_inventory_accuracy_daily_latest` | One store × product × reconciliation date × basis | Latest daily reconciliation per basis for metric rollups without repeated-session double counting. |
+| `gold_count_session_summary` | One RFID count session | Duration, observed units/devices/zones, and full-store plan coverage. |
+| `gold_zone_count_coverage` | One current store zone | Last-counted date and reference cadence, derived from actual session reads. |
+| `gold_receiving_verification` | Linked shipment line or unlinked store × product × window | Expected-versus-observed verification only when the event carries a shipment-line association. |
+| `gold_rfid_oos_candidates` | One store × product × reconciliation date | Latest aligned phantom-stock evidence for investigation; candidates are not stockout episodes and carry no inferred duration or cause beyond the observed evidence. |
+| `gold_unaccounted_exits` | One item exit event | Item-side exit exceptions with no prior sold or shipping disposition; no person linkage. |
 | `gold_store_traffic_daily_current` | One store × trading date | Store-level daily traffic, dwell and occupancy with NRF prior-year comparison. |
 | `gold_zone_traffic_current` | One store × zone × trading date | Zone-level traffic with density and engagement. |
 | `gold_store_traffic_daily_shared` | One store × trading date | Disclosure-controlled shared store traffic. |
 | `gold_zone_traffic_shared` | One store × zone × trading date | Disclosure-controlled shared zone traffic. |
 | `gold_traffic_sales_productivity_current` | One store × trading date | Sales and units per entry and per footfall. It exposes no conversion surface. |
 | `gold_css_device_health` | One device version × report type × aggregation level × trading date | Whole-estate fleet health: uptime, coverage, freshness, session integrity, calibration, governance gaps. Report type and level are in the grain because one device can report more than one thing at more than one level. |
+| `gold_css_automation_response` | One realised firing (`execution_log` grain) | The sense → evaluate → act → log loop as one row: the firing decorated with the action, rule, actuator and the observation that breached the threshold. Every parent is resolved AS OF the firing, so the threshold and payload shown are the versions that actually ran. |
 | `mv_store_foot_traffic` | store × date | Store totals. Separate from the zone view because a metric view cannot require a filter, so one combined view let `SELECT footfall` return the store total plus every zone total. |
 | `mv_zone_foot_traffic` | store × zone × date | Zone detail, for comparing and ranking zones and for density. Zone footfall does NOT sum to a store total. |
 | `mv_traffic_sales_productivity` | store × date | Metric view over traffic-sales productivity. |
 | `mv_device_health` | store × device type × date | Metric view over the fleet-health gold view. |
+| `mv_automation_response` | device × rule × action target × date | Metric view over the automation loop: firings, success rate, response latency and breach magnitude. |
+| `mv_inventory_accuracy` | store × product × reconciliation date × basis | Metric view over RFID observed-versus-book reconciliation. |
+| `mv_item_visibility` | store × product × trading date | Metric view over RFID item-visibility quality. |
+| `mv_count_operations` | store × method × scope × trading date | Metric view over RFID count execution and full-store zone coverage. |
 
 ## Telemetry integrity terms
 
@@ -43,6 +65,24 @@ sum without checking `aggregation_level`**.
 | Sequence gap | Source messages inferred missing within a source session. Raw sequence values stay in Bronze; the interval envelope carries only the interval-level count. |
 | Duplicate delivery | Source messages delivered more than once. A different fault from a gap and counted separately as an interval summary. |
 | Session restart | More than one `source_session_id` in a device-day. |
+
+## RFID terms
+
+| Term | Definition |
+|---|---|
+| **EPC** | GS1 Electronic Product Code. ORDM stores the EPC Pure Identity URI as `tagged_item_id`; it is serialized-item identity, not a person identifier. |
+| **SGTIN** | Serialized Global Trade Item Number: a GTIN plus serial component represented as an EPC identity. |
+| **TID / carrier** | Physical tag-chip identifier. `current_tid_hex` may change when the same serialized identity is re-encoded onto a replacement carrier. |
+| **Tag privacy state** | Current evidence that a tag is `active`, `protected`, `killed`, or `detached`. Post-kill reads are surfaced as quality telemetry. |
+| **Visibility event** | One upstream-deduplicated observation at EPC × reader × UTC second. It is not a raw RF ping and not an interval report. |
+| **Read point vs business location** | The device or mobile platform supplies a read point; `zone_source` records whether the zone came from fixed placement, operator declaration, or platform localization. It is evidence, not certainty. |
+| **Stray read** | A read suspected to be RF bleed from another location. Stray reads stay in the fact for quality analysis but do not drive current presence. |
+| **Count session** | A bounded fixed, handheld, or robot census. `full_store` permits a derived active-zone plan; `partial` makes no plan-completion claim. |
+| **Coverage vs cadence** | Coverage asks which zones a session actually observed. Cadence asks how recently and how often a zone was counted. A session plan is not required for cadence. |
+| **Reconciliation basis** | `aligned_eod` supports the inventory-accuracy label; `misaligned` supports observed-to-book agreement only. |
+| **Phantom stock** | Positive EOD book stock with zero observed units in an aligned, eligible RFID reconciliation. Untagged products are excluded from the eligibility denominator. |
+| **Unaccounted exit** | Attributed outward perimeter read with no sold or shipping disposition at or before the exit. It is an item-state exception, not proof about a person. |
+| **Read rate vs accuracy** | Read volume and attribution health describe sensing quality. Inventory accuracy compares a qualified physical census with book inventory; high read volume alone does not establish accuracy. |
 
 ## Counting terms
 
@@ -113,6 +153,25 @@ sum without checking `aggregation_level`**.
 | `avg_dwell_seconds` | Re-derive from `SUM(total) / SUM(count)`. |
 | `unique_visitor_count` | Not additive at all. |
 | Ratios (`uptime_ratio`, `coverage_ratio`, `confidence_score`) | Averaged, never summed. |
+
+## Automation loop terms (IoT Sensor Monitoring)
+
+The closed loop that turns a sensed breach into an auditable action: **sense**
+(`sensor_report_interval`) → **evaluate** (`evaluation_rule`) → **act**
+(`automation_action` against an `actuator_capability`) → **log** (`execution_log`). It
+reuses the existing device registry rather than redefining one.
+
+| Term | Definition |
+|---|---|
+| **Actuator capability** (`actuator_capability`) | What a device can be *commanded* to do, as opposed to what it observes. An actuator is a capability of a `sensor_device` whose `device_role` is `actuate` or `both` — not a separate device registry. |
+| **Command type** (`command_type`) | The kind of command: `toggle_power`, `set_level`, `set_setpoint`, `open_close`, `dispense`, `display_message`, `reset`. |
+| **Acceptable value range** (`acceptable_value_range`) | Documented bound on a valid command payload, e.g. `0,1` for a toggle or `2.0,8.0` for a setpoint. Free text because the shape varies by `command_type`. |
+| **Evaluation rule** (`evaluation_rule`) | A standing condition on a sensor's `report_type`: `condition_operator` compared against `threshold_value_numeric` (and `threshold_value_upper` for range operators). Shares the GS1 CBV vocabulary with `sensor_report_interval`. |
+| **Sustained-breach window** (`time_window_seconds`) | How long the condition must hold before the rule fires — the debounce against a single transient reading. `0` fires on the first breaching observation. |
+| **Automation action** (`automation_action`) | The intent triggered by a rule: `system_command`, `notification`, `webhook`, `ticket`, or `log_only`. |
+| **Action target** (`target_entity_type`, `target_entity_id`) | A **polymorphic** reference — the target can be an `actuator`, `role`, `person` or `external_system`. The `actuator` case additionally carries a typed `actuator_capability_sk` FK; the others carry only the id pair (standards §A.5 adjudicated exception). |
+| **Payload template vs response** (`payload_template`, `response_payload`) | The template is the command/message to send (on `automation_action`); the response is what the target actually returned (on `execution_log`). |
+| **Execution log** (`execution_log`) | **Append-only** audit ledger: one row per realised firing, with `execution_status` (`success`/`failure`/`pending`/`timeout`/`skipped`), rendered `response_payload`, and `latency_ms`. Parent FKs are nullable so a log row survives the retirement of the action or actuator it references. |
 
 ## Privacy and governance terms
 
