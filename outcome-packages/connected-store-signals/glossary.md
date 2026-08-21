@@ -1,6 +1,6 @@
 # Connected Store Signals — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-19
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-21
 
 Business terms for the Connected Store Signals outcome package. Vendor-neutral; follows the
 ORDM [data model standards](../../docs/data-model-standards.md).
@@ -32,6 +32,11 @@ sum without checking `aggregation_level`**.
 | `tagged_item` | One serialized EPC identity | Type 1 registry of EPC identity, resolved product, current carrier, and tag privacy state. |
 | `rfid_count_session` | One bounded count session | Header for a fixed, handheld, or robot count with an honest `full_store` or `partial` scope claim. |
 | `rfid_read_event` | One EPC × reader × UTC second | Append-only, upstream-deduplicated visibility event; raw RF pings stay in Bronze. |
+| `shelf_position_assignment` | One version per shelf position × product | Position-level expected product and facings, with instant-grained validity. CSS execution state, distinct from BMV allocation intent. |
+| `shelf_state_observation` | One position × product × device × source capture | Restatable shelf-state evidence outside the scalar interval envelope. A misplacement capture has separate missing-expected and detected-wrong-product rows. |
+| `esl_label` | One version per label endpoint | Electronic shelf-label registry below an ESL gateway device. |
+| `esl_label_assignment` | One version per label × product × position binding | Instant-grained pairing lifecycle that makes a displayed-price observation attributable. |
+| `esl_price_observation` | One label × evidence source × source observation | Append-only evidence of displayed price/disclosure versus a captured price of record; never a price command. |
 | `gold_item_current_state` | One serialized item | Latest attributed state, persistent recall, disposition, presence, and method-specific freshness. |
 | `gold_zone_item_presence_current` | One store × zone × product | Fresh serialized units currently attributed as present. |
 | `gold_item_visibility_daily` | One store × product × trading date | Additive read-quality counts plus non-additive daily confidence, lag, and freshness diagnostics. |
@@ -42,6 +47,13 @@ sum without checking `aggregation_level`**.
 | `gold_receiving_verification` | Linked shipment line or unlinked store × product × window | Expected-versus-observed verification only when the event carries a shipment-line association. |
 | `gold_rfid_oos_candidates` | One store × product × reconciliation date | Latest aligned phantom-stock evidence for investigation; candidates are not stockout episodes and carry no inferred duration or cause beyond the observed evidence. |
 | `gold_unaccounted_exits` | One item exit event | Item-side exit exceptions with no prior sold or shipping disposition; no person linkage. |
+| `gold_shelf_state_current` | One shelf position × product | Latest-capture shelf truth with usability, freshness, and four compliance dimensions. |
+| `gold_osa_daily_current` | One store × date × category | OSA with known, unknown, unobserved, and coverage denominators kept explicit. |
+| `gold_planogram_compliance_current` | One store × date × product | Presence, position, facings, and price-tag compliance plus read-only BMV allocation comparison. |
+| `gold_share_of_shelf_current` | One store × category × brand | Facings-based share of shelf at one evaluation instant. |
+| `gold_price_accuracy_current` | One store × date × currency | Display match, split over/undercharge, correction, and acknowledgement latency evidence. |
+| `gold_observed_oos_episodes` | One observed OOS episode | Shelf-gap episode start, recovery, duration, and SDI candidate evidence. |
+| `gold_shelf_vs_system_variance_daily` | One store × product × date | Same-date last-usable shelf evidence versus EOD book inventory. |
 | `gold_store_traffic_daily_current` | One store × trading date | Store-level daily traffic, dwell and occupancy with NRF prior-year comparison. |
 | `gold_zone_traffic_current` | One store × zone × trading date | Zone-level traffic with density and engagement. |
 | `gold_store_traffic_daily_shared` | One store × trading date | Disclosure-controlled shared store traffic. |
@@ -57,6 +69,9 @@ sum without checking `aggregation_level`**.
 | `mv_inventory_accuracy` | store × product × reconciliation date × basis | Metric view over RFID observed-versus-book reconciliation. |
 | `mv_item_visibility` | store × product × trading date | Metric view over RFID item-visibility quality. |
 | `mv_count_operations` | store × method × scope × trading date | Metric view over RFID count execution and full-store zone coverage. |
+| `mv_on_shelf_availability` | store × category × date | Metric view over additive OSA counters and denominator-honesty measures. |
+| `mv_planogram_compliance` | store × product × date | Metric view over recomposable compliance measures and share-of-shelf context. |
+| `mv_price_accuracy` | store × currency × date | Metric view over label accuracy, over/undercharge, correction, and sync-latency measures. |
 
 ## Telemetry integrity terms
 
@@ -80,9 +95,25 @@ sum without checking `aggregation_level`**.
 | **Count session** | A bounded fixed, handheld, or robot census. `full_store` permits a derived active-zone plan; `partial` makes no plan-completion claim. |
 | **Coverage vs cadence** | Coverage asks which zones a session actually observed. Cadence asks how recently and how often a zone was counted. A session plan is not required for cadence. |
 | **Reconciliation basis** | `aligned_eod` supports the inventory-accuracy label; `misaligned` supports observed-to-book agreement only. |
-| **Phantom stock** | Positive EOD book stock with zero observed units in an aligned, eligible RFID reconciliation. Untagged products are excluded from the eligibility denominator. |
+| **Phantom stock** | Positive EOD book stock with zero qualified physical evidence. RFID requires an aligned, eligible reconciliation; Smart Shelf requires same-date usable shelf evidence. It is an investigation signal, not proof that no units exist elsewhere in the store. |
 | **Unaccounted exit** | Attributed outward perimeter read with no sold or shipping disposition at or before the exit. It is an item-state exception, not proof about a person. |
 | **Read rate vs accuracy** | Read volume and attribution health describe sensing quality. Inventory accuracy compares a qualified physical census with book inventory; high read volume alone does not establish accuracy. |
+
+## Smart Shelf terms
+
+| Term | Definition |
+|---|---|
+| **On-shelf availability (OSA)** | Expected shelf positions whose latest evaluable state is `in_stock` or `low_stock`, divided by expected positions with a known state. Unknown and unobserved positions are reported separately and never counted as available. |
+| **Planogram compliance** | Execution compliance across four independently evaluable dimensions: expected product present, correct position, sufficient facings, and correct price tag. CSS expected state is position-level; BMV planogram remains allocation intent. |
+| **Share of shelf** | Brand facings divided by total category facings within one store, category, and evaluation instant. Shares are not additive across categories, stores, or time. |
+| **Facing** | One visible front presentation of a product on the shelf. `expected_facing_count` is the execution target; `observed_facing_count` is sensed evidence. A facing is not a complete unit count. |
+| **Pick / put** | Since-prior activity summaries: picks remove units and puts return or replenish units. They are NULL for platforms that cannot observe events; NULL never means zero. |
+| **Price of record** | Store-scoped authoritative price captured with its source, type, and effective instant on the price observation. It is pricing evidence read by CSS, never an output of shelf sensing. |
+| **Displayed price** | Price actually visible on the label according to platform acknowledgement, shelf CV, or manual audit. It may disagree with the price of record. |
+| **Label assignment** | Instant-grained binding of one ESL endpoint to a product and shelf position. It determines which product a displayed-price observation can be attributed to. |
+| **Acknowledgement** | Platform evidence that a label update or displayed state was accepted/reported. It measures delivery evidence, not independent proof that pixels on the shelf match; shelf CV and manual audit remain separate sources. |
+| **Displayed disclosure** | Indicator and optional text observed on the label alongside price. It records display evidence and does not by itself declare legal compliance. |
+| **Latest-capture-wins** | Current-state rule that selects the newest capture before evaluating usability. A newer unknown, invalid, or occluded reading remains current and never revives an older good reading. |
 
 ## Counting terms
 

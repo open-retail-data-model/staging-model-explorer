@@ -24361,6 +24361,516 @@
           "name": "el_interval_fk_orphan",
           "severity": "error",
           "table": "execution_log"
+        },
+        {
+          "column": null,
+          "name": "ssa_grain_unique",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_keys_not_null",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_nonoverlapping_validity",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_dates_derive_from_ts",
+          "severity": "warn",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_scd2_consistent",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_single_current",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_store_fk_orphan",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_zone_fk_orphan",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_product_fk_orphan",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_reference_key_agreement",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_zone_is_shelf_position",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_zone_has_bay_aisle_ancestry",
+          "severity": "error",
+          "table": "shelf_position_assignment"
+        },
+        {
+          "column": null,
+          "name": "ssa_position_coverage",
+          "severity": "metric",
+          "table": "store_zone"
+        },
+        {
+          "column": null,
+          "name": "sso_grain_unique",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_sk_collision",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_keys_not_null",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_assignment_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_assignment_key_pair",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_assignment_context_consistent",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_store_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_zone_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_product_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_device_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_deployment_fk_orphan",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_reference_key_agreement",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_zone_is_shelf_position",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_state_oos_zero_facings",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_state_low_stock_band",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_state_in_stock_meets_threshold",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_state_unknown_measures_null",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_state_misplaced_semantics",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_misplaced_sibling_present",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_unit_estimate_capability",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_event_count_capability",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_occluded_not_valid",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_time_agreement",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_observation_not_future",
+          "severity": "error",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_unassigned_observation_rate",
+          "severity": "metric",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "sso_position_cadence_gap",
+          "severity": "metric",
+          "table": "shelf_state_observation"
+        },
+        {
+          "column": null,
+          "name": "esll_grain_unique",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_keys_not_null",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_single_current",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_scd2_consistent",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_store_fk_orphan",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_gateway_fk_orphan",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_reference_key_agreement",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esll_gateway_is_esl_gateway",
+          "severity": "error",
+          "table": "esl_label"
+        },
+        {
+          "column": null,
+          "name": "esla_grain_unique",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_keys_not_null",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_dates_derive_from_ts",
+          "severity": "warn",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_scd2_consistent",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_single_current",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_one_current_per_label",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_current_chain_resolves",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_nonoverlapping_validity",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_label_fk_orphan",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_product_fk_orphan",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_store_fk_orphan",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_zone_fk_orphan",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_reference_key_agreement",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_zone_is_shelf_position",
+          "severity": "error",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "esla_encoded_gtin_agrees",
+          "severity": "warn",
+          "table": "esl_label_assignment"
+        },
+        {
+          "column": null,
+          "name": "eslp_grain_unique",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_source_identity_unique",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_sk_collision",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_keys_not_null",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_binding_reference_consistent",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_record_source_present",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_record_source_domain",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_sensing_flag_false",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_label_fk_orphan",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_assignment_fk_orphan",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_product_fk_orphan",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_store_fk_orphan",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_zone_fk_orphan",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_reference_key_agreement",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_match_consistency",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_price_of_record_currency",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_single_currency",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_sync_latency_ack_only",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_sync_latency_agreement",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_disclosure_text_implies_indicator",
+          "severity": "warn",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_time_agreement",
+          "severity": "error",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_binding_denorm_consistent",
+          "severity": "warn",
+          "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "eslp_ack_cv_disagreement",
+          "severity": "metric",
+          "table": "esl_price_observation"
         }
       ],
       "contract_path": "contracts/odcs/connected-store-signals.odcs.yaml",
@@ -24752,6 +25262,226 @@
             "sensor_report_interval_sk"
           ],
           "parent_table": "sensor_report_interval"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "shelf_position_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_zone_sk"
+          ],
+          "child_table": "shelf_position_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_zone_sk"
+          ],
+          "parent_table": "store_zone"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "shelf_position_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "shelf_position_assignment_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "shelf_position_assignment_sk"
+          ],
+          "parent_table": "shelf_position_assignment"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_zone_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_zone_sk"
+          ],
+          "parent_table": "store_zone"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "sensor_device_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "sensing_deployment_sk"
+          ],
+          "child_table": "shelf_state_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensing_deployment_sk"
+          ],
+          "parent_table": "sensing_deployment"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "esl_label",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "sensor_device_sk"
+          ],
+          "child_table": "esl_label",
+          "declared_fk": true,
+          "parent_cols": [
+            "sensor_device_sk"
+          ],
+          "parent_table": "sensor_device"
+        },
+        {
+          "child_cols": [
+            "esl_label_sk"
+          ],
+          "child_table": "esl_label_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "esl_label_sk"
+          ],
+          "parent_table": "esl_label"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "esl_label_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "esl_label_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_zone_sk"
+          ],
+          "child_table": "esl_label_assignment",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_zone_sk"
+          ],
+          "parent_table": "store_zone"
+        },
+        {
+          "child_cols": [
+            "esl_label_sk"
+          ],
+          "child_table": "esl_price_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "esl_label_sk"
+          ],
+          "parent_table": "esl_label"
+        },
+        {
+          "child_cols": [
+            "esl_label_assignment_sk"
+          ],
+          "child_table": "esl_price_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "esl_label_assignment_sk"
+          ],
+          "parent_table": "esl_label_assignment"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "esl_price_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "esl_price_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_zone_sk"
+          ],
+          "child_table": "esl_price_observation",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_zone_sk"
+          ],
+          "parent_table": "store_zone"
         }
       ],
       "tables": [
@@ -25149,6 +25879,850 @@
           "name": "automation_action",
           "role": "master",
           "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable label endpoint identifier (vendor serial or platform label id, vendor-neutral form).",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect when this version was written.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the gateway/access-point device version this label is homed to (sensor_device.device_type = esl_gateway).",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable gateway device business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display hardware class. Allowed values: eink_mono, eink_multicolor, lcd, segment.",
+              "enum_values": [
+                "eink_mono",
+                "eink_multicolor",
+                "lcd",
+                "segment"
+              ],
+              "fk": false,
+              "name": "display_technology",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral model designation for the endpoint hardware.",
+              "enum_values": [],
+              "fk": false,
+              "name": "display_model",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Diagonal display size in inches.",
+              "enum_values": [],
+              "fk": false,
+              "name": "display_size_inches",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Expected battery lifetime class from the vendor specification. Allowed values: under_3y, y3_to_5, y5_to_10, over_10y. Battery LEVEL is telemetry, not registry.",
+              "enum_values": [
+                "under_3y",
+                "y3_to_5",
+                "y5_to_10",
+                "over_10y"
+              ],
+              "fk": false,
+              "name": "battery_life_class",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the endpoint carries an NFC touchpoint. Shopper NFC interactions are out of Smart Shelf scope (interaction domain).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_nfc_capable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the endpoint can render QR / GS1 Digital Link codes (Sunrise 2027 estate).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_qr_capable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Allowed values: active, inactive, faulty, retired.",
+              "enum_values": [
+                "active",
+                "inactive",
+                "faulty",
+                "retired"
+              ],
+              "fk": false,
+              "name": "label_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the endpoint entered service.",
+              "enum_values": [],
+              "fk": false,
+              "name": "commissioned_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "When the endpoint left service. NULL while in service.",
+              "enum_values": [],
+              "fk": false,
+              "name": "decommissioned_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals ESL endpoint registry (SCD2): display capability and gateway homing for electronic shelf labels. Displayed state lives in esl_price_observation; no actuation surface (draft ADR-C).",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "esl_label",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_assignment_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable binding key: esl_label_id|product_id|store_zone_id. Re-pairing the same triple resumes the same durable identity with a new version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_assignment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the label endpoint version bound.",
+              "enum_values": [],
+              "fk": true,
+              "name": "esl_label_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable label endpoint identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the product version in effect when this version was written.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key this label displays.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect when this version was written.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the shelf-position zone version where the bound label is placed.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable shelf-position zone id of the label placement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The GTIN as ENCODED at the shelf edge for this binding \u2014 a snapshot of what the label carries, not an identity authority. Core product.gtin remains authoritative; a warn-severity check surfaces disagreement, because a wrong encoding is exactly the shelf-edge defect this layer exists to catch (Sunrise 2027 join key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "encoded_gtin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The GS1 Digital Link URI as RENDERED by the label where qr_capable \u2014 shelf-edge snapshot, same authority rule as encoded_gtin (Sunrise 2027 lead syntax).",
+              "enum_values": [],
+              "fk": false,
+              "name": "encoded_digital_link_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "How the binding was made. Allowed values: platform, manual.",
+              "enum_values": [
+                "platform",
+                "manual"
+              ],
+              "fk": false,
+              "name": "binding_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the pairing was verified after assignment (scan-back or platform verification workflow).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_binding_verified",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Allowed values: active, suspended, retired.",
+              "enum_values": [
+                "active",
+                "suspended",
+                "retired"
+              ],
+              "fk": false,
+              "name": "binding_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Inclusive UTC instant this binding version took effect. The version grain key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_from_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive UTC instant this binding stopped applying; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_to_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective. Derived: CAST(valid_from_ts AS DATE).",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version. Derived from valid_to_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals ESL binding lifecycle (SCD2): label \u00d7 product \u00d7 shelf-position pairing that makes a displayed price attributable. At most one current binding per label (DQ-enforced).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "esl_label_assignment",
+          "role": "association",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate join key: xxhash64(esl_price_observation_id). The durable id is authoritative and collision-guarded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_price_observation_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable grain key: esl_label_id|observation_source|source_observation_id. Source-event identity, not timestamp-to-the-second: a re-delivered source event deduplicates instead of duplicating, and ack/CV/audit observing the same label in the same second cannot collide.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_price_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source-system event identity: platform ack/event id, CV frame/inference id, or audit record id. Part of the durable grain key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the label endpoint version in effect at observation time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "esl_label_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable label endpoint identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the binding version current at observation time. NULL when the label was observed unbound.",
+              "enum_values": [],
+              "fk": true,
+              "name": "esl_label_assignment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable binding key captured at observation time (SCD2-safe attribution, ADR 0025). NULL when observed unbound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "esl_label_assignment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Product version resolved through the binding at write. NULL when observed unbound.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key via the binding. NULL when observed unbound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect at observation time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the shelf-position zone version of the label placement at observation time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable shelf-position zone id via the binding. NULL when observed unbound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observation instant as UTC: ack receipt, CV capture, or audit scan time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "IANA store timezone used to derive local business fields.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_timezone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store UTC offset in minutes at observed_at_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "utc_offset_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "SMALLINT"
+            },
+            {
+              "comment": "Business date of observed_at_ts, persisted on the ledger itself so no join loss can strip store-local date context. Logical join to fiscal_calendar.date_key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Store-local observation hour, 0 through 23.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hour_of_day",
+              "pii": false,
+              "pk": false,
+              "type": "TINYINT"
+            },
+            {
+              "comment": "How the displayed state became known: platform_ack, shelf_cv, manual_audit. The three paths are independent evidence; disagreement between them is signal.",
+              "enum_values": [
+                "platform_ack",
+                "shelf_cv",
+                "manual_audit"
+              ],
+              "fk": false,
+              "name": "observation_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Unit-grain price shown on the label at observation, in the store reporting currency. NULL only when the source could observe the label but not read a price (e.g. occluded CV).",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "ISO 4217 currency of the displayed price; must match the store reporting currency (single-currency check).",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Unit price shown (per uom), where the label displays one. NIST HB44 random-weight awareness: unit-priced items are priced from scale PLU memory, not the POS database.",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_unit_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "UN/CEFACT unit code for the displayed unit price (e.g. KGM, LBR).",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_price_uom",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the label showed a promotional presentation AS DISPLAYED. Records the display, not the promotion validity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_promo_indicator",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the label showed a pricing-disclosure notice AS DISPLAYED (NY GBL \u00a7349-a wording; CT 2026 mandated label text). Observed display state, not a compliance conclusion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_disclosure_indicator",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "The disclosure wording as displayed, where the source captures text. Nullable; an indicator plus Bronze evidence may stand in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "displayed_disclosure_text",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The STORE-SCOPED unit-grain authoritative price in effect at observation time, captured onto the row (degenerate copy \u2014 audit evidence must stand alone). Core product_price is product \u00d7 price_type \u00d7 DATE with no store/channel scope, so it is a legal source only where the adopter prices chain-wide by day; store/zone-priced or intraday-priced estates capture from their pricing platform of record. This fact READS pricing; it never feeds it (ADR 0030).",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_of_record",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "ISO 4217 currency of the captured price of record. MUST equal displayed_currency_code and the store reporting currency: price_of_record_source may name a non-store-reporting authority (pricing_platform, pos_system) whose price arrives in another currency, so without this column is_price_match and the over/undercharge magnitudes would silently compare across currencies. Enforced row-wise by eslp_price_of_record_currency and folded into the single-reporting-currency contract (eslp_single_currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_of_record_currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Which authority the captured price of record came from: pricing_platform, product_price, pos_system, scale_plu, manual. NIST HB44: random-weight items price from scale PLU memory, not the POS database \u2014 \"the price\" has no single origin (ADR 0030 consequence), so the source is part of the evidence.",
+              "enum_values": [
+                "pricing_platform",
+                "product_price",
+                "pos_system",
+                "scale_plu",
+                "manual"
+              ],
+              "fk": false,
+              "name": "price_of_record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Price type of the captured record where the source distinguishes one (e.g. list, promotional). Vocabulary follows the source system; core product_price uses list/cost/promotional/contract.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_of_record_price_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "UTC instant the captured price of record became effective IN THE SOURCE AUTHORITY. Date-grained sources (core product_price) yield a midnight instant; intraday-capable platforms yield the real one \u2014 display_sync_latency_seconds is only as good as this timestamp.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_of_record_effective_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "TRUE when displayed_price equals the captured price of record. NULL when either side is unobserved. Comparison is same-currency by contract: price_of_record_currency_code = displayed_currency_code (eslp_price_of_record_currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_price_match",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Seconds from price-of-record effectiveness to this ack observation. platform_ack rows only; NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "display_sync_latency_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "ADR 0030 \u00a7Decision.2 invariant, schema-visible: always FALSE (Delta CHECK). No displayed price may claim a sensing-derived input; any attempt to violate is an explicit, reviewable act.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensing_derived_input_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Pointer to source evidence in Bronze (ack payload, CV crop, audit record), outside ORDM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the observation arrived in the lakehouse (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals append-only price-display audit fact: what each ESL displayed, when, by which evidence path, against the captured price of record. Observation-only ESL layer (draft ADR-C, extending ADR 0030).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "esl_price_observation",
+          "role": "transactional",
+          "scd2": false
         },
         {
           "columns": [
@@ -28211,6 +29785,668 @@
               "comment": "Surrogate key. Unique per SCD2 version.",
               "enum_values": [],
               "fk": false,
+              "name": "shelf_position_assignment_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural key: store_zone_id|product_id. One current version per shelf-position zone and product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_position_assignment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect when this version was written.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the shelf-position zone version (store_zone.zone_type = shelf_position).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable shelf-position zone id. The zone carries the aisle/bay ancestry via hierarchy_path.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the product version in effect when this version was written.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key expected at this position.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Facings this product should present at this position per the expected state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Low-stock threshold: observed facings below this and above zero classify as low_stock at evaluation time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Optional left-to-right sequence of this product within its bay, where the source system provides it.",
+              "enum_values": [],
+              "fk": false,
+              "name": "facing_sequence",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Provenance of the expected state. Allowed values: planogram, manual, vendor. Adopters without slot-level planograms operate on manual or vendor.",
+              "enum_values": [
+                "planogram",
+                "manual",
+                "vendor"
+              ],
+              "fk": false,
+              "name": "assignment_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Logical reference to the BMV planogram business key this assignment was derived from, when assignment_source = planogram. Not a FK: BMV planogram is allocation intent at a different grain (ADR-B); reconciliation is read-only gold-to-gold (ADR 0024).",
+              "enum_values": [],
+              "fk": false,
+              "name": "planogram_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Allowed values: active, suspended, retired.",
+              "enum_values": [
+                "active",
+                "suspended",
+                "retired"
+              ],
+              "fk": false,
+              "name": "assignment_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Inclusive UTC instant this version became the expected state. The version grain key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_from_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive UTC instant this version stopped applying; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_to_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective. Derived: CAST(valid_from_ts AS DATE).",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version. Derived from valid_to_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals slot-level expected shelf state (SCD2): product, expected and minimum facings per shelf-position zone. Execution contract for Smart Shelf compliance; distinct from BMV planogram allocation intent (ADR-B).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "shelf_position_assignment",
+          "role": "association",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate join key: xxhash64(shelf_state_observation_id). The durable id is authoritative and collision-guarded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_state_observation_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable grain key: store_zone_id|product_id|sensor_device_id|source_capture_id. product_id uses the _ALL sentinel only for a position-level capture that cannot resolve a product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_state_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Platform identifier for the physical capture (CV frame/inference id, weight-event window id, sweep-pass segment). Groups the several product rows one capture may yield (two-row misplacement model) and keeps restatement idempotent under CV re-inference.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_capture_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the expected-state assignment version in effect at observation time. NULL only when the position had no current assignment.",
+              "enum_values": [],
+              "fk": true,
+              "name": "shelf_position_assignment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable assignment key captured at observation time, so compliance stays evaluable after the assignment re-versions (ADR 0025).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_position_assignment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the store version in effect at observation time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the shelf-position zone version observed.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable shelf-position zone id (store_zone.zone_type = shelf_position).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Product version resolved at write. NULL when product_id carries the _ALL sentinel or resolution failed.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key observed or expected at this position; _ALL sentinel for unresolved position-level captures.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the capturing device version in effect at observation time.",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable capturing device business key. Provenance is part of identity: two platforms may observe the same position at the same instant.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the governing sensing deployment version (ADR 0031).",
+              "enum_values": [],
+              "fk": true,
+              "name": "sensing_deployment_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable sensing deployment business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensing_deployment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Capture or sweep-completion instant as UTC. Observations are instants, not intervals; cadence gaps are measured in gold, never imputed here.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "IANA store timezone used to derive local business fields.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_timezone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store UTC offset in minutes at observation_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "utc_offset_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "SMALLINT"
+            },
+            {
+              "comment": "Business date of observation_ts. Logical join to fiscal_calendar.date_key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Store-local observation hour, 0 through 23.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hour_of_day",
+              "pii": false,
+              "pk": false,
+              "type": "TINYINT"
+            },
+            {
+              "comment": "Evaluated state at capture: in_stock, low_stock, out_of_stock, misplaced, unknown. low_stock uses min_facing_threshold recorded on this row; misplaced means the product on THIS row was detected at a position assigned to a different product (the captured assignment names the violated expectation); unknown means the platform could not evaluate and all measures are NULL, never zero.",
+              "enum_values": [
+                "in_stock",
+                "low_stock",
+                "out_of_stock",
+                "misplaced",
+                "unknown"
+              ],
+              "fk": false,
+              "name": "shelf_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Facings visibly presented at capture. NULL when shelf_state = unknown.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "The assignment min_facing_count evaluated at write, recorded so the low_stock classification stays explainable after the assignment re-versions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_facing_threshold",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Weight-derived unit estimate (total weight / calibrated per-SKU unit weight). An estimate carrying uncertainty, not a count; NULL for platforms without declared unit-estimation capability.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_unit_count",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Observed net weight in grams. NULL for non-weight platforms.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_weight_grams",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Pick events since the prior capture of this position by this device. NULL for platforms that cannot detect events (mirrors ftid_nondirectional_exits_null honesty). Raw events stay in Bronze behind raw_data_uri.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pick_count_since_prior",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Putback events since the prior capture of this position by this device. NULL for platforms that cannot detect events.",
+              "enum_values": [],
+              "fk": false,
+              "name": "put_count_since_prior",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "TRUE when the platform flagged a visible gap/void at this position.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_gap_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "On an expected-product row: TRUE when something else was detected sitting at this position (the detected product gets its own misplaced-state row sharing this source_capture_id).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_misplaced_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when shelf CV flagged the displayed price tag against the expected one. Bridges to the ESL layer; the authoritative price comparison lives in esl_price_observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_price_tag_mismatch_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "How the position zone was attributed: device_placement, operator_declared, platform_localization. Fixed sensors use device_placement; robot sweeps use platform_localization (RFID vocabulary reused).",
+              "enum_values": [
+                "device_placement",
+                "operator_declared",
+                "platform_localization"
+              ],
+              "fk": false,
+              "name": "zone_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Confidence in assigning the capture to the stated position zone, in [0,1]. 1.0 for fixed device placement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "attribution_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Was the sensor telling the truth. Allowed values: valid, degraded, invalid, imputed. Occluded captures are never valid.",
+              "enum_values": [
+                "valid",
+                "degraded",
+                "invalid",
+                "imputed"
+              ],
+              "fk": false,
+              "name": "measurement_validity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Has the data landed. Allowed values: complete, incomplete, late_arrived, precheck.",
+              "enum_values": [
+                "complete",
+                "incomplete",
+                "late_arrived",
+                "precheck"
+              ],
+              "fk": false,
+              "name": "arrival_completeness",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Detector confidence for this capture, [0,1], where supplied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when the view of the position was blocked at capture (CV platforms).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_occluded",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Fraction of the expected extent for this position actually observed in this capture, [0,1]. Matters most for mobile sweeps with partial coverage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_ratio",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Monotonic per grain key. CV pipelines re-infer past captures after model retrains; this fact is restatable, not append-only.",
+              "enum_values": [],
+              "fk": false,
+              "name": "restatement_version",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "When this version of the row was written (UTC). NULL for the first version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "restated_at_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Pointer to raw capture evidence (image crops, weight event stream) in Bronze, outside ORDM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the observation arrived in the lakehouse (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Connected Store Signals restatable positional shelf-state fact at shelf-position zone \u00d7 product \u00d7 capture instant \u00d7 device grain. Outside the sensor_report_interval envelope by design (draft ADR-A / ADR 0036).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "shelf_state_observation",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
               "name": "store_zone_sk",
               "pii": false,
               "pk": true,
@@ -29232,7 +31468,7 @@
               "name": "report_type",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "",
@@ -29241,7 +31477,7 @@
               "name": "aggregation_level",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "",
@@ -29340,7 +31576,7 @@
               "name": "observations_expected",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "",
@@ -29358,7 +31594,7 @@
               "name": "missing_observation_rate",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
               "comment": "",
@@ -29367,7 +31603,7 @@
               "name": "avg_uptime_ratio",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
               "comment": "",
@@ -29376,7 +31612,7 @@
               "name": "avg_coverage_ratio",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
               "comment": "Count of intervals whose measurement was valid. Retained with invalid_intervals so valid-interval share can be re-aggregated from summed components.",
@@ -29403,7 +31639,7 @@
               "name": "invalid_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "",
@@ -29412,7 +31648,7 @@
               "name": "imputed_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Intervals with a MEASURED zero, as distinct from an absent row. Most vendors emit no row for either a zero-traffic interval or an offline sensor, which makes the two indistinguishable without this.",
@@ -29421,7 +31657,7 @@
               "name": "observed_zero_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Intervals that hit the hardware detection ceiling. A capped peak is NOT an exact peak.",
@@ -29430,7 +31666,7 @@
               "name": "capped_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Intervals that landed after their window closed. These feeds are NOT append-only; vendors document data arriving hours or days late.",
@@ -29457,7 +31693,7 @@
               "name": "bad_quality_message_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "",
@@ -29466,7 +31702,7 @@
               "name": "max_restatement_version",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
               "comment": "",
@@ -29529,7 +31765,7 @@
               "name": "session_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "TRUE when more than one source session appears in the device-day.",
@@ -29556,7 +31792,7 @@
               "name": "sequence_gap_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Duplicate source-message deliveries, summed independently from sequence gaps.",
@@ -29565,7 +31801,7 @@
               "name": "duplicate_delivery_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "",
@@ -30604,6 +32840,936 @@
         {
           "columns": [
             {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "oos_episode_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_recovery_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_ongoing",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_duration_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_oos_observed_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "supporting_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "supporting_device_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "candidate_reason",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "candidate_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_quality_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "evidence_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "book_units_eod_at_start",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_phantom_stock_candidate",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per observed out-of-stock EPISODE (store \u00d7 position \u00d7 product \u00d7 episode start): a maximal run of consecutive usable out_of_stock observations, closed by the next usable non-OOS observation (recovery) or ongoing (recovery NULL).",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_observed_oos_episodes",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_unobserved",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_known",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_unknown",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_available_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_low_stock_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_oos_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_misplaced_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_oos_any_time",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_known_oos_any_time",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "osa_pct_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "osa_pct_intraday_floor",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_state_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 category.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_osa_daily_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_expected",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_observed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_unobserved",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_known",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_unknown",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_state_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_facings_total",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_facings_total",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "presence_evaluable",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "presence_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "presence_compliance_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "position_evaluable",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "position_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "position_compliance_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "facing_evaluable",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "facing_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "facing_compliance_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_tag_evaluable",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_tag_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_tag_compliance_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fully_evaluable_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fully_compliant_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "overall_compliance_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "bmv_allocated_facings",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_allocation_divergent",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 product (SKU-level compliance detail).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_planogram_compliance_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_observed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_observations",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "ack_observations",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "cv_observations",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "audit_observations",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_evaluable",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_matched_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_mismatched_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_match_rate_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_overcharging_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_undercharging_eod",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_mismatch_abs_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_mismatch_abs_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_correction_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "correction_hours_total",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "labels_corrected",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_open_mismatch_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sync_latency_p50_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sync_latency_p95_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sync_latency_max_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 displayed currency.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_price_accuracy_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "linked_shipment supports over/short verification; unlinked_window_evidence is evidence only and is never guessed onto a shipment.",
               "enum_values": [],
               "fk": false,
@@ -30839,6 +34005,609 @@
           "layer": "gold",
           "materialized": false,
           "name": "gold_rfid_oos_candidates",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "share_of_shelf_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 category \u00d7 brand at the latest observed state.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_share_of_shelf_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_mobile_platform",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "zone_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_capture_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_unit_count",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_weight_grams",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "pick_count_since_prior",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "put_count_since_prior",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_facing_threshold",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_gap_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_misplaced_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_price_tag_mismatch_detected",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "measurement_validity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "confidence_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_ratio",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_usable",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "shelf_position_assignment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "expected_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_facing_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "assignment_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_presence_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_position_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_facing_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_price_tag_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_window_minutes",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_age_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_stale",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per shelf-position zone \u00d7 product \u2014 the LATEST capture, always.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_shelf_state_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "known_positions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "positions_oos",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_units_on_shelf",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "book_units_eod",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "absolute_unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_phantom_stock",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_over_book",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 product \u00d7 trading_date with both observed shelf evidence and a same-date inventory snapshot.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_shelf_vs_system_variance_daily",
           "role": "gold",
           "scd2": false
         },
@@ -33341,10 +37110,25 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "equipment",
+            "inventory",
+            "logistics",
+            "product",
+            "store"
+          ],
           "name": "Smart Shelf",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_shelf_state_current",
+            "gold_osa_daily_current",
+            "gold_planogram_compliance_current",
+            "gold_share_of_shelf_current",
+            "gold_price_accuracy_current",
+            "gold_observed_oos_episodes",
+            "gold_shelf_vs_system_variance_daily",
+            "gold_css_device_health"
+          ]
         }
       ]
     },

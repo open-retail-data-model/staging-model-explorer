@@ -428,6 +428,1159 @@ schema:
     query: "SELECT * FROM connected_store_signals.automation_action\nWHERE (target_entity_type = 'actuator'\
       \ AND actuator_capability_sk IS NULL)\n   OR (COALESCE(target_entity_type, 'none') <> 'actuator'\
       \ AND actuator_capability_sk IS NOT NULL)"
+- name: esl_label
+  physicalName: connected_store_signals.esl_label
+  physicalType: table
+  description: 'Connected Store Signals ESL endpoint registry (SCD2): display capability and gateway homing
+    for electronic shelf labels. Displayed state lives in esl_price_observation; no actuation surface
+    (draft ADR-C).'
+  tags:
+  - master
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: esl_label_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: esl_label_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable label endpoint identifier (vendor serial or platform label id, vendor-neutral
+      form).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect when this version was written.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the gateway/access-point device version this label is homed to (sensor_device.device_type
+      = esl_gateway).
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable gateway device business key.
+  - name: display_technology
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Display hardware class. Allowed values: eink_mono, eink_multicolor, lcd, segment.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: eink_mono, eink_multicolor, lcd, segment.'
+  - name: display_model
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Vendor-neutral model designation for the endpoint hardware.
+  - name: display_size_inches
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Diagonal display size in inches.
+  - name: battery_life_class
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Expected battery lifetime class from the vendor specification. Allowed values: under_3y,
+      y3_to_5, y5_to_10, over_10y. Battery LEVEL is telemetry, not registry.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: under_3y, y3_to_5, y5_to_10, over_10y.'
+  - name: is_nfc_capable
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the endpoint carries an NFC touchpoint. Shopper NFC interactions are out of
+      Smart Shelf scope (interaction domain).
+  - name: is_qr_capable
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the endpoint can render QR / GS1 Digital Link codes (Sunrise 2027 estate).
+  - name: label_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Allowed values: active, inactive, faulty, retired.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, inactive, faulty, retired.'
+  - name: commissioned_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: When the endpoint entered service.
+  - name: decommissioned_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: When the endpoint left service. NULL while in service.
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective.'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: esll_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_grain_unique
+    query: SELECT esl_label_id, effective_from_date, COUNT(*) AS n FROM connected_store_signals.esl_label
+      GROUP BY esl_label_id, effective_from_date HAVING COUNT(*) > 1
+  - name: esll_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_keys_not_null
+    query: SELECT * FROM connected_store_signals.esl_label WHERE esl_label_sk IS NULL OR esl_label_id
+      IS NULL OR store_id IS NULL OR sensor_device_id IS NULL OR effective_from_date IS NULL OR is_current
+      IS NULL
+  - name: esll_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_single_current
+    query: SELECT esl_label_id, COUNT(*) AS n FROM connected_store_signals.esl_label WHERE is_current
+      = TRUE GROUP BY esl_label_id HAVING COUNT(*) > 1
+  - name: esll_scd2_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_scd2_consistent
+    query: "SELECT * FROM connected_store_signals.esl_label\nWHERE (is_current = TRUE AND effective_to_date\
+      \ IS NOT NULL)\n   OR (is_current = FALSE AND effective_to_date IS NULL)\n   OR (effective_to_date\
+      \ IS NOT NULL AND effective_to_date <= effective_from_date)"
+  - name: esll_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_store_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.esl_label l LEFT JOIN store.store s ON l.store_sk =
+      s.store_sk WHERE l.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: esll_gateway_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_gateway_fk_orphan
+    query: SELECT l.* FROM connected_store_signals.esl_label l LEFT JOIN connected_store_signals.sensor_device
+      d ON l.sensor_device_sk = d.sensor_device_sk WHERE l.sensor_device_sk IS NOT NULL AND d.sensor_device_sk
+      IS NULL
+  - name: esll_reference_key_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_reference_key_agreement
+    query: "SELECT l.esl_label_id\nFROM connected_store_signals.esl_label l\nJOIN store.store s ON l.store_sk\
+      \ = s.store_sk\nJOIN connected_store_signals.sensor_device d ON l.sensor_device_sk = d.sensor_device_sk\n\
+      WHERE l.store_id <> s.store_id\n   OR l.sensor_device_id <> d.sensor_device_id"
+  - name: esll_gateway_is_esl_gateway
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esll_gateway_is_esl_gateway
+    query: 'SELECT l.esl_label_id, d.sensor_device_id, d.device_type
+
+      FROM connected_store_signals.esl_label l
+
+      JOIN connected_store_signals.sensor_device d ON l.sensor_device_sk = d.sensor_device_sk
+
+      WHERE d.device_type <> ''esl_gateway'''
+- name: esl_label_assignment
+  physicalName: connected_store_signals.esl_label_assignment
+  physicalType: table
+  description: 'Connected Store Signals ESL binding lifecycle (SCD2): label × product × shelf-position
+    pairing that makes a displayed price attributable. At most one current binding per label (DQ-enforced).'
+  tags:
+  - association
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: esl_label_assignment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: esl_label_assignment_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable binding key: esl_label_id|product_id|store_zone_id. Re-pairing the same triple
+      resumes the same durable identity with a new version.'
+  - name: esl_label_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the label endpoint version bound.
+    relationships:
+    - to: esl_label.esl_label_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: esl_label_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable label endpoint identifier.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the product version in effect when this version was written.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable product business key this label displays.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect when this version was written.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the shelf-position zone version where the bound label is placed.
+    relationships:
+    - to: store_zone.store_zone_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable shelf-position zone id of the label placement.
+  - name: encoded_gtin
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: The GTIN as ENCODED at the shelf edge for this binding — a snapshot of what the label
+      carries, not an identity authority. Core product.gtin remains authoritative; a warn-severity check
+      surfaces disagreement, because a wrong encoding is exactly the shelf-edge defect this layer exists
+      to catch (Sunrise 2027 join key).
+  - name: encoded_digital_link_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: The GS1 Digital Link URI as RENDERED by the label where qr_capable — shelf-edge snapshot,
+      same authority rule as encoded_gtin (Sunrise 2027 lead syntax).
+  - name: binding_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'How the binding was made. Allowed values: platform, manual.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: platform, manual.'
+  - name: is_binding_verified
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the pairing was verified after assignment (scan-back or platform verification
+      workflow).
+  - name: binding_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Allowed values: active, suspended, retired.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, suspended, retired.'
+  - name: valid_from_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Inclusive UTC instant this binding version took effect. The version grain key.
+  - name: valid_to_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Exclusive UTC instant this binding stopped applying; NULL for the current version.
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective. Derived: CAST(valid_from_ts
+      AS DATE).'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version. Derived from valid_to_ts.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: esla_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_grain_unique
+    query: SELECT esl_label_assignment_id, valid_from_ts, COUNT(*) AS n FROM connected_store_signals.esl_label_assignment
+      GROUP BY esl_label_assignment_id, valid_from_ts HAVING COUNT(*) > 1
+  - name: esla_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_keys_not_null
+    query: SELECT * FROM connected_store_signals.esl_label_assignment WHERE esl_label_assignment_sk IS
+      NULL OR esl_label_assignment_id IS NULL OR esl_label_id IS NULL OR product_id IS NULL OR store_id
+      IS NULL OR store_zone_id IS NULL OR valid_from_ts IS NULL OR effective_from_date IS NULL OR is_current
+      IS NULL
+  - name: esla_dates_derive_from_ts
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: esla_dates_derive_from_ts
+    query: "SELECT * FROM connected_store_signals.esl_label_assignment\nWHERE effective_from_date <> CAST(valid_from_ts\
+      \ AS DATE)\n   OR (valid_to_ts IS NULL AND effective_to_date IS NOT NULL)\n   OR (valid_to_ts IS\
+      \ NOT NULL AND\n       (effective_to_date IS NULL OR effective_to_date <> CAST(valid_to_ts AS DATE)))"
+  - name: esla_scd2_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_scd2_consistent
+    query: "SELECT * FROM connected_store_signals.esl_label_assignment\nWHERE (is_current = TRUE AND (valid_to_ts\
+      \ IS NOT NULL OR effective_to_date IS NOT NULL))\n   OR (is_current = FALSE AND (valid_to_ts IS\
+      \ NULL OR effective_to_date IS NULL))\n   OR (valid_to_ts IS NOT NULL AND valid_to_ts <= valid_from_ts)"
+  - name: esla_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_single_current
+    query: SELECT esl_label_assignment_id, COUNT(*) AS n FROM connected_store_signals.esl_label_assignment
+      WHERE is_current = TRUE GROUP BY esl_label_assignment_id HAVING COUNT(*) > 1
+  - name: esla_one_current_per_label
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_one_current_per_label
+    query: SELECT esl_label_id, COUNT(*) AS n FROM connected_store_signals.esl_label_assignment WHERE
+      is_current = TRUE GROUP BY esl_label_id HAVING COUNT(*) > 1
+  - name: esla_current_chain_resolves
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_current_chain_resolves
+    query: "SELECT a.esl_label_assignment_id, a.esl_label_id, a.store_zone_id, a.product_id\nFROM connected_store_signals.esl_label_assignment\
+      \ a\nLEFT JOIN connected_store_signals.esl_label l\n  ON a.esl_label_id = l.esl_label_id AND l.is_current\
+      \ = TRUE\nLEFT JOIN connected_store_signals.shelf_position_assignment s\n  ON a.store_id = s.store_id\n\
+      \ AND a.store_zone_id = s.store_zone_id\n AND a.product_id = s.product_id\n AND s.is_current = TRUE\n\
+      \ AND s.assignment_status = 'active'\nWHERE a.is_current = TRUE\n  AND a.binding_status = 'active'\n\
+      \  AND (l.esl_label_id IS NULL OR l.store_id <> a.store_id\n       OR s.shelf_position_assignment_id\
+      \ IS NULL)"
+  - name: esla_nonoverlapping_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_nonoverlapping_validity
+    query: "SELECT a.esl_label_id, a.esl_label_assignment_sk, b.esl_label_assignment_sk AS overlapping_sk\n\
+      FROM connected_store_signals.esl_label_assignment a\nJOIN connected_store_signals.esl_label_assignment\
+      \ b\n  ON a.esl_label_id = b.esl_label_id\n AND a.esl_label_assignment_sk < b.esl_label_assignment_sk\n\
+      \ AND a.valid_from_ts < COALESCE(b.valid_to_ts, TIMESTAMP'9999-12-31 00:00:00')\n AND b.valid_from_ts\
+      \ < COALESCE(a.valid_to_ts, TIMESTAMP'9999-12-31 00:00:00')"
+  - name: esla_label_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_label_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.esl_label_assignment a LEFT JOIN connected_store_signals.esl_label
+      l ON a.esl_label_sk = l.esl_label_sk WHERE a.esl_label_sk IS NOT NULL AND l.esl_label_sk IS NULL
+  - name: esla_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_product_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.esl_label_assignment a LEFT JOIN product.product p
+      ON a.product_sk = p.product_sk WHERE a.product_sk IS NOT NULL AND p.product_sk IS NULL
+  - name: esla_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_store_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.esl_label_assignment a LEFT JOIN store.store s ON a.store_sk
+      = s.store_sk WHERE a.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: esla_zone_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_zone_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.esl_label_assignment a LEFT JOIN connected_store_signals.store_zone
+      z ON a.store_zone_sk = z.store_zone_sk WHERE a.store_zone_sk IS NOT NULL AND z.store_zone_sk IS
+      NULL
+  - name: esla_reference_key_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_reference_key_agreement
+    query: "SELECT a.esl_label_assignment_id\nFROM connected_store_signals.esl_label_assignment a\nJOIN\
+      \ connected_store_signals.esl_label l ON a.esl_label_sk = l.esl_label_sk\nJOIN product.product p\
+      \ ON a.product_sk = p.product_sk\nJOIN store.store s ON a.store_sk = s.store_sk\nJOIN connected_store_signals.store_zone\
+      \ z ON a.store_zone_sk = z.store_zone_sk\nWHERE a.esl_label_id <> l.esl_label_id\n   OR a.product_id\
+      \ <> p.product_id\n   OR a.store_id <> s.store_id\n   OR a.store_zone_id <> z.store_zone_id"
+  - name: esla_zone_is_shelf_position
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: esla_zone_is_shelf_position
+    query: "SELECT a.esl_label_assignment_id, z.store_zone_id, z.zone_type\nFROM connected_store_signals.esl_label_assignment\
+      \ a\nJOIN connected_store_signals.store_zone z\n  ON a.store_zone_sk = z.store_zone_sk\nWHERE z.zone_type\
+      \ <> 'shelf_position'"
+  - name: esla_encoded_gtin_agrees
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: esla_encoded_gtin_agrees
+    query: "SELECT a.esl_label_assignment_id, a.encoded_gtin, p.gtin AS product_gtin\nFROM connected_store_signals.esl_label_assignment\
+      \ a\nJOIN product.product p\n  ON a.product_sk = p.product_sk\nWHERE a.encoded_gtin IS NOT NULL\n\
+      \  AND p.gtin IS NOT NULL\n  AND a.encoded_gtin <> p.gtin"
+- name: esl_price_observation
+  physicalName: connected_store_signals.esl_price_observation
+  physicalType: table
+  description: 'Connected Store Signals append-only price-display audit fact: what each ESL displayed,
+    when, by which evidence path, against the captured price of record. Observation-only ESL layer (draft
+    ADR-C, extending ADR 0030).'
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: esl_price_observation_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: 'Surrogate join key: xxhash64(esl_price_observation_id). The durable id is authoritative
+      and collision-guarded.'
+  - name: esl_price_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable grain key: esl_label_id|observation_source|source_observation_id. Source-event
+      identity, not timestamp-to-the-second: a re-delivered source event deduplicates instead of duplicating,
+      and ack/CV/audit observing the same label in the same second cannot collide.'
+  - name: source_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Source-system event identity: platform ack/event id, CV frame/inference id, or audit
+      record id. Part of the durable grain key.'
+  - name: esl_label_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the label endpoint version in effect at observation time.
+    relationships:
+    - to: esl_label.esl_label_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: esl_label_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable label endpoint identifier.
+  - name: esl_label_assignment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the binding version current at observation time. NULL when the label was observed
+      unbound.
+    relationships:
+    - to: esl_label_assignment.esl_label_assignment_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: esl_label_assignment_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable binding key captured at observation time (SCD2-safe attribution, ADR 0025). NULL
+      when observed unbound.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Product version resolved through the binding at write. NULL when observed unbound.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable product business key via the binding. NULL when observed unbound.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect at observation time.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the shelf-position zone version of the label placement at observation time.
+    relationships:
+    - to: store_zone.store_zone_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable shelf-position zone id via the binding. NULL when observed unbound.
+  - name: observed_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: 'Observation instant as UTC: ack receipt, CV capture, or audit scan time.'
+  - name: store_timezone
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: IANA store timezone used to derive local business fields.
+  - name: utc_offset_minutes
+    logicalType: integer
+    physicalType: SMALLINT
+    required: true
+    description: Store UTC offset in minutes at observed_at_ts.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of observed_at_ts, persisted on the ledger itself so no join loss can strip
+      store-local date context. Logical join to fiscal_calendar.date_key.
+  - name: hour_of_day
+    logicalType: integer
+    physicalType: TINYINT
+    required: false
+    description: Store-local observation hour, 0 through 23.
+  - name: observation_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'How the displayed state became known: platform_ack, shelf_cv, manual_audit. The three
+      paths are independent evidence; disagreement between them is signal.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: platform_ack, shelf_cv, manual_audit.'
+  - name: displayed_price
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: Unit-grain price shown on the label at observation, in the store reporting currency.
+      NULL only when the source could observe the label but not read a price (e.g. occluded CV).
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((displayed_price IS NULL OR displayed_price >= 0) AND (displayed_unit_price
+        IS NULL OR displayed_unit_price >= 0) AND (price_of_record IS NULL OR price_of_record >= 0) AND
+        (display_sync_latency_seconds IS NULL OR display_sync_latency_seconds >= 0)).
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (displayed_price IS NULL OR price_of_record IS NULL OR (displayed_currency_code
+        IS NOT NULL AND price_of_record_currency_code IS NOT NULL AND displayed_currency_code = price_of_record_currency_code)).
+  - name: displayed_currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: ISO 4217 currency of the displayed price; must match the store reporting currency (single-currency
+      check).
+  - name: displayed_unit_price
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: 'Unit price shown (per uom), where the label displays one. NIST HB44 random-weight awareness:
+      unit-priced items are priced from scale PLU memory, not the POS database.'
+  - name: unit_price_uom
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: UN/CEFACT unit code for the displayed unit price (e.g. KGM, LBR).
+  - name: displayed_promo_indicator
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the label showed a promotional presentation AS DISPLAYED. Records the display,
+      not the promotion validity.
+  - name: displayed_disclosure_indicator
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the label showed a pricing-disclosure notice AS DISPLAYED (NY GBL §349-a wording;
+      CT 2026 mandated label text). Observed display state, not a compliance conclusion.
+  - name: displayed_disclosure_text
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: The disclosure wording as displayed, where the source captures text. Nullable; an indicator
+      plus Bronze evidence may stand in.
+  - name: price_of_record
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: The STORE-SCOPED unit-grain authoritative price in effect at observation time, captured
+      onto the row (degenerate copy — audit evidence must stand alone). Core product_price is product
+      × price_type × DATE with no store/channel scope, so it is a legal source only where the adopter
+      prices chain-wide by day; store/zone-priced or intraday-priced estates capture from their pricing
+      platform of record. This fact READS pricing; it never feeds it (ADR 0030).
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((price_of_record IS NULL AND price_of_record_currency_code IS NULL) OR (price_of_record
+        IS NOT NULL AND price_of_record_currency_code IS NOT NULL)).
+  - name: price_of_record_currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'ISO 4217 currency of the captured price of record. MUST equal displayed_currency_code
+      and the store reporting currency: price_of_record_source may name a non-store-reporting authority
+      (pricing_platform, pos_system) whose price arrives in another currency, so without this column is_price_match
+      and the over/undercharge magnitudes would silently compare across currencies. Enforced row-wise
+      by eslp_price_of_record_currency and folded into the single-reporting-currency contract (eslp_single_currency).'
+  - name: price_of_record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Which authority the captured price of record came from: pricing_platform, product_price,
+      pos_system, scale_plu, manual. NIST HB44: random-weight items price from scale PLU memory, not the
+      POS database — "the price" has no single origin (ADR 0030 consequence), so the source is part of
+      the evidence.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: pricing_platform, product_price, pos_system, scale_plu, manual.'
+  - name: price_of_record_price_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Price type of the captured record where the source distinguishes one (e.g. list, promotional).
+      Vocabulary follows the source system; core product_price uses list/cost/promotional/contract.
+  - name: price_of_record_effective_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: UTC instant the captured price of record became effective IN THE SOURCE AUTHORITY. Date-grained
+      sources (core product_price) yield a midnight instant; intraday-capable platforms yield the real
+      one — display_sync_latency_seconds is only as good as this timestamp.
+  - name: is_price_match
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: 'TRUE when displayed_price equals the captured price of record. NULL when either side
+      is unobserved. Comparison is same-currency by contract: price_of_record_currency_code = displayed_currency_code
+      (eslp_price_of_record_currency).'
+  - name: display_sync_latency_seconds
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Seconds from price-of-record effectiveness to this ack observation. platform_ack rows
+      only; NULL otherwise.
+  - name: sensing_derived_input_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'ADR 0030 §Decision.2 invariant, schema-visible: always FALSE (Delta CHECK). No displayed
+      price may claim a sensing-derived input; any attempt to violate is an explicit, reviewable act.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (sensing_derived_input_flag = FALSE).
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pointer to source evidence in Bronze (ack payload, CV crop, audit record), outside ORDM.
+  - name: ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the observation arrived in the lakehouse (UTC).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC).
+  quality:
+  - name: eslp_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_grain_unique
+    query: SELECT esl_price_observation_id, COUNT(*) AS n FROM connected_store_signals.esl_price_observation
+      GROUP BY esl_price_observation_id HAVING COUNT(*) > 1
+  - name: eslp_source_identity_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_source_identity_unique
+    query: 'SELECT esl_label_id, observation_source, source_observation_id, COUNT(*) AS n
+
+      FROM connected_store_signals.esl_price_observation
+
+      GROUP BY esl_label_id, observation_source, source_observation_id
+
+      HAVING COUNT(*) > 1'
+  - name: eslp_sk_collision
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_sk_collision
+    query: 'SELECT esl_price_observation_sk, COUNT(DISTINCT esl_price_observation_id) AS durable_id_count
+
+      FROM connected_store_signals.esl_price_observation
+
+      GROUP BY esl_price_observation_sk
+
+      HAVING COUNT(DISTINCT esl_price_observation_id) > 1'
+  - name: eslp_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_keys_not_null
+    query: SELECT * FROM connected_store_signals.esl_price_observation WHERE esl_price_observation_sk
+      IS NULL OR esl_price_observation_id IS NULL OR source_observation_id IS NULL OR esl_label_id IS
+      NULL OR store_id IS NULL OR observed_at_ts IS NULL OR utc_offset_minutes IS NULL OR trading_date
+      IS NULL OR observation_source IS NULL OR sensing_derived_input_flag IS NULL
+  - name: eslp_binding_reference_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_binding_reference_consistent
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE (esl_label_assignment_sk\
+      \ IS NULL AND esl_label_assignment_id IS NOT NULL)\n   OR (esl_label_assignment_sk IS NOT NULL AND\
+      \ esl_label_assignment_id IS NULL)\n   OR (esl_label_assignment_sk IS NULL AND\n       (product_sk\
+      \ IS NOT NULL OR product_id IS NOT NULL\n        OR store_zone_sk IS NOT NULL OR store_zone_id IS\
+      \ NOT NULL))\n   OR (esl_label_assignment_sk IS NOT NULL AND\n       (product_sk IS NULL OR product_id\
+      \ IS NULL\n        OR store_zone_sk IS NULL OR store_zone_id IS NULL))"
+  - name: eslp_record_source_present
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_record_source_present
+    query: 'SELECT * FROM connected_store_signals.esl_price_observation
+
+      WHERE price_of_record IS NOT NULL AND price_of_record_source IS NULL'
+  - name: eslp_record_source_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_record_source_domain
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE price_of_record_source\
+      \ IS NOT NULL\n  AND price_of_record_source NOT IN ('pricing_platform', 'product_price', 'pos_system',\
+      \ 'scale_plu', 'manual')"
+  - name: eslp_sensing_flag_false
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_sensing_flag_false
+    query: SELECT * FROM connected_store_signals.esl_price_observation WHERE sensing_derived_input_flag
+      <> FALSE
+  - name: eslp_label_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_label_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.esl_price_observation o LEFT JOIN connected_store_signals.esl_label
+      l ON o.esl_label_sk = l.esl_label_sk WHERE o.esl_label_sk IS NOT NULL AND l.esl_label_sk IS NULL
+  - name: eslp_assignment_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_assignment_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.esl_price_observation o LEFT JOIN connected_store_signals.esl_label_assignment
+      a ON o.esl_label_assignment_sk = a.esl_label_assignment_sk WHERE o.esl_label_assignment_sk IS NOT
+      NULL AND a.esl_label_assignment_sk IS NULL
+  - name: eslp_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_product_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.esl_price_observation o LEFT JOIN product.product p
+      ON o.product_sk = p.product_sk WHERE o.product_sk IS NOT NULL AND p.product_sk IS NULL
+  - name: eslp_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_store_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.esl_price_observation o LEFT JOIN store.store s ON
+      o.store_sk = s.store_sk WHERE o.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: eslp_zone_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_zone_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.esl_price_observation o LEFT JOIN connected_store_signals.store_zone
+      z ON o.store_zone_sk = z.store_zone_sk WHERE o.store_zone_sk IS NOT NULL AND z.store_zone_sk IS
+      NULL
+  - name: eslp_reference_key_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_reference_key_agreement
+    query: "SELECT o.esl_price_observation_id\nFROM connected_store_signals.esl_price_observation o\n\
+      JOIN connected_store_signals.esl_label l ON o.esl_label_sk = l.esl_label_sk\nJOIN store.store s\
+      \ ON o.store_sk = s.store_sk\nLEFT JOIN connected_store_signals.esl_label_assignment a\n  ON o.esl_label_assignment_sk\
+      \ = a.esl_label_assignment_sk\nLEFT JOIN product.product p ON o.product_sk = p.product_sk\nLEFT\
+      \ JOIN connected_store_signals.store_zone z ON o.store_zone_sk = z.store_zone_sk\nWHERE o.esl_label_id\
+      \ <> l.esl_label_id\n   OR o.store_id <> s.store_id\n   OR (o.esl_label_assignment_sk IS NOT NULL\n\
+      \       AND o.esl_label_assignment_id <> a.esl_label_assignment_id)\n   OR (o.product_sk IS NOT\
+      \ NULL AND o.product_id <> p.product_id)\n   OR (o.store_zone_sk IS NOT NULL AND o.store_zone_id\
+      \ <> z.store_zone_id)"
+  - name: eslp_match_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_match_consistency
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE (is_price_match IS NOT\
+      \ NULL\n       AND (displayed_price IS NULL\n            OR price_of_record IS NULL\n          \
+      \  OR displayed_currency_code IS NULL\n            OR price_of_record_currency_code IS NULL\n  \
+      \          OR displayed_currency_code <> price_of_record_currency_code))\n   OR (is_price_match\
+      \ = TRUE  AND displayed_price <> price_of_record)\n   OR (is_price_match = FALSE AND displayed_price\
+      \ = price_of_record)"
+  - name: eslp_price_of_record_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_price_of_record_currency
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE (price_of_record IS NULL\
+      \ AND price_of_record_currency_code IS NOT NULL)\n   OR (price_of_record IS NOT NULL AND price_of_record_currency_code\
+      \ IS NULL)\n   OR (displayed_price IS NOT NULL AND price_of_record IS NOT NULL\n       AND (displayed_currency_code\
+      \ IS NULL\n            OR price_of_record_currency_code IS NULL\n            OR displayed_currency_code\
+      \ <> price_of_record_currency_code))"
+  - name: eslp_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_single_currency
+    query: "SELECT 'esl_price_observation' AS table_name, COUNT(DISTINCT currency_code) AS currencies\n\
+      FROM (\n  SELECT displayed_currency_code AS currency_code\n  FROM connected_store_signals.esl_price_observation\
+      \ WHERE displayed_price IS NOT NULL\n  UNION ALL\n  SELECT price_of_record_currency_code AS currency_code\n\
+      \  FROM connected_store_signals.esl_price_observation WHERE price_of_record IS NOT NULL\n)\nHAVING\
+      \ COUNT(DISTINCT currency_code) > 1\n    OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) >\
+      \ 0"
+  - name: eslp_sync_latency_ack_only
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_sync_latency_ack_only
+    query: 'SELECT * FROM connected_store_signals.esl_price_observation
+
+      WHERE display_sync_latency_seconds IS NOT NULL AND observation_source <> ''platform_ack'''
+  - name: eslp_sync_latency_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_sync_latency_agreement
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE display_sync_latency_seconds\
+      \ IS NOT NULL\n  AND (price_of_record_effective_ts IS NULL\n       OR display_sync_latency_seconds\
+      \ <>\n          unix_timestamp(observed_at_ts) - unix_timestamp(price_of_record_effective_ts))"
+  - name: eslp_disclosure_text_implies_indicator
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: eslp_disclosure_text_implies_indicator
+    query: 'SELECT * FROM connected_store_signals.esl_price_observation
+
+      WHERE displayed_disclosure_text IS NOT NULL AND COALESCE(displayed_disclosure_indicator, FALSE)
+      = FALSE'
+  - name: eslp_time_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: eslp_time_agreement
+    query: "SELECT * FROM connected_store_signals.esl_price_observation\nWHERE utc_offset_minutes IS NOT\
+      \ NULL\n  AND trading_date <> date_from_unix_date(\n        CAST(FLOOR((unix_timestamp(observed_at_ts)\
+      \ + utc_offset_minutes * 60) / 86400) AS INT))"
+  - name: eslp_binding_denorm_consistent
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: eslp_binding_denorm_consistent
+    query: "SELECT o.esl_price_observation_id, o.product_id AS observed_product, a.product_id AS binding_product,\n\
+      \       o.store_zone_id AS observed_zone, a.store_zone_id AS binding_zone\nFROM connected_store_signals.esl_price_observation\
+      \ o\nJOIN connected_store_signals.esl_label_assignment a\n  ON o.esl_label_assignment_sk = a.esl_label_assignment_sk\n\
+      WHERE o.esl_label_id <> a.esl_label_id\n   OR o.store_id <> a.store_id\n   OR o.product_id <> a.product_id\n\
+      \   OR o.store_zone_id <> a.store_zone_id\n   OR o.observed_at_ts < a.valid_from_ts\n   OR (a.valid_to_ts\
+      \ IS NOT NULL AND o.observed_at_ts >= a.valid_to_ts)"
+  - name: eslp_ack_cv_disagreement
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: eslp_ack_cv_disagreement
+    query: "SELECT COUNT(*) AS disagreeing_label_days\nFROM (\n  SELECT esl_label_id, trading_date\n \
+      \ FROM connected_store_signals.esl_price_observation\n  WHERE observation_source IN ('platform_ack',\
+      \ 'shelf_cv') AND displayed_price IS NOT NULL\n  GROUP BY esl_label_id, trading_date\n  HAVING COUNT(DISTINCT\
+      \ observation_source) = 2 AND COUNT(DISTINCT displayed_price) > 1\n)"
 - name: evaluation_rule
   physicalName: connected_store_signals.evaluation_rule
   physicalType: table
@@ -3799,6 +4952,939 @@ schema:
       \ = p.sensing_disclosure_policy_id\n AND f.trading_date >= p.effective_from_date\n AND (p.effective_to_date\
       \ IS NULL OR f.trading_date < p.effective_to_date)\nWHERE f.report_type = 'gs1:Count'\n  AND p.sensing_disclosure_policy_sk\
       \ IS NULL"
+- name: shelf_position_assignment
+  physicalName: connected_store_signals.shelf_position_assignment
+  physicalType: table
+  description: 'Connected Store Signals slot-level expected shelf state (SCD2): product, expected and
+    minimum facings per shelf-position zone. Execution contract for Smart Shelf compliance; distinct from
+    BMV planogram allocation intent (ADR-B).'
+  tags:
+  - association
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: shelf_position_assignment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key. Unique per SCD2 version.
+  - name: shelf_position_assignment_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable natural key: store_zone_id|product_id. One current version per shelf-position
+      zone and product.'
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect when this version was written.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the shelf-position zone version (store_zone.zone_type = shelf_position).
+    relationships:
+    - to: store_zone.store_zone_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable shelf-position zone id. The zone carries the aisle/bay ancestry via hierarchy_path.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the product version in effect when this version was written.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable product business key expected at this position.
+  - name: expected_facing_count
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Facings this product should present at this position per the expected state.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((expected_facing_count IS NULL OR expected_facing_count >= 0) AND (min_facing_count
+        IS NULL OR min_facing_count >= 0) AND (min_facing_count IS NULL OR expected_facing_count IS NULL
+        OR min_facing_count <= expected_facing_count)).
+  - name: min_facing_count
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: 'Low-stock threshold: observed facings below this and above zero classify as low_stock
+      at evaluation time.'
+  - name: facing_sequence
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Optional left-to-right sequence of this product within its bay, where the source system
+      provides it.
+  - name: assignment_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Provenance of the expected state. Allowed values: planogram, manual, vendor. Adopters
+      without slot-level planograms operate on manual or vendor.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: planogram, manual, vendor.'
+  - name: planogram_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Logical reference to the BMV planogram business key this assignment was derived from,
+      when assignment_source = planogram. Not a FK: BMV planogram is allocation intent at a different
+      grain (ADR-B); reconciliation is read-only gold-to-gold (ADR 0024).'
+  - name: assignment_status
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Allowed values: active, suspended, retired.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: active, suspended, retired.'
+  - name: valid_from_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Inclusive UTC instant this version became the expected state. The version grain key.
+  - name: valid_to_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Exclusive UTC instant this version stopped applying; NULL for the current version.
+  - name: effective_from_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: 'SCD2: inclusive start date this version became effective. Derived: CAST(valid_from_ts
+      AS DATE).'
+  - name: effective_to_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: 'SCD2: exclusive end date; NULL for the current version. Derived from valid_to_ts.'
+  - name: is_current
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: 'SCD2: TRUE for the currently active version.'
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was created in the source system (UTC, ISO 8601).
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the record was last modified in the source system (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ssa_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_grain_unique
+    query: SELECT shelf_position_assignment_id, valid_from_ts, COUNT(*) AS n FROM connected_store_signals.shelf_position_assignment
+      GROUP BY shelf_position_assignment_id, valid_from_ts HAVING COUNT(*) > 1
+  - name: ssa_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_keys_not_null
+    query: SELECT * FROM connected_store_signals.shelf_position_assignment WHERE shelf_position_assignment_sk
+      IS NULL OR shelf_position_assignment_id IS NULL OR store_id IS NULL OR store_zone_id IS NULL OR
+      product_id IS NULL OR valid_from_ts IS NULL OR effective_from_date IS NULL OR is_current IS NULL
+  - name: ssa_nonoverlapping_validity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_nonoverlapping_validity
+    query: "SELECT a.shelf_position_assignment_id, a.shelf_position_assignment_sk, b.shelf_position_assignment_sk\
+      \ AS overlapping_sk\nFROM connected_store_signals.shelf_position_assignment a\nJOIN connected_store_signals.shelf_position_assignment\
+      \ b\n  ON a.shelf_position_assignment_id = b.shelf_position_assignment_id\n AND a.shelf_position_assignment_sk\
+      \ < b.shelf_position_assignment_sk\n AND a.valid_from_ts < COALESCE(b.valid_to_ts, TIMESTAMP'9999-12-31\
+      \ 00:00:00')\n AND b.valid_from_ts < COALESCE(a.valid_to_ts, TIMESTAMP'9999-12-31 00:00:00')"
+  - name: ssa_dates_derive_from_ts
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: ssa_dates_derive_from_ts
+    query: "SELECT * FROM connected_store_signals.shelf_position_assignment\nWHERE effective_from_date\
+      \ <> CAST(valid_from_ts AS DATE)\n   OR (valid_to_ts IS NULL AND effective_to_date IS NOT NULL)\n\
+      \   OR (valid_to_ts IS NOT NULL AND\n       (effective_to_date IS NULL OR effective_to_date <> CAST(valid_to_ts\
+      \ AS DATE)))"
+  - name: ssa_scd2_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_scd2_consistent
+    query: "SELECT * FROM connected_store_signals.shelf_position_assignment\nWHERE (is_current = TRUE\
+      \ AND (valid_to_ts IS NOT NULL OR effective_to_date IS NOT NULL))\n   OR (is_current = FALSE AND\
+      \ (valid_to_ts IS NULL OR effective_to_date IS NULL))\n   OR (valid_to_ts IS NOT NULL AND valid_to_ts\
+      \ <= valid_from_ts)"
+  - name: ssa_single_current
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_single_current
+    query: SELECT shelf_position_assignment_id, COUNT(*) AS n FROM connected_store_signals.shelf_position_assignment
+      WHERE is_current = TRUE GROUP BY shelf_position_assignment_id HAVING COUNT(*) > 1
+  - name: ssa_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_store_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.shelf_position_assignment a LEFT JOIN store.store s
+      ON a.store_sk = s.store_sk WHERE a.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: ssa_zone_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_zone_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.shelf_position_assignment a LEFT JOIN connected_store_signals.store_zone
+      z ON a.store_zone_sk = z.store_zone_sk WHERE a.store_zone_sk IS NOT NULL AND z.store_zone_sk IS
+      NULL
+  - name: ssa_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_product_fk_orphan
+    query: SELECT a.* FROM connected_store_signals.shelf_position_assignment a LEFT JOIN product.product
+      p ON a.product_sk = p.product_sk WHERE a.product_sk IS NOT NULL AND p.product_sk IS NULL
+  - name: ssa_reference_key_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_reference_key_agreement
+    query: "SELECT a.shelf_position_assignment_id\nFROM connected_store_signals.shelf_position_assignment\
+      \ a\nJOIN store.store s ON a.store_sk = s.store_sk\nJOIN connected_store_signals.store_zone z ON\
+      \ a.store_zone_sk = z.store_zone_sk\nJOIN product.product p ON a.product_sk = p.product_sk\nWHERE\
+      \ a.store_id <> s.store_id\n   OR a.store_zone_id <> z.store_zone_id\n   OR a.product_id <> p.product_id"
+  - name: ssa_zone_is_shelf_position
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_zone_is_shelf_position
+    query: "SELECT a.shelf_position_assignment_id, z.store_zone_id, z.zone_type\nFROM connected_store_signals.shelf_position_assignment\
+      \ a\nJOIN connected_store_signals.store_zone z\n  ON a.store_zone_sk = z.store_zone_sk\nWHERE z.zone_type\
+      \ <> 'shelf_position'"
+  - name: ssa_zone_has_bay_aisle_ancestry
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ssa_zone_has_bay_aisle_ancestry
+    query: "SELECT a.shelf_position_assignment_id, z.store_zone_id,\n       b.store_zone_id AS parent_zone_id,\
+      \ ai.store_zone_id AS grandparent_zone_id\nFROM connected_store_signals.shelf_position_assignment\
+      \ a\nJOIN connected_store_signals.store_zone z\n  ON a.store_zone_sk = z.store_zone_sk\nLEFT JOIN\
+      \ connected_store_signals.store_zone b\n  ON z.parent_zone_id = b.store_zone_id AND b.is_current\
+      \ = TRUE\nLEFT JOIN connected_store_signals.store_zone ai\n  ON b.parent_zone_id = ai.store_zone_id\
+      \ AND ai.is_current = TRUE\nWHERE a.is_current = TRUE\n  AND (b.store_zone_id IS NULL OR b.zone_type\
+      \ <> 'bay'\n       OR ai.store_zone_id IS NULL OR ai.zone_type <> 'aisle')"
+- name: shelf_state_observation
+  physicalName: connected_store_signals.shelf_state_observation
+  physicalType: table
+  description: Connected Store Signals restatable positional shelf-state fact at shelf-position zone ×
+    product × capture instant × device grain. Outside the sensor_report_interval envelope by design (draft
+    ADR-A / ADR 0036).
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: shelf_state_observation_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: 'Surrogate join key: xxhash64(shelf_state_observation_id). The durable id is authoritative
+      and collision-guarded.'
+  - name: shelf_state_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable grain key: store_zone_id|product_id|sensor_device_id|source_capture_id. product_id
+      uses the _ALL sentinel only for a position-level capture that cannot resolve a product.'
+  - name: source_capture_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Platform identifier for the physical capture (CV frame/inference id, weight-event window
+      id, sweep-pass segment). Groups the several product rows one capture may yield (two-row misplacement
+      model) and keeps restatement idempotent under CV re-inference.
+  - name: shelf_position_assignment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the expected-state assignment version in effect at observation time. NULL only
+      when the position had no current assignment.
+    relationships:
+    - to: shelf_position_assignment.shelf_position_assignment_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: shelf_position_assignment_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable assignment key captured at observation time, so compliance stays evaluable after
+      the assignment re-versions (ADR 0025).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the store version in effect at observation time.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key.
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the shelf-position zone version observed.
+    relationships:
+    - to: store_zone.store_zone_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable shelf-position zone id (store_zone.zone_type = shelf_position).
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Product version resolved at write. NULL when product_id carries the _ALL sentinel or
+      resolution failed.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable product business key observed or expected at this position; _ALL sentinel for
+      unresolved position-level captures.
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the capturing device version in effect at observation time.
+    relationships:
+    - to: sensor_device.sensor_device_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable capturing device business key. Provenance is part of identity: two platforms
+      may observe the same position at the same instant.'
+  - name: sensing_deployment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the governing sensing deployment version (ADR 0031).
+    relationships:
+    - to: sensing_deployment.sensing_deployment_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: connected_store_signals
+      - property: enforced
+        value: false
+  - name: sensing_deployment_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable sensing deployment business key.
+  - name: observation_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Capture or sweep-completion instant as UTC. Observations are instants, not intervals;
+      cadence gaps are measured in gold, never imputed here.
+  - name: store_timezone
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: IANA store timezone used to derive local business fields.
+  - name: utc_offset_minutes
+    logicalType: integer
+    physicalType: SMALLINT
+    required: true
+    description: Store UTC offset in minutes at observation_ts.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Business date of observation_ts. Logical join to fiscal_calendar.date_key.
+  - name: hour_of_day
+    logicalType: integer
+    physicalType: TINYINT
+    required: false
+    description: Store-local observation hour, 0 through 23.
+  - name: shelf_state
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Evaluated state at capture: in_stock, low_stock, out_of_stock, misplaced, unknown. low_stock
+      uses min_facing_threshold recorded on this row; misplaced means the product on THIS row was detected
+      at a position assigned to a different product (the captured assignment names the violated expectation);
+      unknown means the platform could not evaluate and all measures are NULL, never zero.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: in_stock, low_stock, out_of_stock, misplaced, unknown.'
+  - name: observed_facing_count
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Facings visibly presented at capture. NULL when shelf_state = unknown.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((observed_facing_count IS NULL OR observed_facing_count >= 0) AND (min_facing_threshold
+        IS NULL OR min_facing_threshold >= 0) AND (estimated_unit_count IS NULL OR estimated_unit_count
+        >= 0) AND (estimated_weight_grams IS NULL OR estimated_weight_grams >= 0) AND (pick_count_since_prior
+        IS NULL OR pick_count_since_prior >= 0) AND (put_count_since_prior IS NULL OR put_count_since_prior
+        >= 0)).
+  - name: min_facing_threshold
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: The assignment min_facing_count evaluated at write, recorded so the low_stock classification
+      stays explainable after the assignment re-versions.
+  - name: estimated_unit_count
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Weight-derived unit estimate (total weight / calibrated per-SKU unit weight). An estimate
+      carrying uncertainty, not a count; NULL for platforms without declared unit-estimation capability.
+  - name: estimated_weight_grams
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Observed net weight in grams. NULL for non-weight platforms.
+  - name: pick_count_since_prior
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Pick events since the prior capture of this position by this device. NULL for platforms
+      that cannot detect events (mirrors ftid_nondirectional_exits_null honesty). Raw events stay in Bronze
+      behind raw_data_uri.
+  - name: put_count_since_prior
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Putback events since the prior capture of this position by this device. NULL for platforms
+      that cannot detect events.
+  - name: is_gap_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the platform flagged a visible gap/void at this position.
+  - name: is_misplaced_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: 'On an expected-product row: TRUE when something else was detected sitting at this position
+      (the detected product gets its own misplaced-state row sharing this source_capture_id).'
+  - name: is_price_tag_mismatch_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when shelf CV flagged the displayed price tag against the expected one. Bridges
+      to the ESL layer; the authoritative price comparison lives in esl_price_observation.
+  - name: zone_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'How the position zone was attributed: device_placement, operator_declared, platform_localization.
+      Fixed sensors use device_placement; robot sweeps use platform_localization (RFID vocabulary reused).'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: device_placement, operator_declared, platform_localization.'
+  - name: attribution_confidence
+    logicalType: number
+    physicalType: DOUBLE
+    required: true
+    description: Confidence in assigning the capture to the stated position zone, in [0,1]. 1.0 for fixed
+      device placement.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((attribution_confidence BETWEEN 0 AND 1) AND (confidence_score IS NULL OR (confidence_score
+        BETWEEN 0 AND 1)) AND (coverage_ratio IS NULL OR (coverage_ratio BETWEEN 0 AND 1))).
+  - name: measurement_validity
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Was the sensor telling the truth. Allowed values: valid, degraded, invalid, imputed.
+      Occluded captures are never valid.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: valid, degraded, invalid, imputed.'
+  - name: arrival_completeness
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Has the data landed. Allowed values: complete, incomplete, late_arrived, precheck.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: complete, incomplete, late_arrived, precheck.'
+  - name: confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Detector confidence for this capture, [0,1], where supplied.
+  - name: is_occluded
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when the view of the position was blocked at capture (CV platforms).
+  - name: coverage_ratio
+    logicalType: number
+    physicalType: DOUBLE
+    required: false
+    description: Fraction of the expected extent for this position actually observed in this capture,
+      [0,1]. Matters most for mobile sweeps with partial coverage.
+  - name: restatement_version
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Monotonic per grain key. CV pipelines re-infer past captures after model retrains; this
+      fact is restatable, not append-only.
+  - name: restated_at_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this version of the row was written (UTC). NULL for the first version.
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pointer to raw capture evidence (image crops, weight event stream) in Bronze, outside
+      ORDM.
+  - name: ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When the observation arrived in the lakehouse (UTC).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC).
+  quality:
+  - name: sso_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_grain_unique
+    query: SELECT shelf_state_observation_id, COUNT(*) AS n FROM connected_store_signals.shelf_state_observation
+      GROUP BY shelf_state_observation_id HAVING COUNT(*) > 1
+  - name: sso_sk_collision
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_sk_collision
+    query: 'SELECT shelf_state_observation_sk, COUNT(DISTINCT shelf_state_observation_id) AS durable_id_count
+
+      FROM connected_store_signals.shelf_state_observation
+
+      GROUP BY shelf_state_observation_sk
+
+      HAVING COUNT(DISTINCT shelf_state_observation_id) > 1'
+  - name: sso_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_keys_not_null
+    query: SELECT * FROM connected_store_signals.shelf_state_observation WHERE shelf_state_observation_sk
+      IS NULL OR shelf_state_observation_id IS NULL OR source_capture_id IS NULL OR store_id IS NULL OR
+      store_zone_id IS NULL OR product_id IS NULL OR sensor_device_id IS NULL OR sensing_deployment_id
+      IS NULL OR observation_ts IS NULL OR utc_offset_minutes IS NULL OR trading_date IS NULL OR shelf_state
+      IS NULL OR zone_source IS NULL OR attribution_confidence IS NULL
+  - name: sso_assignment_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_assignment_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN connected_store_signals.shelf_position_assignment
+      a ON o.shelf_position_assignment_sk = a.shelf_position_assignment_sk WHERE o.shelf_position_assignment_sk
+      IS NOT NULL AND a.shelf_position_assignment_sk IS NULL
+  - name: sso_assignment_key_pair
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_assignment_key_pair
+    query: "SELECT * FROM connected_store_signals.shelf_state_observation\nWHERE (shelf_position_assignment_sk\
+      \ IS NULL AND shelf_position_assignment_id IS NOT NULL)\n   OR (shelf_position_assignment_sk IS\
+      \ NOT NULL AND shelf_position_assignment_id IS NULL)"
+  - name: sso_assignment_context_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_assignment_context_consistent
+    query: "SELECT o.shelf_state_observation_id, o.observation_ts,\n       o.store_id AS observed_store,\
+      \ a.store_id AS assignment_store,\n       o.store_zone_id AS observed_zone, a.store_zone_id AS assignment_zone,\n\
+      \       o.product_id AS observed_product, a.product_id AS assignment_product\nFROM connected_store_signals.shelf_state_observation\
+      \ o\nJOIN connected_store_signals.shelf_position_assignment a\n  ON o.shelf_position_assignment_sk\
+      \ = a.shelf_position_assignment_sk\nWHERE o.store_id <> a.store_id\n   OR o.store_zone_id <> a.store_zone_id\n\
+      \   OR (o.shelf_state <> 'misplaced' AND o.product_id <> a.product_id)\n   OR o.observation_ts <\
+      \ a.valid_from_ts\n   OR (a.valid_to_ts IS NOT NULL AND o.observation_ts >= a.valid_to_ts)"
+  - name: sso_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_store_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN store.store s ON
+      o.store_sk = s.store_sk WHERE o.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: sso_zone_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_zone_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN connected_store_signals.store_zone
+      z ON o.store_zone_sk = z.store_zone_sk WHERE o.store_zone_sk IS NOT NULL AND z.store_zone_sk IS
+      NULL
+  - name: sso_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_product_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN product.product
+      p ON o.product_sk = p.product_sk WHERE o.product_sk IS NOT NULL AND p.product_sk IS NULL
+  - name: sso_device_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_device_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN connected_store_signals.sensor_device
+      d ON o.sensor_device_sk = d.sensor_device_sk WHERE o.sensor_device_sk IS NOT NULL AND d.sensor_device_sk
+      IS NULL
+  - name: sso_deployment_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_deployment_fk_orphan
+    query: SELECT o.* FROM connected_store_signals.shelf_state_observation o LEFT JOIN connected_store_signals.sensing_deployment
+      dep ON o.sensing_deployment_sk = dep.sensing_deployment_sk WHERE o.sensing_deployment_sk IS NOT
+      NULL AND dep.sensing_deployment_sk IS NULL
+  - name: sso_reference_key_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_reference_key_agreement
+    query: "SELECT o.shelf_state_observation_id\nFROM connected_store_signals.shelf_state_observation\
+      \ o\nJOIN store.store s ON o.store_sk = s.store_sk\nJOIN connected_store_signals.store_zone z ON\
+      \ o.store_zone_sk = z.store_zone_sk\nJOIN connected_store_signals.sensor_device d ON o.sensor_device_sk\
+      \ = d.sensor_device_sk\nJOIN connected_store_signals.sensing_deployment dep\n  ON o.sensing_deployment_sk\
+      \ = dep.sensing_deployment_sk\nLEFT JOIN connected_store_signals.shelf_position_assignment a\n \
+      \ ON o.shelf_position_assignment_sk = a.shelf_position_assignment_sk\nLEFT JOIN product.product\
+      \ p ON o.product_sk = p.product_sk\nWHERE o.store_id <> s.store_id\n   OR o.store_zone_id <> z.store_zone_id\n\
+      \   OR o.sensor_device_id <> d.sensor_device_id\n   OR o.sensing_deployment_id <> dep.sensing_deployment_id\n\
+      \   OR (o.shelf_position_assignment_sk IS NOT NULL\n       AND o.shelf_position_assignment_id <>\
+      \ a.shelf_position_assignment_id)\n   OR (o.product_sk IS NOT NULL AND o.product_id <> p.product_id)"
+  - name: sso_zone_is_shelf_position
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_zone_is_shelf_position
+    query: 'SELECT o.shelf_state_observation_id, z.store_zone_id, z.zone_type
+
+      FROM connected_store_signals.shelf_state_observation o
+
+      JOIN connected_store_signals.store_zone z ON o.store_zone_sk = z.store_zone_sk
+
+      WHERE z.zone_type <> ''shelf_position'''
+  - name: sso_state_oos_zero_facings
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_state_oos_zero_facings
+    query: 'SELECT * FROM connected_store_signals.shelf_state_observation
+
+      WHERE shelf_state = ''out_of_stock'' AND (observed_facing_count IS NULL OR observed_facing_count
+      <> 0)'
+  - name: sso_state_low_stock_band
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_state_low_stock_band
+    query: "SELECT * FROM connected_store_signals.shelf_state_observation\nWHERE shelf_state = 'low_stock'\n\
+      \  AND (observed_facing_count IS NULL OR min_facing_threshold IS NULL\n       OR observed_facing_count\
+      \ <= 0 OR observed_facing_count >= min_facing_threshold)"
+  - name: sso_state_in_stock_meets_threshold
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_state_in_stock_meets_threshold
+    query: "SELECT * FROM connected_store_signals.shelf_state_observation\nWHERE shelf_state = 'in_stock'\
+      \ AND min_facing_threshold IS NOT NULL\n  AND (observed_facing_count IS NULL OR observed_facing_count\
+      \ < min_facing_threshold)"
+  - name: sso_state_unknown_measures_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_state_unknown_measures_null
+    query: "SELECT * FROM connected_store_signals.shelf_state_observation\nWHERE shelf_state = 'unknown'\n\
+      \  AND (observed_facing_count IS NOT NULL OR estimated_unit_count IS NOT NULL\n       OR estimated_weight_grams\
+      \ IS NOT NULL OR pick_count_since_prior IS NOT NULL\n       OR put_count_since_prior IS NOT NULL)"
+  - name: sso_state_misplaced_semantics
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_state_misplaced_semantics
+    query: "SELECT o.shelf_state_observation_id, o.product_id AS detected_product, a.product_id AS expected_product\n\
+      FROM connected_store_signals.shelf_state_observation o\nLEFT JOIN connected_store_signals.shelf_position_assignment\
+      \ a\n  ON o.shelf_position_assignment_sk = a.shelf_position_assignment_sk\nWHERE o.shelf_state =\
+      \ 'misplaced'\n  AND (o.shelf_position_assignment_sk IS NULL\n       OR o.product_sk IS NULL OR\
+      \ o.product_id = '_ALL'\n       OR a.product_id = o.product_id)"
+  - name: sso_misplaced_sibling_present
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_misplaced_sibling_present
+    query: "SELECT m.shelf_state_observation_id, m.source_capture_id, a.product_id AS expected_product\n\
+      FROM connected_store_signals.shelf_state_observation m\nJOIN connected_store_signals.shelf_position_assignment\
+      \ a\n  ON m.shelf_position_assignment_sk = a.shelf_position_assignment_sk\nLEFT JOIN connected_store_signals.shelf_state_observation\
+      \ s\n  ON s.source_capture_id = m.source_capture_id\n AND s.sensor_device_id = m.sensor_device_id\n\
+      \ AND s.store_id = m.store_id\n AND s.store_zone_id = m.store_zone_id\n AND s.product_id = a.product_id\n\
+      \ AND s.shelf_state = 'out_of_stock'\n AND COALESCE(s.is_misplaced_detected, FALSE) = TRUE\nWHERE\
+      \ m.shelf_state = 'misplaced'\n  AND s.shelf_state_observation_id IS NULL"
+  - name: sso_unit_estimate_capability
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_unit_estimate_capability
+    query: "SELECT o.shelf_state_observation_id, d.sensor_device_id, d.sensing_technology\nFROM connected_store_signals.shelf_state_observation\
+      \ o\nJOIN connected_store_signals.sensor_device d ON o.sensor_device_sk = d.sensor_device_sk\nWHERE\
+      \ (o.estimated_unit_count IS NOT NULL OR o.estimated_weight_grams IS NOT NULL)\n  AND (d.sensing_technology\
+      \ IS NULL OR d.sensing_technology <> 'load_cell')"
+  - name: sso_event_count_capability
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_event_count_capability
+    query: "SELECT o.shelf_state_observation_id, d.sensor_device_id, d.sensing_technology\nFROM connected_store_signals.shelf_state_observation\
+      \ o\nJOIN connected_store_signals.sensor_device d ON o.sensor_device_sk = d.sensor_device_sk\nWHERE\
+      \ (o.pick_count_since_prior IS NOT NULL OR o.put_count_since_prior IS NOT NULL)\n  AND (d.sensing_technology\
+      \ IS NULL OR\n       d.sensing_technology NOT IN ('load_cell', 'video_cv', 'stereo_vision'))"
+  - name: sso_occluded_not_valid
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_occluded_not_valid
+    query: 'SELECT * FROM connected_store_signals.shelf_state_observation
+
+      WHERE COALESCE(is_occluded, FALSE) = TRUE AND measurement_validity = ''valid'''
+  - name: sso_time_agreement
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_time_agreement
+    query: "SELECT * FROM connected_store_signals.shelf_state_observation\nWHERE utc_offset_minutes IS\
+      \ NOT NULL\n  AND trading_date <> date_from_unix_date(\n        CAST(FLOOR((unix_timestamp(observation_ts)\
+      \ + utc_offset_minutes * 60) / 86400) AS INT))"
+  - name: sso_observation_not_future
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: sso_observation_not_future
+    query: 'SELECT * FROM connected_store_signals.shelf_state_observation
+
+      WHERE observation_ts > current_timestamp()'
+  - name: sso_unassigned_observation_rate
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: sso_unassigned_observation_rate
+    query: "SELECT COUNT(CASE WHEN shelf_position_assignment_id IS NULL THEN 1 END) AS unassigned_observations,\n\
+      \       COUNT(*) AS total_observations\nFROM connected_store_signals.shelf_state_observation"
+  - name: sso_position_cadence_gap
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: sso_position_cadence_gap
+    query: "SELECT COUNT(*) AS stale_positions\nFROM (\n  SELECT store_zone_id, MAX(observation_ts) AS\
+      \ latest_ts\n  FROM connected_store_signals.shelf_state_observation\n  GROUP BY store_zone_id\n\
+      ) p\nCROSS JOIN (SELECT MAX(observation_ts) AS estate_latest FROM connected_store_signals.shelf_state_observation)\
+      \ e\nWHERE p.latest_ts < e.estate_latest - INTERVAL 24 HOURS"
 - name: store_zone
   physicalName: connected_store_signals.store_zone
   physicalType: table
@@ -4035,6 +6121,15 @@ schema:
     description: sz_store_fk_orphan
     query: SELECT z.* FROM connected_store_signals.store_zone z LEFT JOIN store.store s ON z.store_sk
       = s.store_sk WHERE z.store_sk IS NOT NULL AND s.store_sk IS NULL
+  - name: ssa_position_coverage
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ssa_position_coverage
+    query: "SELECT COUNT(DISTINCT a.store_zone_id) AS assigned_positions,\n       COUNT(DISTINCT z.store_zone_id)\
+      \ AS shelf_position_zones\nFROM connected_store_signals.store_zone z\nLEFT JOIN connected_store_signals.shelf_position_assignment\
+      \ a\n  ON a.store_zone_id = z.store_zone_id AND a.is_current = TRUE\nWHERE z.zone_type = 'shelf_position'\
+      \ AND z.is_current = TRUE"
 - name: tagged_item
   physicalName: connected_store_signals.tagged_item
   physicalType: table
@@ -4518,7 +6613,11 @@ schema:
       rows here, not new views.
   - name: trading_date
   - name: report_type
+    logicalType: string
+    physicalType: STRING
   - name: aggregation_level
+    logicalType: string
+    physicalType: STRING
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
@@ -4549,24 +6648,40 @@ schema:
     physicalType: BOOLEAN
   - name: intervals_reported
   - name: observations_expected
+    logicalType: integer
+    physicalType: BIGINT
   - name: observations_received
   - name: missing_observation_rate
+    logicalType: number
+    physicalType: DOUBLE
     description: '1 - (observations_received / observations_expected). The primary fleet KPI. Re-aggregate
       it by summing the two component columns, never by averaging this ratio: an average lets a device
       expecting 4 observations outvote one expecting 400, which understates a fleet-wide outage.'
   - name: avg_uptime_ratio
+    logicalType: number
+    physicalType: DOUBLE
   - name: avg_coverage_ratio
+    logicalType: number
+    physicalType: DOUBLE
   - name: valid_intervals
     description: Count of intervals whose measurement was valid. Retained with invalid_intervals so valid-interval
       share can be re-aggregated from summed components.
   - name: valid_interval_share
   - name: invalid_intervals
+    logicalType: integer
+    physicalType: BIGINT
   - name: imputed_intervals
+    logicalType: integer
+    physicalType: BIGINT
   - name: observed_zero_intervals
+    logicalType: integer
+    physicalType: BIGINT
     description: Intervals with a MEASURED zero, as distinct from an absent row. Most vendors emit no
       row for either a zero-traffic interval or an offline sensor, which makes the two indistinguishable
       without this.
   - name: capped_intervals
+    logicalType: integer
+    physicalType: BIGINT
     description: Intervals that hit the hardware detection ceiling. A capped peak is NOT an exact peak.
   - name: late_arrived_intervals
     description: Intervals that landed after their window closed. These feeds are NOT append-only; vendors
@@ -4574,8 +6689,12 @@ schema:
   - name: historical_message_count
     description: Delivered source messages marked as buffered or historical.
   - name: bad_quality_message_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Delivered source messages marked bad or stale by the source.
   - name: max_restatement_version
+    logicalType: integer
+    physicalType: INT
   - name: last_interval_end_ts
   - name: last_ingest_ts
   - name: avg_latency_seconds
@@ -4589,6 +6708,8 @@ schema:
     physicalType: STRING
     description: fresh (<= 60 min), delayed (<= 6 hr), stale (> 6 hr).
   - name: session_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Distinct source_session_id values in the device-day.
   - name: had_session_restart
     logicalType: boolean
@@ -4596,8 +6717,12 @@ schema:
     description: TRUE when more than one source session appears in the device-day.
   - name: source_message_count
   - name: sequence_gap_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Source messages inferred missing within source sessions, summed from interval-level summaries.
   - name: duplicate_delivery_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Duplicate source-message deliveries, summed independently from sequence gaps.
   - name: calibration_valid_to
     logicalType: date
@@ -5006,6 +7131,346 @@ schema:
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+- name: gold_observed_oos_episodes
+  physicalName: connected_store_signals.gold_observed_oos_episodes
+  physicalType: view
+  description: 'GRAIN: one row per observed out-of-stock EPISODE (store × position × product × episode
+    start): a maximal run of consecutive usable out_of_stock observations, closed by the next usable non-OOS
+    observation (recovery) or ongoing (recovery NULL).'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: oos_episode_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: episode_start_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: episode_recovery_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: is_ongoing
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: episode_duration_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: last_oos_observed_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: supporting_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: supporting_device_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: min_confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: detection_method
+    logicalType: string
+    physicalType: STRING
+  - name: candidate_reason
+    logicalType: string
+    physicalType: STRING
+  - name: candidate_severity
+    logicalType: string
+    physicalType: STRING
+  - name: data_quality_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: evidence_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: book_units_eod_at_start
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: is_phantom_stock_candidate
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_osa_daily_current
+  physicalName: connected_store_signals.gold_osa_daily_current
+  physicalType: view
+  description: 'GRAIN: one row per store × trading_date × category.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: expected_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observed_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_unobserved
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_known
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_unknown
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_available_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_low_stock_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_oos_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_misplaced_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_oos_any_time
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_known_oos_any_time
+    logicalType: integer
+    physicalType: BIGINT
+  - name: osa_pct_eod
+    logicalType: number
+    physicalType: DOUBLE
+  - name: osa_pct_intraday_floor
+    logicalType: number
+    physicalType: DOUBLE
+  - name: observation_coverage_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: known_state_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_planogram_compliance_current
+  physicalName: connected_store_signals.gold_planogram_compliance_current
+  physicalType: view
+  description: 'GRAIN: one row per store × trading_date × product (SKU-level compliance detail).'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: positions_expected
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_observed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_unobserved
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_known
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_unknown
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observation_coverage_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: known_state_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: expected_facings_total
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observed_facings_total
+    logicalType: integer
+    physicalType: BIGINT
+  - name: presence_evaluable
+    logicalType: integer
+    physicalType: BIGINT
+  - name: presence_compliant
+    logicalType: integer
+    physicalType: BIGINT
+  - name: presence_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: position_evaluable
+    logicalType: integer
+    physicalType: BIGINT
+  - name: position_compliant
+    logicalType: integer
+    physicalType: BIGINT
+  - name: position_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: facing_evaluable
+    logicalType: integer
+    physicalType: BIGINT
+  - name: facing_compliant
+    logicalType: integer
+    physicalType: BIGINT
+  - name: facing_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: price_tag_evaluable
+    logicalType: integer
+    physicalType: BIGINT
+  - name: price_tag_compliant
+    logicalType: integer
+    physicalType: BIGINT
+  - name: price_tag_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: fully_evaluable_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fully_compliant_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: overall_compliance_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: bmv_allocated_facings
+    logicalType: integer
+    physicalType: INT
+  - name: is_allocation_divergent
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_price_accuracy_current
+  physicalName: connected_store_signals.gold_price_accuracy_current
+  physicalType: view
+  description: 'GRAIN: one row per store × trading_date × displayed currency.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+  - name: labels_observed
+    logicalType: integer
+    physicalType: BIGINT
+  - name: price_observations
+    logicalType: integer
+    physicalType: BIGINT
+  - name: ack_observations
+    logicalType: integer
+    physicalType: BIGINT
+  - name: cv_observations
+    logicalType: integer
+    physicalType: BIGINT
+  - name: audit_observations
+    logicalType: integer
+    physicalType: BIGINT
+  - name: labels_evaluable
+    logicalType: integer
+    physicalType: BIGINT
+  - name: labels_matched_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: labels_mismatched_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: price_match_rate_eod
+    logicalType: number
+    physicalType: DOUBLE
+  - name: labels_overcharging_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: labels_undercharging_eod
+    logicalType: integer
+    physicalType: BIGINT
+  - name: avg_mismatch_abs_amount
+    logicalType: number
+    physicalType: DOUBLE
+  - name: max_mismatch_abs_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+  - name: avg_correction_hours
+    logicalType: number
+    physicalType: DOUBLE
+  - name: correction_hours_total
+    logicalType: number
+    physicalType: DOUBLE
+  - name: labels_corrected
+    logicalType: integer
+    physicalType: BIGINT
+  - name: max_open_mismatch_hours
+    logicalType: number
+    physicalType: DOUBLE
+  - name: sync_latency_p50_seconds
+    logicalType: number
+    physicalType: DOUBLE
+  - name: sync_latency_p95_seconds
+    logicalType: number
+    physicalType: DOUBLE
+  - name: sync_latency_max_seconds
+    logicalType: integer
+    physicalType: BIGINT
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
 - name: gold_receiving_verification
   physicalName: connected_store_signals.gold_receiving_verification
   physicalType: view
@@ -5096,6 +7561,224 @@ schema:
     logicalType: string
     physicalType: STRING
   - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_share_of_shelf_current
+  physicalName: connected_store_signals.gold_share_of_shelf_current
+  physicalType: view
+  description: 'GRAIN: one row per store × category × brand at the latest observed state.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: brand_facing_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: category_facing_count
+    logicalType: integer
+    physicalType: BIGINT
+  - name: share_of_shelf_pct
+    logicalType: number
+    physicalType: DOUBLE
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_shelf_state_current
+  physicalName: connected_store_signals.gold_shelf_state_current
+  physicalType: view
+  description: 'GRAIN: one row per shelf-position zone × product — the LATEST capture, always.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+  - name: is_mobile_platform
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: zone_source
+    logicalType: string
+    physicalType: STRING
+  - name: source_capture_id
+    logicalType: string
+    physicalType: STRING
+  - name: observation_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: shelf_state
+    logicalType: string
+    physicalType: STRING
+  - name: observed_facing_count
+    logicalType: integer
+    physicalType: INT
+  - name: estimated_unit_count
+    logicalType: number
+    physicalType: DOUBLE
+  - name: estimated_weight_grams
+    logicalType: number
+    physicalType: DOUBLE
+  - name: pick_count_since_prior
+    logicalType: integer
+    physicalType: INT
+  - name: put_count_since_prior
+    logicalType: integer
+    physicalType: INT
+  - name: min_facing_threshold
+    logicalType: integer
+    physicalType: INT
+  - name: is_gap_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_misplaced_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_price_tag_mismatch_detected
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: measurement_validity
+    logicalType: string
+    physicalType: STRING
+  - name: confidence_score
+    logicalType: number
+    physicalType: DOUBLE
+  - name: coverage_ratio
+    logicalType: number
+    physicalType: DOUBLE
+  - name: is_usable
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: shelf_position_assignment_id
+    logicalType: string
+    physicalType: STRING
+  - name: expected_facing_count
+    logicalType: integer
+    physicalType: INT
+  - name: min_facing_count
+    logicalType: integer
+    physicalType: INT
+  - name: assignment_source
+    logicalType: string
+    physicalType: STRING
+  - name: is_presence_compliant
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_position_compliant
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_facing_compliant
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_price_tag_compliant
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: freshness_window_minutes
+  - name: freshness_age_minutes
+    logicalType: integer
+    physicalType: INT
+  - name: is_stale
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+- name: gold_shelf_vs_system_variance_daily
+  physicalName: connected_store_signals.gold_shelf_vs_system_variance_daily
+  physicalType: view
+  description: 'GRAIN: one row per store × product × trading_date with both observed shelf evidence and
+    a same-date inventory snapshot.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: observed_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: known_positions
+    logicalType: integer
+    physicalType: BIGINT
+  - name: positions_oos
+    logicalType: integer
+    physicalType: BIGINT
+  - name: observed_units_on_shelf
+    logicalType: number
+    physicalType: DOUBLE
+  - name: book_units_eod
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: absolute_unit_variance
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: is_phantom_stock
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: is_over_book
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
 - name: gold_store_traffic_daily_current
