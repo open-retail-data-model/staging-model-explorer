@@ -20,12 +20,22 @@
       {
         "kind": "consumes",
         "source": "actionable-customer-understanding",
+        "target": "marketing"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
         "target": "order"
       },
       {
         "kind": "consumes",
         "source": "actionable-customer-understanding",
         "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
+        "target": "transaction"
       },
       {
         "kind": "consumes",
@@ -7899,14 +7909,1337 @@
           "name": "segment_membership_rowcount",
           "severity": "metric",
           "table": "segment_membership"
+        },
+        {
+          "column": null,
+          "name": "market_analysis_grain_unique",
+          "severity": "error",
+          "table": "gold_competitive_position"
+        },
+        {
+          "column": null,
+          "name": "market_analysis_count_consistency",
+          "severity": "error",
+          "table": "gold_competitive_position"
+        },
+        {
+          "column": null,
+          "name": "market_analysis_percentage_bounds",
+          "severity": "error",
+          "table": "gold_competitive_position"
+        },
+        {
+          "column": null,
+          "name": "market_analysis_currency_known",
+          "severity": "error",
+          "table": "gold_competitive_position"
+        },
+        {
+          "column": null,
+          "name": "market_analysis_no_person_level_columns",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "market_analysis_no_pricing_lineage",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_no_redistribution_lineage",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "market_analysis_rowcount",
+          "severity": "metric",
+          "table": "gold_competitive_position"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_grain_unique",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_source_identity",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_competitor_logical_fk_orphan",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_product_fk_orphan",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_calendar_fk_orphan",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_single_currency",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_promotion_discount_consistency",
+          "severity": "error",
+          "table": "competitor_promotion"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_grain_unique",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_source_identity",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_competitor_logical_fk_orphan",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_product_fk_orphan",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_calendar_fk_orphan",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_assortment_observation_state",
+          "severity": "error",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "competitor_product_match_grain_unique",
+          "severity": "error",
+          "table": "competitor_product_match"
+        },
+        {
+          "column": null,
+          "name": "competitor_product_match_identity",
+          "severity": "error",
+          "table": "competitor_product_match"
+        },
+        {
+          "column": null,
+          "name": "competitor_product_match_competitor_logical_fk_orphan",
+          "severity": "error",
+          "table": "competitor_product_match"
+        },
+        {
+          "column": null,
+          "name": "competitor_product_match_product_fk_orphan",
+          "severity": "error",
+          "table": "competitor_product_match"
+        },
+        {
+          "column": null,
+          "name": "competitor_product_match_snapshot_drift",
+          "severity": "warn",
+          "table": "competitor_assortment"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_grain_unique",
+          "severity": "error",
+          "table": "market_benchmark"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_source_identity",
+          "severity": "error",
+          "table": "market_benchmark"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_competitor_logical_fk_orphan",
+          "severity": "error",
+          "table": "market_benchmark"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_calendar_fk_orphan",
+          "severity": "error",
+          "table": "market_benchmark"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_single_currency",
+          "severity": "error",
+          "table": "market_benchmark"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_latest_unique",
+          "severity": "error",
+          "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "market_benchmark_share_sum",
+          "severity": "warn",
+          "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "market_share_banner_set_share_sum",
+          "severity": "warn",
+          "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "market_share_percentage_bounds",
+          "severity": "error",
+          "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "market_share_component_consistency",
+          "severity": "error",
+          "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "market_share_rowcount",
+          "severity": "metric",
+          "table": "gold_market_share"
         }
       ],
       "contract_path": "contracts/odcs/actionable-customer-understanding.odcs.yaml",
       "glossary_path": "outcome-packages/actionable-customer-understanding/glossary.md",
       "kind": "outcome",
       "name": "actionable-customer-understanding",
-      "relationships": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "competitor_promotion",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "competitor_assortment",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "competitor_product_match",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        }
+      ],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for this append-only observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_assortment_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable observation key: record_source|source_observation_id; independent of mutable product matching.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_assortment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source-system identity of the delivered listing observation. The synthetic recipe is ASSORT|competitor_id|competitor_item_ref|competitor_location_ref|channel_code|date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Competitor SCD2 version resolved at observation time; retained as lineage, not a cross-package FK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable competitor business key and logical relationship to the BMV-owned competitor dimension.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source item identity; retained even when the item is unmatched.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_item_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the own-product SCD2 version matched at observation time; NULL when unmatched.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable own-product key captured with the match snapshot; NULL when unmatched.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Own merchandising category attribution captured with the observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match snapshot: exact, equivalent, or similar; NULL when unmatched.",
+              "enum_values": [
+                "exact",
+                "equivalent",
+                "similar"
+              ],
+              "fk": false,
+              "name": "match_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match snapshot method: gtin, mpn_brand, ai_text, ai_image, or manual.",
+              "enum_values": [
+                "gtin",
+                "mpn_brand",
+                "ai_text",
+                "ai_image",
+                "manual"
+              ],
+              "fk": false,
+              "name": "match_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match confidence captured with the observation, from 0 through 1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Competitor location reference. National v1 observations use the sentinel ALL.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_location_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observation channel: online, in_store, marketplace, or other.",
+              "enum_values": [
+                "online",
+                "in_store",
+                "marketplace",
+                "other"
+              ],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Logical observation date; logical FK to fiscal_calendar.date_key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exact source observation timestamp in UTC.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "TRUE when the item was listed at the observed point.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_listed",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Availability state when observable; NULL distinguishes unknown from unavailable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_available",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Observed search-result rank when supplied; NULL outside digital-shelf sources.",
+              "enum_values": [],
+              "fk": false,
+              "name": "search_rank",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Seller reference for marketplace observations; NULL for first-party channels.",
+              "enum_values": [],
+              "fk": false,
+              "name": "marketplace_seller",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral acquisition family such as crawl, digital_shelf, or syndicated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional pointer to governed source evidence; access remains adopter-controlled.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating source-system identifier and observation-id namespace.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp this observation was loaded into the lakehouse.",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only competitor listing and availability observations, including sparse and unmatched source items.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "competitor_assortment",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the current Type-1 association.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_product_match_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable association key: competitor_id|competitor_item_ref; excludes the mutable own-product match.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_product_match_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current competitor SCD2 version retained as lineage, not a cross-package FK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable competitor business key and logical relationship to the BMV-owned competitor dimension.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Stable item reference in the competitor/source namespace.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_item_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the currently matched own-product SCD2 version.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Current durable own-product match; mutable under the Type-1 contract.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Relationship semantics: exact, equivalent, or similar.",
+              "enum_values": [
+                "exact",
+                "equivalent",
+                "similar"
+              ],
+              "fk": false,
+              "name": "match_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Resolution method: gtin, mpn_brand, ai_text, ai_image, or manual.",
+              "enum_values": [
+                "gtin",
+                "mpn_brand",
+                "ai_text",
+                "ai_image",
+                "manual"
+              ],
+              "fk": false,
+              "name": "match_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current match confidence from 0 through 1; serving KPIs default to a 0.80 floor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Date this competitor-item association was first established.",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_matched_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Date the current Type-1 association was last verified.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_verified_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "TRUE when the current association is approved for use.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Timestamp the association was first created in the source system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Timestamp the current Type-1 association was last updated in the source system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating product-matching system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp the current association was loaded into the lakehouse.",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Current Type-1 competitor-item to own-product association with auditable method and confidence.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "competitor_product_match",
+          "role": "association",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for this append-only observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_promotion_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable observation key: record_source|source_observation_id; independent of mutable product matching.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_promotion_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source-system identity of the delivered promotion observation. The synthetic recipe is PROMO|competitor_id|competitor_item_ref|competitor_location_ref|promo_vehicle|date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Competitor SCD2 version resolved at observation time; retained as lineage, not a cross-package FK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable competitor business key and logical relationship to the BMV-owned competitor dimension.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source item reference when the promotion is item-level; NULL for category-only placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_item_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to the own-product SCD2 version matched at observation time; NULL when unmatched or category-only.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable own-product key captured with the match snapshot; NULL when unmatched or category-only.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Own merchandising category attribution captured with the observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match snapshot: exact, equivalent, or similar; NULL when no item match applies.",
+              "enum_values": [
+                "exact",
+                "equivalent",
+                "similar"
+              ],
+              "fk": false,
+              "name": "match_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match snapshot method: gtin, mpn_brand, ai_text, ai_image, or manual.",
+              "enum_values": [
+                "gtin",
+                "mpn_brand",
+                "ai_text",
+                "ai_image",
+                "manual"
+              ],
+              "fk": false,
+              "name": "match_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Match confidence captured with the observation, from 0 through 1.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,4)"
+            },
+            {
+              "comment": "Competitor location reference. National v1 observations use the sentinel ALL.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_location_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observation channel: online, in_store, marketplace, or other.",
+              "enum_values": [
+                "online",
+                "in_store",
+                "marketplace",
+                "other"
+              ],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed vehicle: circular_print, circular_digital, onsite, in_store, email_app, or other.",
+              "enum_values": [
+                "circular_print",
+                "circular_digital",
+                "onsite",
+                "in_store",
+                "email_app",
+                "other"
+              ],
+              "fk": false,
+              "name": "promo_vehicle",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed mechanic: TPR, FEATURE, DISPLAY, FEATURE_AND_DISPLAY, BOGO, COUPON, or BUNDLE.",
+              "enum_values": [
+                "TPR",
+                "FEATURE",
+                "DISPLAY",
+                "FEATURE_AND_DISPLAY",
+                "BOGO",
+                "COUPON",
+                "BUNDLE"
+              ],
+              "fk": false,
+              "name": "promo_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed promotional unit price in reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Observed regular unit price in reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "regular_price",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Observed or ingest-derived discount depth percentage, from 0 through 100.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discount_depth_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5,2)"
+            },
+            {
+              "comment": "Displayed promotion start date, inclusive; NULL when the source does not show a window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Displayed promotion end date, inclusive; NULL when the source does not show a window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Logical observation date; logical FK to fiscal_calendar.date_key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exact source observation timestamp in UTC.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Placement order within the observed vehicle, when supplied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "placement_rank",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "TRUE when a circular placement was on the front page; NULL for other sources.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_front_page",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "ISO 4217 reporting/base currency for normalized monetary values.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "ISO 4217 currency exactly as captured before normalization.",
+              "enum_values": [],
+              "fk": false,
+              "name": "transaction_currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral acquisition family such as crawl, circular_tracker, or syndicated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional pointer to governed source evidence; access remains adopter-controlled.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating source-system identifier and observation-id namespace.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp this observation version was loaded into the lakehouse.",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only competitor promotion observations for human decision support; source events retain their point-in-time match snapshot.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "competitor_promotion",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for this delivered cell version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_benchmark_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable delivered-version key: record_source|source_observation_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_benchmark_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source-system identity of this delivered cell version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Stable logical-cell identity: record_source|market_definition|geography_level|geography_code|category_ref|subject_type|subject_id-or-TOTAL|period_type|period_end_date. An adopter category remap intentionally creates a new cell; see ADR 0042.",
+              "enum_values": [],
+              "fk": false,
+              "name": "benchmark_cell_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Nullable competitor SCD2 version retained as lineage, not a cross-package FK.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Nullable durable competitor key and logical relationship to the BMV-owned dimension.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider-defined measured market/store universe, preserved verbatim.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_definition",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Geography grain: total, region, market, key_account, or account_market.",
+              "enum_values": [
+                "total",
+                "region",
+                "market",
+                "key_account",
+                "account_market"
+              ],
+              "fk": false,
+              "name": "geography_level",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider or adopter geography identifier at geography_level.",
+              "enum_values": [],
+              "fk": false,
+              "name": "geography_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Adopter-owned mapping to the own merchandising category hierarchy.",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Cell subject: own_banner, competitor_banner, brand, private_label, or total_category.",
+              "enum_values": [
+                "own_banner",
+                "competitor_banner",
+                "brand",
+                "private_label",
+                "total_category"
+              ],
+              "fk": false,
+              "name": "subject_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Subject identifier in the provider namespace; NULL only for total_category.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider period type: week, quad_week, 13_week, or 52_week.",
+              "enum_values": [
+                "week",
+                "quad_week",
+                "13_week",
+                "52_week"
+              ],
+              "fk": false,
+              "name": "period_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider period end date; never relabeled as an own fiscal week.",
+              "enum_values": [],
+              "fk": false,
+              "name": "period_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Measured sales amount in reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Measured unit volume for the benchmark cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_volume",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Provider-reported market share percentage, from 0 through 100.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_share_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(7,4)"
+            },
+            {
+              "comment": "Provider-reported market growth percentage; never recomputed across restatements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_growth_rate_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(7,4)"
+            },
+            {
+              "comment": "Optional equivalized volume supplied by the provider.",
+              "enum_values": [],
+              "fk": false,
+              "name": "eq_volume",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Optional importance-weighted distribution percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "acv_weighted_distribution_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(7,4)"
+            },
+            {
+              "comment": "Optional outlet-count-weighted distribution percentage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "numeric_distribution_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(7,4)"
+            },
+            {
+              "comment": "Optional total distribution points.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tdp",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Optional sales amount attributed to promotional conditions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Optional sales amount attributed to base conditions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "ISO 4217 reporting/base currency for monetary measures.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when this delivered version revises an earlier logical cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_restatement",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Delivered-version key superseded by this restatement, when supplied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "restates_market_benchmark_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp the provider observed or published this delivered cell version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Provider update timestamp used before observed/load time in latest-wins ordering.",
+              "enum_values": [],
+              "fk": false,
+              "name": "provider_updated_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Optional governed pointer to the licensed delivery evidence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "raw_data_uri",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Licensed provider/source-system identifier and version namespace.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Timestamp this delivered version was loaded into the lakehouse.",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only market benchmark cell versions. License terms are adopter-owned; redistribution is disabled by default.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "market_benchmark",
+          "role": "transactional",
+          "scd2": false
+        },
         {
           "columns": [
             {
@@ -8023,6 +9356,763 @@
           "materialized": true,
           "name": "segment_membership",
           "role": "association",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Own merchandising category captured by the version-specific price product or source observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable competitor business key; aggregation never fragments on the SCD2 surrogate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name effective at fiscal-period end, selected after aggregation by durable competitor_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source-observed promotion/assortment channel; all for national competitor-price observations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal year.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_year",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "NRF 4-5-4 fiscal period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fiscal_period",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "First date in the fiscal period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "period_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Last date in the fiscal period and SCD2 display-name as-of date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "period_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "ISO 4217 reporting currency where monetary observation families agree; NULL on assortment-only rows.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Reachable observation-family scope: price, promotion, assortment, or promotion_assortment. National price cannot co-occur with source-channel promotion/assortment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "measure_scope",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Additive sum of own list price divided by competitor MRP for usable positive same-currency pairs.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_ratio_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Usable positive same-currency regular-price pairs.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_price_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct observed products with at least one usable regular-price pair in this gold grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_price_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct matched products present in competitor-price observations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_price_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Unweighted arithmetic mean of usable product-day own-list/competitor-MRP price relatives; 100 is parity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_index_vs_competitor",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Additive own-list/competitor-MRP ratio multiplied by positive matched own units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sales_weighted_price_ratio_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Own units on usable regular-price-pair product-days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "matched_units",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Own-unit-weighted arithmetic mean of usable product-day own-list/competitor-MRP price relatives; not a ratio of aggregate price totals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sales_weighted_price_index_vs_competitor",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x usable price products divided by observed matched price products; no cap is applied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_observation_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Competitor-price observations represented by the row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Own promoted product-days within the shared any-competitor-observation coverage population.",
+              "enum_values": [],
+              "fk": false,
+              "name": "own_promo_presence_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Competitor promoted product-days within the same observation-coverage population.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_promo_presence_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct covered own product-days from price, promotion or assortment observations; SOV denominator population.",
+              "enum_values": [],
+              "fk": false,
+              "name": "comparable_promo_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct dates represented by the shared promotion-SOV coverage population in this gold grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "comparable_promo_day_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "All competitor-promotion observations, including category-only placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_promotion_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Additive sum of known competitor-promotion discount depths.",
+              "enum_values": [],
+              "fk": false,
+              "name": "discount_depth_pct_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Promotion observations with a known discount depth.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_discount_depth_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "100 x own promoted presence divided by own plus competitor presence on comparable product-days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_sov_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Arithmetic mean of observed or ingest-derived discount-depth percentages over promotion observations with known depth.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_discount_depth_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Observed print-circular promotion placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "circular_print_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed digital-circular promotion placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "circular_digital_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed onsite promotion placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "onsite_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed in-store promotion placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "in_store_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed email or app promotion placements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "email_app_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observed promotion placements in other vehicles.",
+              "enum_values": [],
+              "fk": false,
+              "name": "other_promo_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "All competitor listing and availability observations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Assortment observations explicitly marked listed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "listed_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Listed assortment observations explicitly marked available.",
+              "enum_values": [],
+              "fk": false,
+              "name": "available_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Listed assortment observations explicitly marked unavailable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "out_of_stock_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Listed assortment observations with known availability state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "stock_flagged_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct listed competitor locations in the gold grain; national v1 uses ALL.",
+              "enum_values": [],
+              "fk": false,
+              "name": "points_of_availability_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct channels with a listed item for the category, competitor and period; repeated on channel rows and non-additive.",
+              "enum_values": [],
+              "fk": false,
+              "name": "listed_channel_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "100 x listed observations divided by all assortment observations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "listed_share_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x available listed observations divided by listed observations with known stock state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_rate_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when match-quality review is needed because a listed competitor item lacks a confidence-qualified exact/equivalent match; not a directional distribution gap.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unmatched_listed_item_present_flag",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Distinct listed competitor items in this gold grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_listed_item_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct active own products with exact/equivalent listed competitor matches at confidence 0.80 or higher.",
+              "enum_values": [],
+              "fk": false,
+              "name": "matched_listed_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Confidence-qualified listed matches excluded from overlap because the own product is outside the active period-end catalog.",
+              "enum_values": [],
+              "fk": false,
+              "name": "matched_listed_inactive_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct active own products represented by at least one assortment observation; overlap/uniqueness denominator.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_own_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct listed competitor items with exact/equivalent matches at confidence 0.80 or higher.",
+              "enum_values": [],
+              "fk": false,
+              "name": "matched_listed_competitor_item_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct listed competitor items without a confidence-qualified exact/equivalent match.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unmatched_listed_item_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct active own products in the category at fiscal-period end.",
+              "enum_values": [],
+              "fk": false,
+              "name": "own_catalog_product_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "100 x observed active own products divided by the full active period-end catalog.",
+              "enum_values": [],
+              "fk": false,
+              "name": "own_catalog_observation_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x confidence-qualified active-own matched products divided by observed active own products.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_overlap_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x observed active own products without a confidence-qualified competitor listing divided by observed active own products.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_uniqueness_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x matched product-space intersection divided by observed active own products plus unmatched listed competitor items.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_jaccard_index_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "100 x confidence-qualified listed competitor items divided by all listed competitor items.",
+              "enum_values": [],
+              "fk": false,
+              "name": "match_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Additive sum of known competitor-item search ranks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "search_rank_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Assortment observations with a supplied search rank.",
+              "enum_values": [],
+              "fk": false,
+              "name": "search_rank_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Search-rank sum divided by ranked observations; not physical shelf share.",
+              "enum_values": [],
+              "fk": false,
+              "name": "share_of_search_avg_rank",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Additive upper-bound days from displayed promotion start to source observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promotion_detection_lag_days_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Promotion observations with a computable displayed-start lag.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promotion_detection_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Mean displayed-start-to-observation bound for competitor promotions; median is deferred.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_promotion_detection_lag_days",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Additive prior-observation intervals where assortment state changed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_detection_lag_days_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Observed assortment state changes with a prior observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_detection_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Mean prior-observation interval for observed assortment state changes; median is deferred.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_assortment_detection_lag_days",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Combined promotion and assortment detection-bound day sum.",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_lag_days_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Combined promotion and assortment observations with a detection bound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_lag_observation_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Detection-bound day sum divided by detection-bound observations; not exact event-to-alert latency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_detection_lag_upper_bound_days",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Listing or availability changes versus the prior durable-item observation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_state_change_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Additive days between consecutive assortment observations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_interval_days_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Consecutive assortment-observation intervals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observation_interval_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Observation-interval day sum divided by interval count.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_observation_cadence_days",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Regular-price basis: own list price versus competitor MRP.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_index_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Usable regular-price products over observed matched price products.",
+              "enum_values": [],
+              "fk": false,
+              "name": "price_coverage_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Promoted product-day presence over own product-days covered by any competitor observation; placement/spend bases are not blended.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_sov_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed channel/location presence plus separately labelled unmatched-item match quality; no fabricated ACV weighting.",
+              "enum_values": [],
+              "fk": false,
+              "name": "distribution_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Listed assortment observations with known stock state.",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed active own products versus observed competitor items at the 0.80 exact/equivalent match floor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "assortment_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Displayed promotion start or prior assortment observation upper-bound basis.",
+              "enum_values": [],
+              "fk": false,
+              "name": "detection_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Distinguishes national all-channel price rows from source-observed promotion/assortment channels.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Observation-native synthesis over competitor price, promotion and assortment. Each observation family is aggregated independently before the grains are joined, so sparse feeds do not multiply rows or silently erase dimensions.",
+          "consumes_tables": [
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "promotion",
+              "unit": "marketing"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_competitive_position",
+          "role": "gold",
           "scd2": false
         },
         {
@@ -8570,6 +10660,332 @@
           "name": "gold_customer_ltv",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Stable logical cell identity shared across original and restated deliveries.",
+              "enum_values": [],
+              "fk": false,
+              "name": "benchmark_cell_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current delivered-version identity selected for the stable benchmark cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_benchmark_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source identity of the selected delivered cell version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_observation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Licensed benchmark source namespace; methodology and usage rights remain source-specific.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Measured store/channel universe supplied by the source; a share number is not meaningful without it.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_definition",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider geography hierarchy level: total, region, market, key_account or account_market.",
+              "enum_values": [],
+              "fk": false,
+              "name": "geography_level",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider or adopter identifier at geography_level.",
+              "enum_values": [],
+              "fk": false,
+              "name": "geography_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Adopter-owned mapping from the benchmark category to the own merchandising hierarchy.",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_ref",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Served subject: own banner, competitor banner, brand or private label; total-category cells are denominator-only inputs.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Source identifier for the served non-total subject.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable BMV competitor key when a competitor-banner subject is mapped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Competitor display name effective at provider period end.",
+              "enum_values": [],
+              "fk": false,
+              "name": "competitor_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider period vocabulary; never relabeled as an own fiscal period.",
+              "enum_values": [],
+              "fk": false,
+              "name": "period_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider-defined period end date used for stable-cell grain and period-end display-name resolution.",
+              "enum_values": [],
+              "fk": false,
+              "name": "period_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "ISO 4217 reporting currency for benchmark monetary measures.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Additive measured sales for this subject cell; numerator for market share.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_share_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Matching total-category sales; denominator for market share.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_size_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Measured unit volume for the selected subject cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_unit_volume",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Matching total-category unit volume.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_size_unit_volume",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "100 x subject sales / matching total-category sales. NULL when the denominator cell is unavailable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_share_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Provider-reported share retained for reconciliation; non-additive and not averaged by the metric view.",
+              "enum_values": [],
+              "fk": false,
+              "name": "provider_reported_market_share_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Provider-reported growth retained without recomputation across restatements.",
+              "enum_values": [],
+              "fk": false,
+              "name": "provider_reported_market_growth_rate_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Optional provider-supplied equivalized volume.",
+              "enum_values": [],
+              "fk": false,
+              "name": "eq_volume",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Optional provider-supplied importance-weighted distribution percentage; non-additive.",
+              "enum_values": [],
+              "fk": false,
+              "name": "acv_weighted_distribution_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Optional provider-supplied outlet-count-weighted distribution percentage; non-additive.",
+              "enum_values": [],
+              "fk": false,
+              "name": "numeric_distribution_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Optional provider-supplied total distribution points.",
+              "enum_values": [],
+              "fk": false,
+              "name": "tdp",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Optional provider-supplied sales attributed to promotional conditions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Optional provider-supplied sales attributed to base conditions.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_sales_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "TRUE when the selected current delivery revised an earlier version of the stable cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_restatement",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Delivered-version key superseded by the selected restatement, when supplied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "restates_market_benchmark_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Provider observation or publication timestamp for the selected version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Provider update timestamp used first in latest-wins ordering.",
+              "enum_values": [],
+              "fk": false,
+              "name": "provider_updated_at_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Lakehouse load timestamp used after provider and observation timestamps in latest-wins ordering.",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Ratio basis used by the metric view: subject sales over matching total-category sales.",
+              "enum_values": [],
+              "fk": false,
+              "name": "market_share_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Default internal-use-only boundary for licensed cells and their derivatives; adopters apply their own contracts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "license_posture",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "License: see repository LICENSE.md",
+          "consumes_tables": [],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_market_share",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
@@ -8594,10 +11010,18 @@
           "tables": []
         },
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "marketing",
+            "product",
+            "transaction"
+          ],
           "name": "Market Analysis",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_competitive_position",
+            "gold_market_share"
+          ]
         }
       ]
     },

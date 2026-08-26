@@ -1,8 +1,8 @@
 # Actionable Customer Understanding — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-07-21
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-24
 
-Business terms for the Customer Lifetime Value and Behavioral Segmentation use cases. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
+Business terms for Customer Lifetime Value, Behavioral Segmentation and Market Analysis. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
 
 ## Tables & view
 
@@ -13,6 +13,14 @@ Business terms for the Customer Lifetime Value and Behavioral Segmentation use c
 | `gold_customer_behavioral_attributes` | One customer (by durable `profile_id`) | Wide, agent-discoverable behavioral trait surface (cadence, affinity, lifecycle stage, promo responsiveness) + value/RFM attributes surfaced from `gold_customer_ltv`. No raw PII. |
 | `segment_membership` | One `profile_id` × `audience_id` × `as_of_date` (append-only) | Which customers belong to which segment, as of an evaluation date. Targeting plane only. |
 | `marketing.audience` (canonical-core) | One segment definition (SCD2) | The shared segment/audience **definition** catalog membership references (ADR 0022). |
+| `competitor_promotion` | One append-only source promotion observation | Competitor promotion type, vehicle, pricing, window and placement with point-in-time match snapshot. |
+| `competitor_assortment` | One append-only competitor-item listing/availability observation | Sparse matched or unmatched listing state, stock state, channel, location sentinel and search rank. |
+| `competitor_product_match` | One durable competitor × competitor-item Type-1 association | Current provenance match, method, type, confidence and verification dates; ID excludes mutable `product_id`. V1 serving uses observation snapshots and warns on registry drift. |
+| `market_benchmark` | One delivered version of a stable licensed benchmark cell | Provider market/geography/category/subject/period measures with append-only restatement lineage. |
+| `gold_competitive_position` | One category × durable `competitor_id` × `channel_code` × fiscal period | Observation-native price, promotion, distribution, availability, assortment, matching and detection-bound synthesis. |
+| `mv_competitive_position` | Governed metric surface over `gold_competitive_position` | Reaggregation-safe measures computed from additive components. Count-based shares/rates divide count sums; price indices and discount depth are observation-level means. Assortment rollups across competitors/channels are presence-weighted per-grain averages, not own-catalog unions. |
+| `gold_market_share` | One current stable cell at provider market definition × geography × category × non-total subject × period | Latest-wins licensed market benchmark with additive subject and total-category sales components; denominator-only total-category cells are not served. |
+| `mv_market_share` | Governed metric surface over `gold_market_share` | Market share recomputed from subject-sales/market-size ratio-of-sums, separate from competitive-position grain. |
 
 ## Terms
 
@@ -56,6 +64,42 @@ Derived from the conformed `interaction.touchpoint` fact (stitched, `profile_id`
 | **Cart activity** (`has_cart_activity_flag`) | The customer performed at least one `add_to_cart` touch. |
 | **Cart-without-checkout** (`cart_without_checkout_flag`) | Added to cart but never reached `checkout_start`. **Lifetime-grained** and **checkout-reached, not purchase-confirmed** — a coarse abandonment proxy over all observed touches, not a per-session or per-order signal. |
 
-## PII handling
+### Market Analysis / UC-RET-0021 Competitive & Market Intelligence
+
+| Term | Definition |
+|---|---|
+| **Price index vs competitor** (`price_index_vs_competitor`) | `100 × SUM(own list price ÷ competitor MRP) ÷ SUM(valid price observations)` over positive, same-currency product-day pairs. This is an unweighted arithmetic mean of price relatives, not a ratio of aggregate own and competitor price totals. 100 = parity; above 100 means own list price is higher. Metric-view rollups use the additive ratio sum and count rather than averaging already-aggregated gold-row indices. |
+| **Sales-weighted price index** (`sales_weighted_price_index_vs_competitor`) | `100 × SUM(own-list/competitor-MRP ratio × matched own units) ÷ SUM(matched own units)`. This is an own-unit-weighted arithmetic mean of price relatives, not a value index or ratio of aggregate price totals. Only positive own units on usable regular-price-pair product-days enter the denominator. Use this arm when own-unit importance weighting is desired. |
+| **Usable price-product coverage** (`price_observation_coverage_pct`) | Distinct observed price products with at least one usable regular-price pair divided by all matched products in competitor-price observations. No `LEAST(100, …)` mask is applied. |
+| **Promotion share of voice** (`promo_sov_pct`) | Own promoted product-day presence divided by own plus competitor promoted presence over the same own product-days covered by any price, promotion or assortment competitor observation. This is one promoted-product-day observation basis; vehicle placement and syndicated spend/volume bases are not blended. |
+| **Observed availability rate** (`availability_rate_pct`) | Available listed assortment observations divided by listed observations with a non-null availability state. This is not numeric distribution, %ACV or TDP. |
+| **Unmatched listed-item presence** (`unmatched_listed_item_present_flag`) | Match-quality signal that a listed competitor item lacks a confidence-qualified exact/equivalent own-product match. It is not a directional distribution gap; that KPI needs own channel-ranging presence and is deferred. |
+| **Points of availability** (`points_of_availability_count`) | Distinct observed listing locations within each gold grain. National v1 observations use the sentinel `ALL`, so the measure is a detection count, not an outlet-estate claim. |
+| **Listed channel count** (`listed_channel_count`) | Distinct channels with a listed item per category × competitor × period, computed before the channel-row split. It is non-additive across channel rows. |
+| **Listed share** (`listed_share_pct`) | Listed observations divided by all competitor assortment observations on the selected grains. Sparse observation coverage is not imputed. |
+| **Assortment overlap / uniqueness** (`assortment_overlap_pct`, `assortment_uniqueness_pct`) | Confidence-qualified exact/equivalent active-own matches divided by observed active own products; uniqueness is the complement. `own_catalog_observation_coverage_pct` exposes the full-catalog gap on the gold view at base grain and is deliberately not a metric-view measure because it is only well-defined there; `matched_listed_inactive_product_count` publishes excluded matches. Across competitors/channels these ratios are presence-weighted per-grain averages, not set unions. |
+| **Assortment Jaccard index** (`assortment_jaccard_index_pct`) | Product-space intersection divided by `observed active own products + unmatched listed competitor items`, at category × competitor × channel × period grain. Cross-competitor/channel rollups are weighted averages, not a global union. |
+| **Match coverage** (`match_coverage_pct`) | Listed competitor items carrying an exact/equivalent product match at confidence ≥0.80 divided by all listed competitor items. Unmatched items remain in the denominator. |
+| **Detection-lag upper bound** (`avg_detection_lag_upper_bound_days`) | Ratio-of-sums mean of displayed-promotion-start lag and prior-to-changed-assortment-observation intervals. `avg_promotion_detection_lag_days` and `avg_assortment_detection_lag_days` keep dimensions separate. It is a bound, not exact event-to-alert latency; median/percentile is deferred and cadence is disclosed. |
+| **Current market benchmark cell** | The delivered `market_benchmark` version ranked first within `benchmark_cell_id` by provider update/observation timestamp, then load timestamp and delivered-version key. Source history is never updated away. |
+| **Market share** (`mv_market_share.market_share_pct`) | `100 × SUM(subject sales) ÷ SUM(matching total-category sales)` at the declared market definition, geography, category, non-total subject and provider period. Total-category cells supply denominators internally but are not served as subjects. Provider-reported share remains a separate reconciliation field. |
+| **Comparable promo day** (`comparable_promo_day_count`) | A date with at least one product observation where own and competitor promotion status are both known. Across already-aggregated competitors/periods, its sum is competitor-days, not globally distinct calendar days. |
+| **Market Analysis grain** | Competitive position is category × durable competitor × channel × fiscal period; price uses national `all`, while promotion/assortment retain observed channel. `measure_scope` is one of `price`, `promotion`, `assortment`, or `promotion_assortment`; combined price scopes are unreachable by design. Market share stays separate at provider market-definition × geography × category × non-total subject × period grain. |
+
+### Five distinct “share” senses
+
+| Term | Definition |
+|---|---|
+| **Share of market** | Licensed sales or unit share for a declared provider `market_definition`, geography, category, non-total subject and provider period. Total-category cells are denominator-only inputs. It lives in separate `gold_market_share` / `mv_market_share` surfaces, not competitive-position grain. |
+| **Share of shelf** | Physical share of facings. CSS can measure own-store shelf state; a competitor claim requires a separate imagery/sensing program. |
+| **Share of voice** | Promotion presence share on one explicitly declared comparable matched-product-day basis; placement and syndicated spend/volume bases are not blended into it. |
+| **Share of search** | Digital visibility within ranked search results. V1 publishes ratio-of-sums average observed rank; top-N search-slot share (digital share-of-shelf) is deferred, so average rank is not relabelled as a share. |
+| **Visit share** | Directional share inferred from an anonymized location-intelligence panel. It is neither market sales share nor person-level data in ORDM and is not implemented. |
+
+### Compliance and licensing
+
+Market Analysis contains competitor and aggregate market data only—no profile, household, interaction, session or other person-level source. It may read BMV competitor observations, but its outputs are forbidden upstream dependencies of price-producing surfaces. ORDM ships synthetic rows only; licensed benchmark/promo data remains internal-use-only and excluded from sharing by default. MAP/RPM enforcement is out of scope.
+
+## Customer-capability PII handling
 
 The view keys on the customer **surrogate** (`profile_sk`) plus the pseudonymous business key `profile_id`. Raw PII — `loyalty_id`, `household_id`, names, date of birth — is **never** carried here; it stays in the governed `profile` dimension (tagged `dbx_pii_*`). A DQ check (`ltv_no_raw_pii`) and a test assert PII absence on the gold schema.

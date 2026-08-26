@@ -27,6 +27,1053 @@ authoritativeDefinitions:
 - url: docs/data-model-standards.md
   type: businessDefinition
 schema:
+- name: competitor_assortment
+  physicalName: actionable_customer_understanding.competitor_assortment
+  physicalType: table
+  description: Append-only competitor listing and availability observations, including sparse and unmatched
+    source items.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: competitor_assortment_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for this append-only observation.
+  - name: competitor_assortment_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable observation key: record_source|source_observation_id; independent of mutable
+      product matching.'
+  - name: source_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Source-system identity of the delivered listing observation. The synthetic recipe is
+      ASSORT|competitor_id|competitor_item_ref|competitor_location_ref|channel_code|date.
+  - name: competitor_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: Competitor SCD2 version resolved at observation time; retained as lineage, not a cross-package
+      FK.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable competitor business key and logical relationship to the BMV-owned competitor
+      dimension.
+  - name: competitor_item_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Source item identity; retained even when the item is unmatched.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the own-product SCD2 version matched at observation time; NULL when unmatched.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((product_sk IS NULL AND product_id IS NULL AND match_type IS NULL AND match_method
+        IS NULL AND match_confidence IS NULL) OR (product_sk IS NOT NULL AND product_id IS NOT NULL AND
+        match_type IS NOT NULL AND match_method IS NOT NULL AND match_confidence IS NOT NULL)).
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable own-product key captured with the match snapshot; NULL when unmatched.
+  - name: category_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Own merchandising category attribution captured with the observation.
+  - name: match_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Match snapshot: exact, equivalent, or similar; NULL when unmatched.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: exact, equivalent, similar.'
+  - name: match_method
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Match snapshot method: gtin, mpn_brand, ai_text, ai_image, or manual.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: gtin, mpn_brand, ai_text, ai_image, manual.'
+  - name: match_confidence
+    logicalType: number
+    physicalType: DECIMAL(5,4)
+    required: false
+    description: Match confidence captured with the observation, from 0 through 1.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((match_confidence IS NULL OR match_confidence BETWEEN 0 AND 1) AND (search_rank
+        IS NULL OR search_rank > 0)).
+  - name: competitor_location_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Competitor location reference. National v1 observations use the sentinel ALL.
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Observation channel: online, in_store, marketplace, or other.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: online, in_store, marketplace, other.'
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Logical observation date; logical FK to fiscal_calendar.date_key.
+  - name: observed_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Exact source observation timestamp in UTC.
+  - name: is_listed
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when the item was listed at the observed point.
+  - name: is_available
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: Availability state when observable; NULL distinguishes unknown from unavailable.
+  - name: search_rank
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Observed search-result rank when supplied; NULL outside digital-shelf sources.
+  - name: marketplace_seller
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Seller reference for marketplace observations; NULL for first-party channels.
+  - name: data_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Vendor-neutral acquisition family such as crawl, digital_shelf, or syndicated.
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Optional pointer to governed source evidence; access remains adopter-controlled.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Originating source-system identifier and observation-id namespace.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Timestamp this observation was loaded into the lakehouse.
+  quality:
+  - name: competitor_assortment_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_grain_unique
+    query: 'SELECT competitor_assortment_id
+
+      FROM actionable_customer_understanding.competitor_assortment
+
+      GROUP BY competitor_assortment_id
+
+      HAVING COUNT(*) > 1'
+  - name: competitor_assortment_source_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_source_identity
+    query: 'SELECT *
+
+      FROM actionable_customer_understanding.competitor_assortment
+
+      WHERE competitor_assortment_id <> concat_ws(''|'', record_source, source_observation_id)'
+  - name: competitor_assortment_competitor_logical_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_competitor_logical_fk_orphan
+    query: "SELECT a.*\nFROM actionable_customer_understanding.competitor_assortment a\nWHERE NOT EXISTS\
+      \ (\n  SELECT 1\n  FROM balancing_margin_and_volume.competitor c\n  WHERE c.competitor_id = a.competitor_id\n\
+      )"
+  - name: competitor_assortment_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_product_fk_orphan
+    query: 'SELECT a.*
+
+      FROM actionable_customer_understanding.competitor_assortment a
+
+      LEFT JOIN product.product p ON a.product_sk = p.product_sk
+
+      WHERE a.product_sk IS NOT NULL AND p.product_sk IS NULL'
+  - name: competitor_assortment_calendar_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_calendar_fk_orphan
+    query: 'SELECT a.*
+
+      FROM actionable_customer_understanding.competitor_assortment a
+
+      LEFT JOIN calendar.fiscal_calendar c ON a.date_key = c.date_key
+
+      WHERE c.date_key IS NULL'
+  - name: competitor_assortment_observation_state
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_assortment_observation_state
+    query: 'SELECT *
+
+      FROM actionable_customer_understanding.competitor_assortment
+
+      WHERE is_listed = FALSE AND is_available = TRUE'
+  - name: competitor_product_match_snapshot_drift
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: Serving KPIs intentionally use point-in-time observation snapshots. This check makes
+      drift against the active Type-1 provenance registry visible without rewriting history or making
+      append-only observations depend on mutable state.
+    query: "WITH latest_assortment_match AS (\n  SELECT *\n  FROM (\n    SELECT\n      competitor_id,\n\
+      \      competitor_item_ref,\n      product_id,\n      match_type,\n      match_confidence,\n   \
+      \   ROW_NUMBER() OVER (\n        PARTITION BY competitor_id, competitor_item_ref\n        ORDER\
+      \ BY observed_at_ts DESC, load_timestamp DESC, competitor_assortment_id DESC\n      ) AS observation_rank\n\
+      \    FROM actionable_customer_understanding.competitor_assortment\n  ) ranked\n  WHERE observation_rank\
+      \ = 1\n),\nactive_registry_match AS (\n  SELECT competitor_id, competitor_item_ref, product_id,\
+      \ match_type, match_confidence\n  FROM actionable_customer_understanding.competitor_product_match\n\
+      \  WHERE is_active = TRUE\n)\nSELECT\n  COALESCE(snapshot.competitor_id, registry.competitor_id)\
+      \ AS competitor_id,\n  COALESCE(snapshot.competitor_item_ref, registry.competitor_item_ref)\n  \
+      \  AS competitor_item_ref\nFROM latest_assortment_match snapshot\nFULL OUTER JOIN active_registry_match\
+      \ registry\n  ON snapshot.competitor_id = registry.competitor_id\n AND snapshot.competitor_item_ref\
+      \ = registry.competitor_item_ref\nWHERE snapshot.competitor_id IS NULL\n   OR registry.competitor_id\
+      \ IS NULL\n   OR NOT (snapshot.product_id <=> registry.product_id)\n   OR NOT (snapshot.match_type\
+      \ <=> registry.match_type)\n   OR NOT (snapshot.match_confidence <=> registry.match_confidence)"
+- name: competitor_product_match
+  physicalName: actionable_customer_understanding.competitor_product_match
+  physicalType: table
+  description: Current Type-1 competitor-item to own-product association with auditable method and confidence.
+  tags:
+  - association
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: competitor_product_match_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for the current Type-1 association.
+  - name: competitor_product_match_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable association key: competitor_id|competitor_item_ref; excludes the mutable own-product
+      match.'
+  - name: competitor_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: Current competitor SCD2 version retained as lineage, not a cross-package FK.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable competitor business key and logical relationship to the BMV-owned competitor
+      dimension.
+  - name: competitor_item_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Stable item reference in the competitor/source namespace.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: FK to the currently matched own-product SCD2 version.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Current durable own-product match; mutable under the Type-1 contract.
+  - name: match_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Relationship semantics: exact, equivalent, or similar.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: exact, equivalent, similar.'
+  - name: match_method
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Resolution method: gtin, mpn_brand, ai_text, ai_image, or manual.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: gtin, mpn_brand, ai_text, ai_image, manual.'
+  - name: match_confidence
+    logicalType: number
+    physicalType: DECIMAL(5,4)
+    required: true
+    description: Current match confidence from 0 through 1; serving KPIs default to a 0.80 floor.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (match_confidence BETWEEN 0 AND 1).
+  - name: first_matched_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Date this competitor-item association was first established.
+  - name: last_verified_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Date the current Type-1 association was last verified.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (last_verified_date >= first_matched_date).
+  - name: is_active
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when the current association is approved for use.
+  - name: created_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Timestamp the association was first created in the source system.
+  - name: source_updated_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Timestamp the current Type-1 association was last updated in the source system.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Originating product-matching system.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Timestamp the current association was loaded into the lakehouse.
+  quality:
+  - name: competitor_product_match_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_product_match_grain_unique
+    query: 'SELECT competitor_id, competitor_item_ref
+
+      FROM actionable_customer_understanding.competitor_product_match
+
+      GROUP BY competitor_id, competitor_item_ref
+
+      HAVING COUNT(*) > 1'
+  - name: competitor_product_match_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_product_match_identity
+    query: 'SELECT *
+
+      FROM actionable_customer_understanding.competitor_product_match
+
+      WHERE competitor_product_match_id <> concat_ws(''|'', competitor_id, competitor_item_ref)'
+  - name: competitor_product_match_competitor_logical_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_product_match_competitor_logical_fk_orphan
+    query: "SELECT m.*\nFROM actionable_customer_understanding.competitor_product_match m\nWHERE NOT EXISTS\
+      \ (\n  SELECT 1\n  FROM balancing_margin_and_volume.competitor c\n  WHERE c.competitor_id = m.competitor_id\n\
+      )"
+  - name: competitor_product_match_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_product_match_product_fk_orphan
+    query: 'SELECT m.*
+
+      FROM actionable_customer_understanding.competitor_product_match m
+
+      LEFT JOIN product.product p ON m.product_sk = p.product_sk
+
+      WHERE p.product_sk IS NULL'
+- name: competitor_promotion
+  physicalName: actionable_customer_understanding.competitor_promotion
+  physicalType: table
+  description: Append-only competitor promotion observations for human decision support; source events
+    retain their point-in-time match snapshot.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: competitor_promotion_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for this append-only observation.
+  - name: competitor_promotion_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable observation key: record_source|source_observation_id; independent of mutable
+      product matching.'
+  - name: source_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Source-system identity of the delivered promotion observation. The synthetic recipe is
+      PROMO|competitor_id|competitor_item_ref|competitor_location_ref|promo_vehicle|date.
+  - name: competitor_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    description: Competitor SCD2 version resolved at observation time; retained as lineage, not a cross-package
+      FK.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable competitor business key and logical relationship to the BMV-owned competitor
+      dimension.
+  - name: competitor_item_ref
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Source item reference when the promotion is item-level; NULL for category-only placements.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to the own-product SCD2 version matched at observation time; NULL when unmatched or
+      category-only.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((product_sk IS NULL AND product_id IS NULL AND match_type IS NULL AND match_method
+        IS NULL AND match_confidence IS NULL) OR (product_sk IS NOT NULL AND product_id IS NOT NULL AND
+        match_type IS NOT NULL AND match_method IS NOT NULL AND match_confidence IS NOT NULL)).
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable own-product key captured with the match snapshot; NULL when unmatched or category-only.
+  - name: category_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Own merchandising category attribution captured with the observation.
+  - name: match_type
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Match snapshot: exact, equivalent, or similar; NULL when no item match applies.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: exact, equivalent, similar.'
+  - name: match_method
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Match snapshot method: gtin, mpn_brand, ai_text, ai_image, or manual.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: gtin, mpn_brand, ai_text, ai_image, manual.'
+  - name: match_confidence
+    logicalType: number
+    physicalType: DECIMAL(5,4)
+    required: false
+    description: Match confidence captured with the observation, from 0 through 1.
+  - name: competitor_location_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Competitor location reference. National v1 observations use the sentinel ALL.
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Observation channel: online, in_store, marketplace, or other.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: online, in_store, marketplace, other.'
+  - name: promo_vehicle
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Observed vehicle: circular_print, circular_digital, onsite, in_store, email_app, or
+      other.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: circular_print, circular_digital, onsite, in_store, email_app, other.'
+  - name: promo_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Observed mechanic: TPR, FEATURE, DISPLAY, FEATURE_AND_DISPLAY, BOGO, COUPON, or BUNDLE.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: TPR, FEATURE, DISPLAY, FEATURE_AND_DISPLAY, BOGO, COUPON, BUNDLE.'
+  - name: promo_price
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: Observed promotional unit price in reporting currency.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((promo_price IS NULL OR promo_price >= 0) AND (regular_price IS NULL OR regular_price
+        >= 0) AND (discount_depth_pct IS NULL OR discount_depth_pct BETWEEN 0 AND 100) AND (match_confidence
+        IS NULL OR match_confidence BETWEEN 0 AND 1) AND (placement_rank IS NULL OR placement_rank > 0)).
+  - name: regular_price
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: Observed regular unit price in reporting currency.
+  - name: discount_depth_pct
+    logicalType: number
+    physicalType: DECIMAL(5,2)
+    required: false
+    description: Observed or ingest-derived discount depth percentage, from 0 through 100.
+  - name: promo_start_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: Displayed promotion start date, inclusive; NULL when the source does not show a window.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK (promo_start_date IS NULL OR promo_end_date IS NULL OR promo_end_date >= promo_start_date).
+  - name: promo_end_date
+    logicalType: date
+    physicalType: DATE
+    required: false
+    description: Displayed promotion end date, inclusive; NULL when the source does not show a window.
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Logical observation date; logical FK to fiscal_calendar.date_key.
+  - name: observed_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Exact source observation timestamp in UTC.
+  - name: placement_rank
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Placement order within the observed vehicle, when supplied.
+  - name: is_front_page
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: false
+    description: TRUE when a circular placement was on the front page; NULL for other sources.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: ISO 4217 reporting/base currency for normalized monetary values.
+  - name: transaction_currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: ISO 4217 currency exactly as captured before normalization.
+  - name: data_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Vendor-neutral acquisition family such as crawl, circular_tracker, or syndicated.
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Optional pointer to governed source evidence; access remains adopter-controlled.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Originating source-system identifier and observation-id namespace.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Timestamp this observation version was loaded into the lakehouse.
+  quality:
+  - name: competitor_promotion_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_grain_unique
+    query: 'SELECT competitor_promotion_id
+
+      FROM actionable_customer_understanding.competitor_promotion
+
+      GROUP BY competitor_promotion_id
+
+      HAVING COUNT(*) > 1'
+  - name: competitor_promotion_source_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_source_identity
+    query: 'SELECT *
+
+      FROM actionable_customer_understanding.competitor_promotion
+
+      WHERE competitor_promotion_id <> concat_ws(''|'', record_source, source_observation_id)'
+  - name: competitor_promotion_competitor_logical_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_competitor_logical_fk_orphan
+    query: "SELECT p.*\nFROM actionable_customer_understanding.competitor_promotion p\nWHERE NOT EXISTS\
+      \ (\n  SELECT 1\n  FROM balancing_margin_and_volume.competitor c\n  WHERE c.competitor_id = p.competitor_id\n\
+      )"
+  - name: competitor_promotion_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_product_fk_orphan
+    query: 'SELECT p.*
+
+      FROM actionable_customer_understanding.competitor_promotion p
+
+      LEFT JOIN product.product d ON p.product_sk = d.product_sk
+
+      WHERE p.product_sk IS NOT NULL AND d.product_sk IS NULL'
+  - name: competitor_promotion_calendar_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_calendar_fk_orphan
+    query: 'SELECT p.*
+
+      FROM actionable_customer_understanding.competitor_promotion p
+
+      LEFT JOIN calendar.fiscal_calendar c ON p.date_key = c.date_key
+
+      WHERE c.date_key IS NULL'
+  - name: competitor_promotion_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_single_currency
+    query: "SELECT 1\nFROM actionable_customer_understanding.competitor_promotion\nHAVING COUNT(DISTINCT\
+      \ currency_code) > 1\n    OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) > 0"
+  - name: competitor_promotion_discount_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: competitor_promotion_discount_consistency
+    query: "SELECT *\nFROM actionable_customer_understanding.competitor_promotion\nWHERE promo_price IS\
+      \ NOT NULL\n  AND regular_price IS NOT NULL\n  AND discount_depth_pct IS NOT NULL\n  AND regular_price\
+      \ > 0\n  AND ABS(discount_depth_pct - 100.0 * (regular_price - promo_price) / regular_price) > 0.02"
+- name: market_benchmark
+  physicalName: actionable_customer_understanding.market_benchmark
+  physicalType: table
+  description: Append-only market benchmark cell versions. License terms are adopter-owned; redistribution
+    is disabled by default.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: market_benchmark_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key for this delivered cell version.
+  - name: market_benchmark_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Durable delivered-version key: record_source|source_observation_id.'
+  - name: source_observation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Source-system identity of this delivered cell version.
+  - name: benchmark_cell_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Stable logical-cell identity: record_source|market_definition|geography_level|geography_code|category_ref|subject_type|subject_id-or-TOTAL|period_type|period_end_date.
+      An adopter category remap intentionally creates a new cell; see ADR 0042.'
+  - name: competitor_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: Nullable competitor SCD2 version retained as lineage, not a cross-package FK.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Nullable durable competitor key and logical relationship to the BMV-owned dimension.
+  - name: market_definition
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Provider-defined measured market/store universe, preserved verbatim.
+  - name: geography_level
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Geography grain: total, region, market, key_account, or account_market.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: total, region, market, key_account, account_market.'
+  - name: geography_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Provider or adopter geography identifier at geography_level.
+  - name: category_ref
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Adopter-owned mapping to the own merchandising category hierarchy.
+  - name: subject_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Cell subject: own_banner, competitor_banner, brand, private_label, or total_category.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: own_banner, competitor_banner, brand, private_label, total_category.'
+  - name: subject_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Subject identifier in the provider namespace; NULL only for total_category.
+  - name: period_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Provider period type: week, quad_week, 13_week, or 52_week.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: week, quad_week, 13_week, 52_week.'
+  - name: period_end_date
+    logicalType: date
+    physicalType: DATE
+    required: true
+    description: Provider period end date; never relabeled as an own fiscal week.
+  - name: sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Measured sales amount in reporting currency.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((sales_amount IS NULL OR sales_amount >= 0) AND (unit_volume IS NULL OR unit_volume
+        >= 0) AND (eq_volume IS NULL OR eq_volume >= 0) AND (tdp IS NULL OR tdp >= 0) AND (promo_sales_amount
+        IS NULL OR promo_sales_amount >= 0) AND (base_sales_amount IS NULL OR base_sales_amount >= 0)).
+  - name: unit_volume
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Measured unit volume for the benchmark cell.
+  - name: market_share_pct
+    logicalType: number
+    physicalType: DECIMAL(7,4)
+    required: false
+    description: Provider-reported market share percentage, from 0 through 100.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((market_share_pct IS NULL OR market_share_pct BETWEEN 0 AND 100) AND (acv_weighted_distribution_pct
+        IS NULL OR acv_weighted_distribution_pct BETWEEN 0 AND 100) AND (numeric_distribution_pct IS NULL
+        OR numeric_distribution_pct BETWEEN 0 AND 100)).
+  - name: market_growth_rate_pct
+    logicalType: number
+    physicalType: DECIMAL(7,4)
+    required: false
+    description: Provider-reported market growth percentage; never recomputed across restatements.
+  - name: eq_volume
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Optional equivalized volume supplied by the provider.
+  - name: acv_weighted_distribution_pct
+    logicalType: number
+    physicalType: DECIMAL(7,4)
+    required: false
+    description: Optional importance-weighted distribution percentage.
+  - name: numeric_distribution_pct
+    logicalType: number
+    physicalType: DECIMAL(7,4)
+    required: false
+    description: Optional outlet-count-weighted distribution percentage.
+  - name: tdp
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: Optional total distribution points.
+  - name: promo_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Optional sales amount attributed to promotional conditions.
+  - name: base_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18,2)
+    required: false
+    description: Optional sales amount attributed to base conditions.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: ISO 4217 reporting/base currency for monetary measures.
+  - name: is_restatement
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when this delivered version revises an earlier logical cell.
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: CHECK ((is_restatement = TRUE AND restates_market_benchmark_id IS NOT NULL) OR (is_restatement
+        = FALSE AND restates_market_benchmark_id IS NULL)).
+  - name: restates_market_benchmark_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Delivered-version key superseded by this restatement, when supplied.
+  - name: observed_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Timestamp the provider observed or published this delivered cell version.
+  - name: provider_updated_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: Provider update timestamp used before observed/load time in latest-wins ordering.
+  - name: raw_data_uri
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Optional governed pointer to the licensed delivery evidence.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Licensed provider/source-system identifier and version namespace.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Timestamp this delivered version was loaded into the lakehouse.
+  quality:
+  - name: market_benchmark_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_benchmark_grain_unique
+    query: 'SELECT market_benchmark_id
+
+      FROM actionable_customer_understanding.market_benchmark
+
+      GROUP BY market_benchmark_id
+
+      HAVING COUNT(*) > 1'
+  - name: market_benchmark_source_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_benchmark_source_identity
+    query: 'SELECT *
+
+      FROM actionable_customer_understanding.market_benchmark
+
+      WHERE market_benchmark_id <> concat_ws(''|'', record_source, source_observation_id)'
+  - name: market_benchmark_competitor_logical_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_benchmark_competitor_logical_fk_orphan
+    query: "SELECT b.*\nFROM actionable_customer_understanding.market_benchmark b\nWHERE b.competitor_id\
+      \ IS NOT NULL\n  AND NOT EXISTS (\n    SELECT 1\n    FROM balancing_margin_and_volume.competitor\
+      \ c\n    WHERE c.competitor_id = b.competitor_id\n  )"
+  - name: market_benchmark_calendar_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Provider periods retain their own vocabulary; only the literal end date maps to the daily
+      fiscal calendar, with no claim that provider weeks equal fiscal weeks.
+    query: 'SELECT b.*
+
+      FROM actionable_customer_understanding.market_benchmark b
+
+      LEFT JOIN calendar.fiscal_calendar c ON b.period_end_date = c.date_key
+
+      WHERE c.date_key IS NULL'
+  - name: market_benchmark_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_benchmark_single_currency
+    query: "SELECT 1\nFROM actionable_customer_understanding.market_benchmark\nHAVING COUNT(DISTINCT currency_code)\
+      \ > 1\n    OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) > 0"
 - name: segment_membership
   physicalName: actionable_customer_understanding.segment_membership
   physicalType: table
@@ -194,6 +1241,451 @@ schema:
     severity: info
     description: segment_membership_rowcount
     query: SELECT COUNT(*) AS membership_rows FROM actionable_customer_understanding.segment_membership
+- name: gold_competitive_position
+  physicalName: actionable_customer_understanding.gold_competitive_position
+  physicalType: view
+  description: Observation-native synthesis over competitor price, promotion and assortment. Each observation
+    family is aggregated independently before the grains are joined, so sparse feeds do not multiply rows
+    or silently erase dimensions.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    physicalType: STRING
+    description: Own merchandising category captured by the version-specific price product or source observation.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable competitor business key; aggregation never fragments on the SCD2 surrogate.
+  - name: competitor_name
+    logicalType: string
+    physicalType: STRING
+    description: Display name effective at fiscal-period end, selected after aggregation by durable competitor_id.
+  - name: channel_code
+    logicalType: string
+    physicalType: STRING
+    description: Source-observed promotion/assortment channel; all for national competitor-price observations.
+  - name: fiscal_year
+    logicalType: integer
+    physicalType: INT
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_period
+    logicalType: integer
+    physicalType: INT
+    description: NRF 4-5-4 fiscal period.
+  - name: period_start_date
+    logicalType: date
+    physicalType: DATE
+    description: First date in the fiscal period.
+  - name: period_end_date
+    logicalType: date
+    physicalType: DATE
+    description: Last date in the fiscal period and SCD2 display-name as-of date.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: ISO 4217 reporting currency where monetary observation families agree; NULL on assortment-only
+      rows.
+  - name: measure_scope
+    logicalType: string
+    physicalType: STRING
+    description: 'Reachable observation-family scope: price, promotion, assortment, or promotion_assortment.
+      National price cannot co-occur with source-channel promotion/assortment.'
+  - name: price_ratio_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive sum of own list price divided by competitor MRP for usable positive same-currency
+      pairs.
+  - name: valid_price_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Usable positive same-currency regular-price pairs.
+  - name: valid_price_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct observed products with at least one usable regular-price pair in this gold grain.
+  - name: observed_price_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct matched products present in competitor-price observations.
+  - name: price_index_vs_competitor
+    logicalType: number
+    physicalType: DOUBLE
+    description: Unweighted arithmetic mean of usable product-day own-list/competitor-MRP price relatives;
+      100 is parity.
+  - name: sales_weighted_price_ratio_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive own-list/competitor-MRP ratio multiplied by positive matched own units.
+  - name: matched_units
+    logicalType: number
+    physicalType: DOUBLE
+    description: Own units on usable regular-price-pair product-days.
+  - name: sales_weighted_price_index_vs_competitor
+    logicalType: number
+    physicalType: DOUBLE
+    description: Own-unit-weighted arithmetic mean of usable product-day own-list/competitor-MRP price
+      relatives; not a ratio of aggregate price totals.
+  - name: price_observation_coverage_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x usable price products divided by observed matched price products; no cap is applied.
+  - name: competitor_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Competitor-price observations represented by the row.
+  - name: own_promo_presence_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Own promoted product-days within the shared any-competitor-observation coverage population.
+  - name: competitor_promo_presence_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Competitor promoted product-days within the same observation-coverage population.
+  - name: comparable_promo_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct covered own product-days from price, promotion or assortment observations; SOV
+      denominator population.
+  - name: comparable_promo_day_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct dates represented by the shared promotion-SOV coverage population in this gold
+      grain.
+  - name: competitor_promotion_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: All competitor-promotion observations, including category-only placements.
+  - name: discount_depth_pct_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive sum of known competitor-promotion discount depths.
+  - name: valid_discount_depth_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Promotion observations with a known discount depth.
+  - name: promo_sov_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x own promoted presence divided by own plus competitor presence on comparable product-days.
+  - name: avg_discount_depth_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Arithmetic mean of observed or ingest-derived discount-depth percentages over promotion
+      observations with known depth.
+  - name: circular_print_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed print-circular promotion placements.
+  - name: circular_digital_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed digital-circular promotion placements.
+  - name: onsite_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed onsite promotion placements.
+  - name: in_store_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed in-store promotion placements.
+  - name: email_app_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed email or app promotion placements.
+  - name: other_promo_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed promotion placements in other vehicles.
+  - name: assortment_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: All competitor listing and availability observations.
+  - name: listed_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Assortment observations explicitly marked listed.
+  - name: available_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Listed assortment observations explicitly marked available.
+  - name: out_of_stock_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Listed assortment observations explicitly marked unavailable.
+  - name: stock_flagged_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Listed assortment observations with known availability state.
+  - name: points_of_availability_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct listed competitor locations in the gold grain; national v1 uses ALL.
+  - name: listed_channel_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct channels with a listed item for the category, competitor and period; repeated
+      on channel rows and non-additive.
+  - name: listed_share_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x listed observations divided by all assortment observations.
+  - name: availability_rate_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x available listed observations divided by listed observations with known stock state.
+  - name: unmatched_listed_item_present_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when match-quality review is needed because a listed competitor item lacks a confidence-qualified
+      exact/equivalent match; not a directional distribution gap.
+  - name: competitor_listed_item_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct listed competitor items in this gold grain.
+  - name: matched_listed_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct active own products with exact/equivalent listed competitor matches at confidence
+      0.80 or higher.
+  - name: matched_listed_inactive_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Confidence-qualified listed matches excluded from overlap because the own product is
+      outside the active period-end catalog.
+  - name: observed_own_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct active own products represented by at least one assortment observation; overlap/uniqueness
+      denominator.
+  - name: matched_listed_competitor_item_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct listed competitor items with exact/equivalent matches at confidence 0.80 or
+      higher.
+  - name: unmatched_listed_item_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct listed competitor items without a confidence-qualified exact/equivalent match.
+  - name: own_catalog_product_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct active own products in the category at fiscal-period end.
+  - name: own_catalog_observation_coverage_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x observed active own products divided by the full active period-end catalog.
+  - name: assortment_overlap_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x confidence-qualified active-own matched products divided by observed active own
+      products.
+  - name: assortment_uniqueness_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x observed active own products without a confidence-qualified competitor listing
+      divided by observed active own products.
+  - name: assortment_jaccard_index_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x matched product-space intersection divided by observed active own products plus
+      unmatched listed competitor items.
+  - name: match_coverage_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x confidence-qualified listed competitor items divided by all listed competitor items.
+  - name: search_rank_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive sum of known competitor-item search ranks.
+  - name: search_rank_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Assortment observations with a supplied search rank.
+  - name: share_of_search_avg_rank
+    logicalType: number
+    physicalType: DOUBLE
+    description: Search-rank sum divided by ranked observations; not physical shelf share.
+  - name: promotion_detection_lag_days_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive upper-bound days from displayed promotion start to source observation.
+  - name: promotion_detection_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Promotion observations with a computable displayed-start lag.
+  - name: avg_promotion_detection_lag_days
+    logicalType: number
+    physicalType: DOUBLE
+    description: Mean displayed-start-to-observation bound for competitor promotions; median is deferred.
+  - name: assortment_detection_lag_days_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive prior-observation intervals where assortment state changed.
+  - name: assortment_detection_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Observed assortment state changes with a prior observation.
+  - name: avg_assortment_detection_lag_days
+    logicalType: number
+    physicalType: DOUBLE
+    description: Mean prior-observation interval for observed assortment state changes; median is deferred.
+  - name: detection_lag_days_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Combined promotion and assortment detection-bound day sum.
+  - name: detection_lag_observation_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Combined promotion and assortment observations with a detection bound.
+  - name: avg_detection_lag_upper_bound_days
+    logicalType: number
+    physicalType: DOUBLE
+    description: Detection-bound day sum divided by detection-bound observations; not exact event-to-alert
+      latency.
+  - name: assortment_state_change_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Listing or availability changes versus the prior durable-item observation.
+  - name: observation_interval_days_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Additive days between consecutive assortment observations.
+  - name: observation_interval_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Consecutive assortment-observation intervals.
+  - name: avg_observation_cadence_days
+    logicalType: number
+    physicalType: DOUBLE
+    description: Observation-interval day sum divided by interval count.
+  - name: price_index_basis
+    logicalType: string
+    physicalType: STRING
+    description: 'Regular-price basis: own list price versus competitor MRP.'
+  - name: price_coverage_basis
+    logicalType: string
+    physicalType: STRING
+    description: Usable regular-price products over observed matched price products.
+  - name: promo_sov_basis
+    logicalType: string
+    physicalType: STRING
+    description: Promoted product-day presence over own product-days covered by any competitor observation;
+      placement/spend bases are not blended.
+  - name: distribution_basis
+    logicalType: string
+    physicalType: STRING
+    description: Observed channel/location presence plus separately labelled unmatched-item match quality;
+      no fabricated ACV weighting.
+  - name: availability_basis
+    logicalType: string
+    physicalType: STRING
+    description: Listed assortment observations with known stock state.
+  - name: assortment_basis
+    logicalType: string
+    physicalType: STRING
+    description: Observed active own products versus observed competitor items at the 0.80 exact/equivalent
+      match floor.
+  - name: detection_basis
+    logicalType: string
+    physicalType: STRING
+    description: Displayed promotion start or prior assortment observation upper-bound basis.
+  - name: channel_basis
+    logicalType: string
+    physicalType: STRING
+    description: Distinguishes national all-channel price rows from source-observed promotion/assortment
+      channels.
+  quality:
+  - name: market_analysis_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: One row per category × durable competitor × observed channel × fiscal period.
+    query: 'SELECT category, competitor_id, channel_code, fiscal_year, fiscal_period
+
+      FROM actionable_customer_understanding.gold_competitive_position
+
+      GROUP BY category, competitor_id, channel_code, fiscal_year, fiscal_period
+
+      HAVING COUNT(*) > 1'
+  - name: market_analysis_count_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Raw numerators cannot exceed their same-grain observation populations. listed_channel_count
+      is period-grain and intentionally repeats on channel rows, so it cannot be compared with per-channel
+      listed_observation_count here.
+    query: "SELECT *\nFROM actionable_customer_understanding.gold_competitive_position\nWHERE valid_price_product_count\
+      \ > observed_price_product_count\n   OR valid_price_observation_count > competitor_observation_count\n\
+      \   OR own_promo_presence_count > comparable_promo_observation_count\n   OR competitor_promo_presence_count\
+      \ > comparable_promo_observation_count\n   OR comparable_promo_day_count > comparable_promo_observation_count\n\
+      \   OR valid_discount_depth_count > competitor_promotion_observation_count\n   OR circular_print_promo_count\
+      \ + circular_digital_promo_count\n      + onsite_promo_count + in_store_promo_count\n      + email_app_promo_count\
+      \ + other_promo_count\n      <> competitor_promotion_observation_count\n   OR listed_observation_count\
+      \ > assortment_observation_count\n   OR stock_flagged_observation_count > listed_observation_count\n\
+      \   OR available_observation_count + out_of_stock_observation_count\n      <> stock_flagged_observation_count\n\
+      \   OR points_of_availability_count > listed_observation_count\n   OR matched_listed_competitor_item_count\
+      \ > competitor_listed_item_count\n   OR unmatched_listed_item_count > competitor_listed_item_count\n\
+      \   OR observed_own_product_count > own_catalog_product_count\n   OR matched_listed_product_count\
+      \ > observed_own_product_count\n   OR matched_listed_inactive_product_count > competitor_listed_item_count\n\
+      \   OR search_rank_observation_count > assortment_observation_count\n   OR detection_lag_observation_count\n\
+      \      <> promotion_detection_observation_count\n       + assortment_detection_observation_count\n\
+      \   OR assortment_detection_observation_count > assortment_state_change_count\n   OR observation_interval_count\
+      \ > assortment_observation_count"
+  - name: market_analysis_percentage_bounds
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_analysis_percentage_bounds
+    query: "SELECT *\nFROM actionable_customer_understanding.gold_competitive_position\nWHERE (price_observation_coverage_pct\
+      \ IS NOT NULL\n       AND price_observation_coverage_pct NOT BETWEEN 0 AND 100)\n   OR (promo_sov_pct\
+      \ IS NOT NULL AND promo_sov_pct NOT BETWEEN 0 AND 100)\n   OR (avg_discount_depth_pct IS NOT NULL\
+      \ AND avg_discount_depth_pct NOT BETWEEN 0 AND 100)\n   OR (listed_share_pct IS NOT NULL AND listed_share_pct\
+      \ NOT BETWEEN 0 AND 100)\n   OR (availability_rate_pct IS NOT NULL AND availability_rate_pct NOT\
+      \ BETWEEN 0 AND 100)\n   OR (assortment_overlap_pct IS NOT NULL AND assortment_overlap_pct NOT BETWEEN\
+      \ 0 AND 100)\n   OR (assortment_uniqueness_pct IS NOT NULL\n       AND assortment_uniqueness_pct\
+      \ NOT BETWEEN 0 AND 100)\n   OR (assortment_jaccard_index_pct IS NOT NULL\n       AND assortment_jaccard_index_pct\
+      \ NOT BETWEEN 0 AND 100)\n   OR (match_coverage_pct IS NOT NULL AND match_coverage_pct NOT BETWEEN\
+      \ 0 AND 100)\n   OR (own_catalog_observation_coverage_pct IS NOT NULL\n       AND own_catalog_observation_coverage_pct\
+      \ NOT BETWEEN 0 AND 100)\n   OR (share_of_search_avg_rank IS NOT NULL AND share_of_search_avg_rank\
+      \ <= 0)\n   OR (avg_detection_lag_upper_bound_days IS NOT NULL\n       AND avg_detection_lag_upper_bound_days\
+      \ < 0)\n   OR (avg_promotion_detection_lag_days IS NOT NULL\n       AND avg_promotion_detection_lag_days\
+      \ < 0)\n   OR (avg_assortment_detection_lag_days IS NOT NULL\n       AND avg_assortment_detection_lag_days\
+      \ < 0)\n   OR (avg_observation_cadence_days IS NOT NULL AND avg_observation_cadence_days < 0)\n\
+      \   OR (price_index_vs_competitor IS NOT NULL AND price_index_vs_competitor <= 0)\n   OR (sales_weighted_price_index_vs_competitor\
+      \ IS NOT NULL\n       AND sales_weighted_price_index_vs_competitor <= 0)"
+  - name: market_analysis_currency_known
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A NULL with monetary observations means currencies disagreed inside one grain. Assortment-only
+      rows carry no currency and remain NULL-honest.
+    query: "SELECT *\nFROM actionable_customer_understanding.gold_competitive_position\nWHERE (valid_price_observation_count\
+      \ > 0 OR competitor_promotion_observation_count > 0)\n  AND currency_code IS NULL"
+  - name: market_analysis_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: market_analysis_rowcount
+    query: 'SELECT COUNT(*) AS competitive_position_rows
+
+      FROM actionable_customer_understanding.gold_competitive_position'
 - name: gold_customer_behavioral_attributes
   physicalName: actionable_customer_understanding.gold_customer_behavioral_attributes
   physicalType: view
@@ -585,3 +2077,238 @@ schema:
     query: 'SELECT ROUND(AVG(CASE WHEN predicted_clv IS NULL THEN 1.0 ELSE 0.0 END), 4) AS predicted_null_rate
 
       FROM actionable_customer_understanding.gold_customer_ltv'
+- name: gold_market_share
+  physicalName: actionable_customer_understanding.gold_market_share
+  physicalType: view
+  description: 'License: see repository LICENSE.md'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: benchmark_cell_id
+    logicalType: string
+    physicalType: STRING
+    description: Stable logical cell identity shared across original and restated deliveries.
+  - name: market_benchmark_id
+    logicalType: string
+    physicalType: STRING
+    description: Current delivered-version identity selected for the stable benchmark cell.
+  - name: source_observation_id
+    logicalType: string
+    physicalType: STRING
+    description: Source identity of the selected delivered cell version.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    description: Licensed benchmark source namespace; methodology and usage rights remain source-specific.
+  - name: market_definition
+    logicalType: string
+    physicalType: STRING
+    description: Measured store/channel universe supplied by the source; a share number is not meaningful
+      without it.
+  - name: geography_level
+    logicalType: string
+    physicalType: STRING
+    description: 'Provider geography hierarchy level: total, region, market, key_account or account_market.'
+  - name: geography_code
+    logicalType: string
+    physicalType: STRING
+    description: Provider or adopter identifier at geography_level.
+  - name: category_ref
+    logicalType: string
+    physicalType: STRING
+    description: Adopter-owned mapping from the benchmark category to the own merchandising hierarchy.
+  - name: subject_type
+    logicalType: string
+    physicalType: STRING
+    description: 'Served subject: own banner, competitor banner, brand or private label; total-category
+      cells are denominator-only inputs.'
+  - name: subject_id
+    logicalType: string
+    physicalType: STRING
+    description: Source identifier for the served non-total subject.
+  - name: competitor_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable BMV competitor key when a competitor-banner subject is mapped.
+  - name: competitor_name
+    logicalType: string
+    physicalType: STRING
+    description: Competitor display name effective at provider period end.
+  - name: period_type
+    logicalType: string
+    physicalType: STRING
+    description: Provider period vocabulary; never relabeled as an own fiscal period.
+  - name: period_end_date
+    logicalType: date
+    physicalType: DATE
+    description: Provider-defined period end date used for stable-cell grain and period-end display-name
+      resolution.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: ISO 4217 reporting currency for benchmark monetary measures.
+  - name: market_share_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Additive measured sales for this subject cell; numerator for market share.
+  - name: market_size_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Matching total-category sales; denominator for market share.
+  - name: subject_unit_volume
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Measured unit volume for the selected subject cell.
+  - name: market_size_unit_volume
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Matching total-category unit volume.
+  - name: market_share_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: 100 x subject sales / matching total-category sales. NULL when the denominator cell is
+      unavailable.
+  - name: provider_reported_market_share_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Provider-reported share retained for reconciliation; non-additive and not averaged by
+      the metric view.
+  - name: provider_reported_market_growth_rate_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Provider-reported growth retained without recomputation across restatements.
+  - name: eq_volume
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Optional provider-supplied equivalized volume.
+  - name: acv_weighted_distribution_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Optional provider-supplied importance-weighted distribution percentage; non-additive.
+  - name: numeric_distribution_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Optional provider-supplied outlet-count-weighted distribution percentage; non-additive.
+  - name: tdp
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+    description: Optional provider-supplied total distribution points.
+  - name: promo_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Optional provider-supplied sales attributed to promotional conditions.
+  - name: base_sales_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: Optional provider-supplied sales attributed to base conditions.
+  - name: is_restatement
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the selected current delivery revised an earlier version of the stable cell.
+  - name: restates_market_benchmark_id
+    logicalType: string
+    physicalType: STRING
+    description: Delivered-version key superseded by the selected restatement, when supplied.
+  - name: observed_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Provider observation or publication timestamp for the selected version.
+  - name: provider_updated_at_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Provider update timestamp used first in latest-wins ordering.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Lakehouse load timestamp used after provider and observation timestamps in latest-wins
+      ordering.
+  - name: market_share_basis
+    logicalType: string
+    physicalType: STRING
+    description: 'Ratio basis used by the metric view: subject sales over matching total-category sales.'
+  - name: license_posture
+    logicalType: string
+    physicalType: STRING
+    description: Default internal-use-only boundary for licensed cells and their derivatives; adopters
+      apply their own contracts.
+  quality:
+  - name: market_benchmark_latest_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_benchmark_latest_unique
+    query: 'SELECT benchmark_cell_id
+
+      FROM actionable_customer_understanding.gold_market_share
+
+      GROUP BY benchmark_cell_id
+
+      HAVING COUNT(*) <> 1'
+  - name: market_benchmark_share_sum
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: 'Gold excludes total-category denominator cells. A sum below 100 is an honest unmeasured
+      remainder; only over-allocation beyond rounding tolerance is flagged. Subject types are non-mutually-exclusive
+      measurement lenses: banners, brands and private label may overlap, so the per-subject_type partition
+      is deliberate.'
+    query: "SELECT\n  record_source, market_definition, geography_level, geography_code,\n  category_ref,\
+      \ subject_type, period_type, period_end_date,\n  SUM(provider_reported_market_share_pct) AS measured_subject_share_pct\n\
+      FROM actionable_customer_understanding.gold_market_share\nWHERE provider_reported_market_share_pct\
+      \ IS NOT NULL\nGROUP BY\n  record_source, market_definition, geography_level, geography_code,\n\
+      \  category_ref, subject_type, period_type, period_end_date\nHAVING SUM(provider_reported_market_share_pct)\
+      \ > 100.01"
+  - name: market_share_banner_set_share_sum
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: Own and competitor banners form one mutually-exclusive lens, so validate their combined
+      reported share without mixing in overlapping brand/private-label lenses.
+    query: "SELECT\n  record_source, market_definition, geography_level, geography_code,\n  category_ref,\
+      \ period_type, period_end_date,\n  SUM(provider_reported_market_share_pct) AS measured_banner_share_pct\n\
+      FROM actionable_customer_understanding.gold_market_share\nWHERE subject_type IN ('own_banner', 'competitor_banner')\n\
+      \  AND provider_reported_market_share_pct IS NOT NULL\nGROUP BY\n  record_source, market_definition,\
+      \ geography_level, geography_code,\n  category_ref, period_type, period_end_date\nHAVING SUM(provider_reported_market_share_pct)\
+      \ > 100.01"
+  - name: market_share_percentage_bounds
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_share_percentage_bounds
+    query: "SELECT *\nFROM actionable_customer_understanding.gold_market_share\nWHERE (market_share_pct\
+      \ IS NOT NULL AND market_share_pct NOT BETWEEN 0 AND 100)\n   OR (provider_reported_market_share_pct\
+      \ IS NOT NULL\n       AND provider_reported_market_share_pct NOT BETWEEN 0 AND 100)\n   OR (acv_weighted_distribution_pct\
+      \ IS NOT NULL\n       AND acv_weighted_distribution_pct NOT BETWEEN 0 AND 100)\n   OR (numeric_distribution_pct\
+      \ IS NOT NULL\n       AND numeric_distribution_pct NOT BETWEEN 0 AND 100)"
+  - name: market_share_component_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: market_share_component_consistency
+    query: "SELECT *\nFROM actionable_customer_understanding.gold_market_share\nWHERE market_share_sales_amount\
+      \ IS NOT NULL\n  AND market_size_sales_amount IS NOT NULL\n  AND market_share_sales_amount > market_size_sales_amount"
+  - name: market_share_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: Counts served non-total subject cells; denominator-only total-category cells stay internal.
+    query: 'SELECT COUNT(*) AS market_share_subject_rows
+
+      FROM actionable_customer_understanding.gold_market_share'
