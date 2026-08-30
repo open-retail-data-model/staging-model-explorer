@@ -64,6 +64,21 @@
       },
       {
         "kind": "consumes",
+        "source": "ai-assisted-store-associates",
+        "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "ai-assisted-store-associates",
+        "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "ai-assisted-store-associates",
+        "target": "store"
+      },
+      {
+        "kind": "consumes",
         "source": "balancing-margin-and-volume",
         "target": "calendar"
       },
@@ -15617,31 +15632,1343 @@
       ]
     },
     {
-      "checks": [],
-      "contract_path": null,
-      "glossary_path": null,
+      "checks": [
+        {
+          "column": null,
+          "name": "as_grain_unique",
+          "severity": "error",
+          "table": "associate"
+        },
+        {
+          "column": null,
+          "name": "as_keys_not_null",
+          "severity": "error",
+          "table": "associate"
+        },
+        {
+          "column": null,
+          "name": "as_single_current",
+          "severity": "error",
+          "table": "associate"
+        },
+        {
+          "column": null,
+          "name": "as_scd2_consistent",
+          "severity": "error",
+          "table": "associate"
+        },
+        {
+          "column": null,
+          "name": "as_store_fk_orphan",
+          "severity": "error",
+          "table": "associate"
+        },
+        {
+          "column": null,
+          "name": "sa_grain_unique",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_keys_not_null",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_associate_key_pair",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_associate_fk_orphan",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_store_fk_orphan",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_profile_fk_orphan",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_product_fk_orphan",
+          "severity": "error",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_actioned_requires_associate",
+          "severity": "warn",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "sa_zone_coverage",
+          "severity": "metric",
+          "table": "suggested_action"
+        },
+        {
+          "column": null,
+          "name": "arl_grain_unique",
+          "severity": "error",
+          "table": "action_response_log"
+        },
+        {
+          "column": null,
+          "name": "arl_keys_not_null",
+          "severity": "error",
+          "table": "action_response_log"
+        },
+        {
+          "column": null,
+          "name": "arl_action_fk_orphan",
+          "severity": "error",
+          "table": "action_response_log"
+        },
+        {
+          "column": null,
+          "name": "arl_associate_fk_orphan",
+          "severity": "error",
+          "table": "action_response_log"
+        },
+        {
+          "column": null,
+          "name": "arl_response_after_generated",
+          "severity": "warn",
+          "table": "action_response_log"
+        },
+        {
+          "column": null,
+          "name": "or_grain_unique",
+          "severity": "error",
+          "table": "outcome_resolution"
+        },
+        {
+          "column": null,
+          "name": "or_keys_not_null",
+          "severity": "error",
+          "table": "outcome_resolution"
+        },
+        {
+          "column": null,
+          "name": "or_action_fk_orphan",
+          "severity": "error",
+          "table": "outcome_resolution"
+        },
+        {
+          "column": null,
+          "name": "or_single_currency",
+          "severity": "error",
+          "table": "outcome_resolution"
+        },
+        {
+          "column": null,
+          "name": "or_amount_currency_pair",
+          "severity": "error",
+          "table": "outcome_resolution"
+        }
+      ],
+      "contract_path": "contracts/odcs/ai-assisted-store-associates.odcs.yaml",
+      "glossary_path": "outcome-packages/ai-assisted-store-associates/glossary.md",
       "kind": "outcome",
       "name": "ai-assisted-store-associates",
-      "relationships": [],
-      "tables": [],
+      "relationships": [
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "associate",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "associate_sk"
+          ],
+          "child_table": "suggested_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "associate_sk"
+          ],
+          "parent_table": "associate"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "suggested_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "profile_sk"
+          ],
+          "child_table": "suggested_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "profile_sk"
+          ],
+          "parent_table": "profile"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "suggested_action",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "suggested_action_sk"
+          ],
+          "child_table": "action_response_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "suggested_action_sk"
+          ],
+          "parent_table": "suggested_action"
+        },
+        {
+          "child_cols": [
+            "associate_sk"
+          ],
+          "child_table": "action_response_log",
+          "declared_fk": true,
+          "parent_cols": [
+            "associate_sk"
+          ],
+          "parent_table": "associate"
+        },
+        {
+          "child_cols": [
+            "suggested_action_sk"
+          ],
+          "child_table": "outcome_resolution",
+          "declared_fk": true,
+          "parent_cols": [
+            "suggested_action_sk"
+          ],
+          "parent_table": "suggested_action"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per response event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_response_log_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the response event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_response_log_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to suggested_action.suggested_action_sk \u2014 the action responded to.",
+              "enum_values": [],
+              "fk": true,
+              "name": "suggested_action_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable action business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to associate.associate_sk \u2014 the responding associate (version at response time).",
+              "enum_values": [],
+              "fk": true,
+              "name": "associate_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable associate business key. The SCD2-safe join/aggregation key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the associate responded (UTC, ISO 8601). The business event time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "How the associate acted on the prompt. Allowed values: accepted, rejected, deferred, completed, expired, reassigned.",
+              "enum_values": [
+                "accepted",
+                "rejected",
+                "deferred",
+                "completed",
+                "expired",
+                "reassigned"
+              ],
+              "fk": false,
+              "name": "response_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional reason the associate gave, esp. on reject/defer. Free STRING (operationally extensible); common values: too_busy, wrong_zone, not_qualified, customer_left, out_of_stock, already_handled, completed_successfully.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM AI-Assisted Store Associates \u2014 append-only log of associate responses to suggested actions (accept/reject/defer/complete). Adopter-owned; schema + DQ contract.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "action_response_log",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version; the join/FK target.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the associate \u2014 a pseudonymous workforce/employee code. Stable across SCD2 versions. Not a name (raw employee PII is out of scope; see header).",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk \u2014 the associate's home store (SCD2 version current at load).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable home-store business key. Prefer this for SCD2-safe joins.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Job role on the floor. Allowed values: sales_associate, cashier, department_specialist, stock_associate, customer_service, team_lead, store_manager, visual_merchandiser, loss_prevention.",
+              "enum_values": [
+                "sales_associate",
+                "cashier",
+                "department_specialist",
+                "stock_associate",
+                "customer_service",
+                "team_lead",
+                "store_manager",
+                "visual_merchandiser",
+                "loss_prevention"
+              ],
+              "fk": false,
+              "name": "role",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pipe-delimited capability tags used to route skill-matched tasks, e.g. \"electronics|appliances|installations\". Free STRING (brand-specific taxonomy); a normalized associate_skill association is a documented future option.",
+              "enum_values": [],
+              "fk": false,
+              "name": "skill_tags",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Allowed values: full_time, part_time, seasonal, contractor.",
+              "enum_values": [
+                "full_time",
+                "part_time",
+                "seasonal",
+                "contractor"
+              ],
+              "fk": false,
+              "name": "employment_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Home merchandising department the associate is normally assigned to. Free STRING (brand-specific department taxonomy).",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if currently employed and rostered. NOT a live floor-availability signal \u2014 that is operational state the application owns.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Date the associate was hired.",
+              "enum_values": [],
+              "fk": false,
+              "name": "hire_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM AI-Assisted Store Associates \u2014 the store-workforce dimension (SCD2): qualified, rostered associates a Next Best Action is routed to. No raw employee PII.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "associate",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per resolution.",
+              "enum_values": [],
+              "fk": false,
+              "name": "outcome_resolution_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the resolution.",
+              "enum_values": [],
+              "fk": false,
+              "name": "outcome_resolution_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to suggested_action.suggested_action_sk \u2014 the action resolved.",
+              "enum_values": [],
+              "fk": true,
+              "name": "suggested_action_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable action business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the real-world outcome was recorded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolution_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "What happened. Allowed values: sale_closed, item_restocked, customer_assisted, issue_resolved, task_abandoned, no_outcome.",
+              "enum_values": [
+                "sale_closed",
+                "item_restocked",
+                "customer_assisted",
+                "issue_resolved",
+                "task_abandoned",
+                "no_outcome"
+              ],
+              "fk": false,
+              "name": "outcome_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Realized monetary value attributable to the action (e.g. closed-sale amount), in currency_code. NULL for non-monetary outcomes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "outcome_value_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "ISO 4217 currency of outcome_value_amount. Required whenever outcome_value_amount is present (paired by CHECK).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Non-monetary outcome magnitude where it applies, e.g. units restocked. NULL when not applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "units_affected",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM AI-Assisted Store Associates \u2014 append-only real-world outcome of a suggested action (sale, restock, resolution) for ROI and model training. Adopter-owned; schema + DQ contract.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "outcome_resolution",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per action.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the action (stable across status MERGEs).",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the engine generated/dispatched the action (UTC, ISO 8601). The business event time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "generated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "FK to associate.associate_sk \u2014 the routed associate (version at dispatch). NULL while an action is generated but not yet routed.",
+              "enum_values": [],
+              "fk": true,
+              "name": "associate_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable associate business key. The SCD2-safe join/aggregation key. NULL while unrouted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version current at dispatch).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable zone id of the action's target location. LOGICAL reference to connected-store-signals.store_zone.store_zone_id (not a hard cross-package FK; deploy-order independent).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to customer.profile.profile_sk \u2014 the customer the action concerns. NULL for customer-agnostic tasks (restock, cleaning).",
+              "enum_values": [],
+              "fk": true,
+              "name": "profile_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable, pseudonymous customer business key. NULL for customer-agnostic tasks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product.product_sk \u2014 the product the action concerns. NULL when not product-specific.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key. NULL when not product-specific.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The task class. Allowed values: customer_assist, restock_shelf, bopis_fulfill, safety_loss_prevention, maintenance_cleaning, price_check, queue_bust, clienteling.",
+              "enum_values": [
+                "customer_assist",
+                "restock_shelf",
+                "bopis_fulfill",
+                "safety_loss_prevention",
+                "maintenance_cleaning",
+                "price_check",
+                "queue_bust",
+                "clienteling"
+              ],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What fired the action. Allowed values: ble_beacon_dwell, pos_inventory_decrement, order_management_system, sensor_event, digital_interaction, schedule, manual.",
+              "enum_values": [
+                "ble_beacon_dwell",
+                "pos_inventory_decrement",
+                "order_management_system",
+                "sensor_event",
+                "digital_interaction",
+                "schedule",
+                "manual"
+              ],
+              "fk": false,
+              "name": "trigger_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Hierarchy-of-needs base score in [0,100] before dynamic multipliers/decay (e.g. safety_loss_prevention 90, bopis_fulfill 75, customer_assist 60, restock_shelf 40, maintenance_cleaning 20). See glossary.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Dynamic Business Value Score in [0,100] after multipliers and time decay \u2014 the value the associate UI sorts on. Non-monetary; recomputed as the action ages.",
+              "enum_values": [],
+              "fk": false,
+              "name": "priority_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Relevance-decay curve applied to priority_score. Allowed values: linear, exponential, immediate_nullification, none. See glossary.",
+              "enum_values": [
+                "linear",
+                "exponential",
+                "immediate_nullification",
+                "none"
+              ],
+              "fk": false,
+              "name": "decay_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Schemaless JSON payload the associate app renders (location, customer_context, product_context, suggested_dialogue, ...). Stored as a JSON string so new task types need no schema migration; common shapes are documented in glossary.md.",
+              "enum_values": [],
+              "fk": false,
+              "name": "context_payload",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current lifecycle state. Allowed values: pending, accepted, in_progress, completed, rejected, expired.",
+              "enum_values": [
+                "pending",
+                "accepted",
+                "in_progress",
+                "completed",
+                "rejected",
+                "expired"
+              ],
+              "fk": false,
+              "name": "status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the action becomes stale/un-actionable (UTC). NULL for tasks that persist until completed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expiration_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM AI-Assisted Store Associates \u2014 the normalized, prioritized Next Best Action queue routed to associates (adopter-owned; schema + DQ contract).",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "suggested_action",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date the actions were generated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Task class of the actions in the row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Count of actions generated in the cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actions_generated",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct associates the actions were routed to (durable ids).",
+              "enum_values": [],
+              "fk": false,
+              "name": "distinct_associates",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Actions with an accepted response.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actions_accepted",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Actions with a rejected response.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actions_rejected",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Actions that reached completed status.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actions_completed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Actions that reached expired status.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actions_expired",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "actions_accepted / actions_generated for the cell (ratio-of-sums-safe components are also exposed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "acceptance_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "actions_completed / actions_generated for the cell.",
+              "enum_values": [],
+              "fk": false,
+              "name": "completion_rate",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Mean seconds from dispatch to first response for the cell (display convenience; re-aggregate via response_seconds_total / responses_timed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_response_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Sum of dispatch-to-first-response seconds; the additive numerator for average response time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_seconds_total",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Count of actions that received a first response; the additive denominator for average response time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "responses_timed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of actions resolved as a closed sale.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sales_closed",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Sum of monetary outcomes attributed to the actions (in outcome_currency_code).",
+              "enum_values": [],
+              "fk": false,
+              "name": "realized_outcome_value",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "ISO 4217 currency of realized_outcome_value (single reporting currency; see or_single_currency).",
+              "enum_values": [],
+              "fk": false,
+              "name": "outcome_currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "The Next Best Action feedback funnel, one row per store x trading date x action_type: how many actions were generated, accepted, rejected, completed and expired, the acceptance/completion rates, average time-to-first-response, and the realized monetary outcome. This is the optimization surface \u2014 it turns the response and outcome logs into the ROI signal and the labeled history for future models.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_action_outcome_funnel_daily",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable associate business key the queue belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Associate job role (from the associate version at dispatch).",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_role",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Associate capability tags (pipe-delimited) used for skill matching.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_skill_tags",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable target-zone id (logical reference to connected-store-signals.store_zone).",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable action business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Task class: customer_assist, restock_shelf, bopis_fulfill, safety_loss_prevention, maintenance_cleaning, price_check, queue_bust, clienteling.",
+              "enum_values": [],
+              "fk": false,
+              "name": "action_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What fired the action (ble_beacon_dwell, pos_inventory_decrement, order_management_system, sensor_event, digital_interaction, schedule, manual).",
+              "enum_values": [],
+              "fk": false,
+              "name": "trigger_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Hierarchy-of-needs base score in [0,100] before dynamic multipliers/decay.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_score",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Dynamic Business Value Score in [0,100] the queue is ranked on (after multipliers and decay).",
+              "enum_values": [],
+              "fk": false,
+              "name": "priority_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Relevance-decay curve applied to priority_score: linear, exponential, immediate_nullification, none.",
+              "enum_values": [],
+              "fk": false,
+              "name": "decay_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current lifecycle state of the action (open states only appear here): pending, accepted, in_progress.",
+              "enum_values": [],
+              "fk": false,
+              "name": "status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable, pseudonymous customer key the action concerns; NULL for customer-agnostic tasks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable product key the action concerns; NULL when not product-specific.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the action was generated/dispatched (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "generated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the action becomes stale; NULL for persistent tasks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "expiration_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Minutes remaining until expiration at view evaluation time; NULL for persistent tasks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minutes_to_expiry",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Rank of the action within the associate's open queue (1 = highest priority_score).",
+              "enum_values": [],
+              "fk": false,
+              "name": "queue_rank",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Schemaless JSON payload the associate app renders (location, customer/product context, suggested dialogue).",
+              "enum_values": [],
+              "fk": false,
+              "name": "context_payload",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "View evaluation timestamp (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "The live prioritized Next Best Action queue an associate sees: one row per OPEN, non-expired suggested action, ranked within each associate by the dynamic priority_score. This is the \"Associates Best Next Actions\" serving surface.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "profile",
+              "unit": "customer"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_associate_action_queue_current",
+          "role": "gold",
+          "scd2": false
+        }
+      ],
       "use_cases": [
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "product",
+            "store"
+          ],
           "name": "Associates Best Next Actions",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_associate_action_queue_current"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "product",
+            "store"
+          ],
           "name": "Real-Time Data Access",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_associate_action_queue_current"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer",
+            "product",
+            "store"
+          ],
           "name": "Digital Assistant Selling Tools",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_action_outcome_funnel_daily"
+          ]
         }
       ]
     },
