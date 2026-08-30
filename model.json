@@ -16294,7 +16294,7 @@
         {
           "columns": [
             {
-              "comment": "Surrogate key. Unique per action.",
+              "comment": "Surrogate key. Unique per generated action.",
               "enum_values": [],
               "fk": false,
               "name": "suggested_action_sk",
@@ -16303,7 +16303,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Durable business key for the action (stable across status MERGEs).",
+              "comment": "Durable business key for the action. Stable; joined by the response log and outcome.",
               "enum_values": [],
               "fk": false,
               "name": "suggested_action_id",
@@ -16312,7 +16312,7 @@
               "type": "STRING"
             },
             {
-              "comment": "When the engine generated/dispatched the action (UTC, ISO 8601). The business event time.",
+              "comment": "When the engine generated/dispatched the action (UTC, ISO 8601). The business event time and the decay origin.",
               "enum_values": [],
               "fk": false,
               "name": "generated_timestamp",
@@ -16321,7 +16321,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "FK to associate.associate_sk \u2014 the routed associate (version at dispatch). NULL while an action is generated but not yet routed.",
+              "comment": "FK to associate.associate_sk \u2014 the routed associate (version at dispatch). NULL when the action was generated but not yet routed.",
               "enum_values": [],
               "fk": true,
               "name": "associate_sk",
@@ -16446,7 +16446,7 @@
               "type": "INT"
             },
             {
-              "comment": "Dynamic Business Value Score in [0,100] after multipliers and time decay \u2014 the value the associate UI sorts on. Non-monetary; recomputed as the action ages.",
+              "comment": "Dynamic Business Value Score in [0,100] AT GENERATION (base_score x context multipliers), before time decay. The gold queue view applies decay_type from generated_timestamp to derive the current, rank-on score. Non-monetary.",
               "enum_values": [],
               "fk": false,
               "name": "priority_score",
@@ -16455,7 +16455,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Relevance-decay curve applied to priority_score. Allowed values: linear, exponential, immediate_nullification, none. See glossary.",
+              "comment": "Relevance-decay curve the queue view applies to priority_score. Allowed values: linear, exponential, immediate_nullification, none. See glossary.",
               "enum_values": [
                 "linear",
                 "exponential",
@@ -16478,23 +16478,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Current lifecycle state. Allowed values: pending, accepted, in_progress, completed, rejected, expired.",
-              "enum_values": [
-                "pending",
-                "accepted",
-                "in_progress",
-                "completed",
-                "rejected",
-                "expired"
-              ],
-              "fk": false,
-              "name": "status",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "When the action becomes stale/un-actionable (UTC). NULL for tasks that persist until completed.",
+              "comment": "When the action becomes stale/un-actionable (UTC). NULL for tasks that persist until completed. The queue view drops actions past this instant.",
               "enum_values": [],
               "fk": false,
               "name": "expiration_timestamp",
@@ -16521,7 +16505,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "ORDM AI-Assisted Store Associates \u2014 the normalized, prioritized Next Best Action queue routed to associates (adopter-owned; schema + DQ contract).",
+          "comment": "ORDM AI-Assisted Store Associates \u2014 append-only record of each generated Next Best Action routed to an associate (lifecycle derived from action_response_log). Adopter-owned; schema + DQ contract.",
           "consumes_tables": [
             {
               "table": "product",
@@ -16554,6 +16538,24 @@
               "type": "STRING"
             },
             {
+              "comment": "Durable target-zone id (logical reference to connected-store-signals.store_zone). NULL when the actions had no target zone; the grain that exposes the per-zone staffing signal.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_zone_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable associate business key the actions were routed to. NULL for unrouted actions; the grain for per-associate effectiveness.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
               "comment": "Business date the actions were generated.",
               "enum_values": [],
               "fk": false,
@@ -16581,16 +16583,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Distinct associates the actions were routed to (durable ids).",
-              "enum_values": [],
-              "fk": false,
-              "name": "distinct_associates",
-              "pii": false,
-              "pk": false,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "Actions with an accepted response.",
+              "comment": "Actions with an accepted response (from action_response_log).",
               "enum_values": [],
               "fk": false,
               "name": "actions_accepted",
@@ -16599,7 +16592,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Actions with a rejected response.",
+              "comment": "Actions with a rejected response (from action_response_log).",
               "enum_values": [],
               "fk": false,
               "name": "actions_rejected",
@@ -16608,7 +16601,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Actions that reached completed status.",
+              "comment": "Actions with a completed response (from action_response_log).",
               "enum_values": [],
               "fk": false,
               "name": "actions_completed",
@@ -16617,7 +16610,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Actions that reached expired status.",
+              "comment": "Actions with an expired response (from action_response_log).",
               "enum_values": [],
               "fk": false,
               "name": "actions_expired",
@@ -16707,7 +16700,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "The Next Best Action feedback funnel, one row per store x trading date x action_type: how many actions were generated, accepted, rejected, completed and expired, the acceptance/completion rates, average time-to-first-response, and the realized monetary outcome. This is the optimization surface \u2014 it turns the response and outcome logs into the ROI signal and the labeled history for future models.",
+          "comment": "The Next Best Action feedback funnel, one row per store x zone x associate x trading date x action_type: how many actions were generated, accepted, rejected, completed and expired, the acceptance/completion rates, average time-to-first-response, and the realized monetary outcome. This is the optimization surface \u2014 it turns the response and outcome logs into the ROI signal and the labeled history for future models.",
           "consumes_tables": [
             {
               "table": "product",
@@ -16812,10 +16805,19 @@
               "type": "INT"
             },
             {
-              "comment": "Dynamic Business Value Score in [0,100] the queue is ranked on (after multipliers and decay).",
+              "comment": "Business Value Score at generation (before time decay), in [0,100].",
               "enum_values": [],
               "fk": false,
               "name": "priority_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Time-decayed Business Value Score the queue is ranked on, derived in-view from priority_score and decay_type since generated_timestamp.",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_priority_score",
               "pii": false,
               "pk": false,
               "type": "DOUBLE"
@@ -16830,13 +16832,13 @@
               "type": "STRING"
             },
             {
-              "comment": "Current lifecycle state of the action (open states only appear here): pending, accepted, in_progress.",
+              "comment": "Derived lifecycle state (open states only appear here): pending, or the latest non-terminal response (accepted / deferred / reassigned). Sourced from action_response_log, not a stored status.",
               "enum_values": [],
               "fk": false,
-              "name": "status",
+              "name": "current_state",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Durable, pseudonymous customer key the action concerns; NULL for customer-agnostic tasks.",
@@ -16911,7 +16913,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "The live prioritized Next Best Action queue an associate sees: one row per OPEN, non-expired suggested action, ranked within each associate by the dynamic priority_score. This is the \"Associates Best Next Actions\" serving surface.",
+          "comment": "The live prioritized Next Best Action queue an associate sees: one row per OPEN, non-expired suggested action, ranked within each associate by the time-decayed Business Value Score. This is the \"Associates Best Next Actions\" serving surface.",
           "consumes_tables": [
             {
               "table": "product",

@@ -504,8 +504,8 @@ schema:
 - name: suggested_action
   physicalName: ai_assisted_store_associates.suggested_action
   physicalType: table
-  description: ORDM AI-Assisted Store Associates — the normalized, prioritized Next Best Action queue
-    routed to associates (adopter-owned; schema + DQ contract).
+  description: ORDM AI-Assisted Store Associates — append-only record of each generated Next Best Action
+    routed to an associate (lifecycle derived from action_response_log). Adopter-owned; schema + DQ contract.
   tags:
   - transactional
   authoritativeDefinitions:
@@ -522,23 +522,24 @@ schema:
     required: true
     primaryKey: true
     primaryKeyPosition: 1
-    description: Surrogate key. Unique per action.
+    description: Surrogate key. Unique per generated action.
   - name: suggested_action_id
     logicalType: string
     physicalType: STRING
     required: true
-    description: Durable business key for the action (stable across status MERGEs).
+    description: Durable business key for the action. Stable; joined by the response log and outcome.
   - name: generated_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
     required: true
-    description: When the engine generated/dispatched the action (UTC, ISO 8601). The business event time.
+    description: When the engine generated/dispatched the action (UTC, ISO 8601). The business event time
+      and the decay origin.
   - name: associate_sk
     logicalType: integer
     physicalType: BIGINT
     required: false
-    description: FK to associate.associate_sk — the routed associate (version at dispatch). NULL while
-      an action is generated but not yet routed.
+    description: FK to associate.associate_sk — the routed associate (version at dispatch). NULL when
+      the action was generated but not yet routed.
     relationships:
     - to: associate.associate_sk
       type: foreignKey
@@ -652,8 +653,9 @@ schema:
     logicalType: number
     physicalType: DOUBLE
     required: false
-    description: Dynamic Business Value Score in [0,100] after multipliers and time decay — the value
-      the associate UI sorts on. Non-monetary; recomputed as the action ages.
+    description: Dynamic Business Value Score in [0,100] AT GENERATION (base_score x context multipliers),
+      before time decay. The gold queue view applies decay_type from generated_timestamp to derive the
+      current, rank-on score. Non-monetary.
     quality:
     - type: text
       dimension: validity
@@ -663,8 +665,8 @@ schema:
     logicalType: string
     physicalType: STRING
     required: false
-    description: 'Relevance-decay curve applied to priority_score. Allowed values: linear, exponential,
-      immediate_nullification, none. See glossary.'
+    description: 'Relevance-decay curve the queue view applies to priority_score. Allowed values: linear,
+      exponential, immediate_nullification, none. See glossary.'
     quality:
     - type: text
       dimension: validity
@@ -677,23 +679,12 @@ schema:
     description: Schemaless JSON payload the associate app renders (location, customer_context, product_context,
       suggested_dialogue, ...). Stored as a JSON string so new task types need no schema migration; common
       shapes are documented in glossary.md.
-  - name: status
-    logicalType: string
-    physicalType: STRING
-    required: true
-    description: 'Current lifecycle state. Allowed values: pending, accepted, in_progress, completed,
-      rejected, expired.'
-    quality:
-    - type: text
-      dimension: validity
-      severity: error
-      description: 'Allowed values: pending, accepted, in_progress, completed, rejected, expired.'
   - name: expiration_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
     required: false
     description: When the action becomes stale/un-actionable (UTC). NULL for tasks that persist until
-      completed.
+      completed. The queue view drops actions past this instant.
     quality:
     - type: text
       dimension: validity
@@ -727,8 +718,7 @@ schema:
     unit: rows
     description: sa_keys_not_null
     query: SELECT * FROM ai_assisted_store_associates.suggested_action WHERE suggested_action_sk IS NULL
-      OR suggested_action_id IS NULL OR generated_timestamp IS NULL OR action_type IS NULL OR status IS
-      NULL
+      OR suggested_action_id IS NULL OR generated_timestamp IS NULL OR action_type IS NULL
   - name: sa_associate_key_pair
     type: sql
     dimension: accuracy
@@ -781,8 +771,13 @@ schema:
     mustBe: 0
     unit: rows
     description: sa_actioned_requires_associate
-    query: SELECT * FROM ai_assisted_store_associates.suggested_action WHERE status IN ('accepted', 'in_progress',
-      'completed') AND associate_sk IS NULL
+    query: 'SELECT a.suggested_action_id
+
+      FROM ai_assisted_store_associates.suggested_action a
+
+      JOIN ai_assisted_store_associates.action_response_log r ON a.suggested_action_sk = r.suggested_action_sk
+
+      WHERE r.response_type IN (''accepted'', ''completed'') AND a.associate_sk IS NULL'
   - name: sa_zone_coverage
     type: sql
     dimension: accuracy
@@ -794,8 +789,8 @@ schema:
 - name: gold_action_outcome_funnel_daily
   physicalName: ai_assisted_store_associates.gold_action_outcome_funnel_daily
   physicalType: view
-  description: 'The Next Best Action feedback funnel, one row per store x trading date x action_type:
-    how many actions were generated, accepted, rejected, completed and expired, the acceptance/completion
+  description: 'The Next Best Action feedback funnel, one row per store x zone x associate x trading date
+    x action_type: how many actions were generated, accepted, rejected, completed and expired, the acceptance/completion
     rates, average time-to-first-response, and the realized monetary outcome. This is the optimization
     surface — it turns the response and outcome logs into the ROI signal and the labeled history for future
     models.'
@@ -813,6 +808,16 @@ schema:
     logicalType: string
     physicalType: STRING
     description: Durable store business key.
+  - name: store_zone_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable target-zone id (logical reference to connected-store-signals.store_zone). NULL
+      when the actions had no target zone; the grain that exposes the per-zone staffing signal.
+  - name: associate_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable associate business key the actions were routed to. NULL for unrouted actions;
+      the grain for per-associate effectiveness.
   - name: trading_date
     logicalType: date
     physicalType: DATE
@@ -825,26 +830,22 @@ schema:
     logicalType: integer
     physicalType: BIGINT
     description: Count of actions generated in the cell.
-  - name: distinct_associates
-    logicalType: integer
-    physicalType: BIGINT
-    description: Distinct associates the actions were routed to (durable ids).
   - name: actions_accepted
     logicalType: integer
     physicalType: BIGINT
-    description: Actions with an accepted response.
+    description: Actions with an accepted response (from action_response_log).
   - name: actions_rejected
     logicalType: integer
     physicalType: BIGINT
-    description: Actions with a rejected response.
+    description: Actions with a rejected response (from action_response_log).
   - name: actions_completed
     logicalType: integer
     physicalType: BIGINT
-    description: Actions that reached completed status.
+    description: Actions with a completed response (from action_response_log).
   - name: actions_expired
     logicalType: integer
     physicalType: BIGINT
-    description: Actions that reached expired status.
+    description: Actions with an expired response (from action_response_log).
   - name: acceptance_rate
     logicalType: number
     physicalType: DOUBLE
@@ -887,8 +888,8 @@ schema:
   physicalName: ai_assisted_store_associates.gold_associate_action_queue_current
   physicalType: view
   description: 'The live prioritized Next Best Action queue an associate sees: one row per OPEN, non-expired
-    suggested action, ranked within each associate by the dynamic priority_score. This is the "Associates
-    Best Next Actions" serving surface.'
+    suggested action, ranked within each associate by the time-decayed Business Value Score. This is the
+    "Associates Best Next Actions" serving surface.'
   tags:
   - gold
   authoritativeDefinitions:
@@ -940,18 +941,20 @@ schema:
   - name: priority_score
     logicalType: number
     physicalType: DOUBLE
-    description: Dynamic Business Value Score in [0,100] the queue is ranked on (after multipliers and
-      decay).
+    description: Business Value Score at generation (before time decay), in [0,100].
+  - name: current_priority_score
+    logicalType: number
+    physicalType: DOUBLE
+    description: Time-decayed Business Value Score the queue is ranked on, derived in-view from priority_score
+      and decay_type since generated_timestamp.
   - name: decay_type
     logicalType: string
     physicalType: STRING
     description: 'Relevance-decay curve applied to priority_score: linear, exponential, immediate_nullification,
       none.'
-  - name: status
-    logicalType: string
-    physicalType: STRING
-    description: 'Current lifecycle state of the action (open states only appear here): pending, accepted,
-      in_progress.'
+  - name: current_state
+    description: 'Derived lifecycle state (open states only appear here): pending, or the latest non-terminal
+      response (accepted / deferred / reassigned). Sourced from action_response_log, not a stored status.'
   - name: profile_id
     logicalType: string
     physicalType: STRING

@@ -14,12 +14,12 @@ the trigger signals map to existing entities (see *Builds on* in the README).
 | Object | Grain | Description |
 |---|---|---|
 | `associate` | One row per associate per SCD2 version | Store-workforce dimension: role, skills, home store, employment type. Master-tagged extension; no raw employee PII. Live floor status/zone is out of scope (operational state). |
-| `suggested_action` | One row per suggested action | The normalized, prioritized NBA queue routed to associates. Adopter-owned current-state table (schema + DQ contract); lifecycle transitions are logged in `action_response_log`. |
-| `action_response_log` | One row per associate response event | Append-only log of how the associate acted on a prompt (accept/reject/defer/complete). |
+| `suggested_action` | One append-only row per action generated | The normalized, prioritized NBA queue routed to associates, recorded as generated and never restated (no mutable workflow state, §0). The action's lifecycle lives in `action_response_log`; `priority_score` is the score at generation and is time-decayed downstream in the queue view. Adopter-owned; schema + DQ contract. |
+| `action_response_log` | One row per associate response event | Append-only log of how the associate acted on a prompt (accept/reject/defer/complete/expire) — the authoritative lifecycle of a suggested action. |
 | `outcome_resolution` | One row per resolved action | Append-only real-world outcome (sale closed, item restocked, …) — the ROI signal and labeled training history. |
-| `gold_associate_action_queue_current` | One row per open, non-expired action | The live prioritized queue an associate sees, ranked within associate by `priority_score`. |
-| `gold_action_outcome_funnel_daily` | One row per store × trading date × action_type | Generated / accepted / rejected / completed / expired counts, acceptance & completion rates, avg response time, realized outcome value. |
-| `mv_associate_action_performance` | store × trading date × action_type | UC Metric View over the daily funnel: acceptance, completion, responsiveness, realized value (ratio-of-sums). |
+| `gold_associate_action_queue_current` | One row per open, non-expired action | The live prioritized queue an associate sees, ranked within associate by the time-decayed `current_priority_score`. "Open" and `current_state` are derived from `action_response_log` (no terminal response yet), not a stored status. |
+| `gold_action_outcome_funnel_daily` | One row per store × zone × associate × trading date × action_type | Generated / accepted / rejected / completed / expired counts (from the response log), acceptance & completion rates, avg response time, realized outcome value. The associate and zone grain serve per-associate effectiveness and the per-zone staffing signal. |
+| `mv_associate_action_performance` | store × zone × associate × trading date × action_type | UC Metric View over the daily funnel: acceptance, completion, responsiveness, realized value (ratio-of-sums), broken down by associate or zone. |
 | `profile` / `product` / `store` | — | *(canonical-core)* the customer / product / store context the actions reference. |
 
 ## Key concepts
@@ -32,7 +32,7 @@ the trigger signals map to existing entities (see *Builds on* in the README).
 | **Dynamic multipliers** | Contextual scaling applied to the base: customer VIP ×1.5 (unknown ×1.0); high-margin product ×1.4 (low-margin ×0.8); completely empty shelf ×2.0 (low stock ×1.1). *Example:* an unknown shopper dwelling at high-margin OLED TVs (60 × 1.4 = **84**) outranks an empty shelf of HDMI cables (40 × 0.9 × 2.0 = **72**). |
 | **`decay_type` — linear** | Persistent-state tasks (restocking, cleaning): the physical state won't self-resolve, so priority erodes slowly. `priority_score = base_score − (elapsed_minutes × 0.5)`, to a floor. |
 | **`decay_type` — exponential** | Transient tasks (customer assistance, queue-busting): the opportunity window closes fast. `priority_score = base_score × (0.8 ^ elapsed_minutes)` — a VIP assist at 85 falls below routine restocking within ~5 minutes. |
-| **`decay_type` — immediate_nullification** | A secondary event makes the task instantly irrelevant: the customer leaves the zone, another associate scans the out-of-stock item, or the store closes. `priority_score → 0` and `status → 'expired'`. |
+| **`decay_type` — immediate_nullification** | A secondary event makes the task instantly irrelevant: the customer leaves the zone, another associate scans the out-of-stock item, or the store closes. The engine logs an `expired` response in `action_response_log`, which drops the action from the open queue. |
 | **`context_payload`** | Schemaless JSON the associate app renders, so a new task type needs no schema migration. Common shapes below. |
 | **Acceptance rate / completion rate** | `actions_accepted / actions_generated` and `actions_completed / actions_generated`. A run of `rejected | too_busy` in one zone is a staffing signal, not just a data point. |
 
@@ -65,12 +65,12 @@ Captured engine-neutrally (definition, grain, expression) and materialized as th
 
 | Metric | Definition | Grain / dimensions | Expression (over the gold funnel) |
 |---|---|---|---|
-| `actions_generated` | Count of NBAs dispatched. | store × date × action_type | `SUM(actions_generated)` |
-| `acceptance_rate` | Share of generated actions accepted. | store × date × action_type | `SUM(actions_accepted) / SUM(actions_generated)` |
-| `completion_rate` | Share of generated actions completed. | store × date × action_type | `SUM(actions_completed) / SUM(actions_generated)` |
-| `avg_response_seconds` | Mean dispatch-to-first-response time. | store × date × action_type | `SUM(response_seconds_total) / SUM(responses_timed)` |
-| `sales_closed` | Actions resolved as a closed sale. | store × date × action_type | `SUM(sales_closed)` |
-| `realized_outcome_value` | Monetary value attributed to actions. | store × date × action_type | `SUM(realized_outcome_value)` (single reporting currency) |
+| `actions_generated` | Count of NBAs dispatched. | store × zone × associate × date × action_type | `SUM(actions_generated)` |
+| `acceptance_rate` | Share of generated actions accepted. | store × zone × associate × date × action_type | `SUM(actions_accepted) / SUM(actions_generated)` |
+| `completion_rate` | Share of generated actions completed. | store × zone × associate × date × action_type | `SUM(actions_completed) / SUM(actions_generated)` |
+| `avg_response_seconds` | Mean dispatch-to-first-response time. | store × zone × associate × date × action_type | `SUM(response_seconds_total) / SUM(responses_timed)` |
+| `sales_closed` | Actions resolved as a closed sale. | store × zone × associate × date × action_type | `SUM(sales_closed)` |
+| `realized_outcome_value` | Monetary value attributed to actions. | store × zone × associate × date × action_type | `SUM(realized_outcome_value)` (single reporting currency) |
 
 ## Standards used
 
