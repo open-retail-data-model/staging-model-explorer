@@ -265,6 +265,16 @@
       {
         "kind": "consumes",
         "source": "predictive-operations",
+        "target": "labor"
+      },
+      {
+        "kind": "consumes",
+        "source": "predictive-operations",
+        "target": "order"
+      },
+      {
+        "kind": "consumes",
+        "source": "predictive-operations",
         "target": "procurement"
       },
       {
@@ -276,6 +286,11 @@
         "kind": "consumes",
         "source": "predictive-operations",
         "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "predictive-operations",
+        "target": "transaction"
       },
       {
         "kind": "consumes",
@@ -373,6 +388,11 @@
         "id": "inventory",
         "kind": "core",
         "label": "inventory"
+      },
+      {
+        "id": "labor",
+        "kind": "core",
+        "label": "labor"
       },
       {
         "id": "logistics",
@@ -4159,6 +4179,1263 @@
           "layer": "silver",
           "materialized": true,
           "name": "inventory_position",
+          "role": "transactional",
+          "scd2": false
+        }
+      ],
+      "use_cases": []
+    },
+    {
+      "checks": [
+        {
+          "column": null,
+          "name": "employee_keys_not_null",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_pk_unique",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_scd2_current_open",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_scd2_noncurrent_closed",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_scd2_start_before_end",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_current_id_unique",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_store_fk_orphan",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_cost_single_currency",
+          "severity": "error",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_rowcount",
+          "severity": "metric",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_role_distribution",
+          "severity": "metric",
+          "table": "employee"
+        },
+        {
+          "column": null,
+          "name": "employee_skill_keys_not_null",
+          "severity": "error",
+          "table": "employee_skill"
+        },
+        {
+          "column": null,
+          "name": "employee_skill_pk_unique",
+          "severity": "error",
+          "table": "employee_skill"
+        },
+        {
+          "column": null,
+          "name": "employee_skill_biz_key_unique",
+          "severity": "error",
+          "table": "employee_skill"
+        },
+        {
+          "column": null,
+          "name": "employee_skill_fk_orphan",
+          "severity": "error",
+          "table": "employee_skill"
+        },
+        {
+          "column": null,
+          "name": "employee_skill_rowcount",
+          "severity": "metric",
+          "table": "employee_skill"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_keys_not_null",
+          "severity": "error",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_pk_unique",
+          "severity": "error",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_biz_key_unique",
+          "severity": "error",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_end_after_start",
+          "severity": "error",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_fk_orphan",
+          "severity": "error",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_availability_rowcount",
+          "severity": "metric",
+          "table": "employee_availability"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_keys_not_null",
+          "severity": "error",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_pk_unique",
+          "severity": "error",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_biz_key_unique",
+          "severity": "error",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_store_fk_orphan",
+          "severity": "error",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_employee_fk_orphan",
+          "severity": "error",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "employee_store_eligibility_rowcount",
+          "severity": "metric",
+          "table": "employee_store_eligibility"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_keys_not_null",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_end_after_start",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_hours_nonnegative",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_pk_unique",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_biz_key_unique",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_employee_fk_orphan",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_store_fk_orphan",
+          "severity": "error",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_schedule_rowcount",
+          "severity": "metric",
+          "table": "labor_schedule"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_keys_not_null",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_pk_unique",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_biz_key_unique",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_end_after_start",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_hours_nonnegative",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_employee_fk_orphan",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_store_fk_orphan",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_schedule_fk_orphan",
+          "severity": "error",
+          "table": "labor_actuals"
+        },
+        {
+          "column": null,
+          "name": "labor_actuals_rowcount",
+          "severity": "metric",
+          "table": "labor_actuals"
+        }
+      ],
+      "contract_path": "contracts/odcs/labor.odcs.yaml",
+      "glossary_path": "canonical-core/labor/glossary.md",
+      "kind": "core",
+      "name": "labor",
+      "relationships": [
+        {
+          "child_cols": [
+            "home_store_sk"
+          ],
+          "child_table": "employee",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "employee_skill",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "employee_availability",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "employee_store_eligibility",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "employee_store_eligibility",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "labor_schedule",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "labor_schedule",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "labor_actuals",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "labor_actuals",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "labor_schedule_sk"
+          ],
+          "child_table": "labor_actuals",
+          "declared_fk": true,
+          "parent_cols": [
+            "labor_schedule_sk"
+          ],
+          "parent_table": "labor_schedule"
+        }
+      ],
+      "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version; the join/FK target.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous business key for the associate. Not a legal name or government ID.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk for the associate home store (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "home_store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key of the home store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "home_store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Primary role. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Employment status. Allowed values: active, leave, terminated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employment_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Engagement type. Allowed values: full_time, part_time, seasonal, contractor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employment_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Fully-loaded hourly labor cost in base currency (unit-grain rate; DECIMAL scale 4).",
+              "enum_values": [],
+              "fk": false,
+              "name": "hourly_labor_cost",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "ISO 4217 alpha-3 for hourly_labor_cost; constant base_currency (USD) per single-reporting-currency rule.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Maximum scheduled hours in a single calendar day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_daily_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(6,2)"
+            },
+            {
+              "comment": "Maximum scheduled hours in a calendar week (Mon-Sun UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_weekly_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(6,2)"
+            },
+            {
+              "comment": "Minimum rest hours required between the end of one shift and the start of the next.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_rest_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(6,2)"
+            },
+            {
+              "comment": "Preferred local shift start as HH:mm (store-local); advisory only.",
+              "enum_values": [],
+              "fk": false,
+              "name": "preferred_shift_start_local",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Preferred local shift end as HH:mm (store-local); advisory only.",
+              "enum_values": [],
+              "fk": false,
+              "name": "preferred_shift_end_local",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Date employment began (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "hire_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Date employment ended; NULL while active (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "termination_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: inclusive start date this version became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for the current version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the record was created in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the record was last modified in the source system (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded into the canonical core (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "ORDM canonical-core pseudonymous associate master (SCD2). Workforce supply attributes for scheduling; no personal names or contact PII.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "employee",
+          "role": "master",
+          "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_availability_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the availability window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_availability_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date the window applies to (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive availability start (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "available_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive availability end (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "available_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "TRUE = can work this window; FALSE = explicitly unavailable (e.g. PTO block).",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_available",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Window type. Allowed values: preferred, available, unavailable, time_off.",
+              "enum_values": [],
+              "fk": false,
+              "name": "availability_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Associate availability and time-off windows. end must be after start; used as hard constraints by the schedule recommender.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "employee_availability",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_skill_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key (e.g. \"<employee_id>|<skill_code>\").",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_skill_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Skill / qualification code. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor, food_handler, pharmacy_tech.",
+              "enum_values": [],
+              "fk": false,
+              "name": "skill_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Proficiency. Allowed values: trainee, qualified, expert.",
+              "enum_values": [],
+              "fk": false,
+              "name": "proficiency_level",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when the skill is currently usable for scheduling.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Inclusive date the skill became effective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exclusive end date; NULL while active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Associate skill eligibility bridge. Role scheduling must not assign an employee lacking the required skill_code.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "employee_skill",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_store_eligibility_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key (e.g. \"<employee_id>|<store_id>\").",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_store_eligibility_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key the associate may work.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when this is the primary / home eligibility row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_primary",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the eligibility is currently usable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Inclusive eligibility start date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Exclusive eligibility end date; NULL while active.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Employee \u00d7 store eligibility bridge for multi-location associates.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "employee_store_eligibility",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_actuals_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the worked interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_actuals_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key where time was worked.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to labor_schedule.labor_schedule_sk when the punch maps to a planned shift.",
+              "enum_values": [],
+              "fk": true,
+              "name": "labor_schedule_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable schedule business key when mapped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_schedule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role worked. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Department or zone worked (free STRING; common values include storewide, front_end, grocery, backroom).",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date of the worked interval (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive clock-in (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "clock_in_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive clock-out (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "clock_out_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Paid / worked hours for the interval (non-negative).",
+              "enum_values": [],
+              "fk": false,
+              "name": "worked_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "Status. Allowed values: approved, pending, rejected, adjusted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actuals_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Worked timecard intervals for associates. end after start; feeds adherence and labor-risk actuals.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "labor_actuals",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_schedule_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the scheduled shift.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_schedule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk (version-specific).",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key where the shift is worked.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role for the shift. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Department or zone label (e.g. front_end, grocery, backroom, storewide). Free STRING; common values include storewide, front_end, grocery, general_merchandise, backroom.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date of the shift (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive shift start (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shift_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive shift end (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shift_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Scheduled duration in hours (must be non-negative).",
+              "enum_values": [],
+              "fk": false,
+              "name": "scheduled_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "Status. Allowed values: draft, published, cancelled.",
+              "enum_values": [],
+              "fk": false,
+              "name": "schedule_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Origin. Allowed values: workforce_system, manager, recommendation_accepted, other.",
+              "enum_values": [],
+              "fk": false,
+              "name": "schedule_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Planned associate shifts. end after start; used as supply baseline and double-booking constraint.",
+          "layer": "silver",
+          "materialized": true,
+          "name": "labor_schedule",
           "role": "transactional",
           "scd2": false
         }
@@ -47535,6 +48812,378 @@
           "name": "sor_high_or_worse_count",
           "severity": "metric",
           "table": "gold_store_operational_risk"
+        },
+        {
+          "column": null,
+          "name": "ls_keys_not_null",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_pk_unique",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_id_unique",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_active_key_unique",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_role_domain",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_driver_domain",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_positive_standard",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_scd2_current_open",
+          "severity": "error",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "ls_rowcount",
+          "severity": "metric",
+          "table": "labor_standard"
+        },
+        {
+          "column": null,
+          "name": "wdf_keys_not_null",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_pk_unique",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_id_unique",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_store_fk_orphan",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_run_fk_orphan",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_interval_order",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_units_nonnegative",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_role_domain",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_driver_domain",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_method_domain",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wdf_rowcount",
+          "severity": "metric",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
+          "name": "wlr_keys_not_null",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_pk_unique",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_id_unique",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_store_fk_orphan",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_run_fk_orphan",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_labor_standard_fk_orphan",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_interval_order",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_hours_nonnegative",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_role_domain",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_driver_domain",
+          "severity": "error",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wlr_rowcount",
+          "severity": "metric",
+          "table": "workforce_labor_requirement"
+        },
+        {
+          "column": null,
+          "name": "wsr_keys_not_null",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_pk_unique",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_id_unique",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_store_fk_orphan",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_run_fk_orphan",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_employee_fk_orphan",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_interval_order",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_hours_nonnegative",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_role_domain",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_status_domain",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_single_currency",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_rowcount",
+          "severity": "metric",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wce_keys_not_null",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_pk_unique",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_id_unique",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_store_fk_orphan",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_run_fk_orphan",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_interval_order",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_counts_nonnegative",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_role_domain",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_severity_domain",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_action_domain",
+          "severity": "error",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wce_rowcount",
+          "severity": "metric",
+          "table": "workforce_coverage_exception"
+        },
+        {
+          "column": null,
+          "name": "wor_keys_not_null",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_pk_unique",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_run_id_unique",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_positive_params",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_method_domain",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_counts_nonnegative",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_single_currency",
+          "severity": "error",
+          "table": "workforce_optimization_run"
+        },
+        {
+          "column": null,
+          "name": "wor_rowcount",
+          "severity": "metric",
+          "table": "workforce_optimization_run"
         }
       ],
       "contract_path": "contracts/odcs/predictive-operations.odcs.yaml",
@@ -47596,9 +49245,246 @@
             "store_sk"
           ],
           "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "workforce_demand_forecast",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "workforce_labor_requirement",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "workforce_schedule_recommendation",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "employee_sk"
+          ],
+          "child_table": "workforce_schedule_recommendation",
+          "declared_fk": true,
+          "parent_cols": [
+            "employee_sk"
+          ],
+          "parent_table": "employee"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "workforce_coverage_exception",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
         }
       ],
       "tables": [
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key. Unique per SCD2 version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the standard (stable across versions).",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Configuration version label (e.g. v1, 2026-Q3).",
+              "enum_values": [],
+              "fk": false,
+              "name": "standard_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role the standard applies to. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Demand driver. Allowed values: transaction_count, foot_traffic, pickup_orders, receiving_units, store_open_coverage, minimum_coverage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optional department/zone scope; NULL or storewide = all zones.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Planning interval length in minutes (default 30).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "How many driver units one labor hour covers (e.g. 30 transactions per cashier hour). Must be positive except for coverage drivers.",
+              "enum_values": [],
+              "fk": false,
+              "name": "driver_units_per_labor_hour",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Optional inverse form (hours per driver unit). When set, used preferentially over driver_units_per_labor_hour.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_hours_per_driver_unit",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,6)"
+            },
+            {
+              "comment": "Minimum headcount required whenever the store is open for this role/zone.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minimum_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Human-readable explanation of why this standard exists.",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_rationale",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when this version may be applied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_active",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "SCD2: inclusive start date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_from_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: exclusive end date; NULL for current.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_to_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "SCD2: TRUE for the currently active version.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_current",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the standard was created (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "created_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the standard was last modified (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_updated_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Versioned workload-to-labor standards for Workforce Optimization. Data-driven configuration, not hardcoded pipeline logic.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "labor_standard",
+          "role": "reference",
+          "scd2": true
+        },
         {
           "columns": [
             {
@@ -47879,7 +49765,7 @@
               "type": "STRING"
             },
             {
-              "comment": "How many domains had a present (non-NULL) sub-score feeding the composite. Max is 4 in v1 (labor + cx are deferred, always NULL); 0 means the store is unscored (tier UNKNOWN).",
+              "comment": "How many domains had a present (non-NULL) sub-score feeding the composite. Max is 5 when labor is present (cx still deferred); 0 means the store is unscored (tier UNKNOWN).",
               "enum_values": [],
               "fk": false,
               "name": "domains_scored",
@@ -47933,7 +49819,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Labor/workforce domain sub-score. DEFERRED \u2014 always NULL in v1 (no canonical-core labor domain yet).",
+              "comment": "Labor/workforce domain sub-score from gold_labor_risk (0-100). NULL when unscored.",
               "enum_values": [],
               "fk": false,
               "name": "labor_risk",
@@ -47942,7 +49828,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Customer-experience domain sub-score. DEFERRED \u2014 always NULL in v1 (no CX source yet).",
+              "comment": "Customer-experience domain sub-score. DEFERRED \u2014 always NULL until a CX source lands.",
               "enum_values": [],
               "fk": false,
               "name": "cx_risk",
@@ -48406,6 +50292,1111 @@
           "layer": "silver",
           "materialized": true,
           "name": "work_order_line",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_coverage_exception_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the exception.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_coverage_exception_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "workforce_optimization_run.run_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive understaffed interval start (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive understaffed interval end (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Department or zone.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Required headcount for the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Scheduled / recommended headcount for the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "scheduled_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "required - scheduled (positive when understaffed).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shortfall_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Severity. Allowed values: low, medium, high, critical.",
+              "enum_values": [],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Why coverage could not be met.",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_explanation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Suggested action. Allowed values: call_in, transfer, shorten_interval_service, overtime, accept_risk, hire_temp.",
+              "enum_values": [],
+              "fk": false,
+              "name": "suggested_action",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating pipeline or system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Unfilled workforce demand exceptions with severity and suggested operational action.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "workforce_coverage_exception",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_demand_forecast_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the forecast line.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_demand_forecast_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK-like link to workforce_optimization_run.run_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date being forecast (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive interval start (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive interval end (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Interval length in minutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Department or zone (storewide when unknown).",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Driver being forecast. Allowed values: transaction_count, foot_traffic, pickup_orders, receiving_units, store_open_coverage, minimum_coverage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecasted driver units for the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Lower uncertainty proxy bound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_lower_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Upper uncertainty proxy bound.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_upper_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Method. Allowed values: seasonal_rolling_avg, hierarchical_fallback, model, manual.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Version of the model that produced the row when forecast_method = model; NULL for heuristic rows.",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forward horizon in days this line belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "When the forecast was produced (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_origin_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating pipeline or system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Workforce demand forecast fact at store x date x interval x zone x role grain.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "workforce_demand_forecast",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_labor_requirement_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable business key for the requirement line.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_labor_requirement_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Link to workforce_optimization_run.run_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date (ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive interval start (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive interval end (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Interval length in minutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Department or zone.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Driver applied. Allowed values: transaction_count, foot_traffic, pickup_orders, receiving_units, store_open_coverage, minimum_coverage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecasted workload units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "labor_standard.labor_standard_id applied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "labor_standard.standard_version applied.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Hours per driver unit (or equivalent) used.",
+              "enum_values": [],
+              "fk": false,
+              "name": "applied_labor_standard",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,6)"
+            },
+            {
+              "comment": "Required labor hours for the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_labor_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Required headcount (hours / interval length in hours), ceil-ready.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "Minimum coverage headcount from the standard.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minimum_headcount",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Explanation of why this requirement was generated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_rationale",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating pipeline or system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Required labor hours/headcount from forecast drivers and versioned labor standards.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "workforce_labor_requirement",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_optimization_run_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable run business key (UUID or deterministic stamp).",
+              "enum_values": [],
+              "fk": false,
+              "name": "run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forward horizon in days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Planning interval length in minutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Forecast method used. Allowed values: seasonal_rolling_avg, hierarchical_fallback, model, manual.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Scheduler method. Allowed values: greedy_heuristic, ortools, pulp, other.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimizer_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Employees considered.",
+              "enum_values": [],
+              "fk": false,
+              "name": "input_employee_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Demand intervals considered.",
+              "enum_values": [],
+              "fk": false,
+              "name": "input_demand_intervals",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Input rows rejected by quality checks.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rejected_quality_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Forecast lines produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_line_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Labor requirement lines produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "requirement_line_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Recommended shifts produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_shift_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Coverage exceptions produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_count",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Total recommended scheduled hours.",
+              "enum_values": [],
+              "fk": false,
+              "name": "scheduled_hours_total",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Total required labor hours.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_hours_total",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "scheduled_hours_total / required_hours_total (0-1+).",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Hours of unmet demand.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unfilled_demand_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "Estimated labor cost of recommendations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_labor_cost",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "ISO 4217 for estimated_labor_cost.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Workload balance proxy (e.g. 1 - CV of assigned hours); higher is fairer.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fairness_score",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "MAPE vs actuals when available; NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_mape",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Mean forecast error when actuals available; NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_bias",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Run status. Allowed values: success, success_partial, infeasible, failed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Structured diagnostics (JSON string) for debugging.",
+              "enum_values": [],
+              "fk": false,
+              "name": "diagnostics_json",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Input data version / watermark label.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Run start (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "run_started_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Run completion (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "run_completed_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Per-stage durations in seconds (JSON string).",
+              "enum_values": [],
+              "fk": false,
+              "name": "stage_durations_json",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating pipeline or system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Run-level metrics for Workforce Optimization forecast and schedule executions.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "workforce_optimization_run",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_schedule_recommendation_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable recommendation / shift ID.",
+              "enum_values": [],
+              "fk": false,
+              "name": "workforce_schedule_recommendation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "workforce_optimization_run.run_id that produced this row.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to employee.employee_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "employee_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable pseudonymous employee business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "employee_id",
+              "pii": true,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Department or zone.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Role. Allowed values: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Inclusive recommended shift start (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shift_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive recommended shift end (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shift_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Assigned hours (non-negative).",
+              "enum_values": [],
+              "fk": false,
+              "name": "assigned_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8,2)"
+            },
+            {
+              "comment": "assigned_hours * hourly_labor_cost in base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "estimated_labor_cost",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,2)"
+            },
+            {
+              "comment": "ISO 4217 for estimated_labor_cost.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE if assignment falls inside availability.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_availability_ok",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if employee has required skill/role.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_skill_ok",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if employee is eligible for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_store_eligible_ok",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if daily/weekly caps respected.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_hours_cap_ok",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE if minimum rest respected.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_min_rest_ok",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Status. Allowed values: proposed, accepted, rejected, superseded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommendation_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Optimizer outcome for this assignment. Allowed values: optimal, feasible, heuristic, infeasible_partial.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimizer_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating pipeline or system.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Recommended associate shifts from the Workforce Optimization scheduler.",
+          "consumes_tables": [
+            {
+              "table": "employee",
+              "unit": "labor"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "workforce_schedule_recommendation",
           "role": "transactional",
           "scd2": false
         },
@@ -48905,6 +51896,155 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store region for roll-up.",
+              "enum_values": [],
+              "fk": false,
+              "name": "region",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store district for roll-up.",
+              "enum_values": [],
+              "fk": false,
+              "name": "district",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Date the sub-score is computed for (the view evaluates at query time).",
+              "enum_values": [],
+              "fk": false,
+              "name": "as_of_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Required labor hours summed over the 7-day observation window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_hours_7d",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Unmet required hours summed over the 7-day observation window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shortfall_hours_7d",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Mean interval coverage ratio over the window (1.0 = fully covered).",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Count of intervals in the window at critical coverage (below 35% covered).",
+              "enum_values": [],
+              "fk": false,
+              "name": "critical_intervals",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Count of intervals in the window at high or critical coverage (below 60% covered).",
+              "enum_values": [],
+              "fk": false,
+              "name": "high_or_critical_intervals",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "How many intervals contributed to the sub-score; a small count makes the score noisy.",
+              "enum_values": [],
+              "fk": false,
+              "name": "intervals_scored",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Labor/workforce sub-score, 0-100, higher = riskier. A transparent HEURISTIC INDEX built from coverage shortfall plus critical-interval escalators, not a calibrated probability. Feeds gold_store_operational_risk.labor_risk (ADR 0034).",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_risk",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            }
+          ],
+          "comment": "Store-grain labor/workforce risk sub-score (0-100, higher = riskier). Transparent heuristic: 100 * (1 - coverage_pct) over the next 7 days, plus escalators for critical shortfall intervals. Slots into gold_store_operational_risk.labor_risk (ADR 0034).",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "employee",
+              "unit": "labor"
+            },
+            {
+              "table": "labor_schedule",
+              "unit": "labor"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_labor_risk",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "Equipment surrogate key.",
               "enum_values": [],
               "fk": false,
@@ -49231,7 +52371,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Labor/workforce domain sub-score. DEFERRED \u2014 always NULL in v1 (no canonical-core labor domain yet).",
+              "comment": "Labor/workforce domain sub-score from gold_labor_risk (0-100). Present when Workforce Optimization / labor domain is deployed (ADR 0034).",
               "enum_values": [],
               "fk": false,
               "name": "labor_risk",
@@ -49249,7 +52389,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "How many domains had a present (non-NULL) sub-score feeding the composite. Max is 4 in v1 (labor + cx deferred); 0 means unscored (tier UNKNOWN).",
+              "comment": "How many domains had a present (non-NULL) sub-score feeding the composite. Max is 5 (cx deferred); 0 means unscored (tier UNKNOWN).",
               "enum_values": [],
               "fk": false,
               "name": "domains_scored",
@@ -49276,8 +52416,16 @@
               "type": "STRING"
             }
           ],
-          "comment": "The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term operational/financial deterioration risk. Composes FOUR sub-scores that already exist in other packages into a single store-grain triage surface plus a per-domain diagnostic breakdown.",
+          "comment": "The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term operational/financial deterioration risk. Composes FIVE sub-scores -- four from other packages (inventory, supply_chain, sales_margin, equipment) plus labor from this package's gold_labor_risk (ADR 0034) -- into a single store-grain triage surface plus a per-domain diagnostic breakdown.",
           "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "employee",
+              "unit": "labor"
+            },
             {
               "table": "equipment",
               "unit": "equipment"
@@ -49287,8 +52435,16 @@
               "unit": "equipment"
             },
             {
+              "table": "labor_schedule",
+              "unit": "labor"
+            },
+            {
               "table": "purchase_order_line",
               "unit": "procurement"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
             },
             {
               "table": "store",
@@ -49300,14 +52456,688 @@
           "name": "gold_store_operational_risk",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Local business date the interval belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Inclusive start of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Exclusive end of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Department or zone within the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Workforce role the gap is measured for.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Labor hours required in the interval, from gold_workforce_labor_requirement.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_labor_hours",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Required headcount in the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_headcount",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Published labor_schedule hours overlapping the interval, clipped to the interval boundaries.",
+              "enum_values": [],
+              "fk": false,
+              "name": "scheduled_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Proposed workforce_schedule_recommendation hours overlapping the interval, clipped to the interval boundaries. Status = proposed ONLY: an accepted recommendation is published into labor_schedule and is already counted in scheduled_hours, so including it here would double-count the same shift.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recommended_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Scheduled plus recommended hours overlapping the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "covered_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Unmet required hours (required minus covered, floored at 0). Overstaffing is not reported as a negative shortfall.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shortfall_hours",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Covered hours over required hours, capped at 2.0; 1.0 when nothing is required.",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_pct",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Coverage band: none (no shortfall), low (>=85% covered), medium (>=60%), high (>=35%), critical (below 35%).",
+              "enum_values": [],
+              "fk": false,
+              "name": "shortfall_severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Compares required headcount to published labor_schedule coverage (and proposed recommendations when present) to surface understaffed intervals. Feeds labor_risk and coverage exceptions.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "employee",
+              "unit": "labor"
+            },
+            {
+              "table": "labor_schedule",
+              "unit": "labor"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_workforce_coverage_gap",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date the forecast interval belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Inclusive start of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive end of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Planning interval length in minutes, taken from the current labor_standard (30 when none is configured).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Department or zone within the store the forecast applies to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Workforce role the forecast is produced for: cashier, sales_associate, fulfillment, inventory, supervisor.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Workload driver the forecast is expressed in, derived from role_code (transaction_count, foot_traffic, pickup_orders, receiving_units, store_open_coverage).",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Point forecast of driver units in the interval. A transparent seasonal-average HEURISTIC, not a calibrated model output.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Lower uncertainty proxy: 80% of the point forecast. A fixed band, not a fitted prediction interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_lower_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Upper uncertainty proxy: 120% of the point forecast. A fixed band, not a fitted prediction interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_upper_bound",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "How the row was produced: seasonal_rolling_avg when store-level history was available, hierarchical_fallback when the estimate came from a coarser level.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Reserved for a model-backed pipeline (forecast_method = model); NULL in the shipped heuristic (ADR 0028 \u00a74).",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forward horizon the forecast covers, in days (7 by default).",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_horizon_days",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "When the forecast was computed (UTC) \u2014 the view evaluates at query time.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_origin_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Transparent heuristic demand forecast at store x business_date x interval x zone x role.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_workforce_demand_forecast",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Local business date the interval belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Inclusive start of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Exclusive end of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Planning interval length in minutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Department or zone within the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Workforce role the forecast was produced for.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Workload driver the forecast is expressed in.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Forecast driver units for the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Observed driver units for the interval; NULL when no actuals source is available for the driver. STORE-TOTAL grain: actuals are joined on store/date/interval only, NOT on role or zone, so every per-role row on one interval repeats the SAME store total. Use it as a per-row diagnostic; summing it across roles multiply-counts the interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "actual_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 2)"
+            },
+            {
+              "comment": "Forecast minus actual driver units. Positive = over-forecast.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_error",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Absolute percentage error for the interval; NULL when actuals are absent or zero. Aggregate as a weighted ratio of sums, not a mean of these row values.",
+              "enum_values": [],
+              "fk": false,
+              "name": "ape",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "How the forecast row was produced.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_method",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Reserved for a model-backed pipeline (forecast_method = model); NULL for heuristic rows (ADR 0028 \u00a74).",
+              "enum_values": [],
+              "fk": false,
+              "name": "model_version",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "workforce_optimization_run.run_id that produced the forecast being scored.",
+              "enum_values": [],
+              "fk": false,
+              "name": "optimization_run_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Backtest accuracy for workforce demand forecasts when actuals exist. Actuals preference (same spirit as the forecast view): foot_traffic     -> CSS site-level footfall when css_schema is readable (this view does NOT hard-join CSS \u2014 adopters overlay CSS actuals in the notebook / pipeline; core actuals use order-line interval buckets and labor_actuals hours). transaction_count / pickup_orders -> customer_order_line units in interval else -> NULL actual (row excluded from MAPE denominator)",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "labor_actuals",
+              "unit": "labor"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_workforce_forecast_accuracy",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Local business date the requirement interval belongs to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "business_date",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Inclusive start of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Exclusive end of the planning interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Planning interval length in minutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_minutes",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Department or zone within the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "department_or_zone",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Workforce role the requirement applies to.",
+              "enum_values": [],
+              "fk": false,
+              "name": "role_code",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Workload driver the requirement was converted from.",
+              "enum_values": [],
+              "fk": false,
+              "name": "demand_driver",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Forecast driver units carried through from gold_workforce_demand_forecast.",
+              "enum_values": [],
+              "fk": false,
+              "name": "forecast_driver_units",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Durable key of the labor_standard row applied to this interval.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_id",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Version label of the applied labor_standard, so a requirement stays reproducible after the standard changes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "labor_standard_version",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Labor hours per driver unit taken from the applied standard.",
+              "enum_values": [],
+              "fk": false,
+              "name": "applied_labor_standard",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Labor hours required in the interval: driver units x standard, floored at the minimum-headcount coverage.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_labor_hours",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Required headcount for the interval: required hours over interval length, floored at minimum_headcount.",
+              "enum_values": [],
+              "fk": false,
+              "name": "required_headcount",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Minimum headcount the standard mandates regardless of forecast demand.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minimum_headcount",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            },
+            {
+              "comment": "Why the standard sets this coverage (service, safety, or statutory rationale recorded on labor_standard).",
+              "enum_values": [],
+              "fk": false,
+              "name": "coverage_rationale",
+              "pii": false,
+              "pk": false,
+              "type": ""
+            }
+          ],
+          "comment": "Translates gold_workforce_demand_forecast drivers through current labor_standard rows into required labor hours and headcount.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_workforce_labor_requirement",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
         {
           "consumes": [
             "equipment",
+            "labor",
+            "order",
             "procurement",
-            "store"
+            "store",
+            "transaction"
           ],
           "name": "Store Performance",
           "status": "done",
@@ -49316,10 +53146,21 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "labor",
+            "order",
+            "store",
+            "transaction"
+          ],
           "name": "Workforce Optimization",
-          "status": "planned",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_workforce_demand_forecast",
+            "gold_workforce_labor_requirement",
+            "gold_workforce_coverage_gap",
+            "gold_labor_risk",
+            "gold_workforce_forecast_accuracy"
+          ]
         },
         {
           "consumes": [
