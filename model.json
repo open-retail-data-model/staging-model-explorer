@@ -8146,6 +8146,96 @@
           "name": "market_share_rowcount",
           "severity": "metric",
           "table": "gold_market_share"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_grain_unique",
+          "severity": "error",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_keys_not_null",
+          "severity": "error",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_metric_bounds",
+          "severity": "error",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_count_consistency",
+          "severity": "error",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_product_fk_orphan",
+          "severity": "error",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "product_affinity_pairwise_rowcount",
+          "severity": "metric",
+          "table": "gold_product_affinity_pairwise"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_grain_unique",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_keys_not_null",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_score_range",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_band_domain",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_single_currency",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_no_raw_pii",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_profile_fk_orphan",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_product_fk_orphan",
+          "severity": "error",
+          "table": "gold_customer_product_affinity"
+        },
+        {
+          "column": null,
+          "name": "customer_product_affinity_rowcount",
+          "severity": "metric",
+          "table": "gold_customer_product_affinity"
         }
       ],
       "contract_path": "contracts/odcs/actionable-customer-understanding.odcs.yaml",
@@ -10679,6 +10769,197 @@
         {
           "columns": [
             {
+              "comment": "Durable grain key: profile_id|product_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_product_affinity_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable, pseudonymous customer business key (not raw PII).",
+              "enum_values": [],
+              "fk": false,
+              "name": "profile_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of the product (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Merchandising category (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Merchandising subcategory (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "subcategory",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Brand (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Distinct orders (purchase occasions) the customer bought this product on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "purchase_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Total units of this product the customer purchased.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Total net spend on this product, in the reporting/base currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_net_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "Reporting/base currency of total_net_amount (ISO 4217).",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Date of the customer's first purchase of this product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_purchase_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Date of the customer's most recent purchase of this product.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_purchase_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Event-time (UTC) of the customer's most recent PURCHASE of this product (MAX event_timestamp) \u2014 carries time-of-day, not midnight. Named for the single v1 driver (PURCHASE_HISTORY); a broader last_interacted_at spanning browse/ML interaction sources is a documented follow-on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_purchased_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Days from the last purchase to as_of_date (MAX(order_date) in the data) \u2014 the input to recency decay.",
+              "enum_values": [],
+              "fk": false,
+              "name": "days_since_last_purchase",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Exponential time-decay weight pow(0.5, days_since_last_purchase / 90) in (0,1]. Half-life 90 days.",
+              "enum_values": [],
+              "fk": false,
+              "name": "recency_weight",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "Purchase-history affinity in [0,1] = LEAST(1, purchase_intensity x recency_weight); purchase_intensity = LEAST(1, purchase_count / 5). Transparent heuristic, not an ML model.",
+              "enum_values": [],
+              "fk": false,
+              "name": "affinity_score",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(5, 4)"
+            },
+            {
+              "comment": "Coarse affinity bucket: high (>= 0.6) / medium (>= 0.2) / low.",
+              "enum_values": [],
+              "fk": false,
+              "name": "affinity_band",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "What the affinity is derived from. v1 is always PURCHASE_HISTORY; BROWSE_BEHAVIOR and latent/embedding (ML) drivers are a documented follow-on.",
+              "enum_values": [],
+              "fk": false,
+              "name": "primary_driver",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Individualized customer -> product affinity: one row per (customer \u00d7 product) the customer has purchased, with a transparent, recency-weighted PURCHASE-HISTORY affinity score. Feeds \"recommended for you\" / personalized re-purchase prompts. Built on the BASE order fact; keyed on the DURABLE, pseudonymous profile_id (no raw PII). This is the explicit, explainable modality (NOT an ML model) \u2014 the analogue of predicted_clv's heuristic-not-model stance.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_customer_product_affinity",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "Stable logical cell identity shared across original and restated deliveries.",
               "enum_values": [],
               "fk": false,
@@ -11001,6 +11282,197 @@
           "name": "gold_market_share",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable grain key for the directed pair: product_id_a|product_id_b|time_window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_affinity_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Antecedent product (the durable business key). The \"if a customer buys A\" side.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id_a",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of product A (current product version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name_a",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Merchandising category of product A (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_a",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Brand of product A (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand_a",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Consequent product (the durable business key). The \"...they also buy B\" side.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id_b",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Display name of product B (current product version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name_b",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Merchandising category of product B (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "category_b",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Brand of product B (current version; label only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand_b",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The trailing window the rule was computed over: 30D / 90D / ALL_TIME, each anchored to MAX(order_date) (not current_date). support/confidence/lift are recomputed per window, so a pair can rank differently or drop out in a shorter window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "time_window",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The anchor the trailing windows trail from: MAX(order_date) in the data (same value on every row). A 30D row therefore covers computed_through_date - 30 days .. computed_through_date; makes the window end explicit for interpretability.",
+              "enum_values": [],
+              "fk": false,
+              "name": "computed_through_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Baskets (orders) containing BOTH A and B \u2014 the numerator for support and confidence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "cooccurrence_baskets",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Baskets containing A (the confidence denominator).",
+              "enum_values": [],
+              "fk": false,
+              "name": "antecedent_baskets",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Baskets containing B.",
+              "enum_values": [],
+              "fk": false,
+              "name": "consequent_baskets",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct baskets (orders) in the window \u2014 the support denominator.",
+              "enum_values": [],
+              "fk": false,
+              "name": "total_baskets",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Support = cooccurrence_baskets / total_baskets: how common the pair is across all baskets (0..1).",
+              "enum_values": [],
+              "fk": false,
+              "name": "support",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 8)"
+            },
+            {
+              "comment": "Confidence(A->B) = cooccurrence_baskets / antecedent_baskets: P(B in basket | A in basket) (0..1). Directional.",
+              "enum_values": [],
+              "fk": false,
+              "name": "confidence",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 8)"
+            },
+            {
+              "comment": "Lift = support(A,B) / (support(A) x support(B)): association strength vs. chance. > 1 = positive/meaningful, = 1 = independent, < 1 = substitutes.",
+              "enum_values": [],
+              "fk": false,
+              "name": "lift",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 8)"
+            },
+            {
+              "comment": "TRUE on the mirror copy (product_id_a > product_id_b). Filter to FALSE for one row per undirected pair; keep both for directional confidence.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_mirrored_pair",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            }
+          ],
+          "comment": "Rules-based product affinity: \"frequently bought together\" association rules (support / confidence / lift) computed by MARKET BASKET ANALYSIS over the customer-attributed order fact (customer_order_line), for MULTIPLE TRAILING WINDOWS. One row per DIRECTED product pair \u00d7 time_window (A -> B): support and lift are symmetric, confidence is directional, so both A->B and B->A are emitted. Built entirely on the BASE dimensional model \u2014 no ML, no stored affinity table, no synthetic producer: the durable product_id lives on customer_order_line, and `product` is read (current version) only for display labels (name / category / brand).",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_product_affinity_pairwise",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
@@ -11019,10 +11491,16 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "order",
+            "product"
+          ],
           "name": "Product Affinity",
-          "status": "planned",
-          "tables": []
+          "status": "in-progress",
+          "tables": [
+            "gold_product_affinity_pairwise",
+            "gold_customer_product_affinity"
+          ]
         },
         {
           "consumes": [

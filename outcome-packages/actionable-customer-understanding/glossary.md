@@ -21,6 +21,9 @@ Business terms for Customer Lifetime Value, Behavioral Segmentation and Market A
 | `mv_competitive_position` | Governed metric surface over `gold_competitive_position` | Reaggregation-safe measures computed from additive components. Count-based shares/rates divide count sums; price indices and discount depth are observation-level means. Assortment rollups across competitors/channels are presence-weighted per-grain averages, not own-catalog unions. |
 | `gold_market_share` | One current stable cell at provider market definition × geography × category × non-total subject × period | Latest-wins licensed market benchmark with additive subject and total-category sales components; denominator-only total-category cells are not served. |
 | `mv_market_share` | Governed metric surface over `gold_market_share` | Market share recomputed from subject-sales/market-size ratio-of-sums, separate from competitive-position grain. |
+| `gold_product_affinity_pairwise` | One directed product pair × time window (`product_id_a` × `product_id_b` × `time_window`) | Market-basket association rules (support/confidence/lift) over order baskets — "frequently bought together". Derived from `customer_order_line`; no PII. |
+| `gold_customer_product_affinity` | One customer × product (`profile_id` × `product_id`) | Individualized recency-weighted PURCHASE-HISTORY affinity score for each product a customer has bought. Keyed on the pseudonymous `profile_id`; no raw PII. |
+| `mv_product_affinity` | Governed metric surface over `gold_customer_product_affinity` | Customer→product affinity reach and average strength by category/brand/driver/band. Means are ratio-of-sums. |
 
 ## Terms
 
@@ -63,6 +66,28 @@ Derived from the conformed `interaction.touchpoint` fact (stitched, `profile_id`
 | **Search intent** (`has_search_intent_flag`) | The customer performed at least one `search` touch. |
 | **Cart activity** (`has_cart_activity_flag`) | The customer performed at least one `add_to_cart` touch. |
 | **Cart-without-checkout** (`cart_without_checkout_flag`) | Added to cart but never reached `checkout_start`. **Lifetime-grained** and **checkout-reached, not purchase-confirmed** — a coarse abandonment proxy over all observed touches, not a per-session or per-order signal. |
+
+### Product Affinity
+
+Two complementary recommendation modalities, both derived from the canonical-core order fact (`customer_order_line`) — no ML, no stored affinity table, no synthetic producer.
+
+> **Synthetic-data note (why the "frequently bought together" table is sparse in the demo):** raw uniform-random baskets carry no real co-purchase correlation, so almost nothing clears `min_lift = 1.05`. The shipped demo keeps `customer_order_line` a **strictly neutral uniform draw** — the co-purchase seeding (`affinity_copurchase_denom`, `seeds.yaml`) is shipped **OFF** (`= 0`) so no one package's demo need reshapes the shared fact CLV, Behavioral Segmentation and Market Analysis read. So `gold_product_affinity_pairwise` is **intentionally sparse/empty on the shipped demo data**, and its `severity: error` checks pass vacuously there — expected, not a defect. The market-basket algebra and trailing windows are proven on a correlated fixture, and end-to-end on the real generator with seeding enabled, in `tests/test_product_affinity.py`. To populate the surface (e.g. for a demo), set `affinity_copurchase_denom` > 0 — that seeds a light, deterministic co-purchase pattern (first two lines of ~1/denom multi-line baskets) but then lightly shapes the shared order fact. The customer→product affinity surface (`gold_customer_product_affinity`) needs no co-occurrence and is unaffected either way.
+
+| Term | Definition |
+|---|---|
+| **Market basket analysis** | Finding products that co-occur in the same basket (order) more than chance would predict. The rules-based "frequently bought together" engine behind `gold_product_affinity_pairwise`. |
+| **Basket** | One order (`order_id`) — a purchase occasion. A product counts once per basket (repeat lines of a SKU in one order collapse to a single co-occurrence unit). |
+| **Support** (`support`) | `cooccurrence_baskets / total_baskets` — how common a pair is across all baskets (0..1). Symmetric in A and B. |
+| **Confidence** (`confidence`) | `cooccurrence_baskets / antecedent_baskets` = P(basket contains B \| basket contains A), 0..1. **Directional** (A→B ≠ B→A), which is why both directions are emitted. |
+| **Lift** (`lift`) | `support(A,B) / (support(A) × support(B))` — association strength vs. statistical independence. **> 1** = positive/meaningful co-purchase, **= 1** = independent, **< 1** = substitutes (rarely bought together). The primary ranking signal. |
+| **Pruning constants** | Illustrative retail defaults keeping noise off the serving surface: `MIN_ITEM_BASKETS=5`, `MIN_PAIR_BASKETS=3`, `MIN_SUPPORT=0.0002`, `MIN_CONFIDENCE=0.02`, `MIN_LIFT=1.05`. Adopters retune (one place: the constants + final WHERE in `gold_product_affinity_pairwise`). |
+| **Time window** (`time_window`) | The trailing window a rule is computed over: `30D` / `90D` / `ALL_TIME` (the source model's grain axis). Trailing cutoffs are anchored to `MAX(order_date)` (not `CURRENT_DATE`, so the surface is reproducible on historical data). `support`/`confidence`/`lift` are recomputed independently per window, so a pair can rank differently — or drop out — in a shorter window as recent behavior shifts. |
+| **Customer→product affinity** (`gold_customer_product_affinity`) | Per-customer, per-product affinity score in [0,1]: `LEAST(1, purchase_intensity × recency_weight)`. Transparent heuristic, **not an ML model** (mirrors `predicted_clv`'s stance). |
+| **Purchase intensity** | `LEAST(1, purchase_count / TARGET_REPEAT)`, `TARGET_REPEAT=5` — repeat-purchase depth normalized to [0,1]. |
+| **Recency weight** (`recency_weight`) | `pow(0.5, days_since_last_purchase / 90)` — exponential time-decay in (0,1] with a 90-day half-life. |
+| **Affinity band** (`affinity_band`) | Coarse strength bucket: `high` (≥0.6) / `medium` (≥0.2) / `low`. |
+| **Primary driver** (`primary_driver`) | What an affinity is derived from. v1 is always `PURCHASE_HISTORY`; the source model's `BROWSE_BEHAVIOR` and latent/embedding (ML vector) drivers are a documented follow-on. |
+| **Deferred: ML vector modality** | The source model's `dim_product_embedding` / `dim_customer_embedding` (pgvector `VECTOR(768)` + ANN/HNSW cosine search) are **out of v1 scope**. On Databricks this is Vector Search synced from Delta, not stored pgvector columns/indexes (ORDM's strict typing has no `VECTOR` type). It solves cold-start (new items) and latent discovery, and layers on top of this data model rather than living in it. |
 
 ### Market Analysis / UC-RET-0021 Competitive & Market Intelligence
 
