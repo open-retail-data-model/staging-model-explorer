@@ -2,12 +2,21 @@
 
 > Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-08-29
 
-Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). This package
-is the **Next Best Action (NBA)** engine for the store floor: it normalizes disparate real-time triggers into
+Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). This package covers two capabilities on one schema. The **Next Best Action (NBA)** engine for the store floor: it normalizes disparate real-time triggers into
 a single prioritized task queue routed to the right associate, then closes the loop by capturing the
 response and the real-world outcome. It **builds on** the canonical core rather than redefining it — customer,
 product, and store context are foreign keys into `customer.profile` / `product.product` / `store.store`, and
 the trigger signals map to existing entities (see *Builds on* in the README).
+
+The second capability, **Real-Time Data Access**, is the governed lookup contract the associate device reads (inventory, price/promotion, order status, operational context, and a freshness surface). The two share this schema and the canonical core but carry no foreign keys into each other, so either deploys without the other.
+
+## Use-case status
+
+| Use case | Status | Notes |
+|---|---|---|
+| Real-Time Data Access | done | Governed associate lookup contract. |
+| Associates Best Next Actions | in-progress | Prioritized action queue (`gold_associate_action_queue_current`). |
+| Digital Assistant Selling Tools | in-progress | Response + outcome loop (`gold_action_outcome_funnel_daily`). |
 
 ## Tables & views
 
@@ -20,8 +29,15 @@ the trigger signals map to existing entities (see *Builds on* in the README).
 | `gold_associate_action_queue_current` | One row per open, non-expired action | The live prioritized queue an associate sees, ranked within associate by the time-decayed `current_priority_score`. "Open" and `current_state` are derived from `action_response_log` (no terminal response yet), not a stored status. |
 | `gold_action_outcome_funnel_daily` | One row per store × zone × associate × trading date × action_type | Generated / accepted / rejected / completed / expired counts (from the response log), acceptance & completion rates, avg response time, realized outcome value. The associate and zone grain serve per-associate effectiveness and the per-zone staffing signal. |
 | `mv_associate_action_performance` | store × zone × associate × trading date × action_type | UC Metric View over the daily funnel: acceptance, completion, responsiveness, realized value (ratio-of-sums), broken down by associate or zone. |
+| `associate_context_event` | One source event (append-only) | Streaming-ready change events for inventory, price, promotion, order, operations. |
+| `associate_fulfillment_status` | One order (current) | Associate-safe BOPIS/curbside/fulfillment status. No customer PII. |
+| `associate_lookup_audit` | One lookup | Allow/deny audit with hashed entity keys and latency. |
+| `gold_associate_product_inventory_current` | product × store | On-hand / ATS / stock status / nearby alternative / freshness, with honest basis fields. |
+| `gold_associate_price_promotion_current` | product × store | Base and effective price, active store-scoped promo, eligibility flags. |
+| `gold_associate_order_status_current` | order | Fulfillment type, status, pickup readiness, exception, freshness. |
+| `gold_associate_operational_context_current` | store × context | Replenishment tasks and equipment alerts safe for associates. |
+| `gold_associate_data_freshness` | feed × store | Lag, freshness status, SLA state. |
 | `profile` / `product` / `store` | — | *(canonical-core)* the customer / product / store context the actions reference. |
-
 ## Key concepts
 
 | Term | Definition |
@@ -57,7 +73,6 @@ BOPIS expedite:
  "location":{"zone_name":"Fulfillment Desk"},
  "order_context":{"order_id":"ORD-99381","item_count":4,"sla_deadline":"2026-08-29T19:30:00Z","minutes_remaining":67,"urgency_flag":"ELEVATED"}}
 ```
-
 ## Metrics (definitions)
 
 Captured engine-neutrally (definition, grain, expression) and materialized as the UC Metric View
@@ -71,7 +86,6 @@ Captured engine-neutrally (definition, grain, expression) and materialized as th
 | `avg_response_seconds` | Mean dispatch-to-first-response time. | store × zone × associate × date × action_type | `SUM(response_seconds_total) / SUM(responses_timed)` |
 | `sales_closed` | Actions resolved as a closed sale. | store × zone × associate × date × action_type | `SUM(sales_closed)` |
 | `realized_outcome_value` | Monetary value attributed to actions. | store × zone × associate × date × action_type | `SUM(realized_outcome_value)` (single reporting currency) |
-
 ## Standards used
 
 | Concept | Standard |
@@ -79,7 +93,28 @@ Captured engine-neutrally (definition, grain, expression) and materialized as th
 | Dates / timestamps | ISO 8601 (UTC) |
 | Currency | ISO 4217 (`currency_code`, `outcome_currency_code`) |
 | Money typing | DECIMAL(18,2) for `outcome_value_amount` (ORDM §A.6) |
+## Terms — Real-Time Data Access
 
+| Term | Definition |
+|---|---|
+| **Available to sell (ATS)** | On-hand minus reserved, floored at zero. |
+| **Stock status** | `IN_STOCK`, `LOW_STOCK`, `OUT_OF_STOCK`, or `UNKNOWN`. |
+| **Inventory basis** | `daily_snapshot` (EOD `inventory_position` only) or `event_overlay` (intra-day event present). |
+| **Freshness status (event overlay)** | `fresh` (&lt;60 min lag), `delayed` (60–1440), `stale` (&gt;1440), or `UNKNOWN`. |
+| **Freshness status (daily snapshot)** | Calendar age of `snapshot_date_key`: same day → `fresh` (**EOD semantics, not live shelf**), 1 day behind → `delayed`, older → `stale`. |
+| **Location basis** | `event_location_code` when a free-text code exists; `not_modeled` when absent. ORDM has no shelf/bay geo. |
+| **Nearby-store match basis** | `same_region_on_hand` — same `store.region`, active, on-hand &gt; 0; **not** distance-ranked. |
+| **Customer eligibility status** | Always `CUSTOMER_ELIGIBILITY_REQUIRES_AUTHORIZED_CONTEXT` in associate gold — personalized offers are not inferred. |
+| **Store-scope authorization** | Associate may only read data for stores in their authorized set unless holding a cross-store role. |
+| **Exact product match** | Lookup by durable `product_id` / SKU / GTIN equality — free-text fuzzy search is denied at the policy layer. |
+| **Associate-safe order status** | Fulfillment fields without profile, contact, loyalty, or payment attributes. |
+## Classification
+
+| Class | Examples |
+|---|---|
+| `public_ops` | Store name, product name, stock status |
+| `associate_ops` | Quantities, pickup desk codes, equipment zone alerts |
+| `restricted` | Customer PII, unit cost, margin, loss-prevention — **excluded** from gold |
 ## Deferred (documented, not built)
 
 A normalized `associate_skill` association (skills are a delimited STRING today); a live associate

@@ -95,6 +95,9 @@ schema:
     physicalType: DECIMAL(18,4)
     required: false
     description: Fully-loaded hourly labor cost in base currency (unit-grain rate; DECIMAL scale 4).
+    classification: restricted
+    tags:
+    - dbx_pii_financial
   - name: currency_code
     logicalType: string
     physicalType: STRING
@@ -261,14 +264,11 @@ schema:
     severity: error
     mustBe: 0
     unit: rows
-    description: employee_cost_single_currency
-    query: 'SELECT ''employee'' AS table_name, COUNT(DISTINCT currency_code) AS currencies
-
-      FROM labor.employee
-
-      WHERE currency_code IS NOT NULL AND hourly_labor_cost IS NOT NULL
-
-      HAVING COUNT(DISTINCT currency_code) > 1'
+    description: 'hourly_labor_cost is nullable; only cost-bearing rows carry a currency. Mirrors wsr_cost_single_currency:
+      a costed row with no currency is a violation, not a pass.'
+    query: "SELECT 'employee' AS table_name, COUNT(DISTINCT currency_code) AS currencies\nFROM labor.employee\n\
+      WHERE hourly_labor_cost IS NOT NULL\nHAVING COUNT(DISTINCT currency_code) > 1\n    OR COUNT(CASE\
+      \ WHEN currency_code IS NULL THEN 1 END) > 0"
   - name: employee_rowcount
     type: sql
     dimension: accuracy
@@ -443,7 +443,7 @@ schema:
   description: Associate skill eligibility bridge. Role scheduling must not assign an employee lacking
     the required skill_code.
   tags:
-  - transactional
+  - association
   authoritativeDefinitions:
   - url: canonical-core/labor/README.md
     type: businessDefinition
@@ -583,7 +583,7 @@ schema:
   physicalType: table
   description: Employee × store eligibility bridge for multi-location associates.
   tags:
-  - transactional
+  - association
   authoritativeDefinitions:
   - url: canonical-core/labor/README.md
     type: businessDefinition

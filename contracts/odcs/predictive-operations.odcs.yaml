@@ -712,7 +712,7 @@ schema:
     severity: error
     mustBe: 0
     unit: rows
-    description: 'ADR 0034: labor_risk is live; only cx_risk remains deferred and must be NULL.'
+    description: 'ADR 0043: labor_risk is live; only cx_risk remains deferred and must be NULL.'
     query: 'SELECT * FROM predictive_operations.store_risk_score
 
       WHERE cx_risk IS NOT NULL'
@@ -1295,11 +1295,11 @@ schema:
     physicalType: STRING
     required: true
     description: Durable business key for the exception.
-  - name: optimization_run_id
+  - name: workforce_optimization_run_id
     logicalType: string
     physicalType: STRING
     required: true
-    description: workforce_optimization_run.run_id.
+    description: workforce_optimization_run.workforce_optimization_run_id.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
@@ -1393,11 +1393,11 @@ schema:
     unit: rows
     description: wce_keys_not_null
     query: "SELECT * FROM predictive_operations.workforce_coverage_exception\nWHERE workforce_coverage_exception_sk\
-      \ IS NULL OR workforce_coverage_exception_id IS NULL\n   OR optimization_run_id IS NULL OR store_id\
-      \ IS NULL OR business_date IS NULL\n   OR interval_start_ts IS NULL OR interval_end_ts IS NULL\n\
-      \   OR department_or_zone IS NULL OR role_code IS NULL\n   OR required_headcount IS NULL OR scheduled_headcount\
-      \ IS NULL OR shortfall_headcount IS NULL\n   OR severity IS NULL OR exception_explanation IS NULL\
-      \ OR suggested_action IS NULL"
+      \ IS NULL OR workforce_coverage_exception_id IS NULL\n   OR workforce_optimization_run_id IS NULL\
+      \ OR store_id IS NULL OR business_date IS NULL\n   OR interval_start_ts IS NULL OR interval_end_ts\
+      \ IS NULL\n   OR department_or_zone IS NULL OR role_code IS NULL\n   OR required_headcount IS NULL\
+      \ OR scheduled_headcount IS NULL OR shortfall_headcount IS NULL\n   OR severity IS NULL OR exception_explanation\
+      \ IS NULL OR suggested_action IS NULL"
   - name: wce_pk_unique
     type: sql
     dimension: accuracy
@@ -1446,8 +1446,8 @@ schema:
     unit: rows
     description: wce_run_fk_orphan
     query: "SELECT t.* FROM predictive_operations.workforce_coverage_exception t\nLEFT JOIN predictive_operations.workforce_optimization_run\
-      \ r\n  ON t.optimization_run_id = r.run_id\nWHERE r.run_id IS NULL AND t.optimization_run_id IS\
-      \ NOT NULL"
+      \ r\n  ON t.workforce_optimization_run_id = r.workforce_optimization_run_id\nWHERE r.workforce_optimization_run_id\
+      \ IS NULL AND t.workforce_optimization_run_id IS NOT NULL"
   - name: wce_interval_order
     type: sql
     dimension: accuracy
@@ -1532,11 +1532,11 @@ schema:
     physicalType: STRING
     required: true
     description: Durable business key for the forecast line.
-  - name: optimization_run_id
+  - name: workforce_optimization_run_id
     logicalType: string
     physicalType: STRING
     required: false
-    description: FK-like link to workforce_optimization_run.run_id.
+    description: FK-like link to workforce_optimization_run.workforce_optimization_run_id.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
@@ -1698,8 +1698,8 @@ schema:
     unit: rows
     description: wdf_run_fk_orphan
     query: "SELECT t.* FROM predictive_operations.workforce_demand_forecast t\nLEFT JOIN predictive_operations.workforce_optimization_run\
-      \ r\n  ON t.optimization_run_id = r.run_id\nWHERE r.run_id IS NULL AND t.optimization_run_id IS\
-      \ NOT NULL"
+      \ r\n  ON t.workforce_optimization_run_id = r.workforce_optimization_run_id\nWHERE r.workforce_optimization_run_id\
+      \ IS NULL AND t.workforce_optimization_run_id IS NOT NULL"
   - name: wdf_interval_order
     type: sql
     dimension: accuracy
@@ -1758,6 +1758,22 @@ schema:
     query: 'SELECT COUNT(*) AS workforce_demand_forecast_rows
 
       FROM predictive_operations.workforce_demand_forecast'
+  - name: wlr_forecast_missing_standard
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Every (role, driver, zone) the demand forecast produces must resolve to a CURRENT labor
+      standard; an unmatched combination is silently dropped by the requirement step, understating required
+      hours rather than erroring. A standard scoped storewide (department_or_zone NULL or 'storewide')
+      covers every zone.
+    query: "SELECT f.role_code, f.demand_driver, f.department_or_zone\nFROM (\n  SELECT DISTINCT role_code,\
+      \ demand_driver, department_or_zone\n  FROM predictive_operations.workforce_demand_forecast\n) f\n\
+      LEFT JOIN (\n  SELECT DISTINCT role_code, demand_driver, department_or_zone\n  FROM predictive_operations.labor_standard\n\
+      \  WHERE is_current = TRUE\n) s\n  ON  s.role_code = f.role_code\n  AND s.demand_driver = f.demand_driver\n\
+      \  AND (s.department_or_zone IS NULL\n       OR s.department_or_zone = 'storewide'\n       OR s.department_or_zone\
+      \ = f.department_or_zone)\nWHERE s.role_code IS NULL"
 - name: workforce_labor_requirement
   physicalName: predictive_operations.workforce_labor_requirement
   physicalType: table
@@ -1784,11 +1800,11 @@ schema:
     physicalType: STRING
     required: true
     description: Durable business key for the requirement line.
-  - name: optimization_run_id
+  - name: workforce_optimization_run_id
     logicalType: string
     physicalType: STRING
     required: false
-    description: Link to workforce_optimization_run.run_id.
+    description: Link to workforce_optimization_run.workforce_optimization_run_id.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
@@ -1956,8 +1972,8 @@ schema:
     unit: rows
     description: wlr_run_fk_orphan
     query: "SELECT t.* FROM predictive_operations.workforce_labor_requirement t\nLEFT JOIN predictive_operations.workforce_optimization_run\
-      \ r\n  ON t.optimization_run_id = r.run_id\nWHERE r.run_id IS NULL AND t.optimization_run_id IS\
-      \ NOT NULL"
+      \ r\n  ON t.workforce_optimization_run_id = r.workforce_optimization_run_id\nWHERE r.workforce_optimization_run_id\
+      \ IS NULL AND t.workforce_optimization_run_id IS NOT NULL"
   - name: wlr_labor_standard_fk_orphan
     type: sql
     dimension: accuracy
@@ -2037,7 +2053,7 @@ schema:
     primaryKey: true
     primaryKeyPosition: 1
     description: Surrogate key.
-  - name: run_id
+  - name: workforce_optimization_run_id
     logicalType: string
     physicalType: STRING
     required: true
@@ -2192,9 +2208,9 @@ schema:
     unit: rows
     description: wor_keys_not_null
     query: "SELECT * FROM predictive_operations.workforce_optimization_run\nWHERE workforce_optimization_run_sk\
-      \ IS NULL OR run_id IS NULL\n   OR forecast_horizon_days IS NULL OR interval_minutes IS NULL\n \
-      \  OR forecast_method IS NULL OR optimizer_method IS NULL\n   OR optimization_status IS NULL OR\
-      \ run_started_ts IS NULL"
+      \ IS NULL OR workforce_optimization_run_id IS NULL\n   OR forecast_horizon_days IS NULL OR interval_minutes\
+      \ IS NULL\n   OR forecast_method IS NULL OR optimizer_method IS NULL\n   OR optimization_status\
+      \ IS NULL OR run_started_ts IS NULL"
   - name: wor_pk_unique
     type: sql
     dimension: accuracy
@@ -2216,11 +2232,11 @@ schema:
     mustBe: 0
     unit: rows
     description: wor_run_id_unique
-    query: 'SELECT run_id
+    query: 'SELECT workforce_optimization_run_id
 
       FROM predictive_operations.workforce_optimization_run
 
-      GROUP BY run_id
+      GROUP BY workforce_optimization_run_id
 
       HAVING COUNT(*) > 1'
   - name: wor_positive_params
@@ -2302,11 +2318,11 @@ schema:
     physicalType: STRING
     required: true
     description: Durable recommendation / shift ID.
-  - name: optimization_run_id
+  - name: workforce_optimization_run_id
     logicalType: string
     physicalType: STRING
     required: true
-    description: workforce_optimization_run.run_id that produced this row.
+    description: workforce_optimization_run.workforce_optimization_run_id that produced this row.
   - name: employee_sk
     logicalType: integer
     physicalType: BIGINT
@@ -2436,11 +2452,12 @@ schema:
     unit: rows
     description: wsr_keys_not_null
     query: "SELECT * FROM predictive_operations.workforce_schedule_recommendation\nWHERE workforce_schedule_recommendation_sk\
-      \ IS NULL\n   OR workforce_schedule_recommendation_id IS NULL\n   OR optimization_run_id IS NULL\
-      \ OR employee_id IS NULL OR store_id IS NULL\n   OR department_or_zone IS NULL OR role_code IS NULL\n\
-      \   OR shift_start_ts IS NULL OR shift_end_ts IS NULL OR assigned_hours IS NULL\n   OR is_availability_ok\
-      \ IS NULL OR is_skill_ok IS NULL\n   OR is_store_eligible_ok IS NULL OR is_hours_cap_ok IS NULL\
-      \ OR is_min_rest_ok IS NULL\n   OR recommendation_status IS NULL OR optimizer_status IS NULL"
+      \ IS NULL\n   OR workforce_schedule_recommendation_id IS NULL\n   OR workforce_optimization_run_id\
+      \ IS NULL OR employee_id IS NULL OR store_id IS NULL\n   OR department_or_zone IS NULL OR role_code\
+      \ IS NULL\n   OR shift_start_ts IS NULL OR shift_end_ts IS NULL OR assigned_hours IS NULL\n   OR\
+      \ is_availability_ok IS NULL OR is_skill_ok IS NULL\n   OR is_store_eligible_ok IS NULL OR is_hours_cap_ok\
+      \ IS NULL OR is_min_rest_ok IS NULL\n   OR recommendation_status IS NULL OR optimizer_status IS\
+      \ NULL"
   - name: wsr_pk_unique
     type: sql
     dimension: accuracy
@@ -2489,8 +2506,8 @@ schema:
     unit: rows
     description: wsr_run_fk_orphan
     query: "SELECT t.* FROM predictive_operations.workforce_schedule_recommendation t\nLEFT JOIN predictive_operations.workforce_optimization_run\
-      \ r\n  ON t.optimization_run_id = r.run_id\nWHERE r.run_id IS NULL AND t.optimization_run_id IS\
-      \ NOT NULL"
+      \ r\n  ON t.workforce_optimization_run_id = r.workforce_optimization_run_id\nWHERE r.workforce_optimization_run_id\
+      \ IS NULL AND t.workforce_optimization_run_id IS NOT NULL"
   - name: wsr_employee_fk_orphan
     type: sql
     dimension: accuracy
@@ -2522,6 +2539,17 @@ schema:
     description: wsr_hours_nonnegative
     query: "SELECT * FROM predictive_operations.workforce_schedule_recommendation\nWHERE assigned_hours\
       \ < 0\n   OR (estimated_labor_cost IS NOT NULL AND estimated_labor_cost < 0)"
+  - name: wsr_cost_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: estimated_labor_cost is nullable; only cost-bearing rows carry a currency.
+    query: "SELECT 'workforce_schedule_recommendation' AS table_name, COUNT(DISTINCT currency_code) AS\
+      \ currencies\nFROM predictive_operations.workforce_schedule_recommendation\nWHERE estimated_labor_cost\
+      \ IS NOT NULL\nHAVING COUNT(DISTINCT currency_code) > 1\n    OR COUNT(CASE WHEN currency_code IS\
+      \ NULL THEN 1 END) > 0"
   - name: wsr_role_domain
     type: sql
     dimension: accuracy
@@ -2793,7 +2821,7 @@ schema:
   physicalType: view
   description: 'Store-grain labor/workforce risk sub-score (0-100, higher = riskier). Transparent heuristic:
     100 * (1 - coverage_pct) over the next 7 days, plus escalators for critical shortfall intervals. Slots
-    into gold_store_operational_risk.labor_risk (ADR 0034).'
+    into gold_store_operational_risk.labor_risk (ADR 0043).'
   tags:
   - gold
   authoritativeDefinitions:
@@ -2969,7 +2997,7 @@ schema:
   physicalType: view
   description: 'The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term
     operational/financial deterioration risk. Composes FIVE sub-scores -- four from other packages (inventory,
-    supply_chain, sales_margin, equipment) plus labor from this package''s gold_labor_risk (ADR 0034)
+    supply_chain, sales_margin, equipment) plus labor from this package''s gold_labor_risk (ADR 0043)
     -- into a single store-grain triage surface plus a per-domain diagnostic breakdown.'
   tags:
   - gold
@@ -3037,7 +3065,7 @@ schema:
     logicalType: number
     physicalType: DOUBLE
     description: Labor/workforce domain sub-score from gold_labor_risk (0-100). Present when Workforce
-      Optimization / labor domain is deployed (ADR 0034).
+      Optimization / labor domain is deployed (ADR 0043).
   - name: cx_risk
     logicalType: number
     physicalType: DOUBLE
@@ -3257,69 +3285,39 @@ schema:
     type: businessDefinition
   properties:
   - name: store_id
-    logicalType: string
-    physicalType: STRING
     description: Durable store business key.
   - name: business_date
-    logicalType: date
-    physicalType: DATE
     description: Local business date the interval belongs to.
   - name: interval_start_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
     description: Inclusive start of the planning interval (UTC).
   - name: interval_end_ts
-    logicalType: timestamp
-    physicalType: TIMESTAMP
     description: Exclusive end of the planning interval (UTC).
   - name: interval_minutes
-    logicalType: integer
-    physicalType: INT
     description: Planning interval length in minutes.
   - name: department_or_zone
-    logicalType: string
-    physicalType: STRING
     description: Department or zone within the store.
   - name: role_code
-    logicalType: string
-    physicalType: STRING
     description: Workforce role the forecast was produced for.
   - name: demand_driver
-    logicalType: string
-    physicalType: STRING
     description: Workload driver the forecast is expressed in.
   - name: forecast_driver_units
-    logicalType: number
-    physicalType: DECIMAL(18, 4)
     description: Forecast driver units for the interval.
   - name: actual_driver_units
-    logicalType: number
-    physicalType: DECIMAL(8, 2)
     description: 'Observed driver units for the interval; NULL when no actuals source is available for
       the driver. STORE-TOTAL grain: actuals are joined on store/date/interval only, NOT on role or zone,
       so every per-role row on one interval repeats the SAME store total. Use it as a per-row diagnostic;
       summing it across roles multiply-counts the interval.'
   - name: forecast_error
-    logicalType: number
-    physicalType: DECIMAL(18, 4)
     description: Forecast minus actual driver units. Positive = over-forecast.
   - name: ape
-    logicalType: number
-    physicalType: DOUBLE
     description: Absolute percentage error for the interval; NULL when actuals are absent or zero. Aggregate
       as a weighted ratio of sums, not a mean of these row values.
   - name: forecast_method
-    logicalType: string
-    physicalType: STRING
     description: How the forecast row was produced.
   - name: model_version
-    logicalType: string
-    physicalType: STRING
     description: Reserved for a model-backed pipeline (forecast_method = model); NULL for heuristic rows
       (ADR 0028 §4).
   - name: optimization_run_id
-    logicalType: string
-    physicalType: STRING
     description: workforce_optimization_run.run_id that produced the forecast being scored.
 - name: gold_workforce_labor_requirement
   physicalName: predictive_operations.gold_workforce_labor_requirement

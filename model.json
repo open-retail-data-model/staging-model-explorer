@@ -70,6 +70,21 @@
       {
         "kind": "consumes",
         "source": "ai-assisted-store-associates",
+        "target": "equipment"
+      },
+      {
+        "kind": "consumes",
+        "source": "ai-assisted-store-associates",
+        "target": "inventory"
+      },
+      {
+        "kind": "consumes",
+        "source": "ai-assisted-store-associates",
+        "target": "marketing"
+      },
+      {
+        "kind": "consumes",
+        "source": "ai-assisted-store-associates",
         "target": "product"
       },
       {
@@ -4639,7 +4654,7 @@
               "enum_values": [],
               "fk": false,
               "name": "hourly_labor_cost",
-              "pii": false,
+              "pii": true,
               "pk": false,
               "type": "DECIMAL(18,4)"
             },
@@ -5001,7 +5016,7 @@
           "layer": "silver",
           "materialized": true,
           "name": "employee_skill",
-          "role": "transactional",
+          "role": "association",
           "scd2": false
         },
         {
@@ -5119,7 +5134,7 @@
           "layer": "silver",
           "materialized": true,
           "name": "employee_store_eligibility",
-          "role": "transactional",
+          "role": "association",
           "scd2": false
         },
         {
@@ -17531,6 +17546,210 @@
           "name": "or_amount_currency_pair",
           "severity": "error",
           "table": "outcome_resolution"
+        },
+        {
+          "column": null,
+          "name": "ace_event_id_unique",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_required_ids",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_timestamps_valid",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_domain_values",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_nonneg_quantities",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_single_currency",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_store_fk_orphan",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_product_fk_orphan",
+          "severity": "error",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "ace_rowcount",
+          "severity": "metric",
+          "table": "associate_context_event"
+        },
+        {
+          "column": null,
+          "name": "afs_order_id_unique",
+          "severity": "error",
+          "table": "associate_fulfillment_status"
+        },
+        {
+          "column": null,
+          "name": "afs_required_ids",
+          "severity": "error",
+          "table": "associate_fulfillment_status"
+        },
+        {
+          "column": null,
+          "name": "afs_no_customer_pii_columns",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "afs_store_fk_orphan",
+          "severity": "error",
+          "table": "associate_fulfillment_status"
+        },
+        {
+          "column": null,
+          "name": "afs_rowcount",
+          "severity": "metric",
+          "table": "associate_fulfillment_status"
+        },
+        {
+          "column": null,
+          "name": "ala_audit_id_unique",
+          "severity": "error",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "ala_decision_has_reason",
+          "severity": "error",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "ala_correlation_present",
+          "severity": "error",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "ala_latency_nonneg",
+          "severity": "error",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "ala_denied_count",
+          "severity": "metric",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "ala_rowcount",
+          "severity": "metric",
+          "table": "associate_lookup_audit"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_grain_unique",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_stock_status_domain",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_basis_domain",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_location_basis_domain",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_nearby_basis_domain",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_eod_warning_when_snapshot",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_inv_freshness_present",
+          "severity": "error",
+          "table": "gold_associate_product_inventory_current"
+        },
+        {
+          "column": null,
+          "name": "gold_price_grain_unique",
+          "severity": "error",
+          "table": "gold_associate_price_promotion_current"
+        },
+        {
+          "column": null,
+          "name": "gold_price_nonneg",
+          "severity": "error",
+          "table": "gold_associate_price_promotion_current"
+        },
+        {
+          "column": null,
+          "name": "gold_price_single_currency",
+          "severity": "error",
+          "table": "gold_associate_price_promotion_current"
+        },
+        {
+          "column": null,
+          "name": "gold_price_customer_eligibility_safe",
+          "severity": "error",
+          "table": "gold_associate_price_promotion_current"
+        },
+        {
+          "column": null,
+          "name": "gold_order_grain_unique",
+          "severity": "error",
+          "table": "gold_associate_order_status_current"
+        },
+        {
+          "column": null,
+          "name": "gold_order_no_profile",
+          "severity": "error",
+          "table": ""
+        },
+        {
+          "column": null,
+          "name": "gold_freshness_sla_breaches",
+          "severity": "metric",
+          "table": "gold_associate_data_freshness"
         }
       ],
       "contract_path": "contracts/odcs/ai-assisted-store-associates.odcs.yaml",
@@ -17625,6 +17844,39 @@
             "suggested_action_sk"
           ],
           "parent_table": "suggested_action"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "associate_context_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
+        },
+        {
+          "child_cols": [
+            "product_sk"
+          ],
+          "child_table": "associate_context_event",
+          "declared_fk": true,
+          "parent_cols": [
+            "product_sk"
+          ],
+          "parent_table": "product"
+        },
+        {
+          "child_cols": [
+            "store_sk"
+          ],
+          "child_table": "associate_fulfillment_status",
+          "declared_fk": true,
+          "parent_cols": [
+            "store_sk"
+          ],
+          "parent_table": "store"
         }
       ],
       "tables": [
@@ -17928,6 +18180,629 @@
           "name": "associate",
           "role": "master",
           "scd2": true
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_context_event_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the source event (idempotency key).",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_context_event_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Domain of the change. Allowed values: inventory, price, promotion, order, operations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_domain",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Change type within the domain (e.g. stock_adjustment, price_update, promo_activate, fulfillment_update, equipment_alert).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk when store-scoped.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key when store-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to product.product_sk when product-scoped.",
+              "enum_values": [],
+              "fk": true,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key when product-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable order business key when order-scoped. No customer identifiers.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable promotion business key when promotion-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable equipment business key when operations/equipment-scoped.",
+              "enum_values": [],
+              "fk": false,
+              "name": "equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Observed on-hand quantity for inventory events (nullable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_on_hand",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Observed available-to-sell quantity for inventory events (nullable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_available",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Observed reserved quantity for inventory events (nullable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_reserved",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Observed in-transit quantity for inventory events (nullable).",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_in_transit",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12,3)"
+            },
+            {
+              "comment": "Observed unit price for price events (unit-grain DECIMAL scale 4).",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18,4)"
+            },
+            {
+              "comment": "ISO 4217 reporting/base currency for monetary amounts; constant base_currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Domain status payload (stock status, order status, alert severity, etc.).",
+              "enum_values": [],
+              "fk": false,
+              "name": "status_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Sales-floor or backroom location code when provided by source.",
+              "enum_values": [],
+              "fk": false,
+              "name": "location_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Short vendor-neutral summary suitable for associate display; never PII.",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_payload_summary",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Vendor-neutral source-system label (e.g. inventory_ledger, price_engine, oms, iot_gateway).",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Event time at source (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the event was ingested into the lakehouse (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When current-state processing considered this event (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "processed_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Ingest latency = ingest_timestamp - event_timestamp, in seconds.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Append-only associate context events for Real-Time Data Access. Streaming-ready contract; current-state gold views derive from the latest valid event per entity.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "associate_context_event",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_fulfillment_status_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key (typically equals order_id for current-state grain).",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_fulfillment_status_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable customer-order business key. Required for associate lookup.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "FK to store.store_sk of the fulfillment / pickup store.",
+              "enum_values": [],
+              "fk": true,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key where the order is fulfilled or picked up.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Fulfillment mode. Allowed values: bopis, curbside, ship_to_store, ship_to_home, in_store_reserve.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fulfillment_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Associate-safe order status. Allowed values: received, picking, packing, ready_for_pickup, picked_up, shipped, cancelled, exception.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pickup readiness. Allowed values: not_ready, ready, overdue, completed, not_applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pickup_readiness",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Pickup desk / locker / curbside bay code. No customer address.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pickup_location_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Exception state when order_status = exception. Allowed values: missing_item, payment_hold, customer_no_show, damaged, other, none.",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Latest known fulfillment event time (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Vendor-neutral OMS / fulfillment source label.",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when associate must present authorized customer-verification context before detail is returned.",
+              "enum_values": [],
+              "fk": false,
+              "name": "requires_customer_verification",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When this current-state row was last refreshed (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_freshness_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Originating system of record (vendor-neutral label).",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Associate-safe order fulfillment / pickup status. No customer PII. Exact order_id required for lookup.",
+          "consumes_tables": [
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "silver",
+          "materialized": true,
+          "name": "associate_fulfillment_status",
+          "role": "transactional",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_lookup_audit_sk",
+              "pii": false,
+              "pk": true,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable natural/business key for the audit event.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_lookup_audit_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Caller-supplied request identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "request_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Cross-system correlation identifier.",
+              "enum_values": [],
+              "fk": false,
+              "name": "correlation_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When the lookup was requested (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "request_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "When the audit row was written (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "generated_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Pseudonymous associate / session identifier. Not a legal name.",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Requester role code (e.g. sales_associate, fulfillment, supervisor, store_manager).",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_role",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Request channel. Allowed values: mobile, kiosk, pos, dashboard, api, test.",
+              "enum_values": [],
+              "fk": false,
+              "name": "channel",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store scope asserted on the request.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Requested capability. Allowed values: get_product_availability, get_product_location, get_price_and_promotions, get_order_fulfillment_status, get_store_operations_context, get_associate_context_summary.",
+              "enum_values": [],
+              "fk": false,
+              "name": "capability",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Authorization outcome. Allowed values: allow, deny.",
+              "enum_values": [],
+              "fk": false,
+              "name": "access_decision",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Machine-readable reason for the access decision.",
+              "enum_values": [],
+              "fk": false,
+              "name": "access_reason_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Envelope status returned to the caller. Allowed values: SUCCESS, NOT_FOUND, NOT_AVAILABLE, STALE_DATA, ACCESS_DENIED, INVALID_REQUEST, PARTIAL_RESULT, UPSTREAM_DATA_DELAY.",
+              "enum_values": [],
+              "fk": false,
+              "name": "response_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "End-to-end lookup latency in milliseconds.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_ms",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Comma-separated domain tags actually read (inventory,price,promotion,order,operations).",
+              "enum_values": [],
+              "fk": false,
+              "name": "domains_accessed",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Highest classification of returned fields. Allowed values: public_ops, associate_ops, restricted.",
+              "enum_values": [],
+              "fk": false,
+              "name": "data_classification",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SHA-256 hex of product_id when product-scoped; NULL otherwise. Never store raw search text.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id_hash",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SHA-256 hex of order_id when order-scoped; NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id_hash",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Originating lookup service label.",
+              "enum_values": [],
+              "fk": false,
+              "name": "record_source",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "When this row was loaded (UTC, ISO 8601).",
+              "enum_values": [],
+              "fk": false,
+              "name": "load_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "Associate lookup audit trail. Allow/deny, capability, latency, hashed keys only \u2014 no customer PII or raw search terms.",
+          "consumes_tables": [],
+          "layer": "silver",
+          "materialized": true,
+          "name": "associate_lookup_audit",
+          "role": "transactional",
+          "scd2": false
         },
         {
           "columns": [
@@ -18688,6 +19563,1101 @@
           "name": "gold_associate_action_queue_current",
           "role": "gold",
           "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "feed_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_source_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_processed_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_lag_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "within_sla or breach vs 60-minute associate freshness objective.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sla_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "event_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            }
+          ],
+          "comment": "Domain-level freshness metrics for associate real-time access. SLA: fresh < 60 min lag, delayed 60\u20131440 min, stale > 1440 min (aligned with early-risk feed_freshness). Inventory day snapshots without event overlay are evaluated on load_timestamp age.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_associate_data_freshness",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "replenishment_task, equipment_alert, or operations signal type.",
+              "enum_values": [],
+              "fk": false,
+              "name": "context_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "context_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "related_product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "related_equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "info/medium/high style severity safe for associate display.",
+              "enum_values": [],
+              "fk": false,
+              "name": "severity",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "resolution_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "signal_summary",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_state_updated_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_lag_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "explanation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "warning",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Store-level operational signals safe for associate display: replenishment / shelf-gap hints from inventory, equipment alerts from equipment_reading, and optional operations events. Excludes loss-prevention, margin, and employee personal data.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "equipment_reading",
+              "unit": "equipment"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_associate_operational_context_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_fulfillment_status_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "associate_fulfillment_status_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Exact order business key required for lookup.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "fulfillment_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "not_ready, ready, overdue, completed, or not_applicable.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pickup_readiness",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "pickup_location_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "exception_state",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "TRUE when associate must verify customer before detail release.",
+              "enum_values": [],
+              "fk": false,
+              "name": "requires_customer_verification",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "last_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_state_updated_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_lag_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "explanation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "warning",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Associate-safe order / fulfillment current state. Sourced from the package extension associate_fulfillment_status (canonical order domain has no BOPIS lifecycle). No customer PII columns.",
+          "consumes_tables": [
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_associate_order_status_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sku",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "gtin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Current base/list unit price in reporting currency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "base_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "Effective selling unit price after known store promo mechanics.",
+              "enum_values": [],
+              "fk": false,
+              "name": "effective_selling_price_amount",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 4)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Active store-scoped promotion id, if any.",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_promo_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_promo_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "active_promo_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "promo_end_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_channel_eligibility",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Always CUSTOMER_ELIGIBILITY_REQUIRES_AUTHORIZED_CONTEXT for associate gold.",
+              "enum_values": [],
+              "fk": false,
+              "name": "customer_eligibility_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_state_updated_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_lag_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "explanation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "warning",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Product \u00d7 store current price and active promotion context at the assortment grain (product\u00d7store pairs observed in inventory_position). List / promotional prices from product_price (SCD2 current) and product.list_price fallback; promotion coverage via marketing.promotion + promote_with_purpose.promotion_scope when scoped to the store.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "product_price",
+              "unit": "product"
+            },
+            {
+              "table": "promotion",
+              "unit": "marketing"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_associate_price_promotion_current",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key (SKU/item).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "sku",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "gtin",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "brand",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "category",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "department",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key for the associate store scope.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_name",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "region",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "district",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_on_hand",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "Available-to-sell units after reservations.",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_available_to_sell",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_reserved",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "quantity_in_transit",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "IN_STOCK, LOW_STOCK, OUT_OF_STOCK, or UNKNOWN.",
+              "enum_values": [],
+              "fk": false,
+              "name": "stock_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "replenishment_indicator",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "Optional free-text location_code from an inventory event. Not aisle/bay coordinates.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sales_floor_or_backroom_location",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "event_location_code when optional free-text location_code is present; not_modeled when absent. No shelf/bay geo in ORDM.",
+              "enum_values": [],
+              "fk": false,
+              "name": "location_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Same-region active store with on-hand > 0 (qty then store_id). Not geo-nearest.",
+              "enum_values": [],
+              "fk": false,
+              "name": "nearby_store_with_stock_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "nearby_store_on_hand",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "same_region_on_hand when a peer store is suggested \u2014 not distance-ranked.",
+              "enum_values": [],
+              "fk": false,
+              "name": "nearby_store_match_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "snapshot_date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "daily_snapshot (EOD inventory_position only) or event_overlay (intra-day associate_context_event).",
+              "enum_values": [],
+              "fk": false,
+              "name": "inventory_basis",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_event_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_ingest_timestamp",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "current_state_updated_at",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "source_system",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "For event_overlay: lag bands. For daily_snapshot: calendar age of date_key (EOD semantics \u2014 not live shelf).",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "",
+              "enum_values": [],
+              "fk": false,
+              "name": "freshness_lag_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Human-readable provenance for associate UI display; states EOD vs overlay and nearby-match rule.",
+              "enum_values": [],
+              "fk": false,
+              "name": "explanation",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Honesty warning for EOD grain, stale overlay, or incomplete location; NULL when none.",
+              "enum_values": [],
+              "fk": false,
+              "name": "warning",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            }
+          ],
+          "comment": "Product \u00d7 store current inventory context for associates. Base state comes from the latest canonical-core inventory_position day snapshot; optional associate_context_event inventory overlays supply fresher intra-day quantities when present.",
+          "consumes_tables": [
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_associate_product_inventory_current",
+          "role": "gold",
+          "scd2": false
         }
       ],
       "use_cases": [
@@ -18705,14 +20675,20 @@
         },
         {
           "consumes": [
-            "customer",
+            "equipment",
+            "inventory",
+            "marketing",
             "product",
             "store"
           ],
           "name": "Real-Time Data Access",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
-            "gold_associate_action_queue_current"
+            "gold_associate_product_inventory_current",
+            "gold_associate_price_promotion_current",
+            "gold_associate_order_status_current",
+            "gold_associate_operational_context_current",
+            "gold_associate_data_freshness"
           ]
         },
         {
@@ -48995,6 +50971,12 @@
         },
         {
           "column": null,
+          "name": "wlr_forecast_missing_standard",
+          "severity": "error",
+          "table": "workforce_demand_forecast"
+        },
+        {
+          "column": null,
           "name": "wlr_rowcount",
           "severity": "metric",
           "table": "workforce_labor_requirement"
@@ -49044,6 +51026,12 @@
         {
           "column": null,
           "name": "wsr_hours_nonnegative",
+          "severity": "error",
+          "table": "workforce_schedule_recommendation"
+        },
+        {
+          "column": null,
+          "name": "wsr_cost_single_currency",
           "severity": "error",
           "table": "workforce_schedule_recommendation"
         },
@@ -50316,10 +52304,10 @@
               "type": "STRING"
             },
             {
-              "comment": "workforce_optimization_run.run_id.",
+              "comment": "workforce_optimization_run.workforce_optimization_run_id.",
               "enum_values": [],
               "fk": false,
-              "name": "optimization_run_id",
+              "name": "workforce_optimization_run_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -50494,10 +52482,10 @@
               "type": "STRING"
             },
             {
-              "comment": "FK-like link to workforce_optimization_run.run_id.",
+              "comment": "FK-like link to workforce_optimization_run.workforce_optimization_run_id.",
               "enum_values": [],
               "fk": false,
-              "name": "optimization_run_id",
+              "name": "workforce_optimization_run_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -50699,10 +52687,10 @@
               "type": "STRING"
             },
             {
-              "comment": "Link to workforce_optimization_run.run_id.",
+              "comment": "Link to workforce_optimization_run.workforce_optimization_run_id.",
               "enum_values": [],
               "fk": false,
-              "name": "optimization_run_id",
+              "name": "workforce_optimization_run_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -50907,7 +52895,7 @@
               "comment": "Durable run business key (UUID or deterministic stamp).",
               "enum_values": [],
               "fk": false,
-              "name": "run_id",
+              "name": "workforce_optimization_run_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -51194,10 +53182,10 @@
               "type": "STRING"
             },
             {
-              "comment": "workforce_optimization_run.run_id that produced this row.",
+              "comment": "workforce_optimization_run.workforce_optimization_run_id that produced this row.",
               "enum_values": [],
               "fk": false,
-              "name": "optimization_run_id",
+              "name": "workforce_optimization_run_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
@@ -52013,7 +54001,7 @@
               "type": "DOUBLE"
             }
           ],
-          "comment": "Store-grain labor/workforce risk sub-score (0-100, higher = riskier). Transparent heuristic: 100 * (1 - coverage_pct) over the next 7 days, plus escalators for critical shortfall intervals. Slots into gold_store_operational_risk.labor_risk (ADR 0034).",
+          "comment": "Store-grain labor/workforce risk sub-score (0-100, higher = riskier). Transparent heuristic: 100 * (1 - coverage_pct) over the next 7 days, plus escalators for critical shortfall intervals. Slots into gold_store_operational_risk.labor_risk (ADR 0043).",
           "consumes_tables": [
             {
               "table": "customer_order_line",
@@ -52371,7 +54359,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "Labor/workforce domain sub-score from gold_labor_risk (0-100). Present when Workforce Optimization / labor domain is deployed (ADR 0034).",
+              "comment": "Labor/workforce domain sub-score from gold_labor_risk (0-100). Present when Workforce Optimization / labor domain is deployed (ADR 0043).",
               "enum_values": [],
               "fk": false,
               "name": "labor_risk",
@@ -52416,7 +54404,7 @@
               "type": "STRING"
             }
           ],
-          "comment": "The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term operational/financial deterioration risk. Composes FIVE sub-scores -- four from other packages (inventory, supply_chain, sales_margin, equipment) plus labor from this package's gold_labor_risk (ADR 0034) -- into a single store-grain triage surface plus a per-domain diagnostic breakdown.",
+          "comment": "The Store Operational Risk Score: one row per store (current as_of_date), estimating near-term operational/financial deterioration risk. Composes FIVE sub-scores -- four from other packages (inventory, supply_chain, sales_margin, equipment) plus labor from this package's gold_labor_risk (ADR 0043) -- into a single store-grain triage surface plus a per-domain diagnostic breakdown.",
           "consumes_tables": [
             {
               "table": "customer_order_line",
@@ -52801,7 +54789,7 @@
               "name": "store_id",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Local business date the interval belongs to.",
@@ -52810,7 +54798,7 @@
               "name": "business_date",
               "pii": false,
               "pk": false,
-              "type": "DATE"
+              "type": ""
             },
             {
               "comment": "Inclusive start of the planning interval (UTC).",
@@ -52819,7 +54807,7 @@
               "name": "interval_start_ts",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": ""
             },
             {
               "comment": "Exclusive end of the planning interval (UTC).",
@@ -52828,7 +54816,7 @@
               "name": "interval_end_ts",
               "pii": false,
               "pk": false,
-              "type": "TIMESTAMP"
+              "type": ""
             },
             {
               "comment": "Planning interval length in minutes.",
@@ -52837,7 +54825,7 @@
               "name": "interval_minutes",
               "pii": false,
               "pk": false,
-              "type": "INT"
+              "type": ""
             },
             {
               "comment": "Department or zone within the store.",
@@ -52846,7 +54834,7 @@
               "name": "department_or_zone",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Workforce role the forecast was produced for.",
@@ -52855,7 +54843,7 @@
               "name": "role_code",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Workload driver the forecast is expressed in.",
@@ -52864,7 +54852,7 @@
               "name": "demand_driver",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Forecast driver units for the interval.",
@@ -52873,7 +54861,7 @@
               "name": "forecast_driver_units",
               "pii": false,
               "pk": false,
-              "type": "DECIMAL(18, 4)"
+              "type": ""
             },
             {
               "comment": "Observed driver units for the interval; NULL when no actuals source is available for the driver. STORE-TOTAL grain: actuals are joined on store/date/interval only, NOT on role or zone, so every per-role row on one interval repeats the SAME store total. Use it as a per-row diagnostic; summing it across roles multiply-counts the interval.",
@@ -52882,7 +54870,7 @@
               "name": "actual_driver_units",
               "pii": false,
               "pk": false,
-              "type": "DECIMAL(8, 2)"
+              "type": ""
             },
             {
               "comment": "Forecast minus actual driver units. Positive = over-forecast.",
@@ -52891,7 +54879,7 @@
               "name": "forecast_error",
               "pii": false,
               "pk": false,
-              "type": "DECIMAL(18, 4)"
+              "type": ""
             },
             {
               "comment": "Absolute percentage error for the interval; NULL when actuals are absent or zero. Aggregate as a weighted ratio of sums, not a mean of these row values.",
@@ -52900,7 +54888,7 @@
               "name": "ape",
               "pii": false,
               "pk": false,
-              "type": "DOUBLE"
+              "type": ""
             },
             {
               "comment": "How the forecast row was produced.",
@@ -52909,7 +54897,7 @@
               "name": "forecast_method",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "Reserved for a model-backed pipeline (forecast_method = model); NULL for heuristic rows (ADR 0028 \u00a74).",
@@ -52918,7 +54906,7 @@
               "name": "model_version",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             },
             {
               "comment": "workforce_optimization_run.run_id that produced the forecast being scored.",
@@ -52927,7 +54915,7 @@
               "name": "optimization_run_id",
               "pii": false,
               "pk": false,
-              "type": "STRING"
+              "type": ""
             }
           ],
           "comment": "Backtest accuracy for workforce demand forecasts when actuals exist. Actuals preference (same spirit as the forecast view): foot_traffic     -> CSS site-level footfall when css_schema is readable (this view does NOT hard-join CSS \u2014 adopters overlay CSS actuals in the notebook / pipeline; core actuals use order-line interval buckets and labor_actuals hours). transaction_count / pickup_orders -> customer_order_line units in interval else -> NULL actual (row excluded from MAPE denominator)",

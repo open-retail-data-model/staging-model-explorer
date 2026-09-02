@@ -349,6 +349,601 @@ schema:
     description: as_store_fk_orphan
     query: SELECT a.* FROM ai_assisted_store_associates.associate a LEFT JOIN store.store s ON a.store_sk
       = s.store_sk WHERE a.store_sk IS NOT NULL AND s.store_sk IS NULL
+- name: associate_context_event
+  physicalName: ai_assisted_store_associates.associate_context_event
+  physicalType: table
+  description: Append-only associate context events for Real-Time Data Access. Streaming-ready contract;
+    current-state gold views derive from the latest valid event per entity.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: associate_context_event_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: associate_context_event_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the source event (idempotency key).
+  - name: event_domain
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Domain of the change. Allowed values: inventory, price, promotion, order, operations.'
+  - name: event_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Change type within the domain (e.g. stock_adjustment, price_update, promo_activate, fulfillment_update,
+      equipment_alert).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk when store-scoped.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable store business key when store-scoped.
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to product.product_sk when product-scoped.
+    relationships:
+    - to: product.product_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: product
+      - property: enforced
+        value: false
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable product business key when product-scoped.
+  - name: order_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable order business key when order-scoped. No customer identifiers.
+  - name: promo_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable promotion business key when promotion-scoped.
+  - name: equipment_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Durable equipment business key when operations/equipment-scoped.
+  - name: quantity_on_hand
+    logicalType: number
+    physicalType: DECIMAL(12,3)
+    required: false
+    description: Observed on-hand quantity for inventory events (nullable).
+  - name: quantity_available
+    logicalType: number
+    physicalType: DECIMAL(12,3)
+    required: false
+    description: Observed available-to-sell quantity for inventory events (nullable).
+  - name: quantity_reserved
+    logicalType: number
+    physicalType: DECIMAL(12,3)
+    required: false
+    description: Observed reserved quantity for inventory events (nullable).
+  - name: quantity_in_transit
+    logicalType: number
+    physicalType: DECIMAL(12,3)
+    required: false
+    description: Observed in-transit quantity for inventory events (nullable).
+  - name: unit_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18,4)
+    required: false
+    description: Observed unit price for price events (unit-grain DECIMAL scale 4).
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: ISO 4217 reporting/base currency for monetary amounts; constant base_currency.
+  - name: status_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Domain status payload (stock status, order status, alert severity, etc.).
+  - name: location_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Sales-floor or backroom location code when provided by source.
+  - name: event_payload_summary
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Short vendor-neutral summary suitable for associate display; never PII.
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Vendor-neutral source-system label (e.g. inventory_ledger, price_engine, oms, iot_gateway).
+  - name: event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Event time at source (UTC, ISO 8601).
+  - name: ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the event was ingested into the lakehouse (UTC, ISO 8601).
+  - name: processed_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When current-state processing considered this event (UTC, ISO 8601).
+  - name: latency_seconds
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: Ingest latency = ingest_timestamp - event_timestamp, in seconds.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ace_event_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_event_id_unique
+    query: 'SELECT associate_context_event_id
+
+      FROM ai_assisted_store_associates.associate_context_event
+
+      GROUP BY associate_context_event_id
+
+      HAVING COUNT(*) > 1'
+  - name: ace_required_ids
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_required_ids
+    query: "SELECT * FROM ai_assisted_store_associates.associate_context_event\nWHERE associate_context_event_id\
+      \ IS NULL\n   OR event_domain IS NULL\n   OR event_type IS NULL\n   OR source_system IS NULL\n \
+      \  OR event_timestamp IS NULL\n   OR ingest_timestamp IS NULL"
+  - name: ace_timestamps_valid
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_timestamps_valid
+    query: 'SELECT * FROM ai_assisted_store_associates.associate_context_event
+
+      WHERE ingest_timestamp < event_timestamp'
+  - name: ace_domain_values
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_domain_values
+    query: 'SELECT * FROM ai_assisted_store_associates.associate_context_event
+
+      WHERE event_domain NOT IN (''inventory'', ''price'', ''promotion'', ''order'', ''operations'')'
+  - name: ace_nonneg_quantities
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_nonneg_quantities
+    query: "SELECT * FROM ai_assisted_store_associates.associate_context_event\nWHERE quantity_on_hand\
+      \ < 0\n   OR quantity_available < 0\n   OR quantity_reserved < 0\n   OR quantity_in_transit < 0\n\
+      \   OR unit_price_amount < 0"
+  - name: ace_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: currency_code is populated only on price-domain rows, so scope the assertion to rows
+      that actually carry an amount; inventory/order/operations rows are exempt.
+    query: "SELECT 'associate_context_event' AS table_name, COUNT(DISTINCT currency_code) AS currencies\n\
+      FROM ai_assisted_store_associates.associate_context_event\nWHERE unit_price_amount IS NOT NULL\n\
+      HAVING COUNT(DISTINCT currency_code) > 1\n    OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END)\
+      \ > 0"
+  - name: ace_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_store_fk_orphan
+    query: "SELECT e.*\nFROM ai_assisted_store_associates.associate_context_event e\nLEFT JOIN store.store\
+      \ s\n  ON e.store_sk = s.store_sk\nWHERE e.store_sk IS NOT NULL AND s.store_sk IS NULL"
+  - name: ace_product_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ace_product_fk_orphan
+    query: "SELECT e.*\nFROM ai_assisted_store_associates.associate_context_event e\nLEFT JOIN product.product\
+      \ p\n  ON e.product_sk = p.product_sk\nWHERE e.product_sk IS NOT NULL AND p.product_sk IS NULL"
+  - name: ace_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ace_rowcount
+    query: SELECT COUNT(*) AS ace_rows FROM ai_assisted_store_associates.associate_context_event
+- name: associate_fulfillment_status
+  physicalName: ai_assisted_store_associates.associate_fulfillment_status
+  physicalType: table
+  description: Associate-safe order fulfillment / pickup status. No customer PII. Exact order_id required
+    for lookup.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: associate_fulfillment_status_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: associate_fulfillment_status_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key (typically equals order_id for current-state grain).
+  - name: order_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable customer-order business key. Required for associate lookup.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: false
+    description: FK to store.store_sk of the fulfillment / pickup store.
+    relationships:
+    - to: store.store_sk
+      type: foreignKey
+      customProperties:
+      - property: toSchema
+        value: store
+      - property: enforced
+        value: false
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable store business key where the order is fulfilled or picked up.
+  - name: fulfillment_type
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Fulfillment mode. Allowed values: bopis, curbside, ship_to_store, ship_to_home, in_store_reserve.'
+  - name: order_status
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Associate-safe order status. Allowed values: received, picking, packing, ready_for_pickup,
+      picked_up, shipped, cancelled, exception.'
+  - name: pickup_readiness
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Pickup readiness. Allowed values: not_ready, ready, overdue, completed, not_applicable.'
+  - name: pickup_location_code
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pickup desk / locker / curbside bay code. No customer address.
+  - name: exception_state
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Exception state when order_status = exception. Allowed values: missing_item, payment_hold,
+      customer_no_show, damaged, other, none.'
+  - name: last_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: Latest known fulfillment event time (UTC, ISO 8601).
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Vendor-neutral OMS / fulfillment source label.
+  - name: requires_customer_verification
+    logicalType: boolean
+    physicalType: BOOLEAN
+    required: true
+    description: TRUE when associate must present authorized customer-verification context before detail
+      is returned.
+  - name: data_freshness_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When this current-state row was last refreshed (UTC, ISO 8601).
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating system of record (vendor-neutral label).
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: afs_order_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: afs_order_id_unique
+    query: 'SELECT order_id
+
+      FROM ai_assisted_store_associates.associate_fulfillment_status
+
+      GROUP BY order_id
+
+      HAVING COUNT(*) > 1'
+  - name: afs_required_ids
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: afs_required_ids
+    query: "SELECT * FROM ai_assisted_store_associates.associate_fulfillment_status\nWHERE associate_fulfillment_status_id\
+      \ IS NULL\n   OR order_id IS NULL\n   OR store_id IS NULL\n   OR fulfillment_type IS NULL\n   OR\
+      \ order_status IS NULL\n   OR pickup_readiness IS NULL"
+  - name: afs_store_fk_orphan
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: afs_store_fk_orphan
+    query: "SELECT a.*\nFROM ai_assisted_store_associates.associate_fulfillment_status a\nLEFT JOIN store.store\
+      \ s\n  ON a.store_sk = s.store_sk\nWHERE a.store_sk IS NOT NULL AND s.store_sk IS NULL"
+  - name: afs_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: afs_rowcount
+    query: SELECT COUNT(*) AS afs_rows FROM ai_assisted_store_associates.associate_fulfillment_status
+- name: associate_lookup_audit
+  physicalName: ai_assisted_store_associates.associate_lookup_audit
+  physicalType: table
+  description: Associate lookup audit trail. Allow/deny, capability, latency, hashed keys only — no customer
+    PII or raw search terms.
+  tags:
+  - transactional
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: associate_lookup_audit_sk
+    logicalType: integer
+    physicalType: BIGINT
+    required: true
+    primaryKey: true
+    primaryKeyPosition: 1
+    description: Surrogate key.
+  - name: associate_lookup_audit_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Durable natural/business key for the audit event.
+  - name: request_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Caller-supplied request identifier.
+  - name: correlation_id
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Cross-system correlation identifier.
+  - name: request_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the lookup was requested (UTC, ISO 8601).
+  - name: generated_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: true
+    description: When the audit row was written (UTC, ISO 8601).
+  - name: associate_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Pseudonymous associate / session identifier. Not a legal name.
+  - name: associate_role
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Requester role code (e.g. sales_associate, fulfillment, supervisor, store_manager).
+  - name: channel
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Request channel. Allowed values: mobile, kiosk, pos, dashboard, api, test.'
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Store scope asserted on the request.
+  - name: capability
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Requested capability. Allowed values: get_product_availability, get_product_location,
+      get_price_and_promotions, get_order_fulfillment_status, get_store_operations_context, get_associate_context_summary.'
+  - name: access_decision
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Authorization outcome. Allowed values: allow, deny.'
+  - name: access_reason_code
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: Machine-readable reason for the access decision.
+  - name: response_status
+    logicalType: string
+    physicalType: STRING
+    required: true
+    description: 'Envelope status returned to the caller. Allowed values: SUCCESS, NOT_FOUND, NOT_AVAILABLE,
+      STALE_DATA, ACCESS_DENIED, INVALID_REQUEST, PARTIAL_RESULT, UPSTREAM_DATA_DELAY.'
+  - name: latency_ms
+    logicalType: integer
+    physicalType: INT
+    required: false
+    description: End-to-end lookup latency in milliseconds.
+  - name: domains_accessed
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Comma-separated domain tags actually read (inventory,price,promotion,order,operations).
+  - name: data_classification
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: 'Highest classification of returned fields. Allowed values: public_ops, associate_ops,
+      restricted.'
+  - name: product_id_hash
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: SHA-256 hex of product_id when product-scoped; NULL otherwise. Never store raw search
+      text.
+  - name: order_id_hash
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: SHA-256 hex of order_id when order-scoped; NULL otherwise.
+  - name: record_source
+    logicalType: string
+    physicalType: STRING
+    required: false
+    description: Originating lookup service label.
+  - name: load_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    required: false
+    description: When this row was loaded (UTC, ISO 8601).
+  quality:
+  - name: ala_audit_id_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ala_audit_id_unique
+    query: 'SELECT associate_lookup_audit_id
+
+      FROM ai_assisted_store_associates.associate_lookup_audit
+
+      GROUP BY associate_lookup_audit_id
+
+      HAVING COUNT(*) > 1'
+  - name: ala_decision_has_reason
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ala_decision_has_reason
+    query: 'SELECT * FROM ai_assisted_store_associates.associate_lookup_audit
+
+      WHERE access_decision IS NULL OR access_reason_code IS NULL OR access_reason_code = '''''
+  - name: ala_correlation_present
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ala_correlation_present
+    query: 'SELECT * FROM ai_assisted_store_associates.associate_lookup_audit
+
+      WHERE correlation_id IS NULL OR request_id IS NULL OR request_timestamp IS NULL'
+  - name: ala_latency_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ala_latency_nonneg
+    query: 'SELECT * FROM ai_assisted_store_associates.associate_lookup_audit
+
+      WHERE latency_ms IS NOT NULL AND latency_ms < 0'
+  - name: ala_denied_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ala_denied_count
+    query: 'SELECT COUNT(*) AS denied_lookups
+
+      FROM ai_assisted_store_associates.associate_lookup_audit
+
+      WHERE access_decision = ''deny'''
+  - name: ala_rowcount
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ala_rowcount
+    query: SELECT COUNT(*) AS ala_rows FROM ai_assisted_store_associates.associate_lookup_audit
 - name: outcome_resolution
   physicalName: ai_assisted_store_associates.outcome_resolution
   physicalType: table
@@ -988,3 +1583,576 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+- name: gold_associate_data_freshness
+  physicalName: ai_assisted_store_associates.gold_associate_data_freshness
+  physicalType: view
+  description: 'Domain-level freshness metrics for associate real-time access. SLA: fresh < 60 min lag,
+    delayed 60–1440 min, stale > 1440 min (aligned with early-risk feed_freshness). Inventory day snapshots
+    without event overlay are evaluated on load_timestamp age.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: feed_name
+    logicalType: string
+    physicalType: STRING
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: last_source_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: last_ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: last_processed_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: freshness_lag_minutes
+    logicalType: number
+    physicalType: DOUBLE
+  - name: freshness_status
+    logicalType: string
+    physicalType: STRING
+  - name: sla_state
+    logicalType: string
+    physicalType: STRING
+    description: within_sla or breach vs 60-minute associate freshness objective.
+  - name: event_count
+    logicalType: integer
+    physicalType: BIGINT
+  quality:
+  - name: gold_freshness_sla_breaches
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: gold_freshness_sla_breaches
+    query: 'SELECT COUNT(*) AS sla_breach_rows
+
+      FROM ai_assisted_store_associates.gold_associate_data_freshness
+
+      WHERE sla_state = ''breach'''
+- name: gold_associate_operational_context_current
+  physicalName: ai_assisted_store_associates.gold_associate_operational_context_current
+  physicalType: view
+  description: 'Store-level operational signals safe for associate display: replenishment / shelf-gap
+    hints from inventory, equipment alerts from equipment_reading, and optional operations events. Excludes
+    loss-prevention, margin, and employee personal data.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+  - name: context_type
+    logicalType: string
+    physicalType: STRING
+    description: replenishment_task, equipment_alert, or operations signal type.
+  - name: context_id
+    logicalType: string
+    physicalType: STRING
+  - name: related_product_id
+    logicalType: string
+    physicalType: STRING
+  - name: related_equipment_id
+    logicalType: string
+    physicalType: STRING
+  - name: severity
+    logicalType: string
+    physicalType: STRING
+    description: info/medium/high style severity safe for associate display.
+  - name: resolution_status
+    logicalType: string
+    physicalType: STRING
+  - name: signal_summary
+    logicalType: string
+    physicalType: STRING
+  - name: source_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: current_state_updated_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_status
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_lag_minutes
+    logicalType: number
+    physicalType: DOUBLE
+  - name: explanation
+    logicalType: string
+    physicalType: STRING
+  - name: warning
+    logicalType: string
+    physicalType: STRING
+- name: gold_associate_order_status_current
+  physicalName: ai_assisted_store_associates.gold_associate_order_status_current
+  physicalType: view
+  description: Associate-safe order / fulfillment current state. Sourced from the package extension associate_fulfillment_status
+    (canonical order domain has no BOPIS lifecycle). No customer PII columns.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: associate_fulfillment_status_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: associate_fulfillment_status_id
+    logicalType: string
+    physicalType: STRING
+  - name: order_id
+    logicalType: string
+    physicalType: STRING
+    description: Exact order business key required for lookup.
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+  - name: fulfillment_type
+    logicalType: string
+    physicalType: STRING
+  - name: order_status
+    logicalType: string
+    physicalType: STRING
+  - name: pickup_readiness
+    logicalType: string
+    physicalType: STRING
+    description: not_ready, ready, overdue, completed, or not_applicable.
+  - name: pickup_location_code
+    logicalType: string
+    physicalType: STRING
+  - name: exception_state
+    logicalType: string
+    physicalType: STRING
+  - name: requires_customer_verification
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when associate must verify customer before detail release.
+  - name: last_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: current_state_updated_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_status
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_lag_minutes
+    logicalType: number
+    physicalType: DOUBLE
+  - name: explanation
+    logicalType: string
+    physicalType: STRING
+  - name: warning
+    logicalType: string
+    physicalType: STRING
+  quality:
+  - name: gold_order_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_order_grain_unique
+    query: 'SELECT order_id
+
+      FROM ai_assisted_store_associates.gold_associate_order_status_current
+
+      GROUP BY order_id
+
+      HAVING COUNT(*) > 1'
+- name: gold_associate_price_promotion_current
+  physicalName: ai_assisted_store_associates.gold_associate_price_promotion_current
+  physicalType: view
+  description: Product × store current price and active promotion context at the assortment grain (product×store
+    pairs observed in inventory_position). List / promotional prices from product_price (SCD2 current)
+    and product.list_price fallback; promotion coverage via marketing.promotion + promote_with_purpose.promotion_scope
+    when scoped to the store.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+  - name: sku
+    logicalType: string
+    physicalType: STRING
+  - name: gtin
+    logicalType: string
+    physicalType: STRING
+  - name: product_name
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+  - name: base_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+    description: Current base/list unit price in reporting currency.
+  - name: effective_selling_price_amount
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
+    description: Effective selling unit price after known store promo mechanics.
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+  - name: active_promo_id
+    logicalType: string
+    physicalType: STRING
+    description: Active store-scoped promotion id, if any.
+  - name: active_promo_name
+    logicalType: string
+    physicalType: STRING
+  - name: active_promo_type
+    logicalType: string
+    physicalType: STRING
+  - name: promo_start_date
+    logicalType: date
+    physicalType: DATE
+  - name: promo_end_date
+    logicalType: date
+    physicalType: DATE
+  - name: store_channel_eligibility
+    logicalType: string
+    physicalType: STRING
+  - name: customer_eligibility_status
+    logicalType: string
+    physicalType: STRING
+    description: Always CUSTOMER_ELIGIBILITY_REQUIRES_AUTHORIZED_CONTEXT for associate gold.
+  - name: source_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: current_state_updated_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_status
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_lag_minutes
+    logicalType: number
+    physicalType: DOUBLE
+  - name: explanation
+    logicalType: string
+    physicalType: STRING
+  - name: warning
+    logicalType: string
+    physicalType: STRING
+  quality:
+  - name: gold_price_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_price_grain_unique
+    query: 'SELECT product_id, store_id
+
+      FROM ai_assisted_store_associates.gold_associate_price_promotion_current
+
+      GROUP BY product_id, store_id
+
+      HAVING COUNT(*) > 1'
+  - name: gold_price_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_price_nonneg
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_price_promotion_current
+
+      WHERE base_price_amount < 0 OR effective_selling_price_amount < 0'
+  - name: gold_price_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'The associate price surface must report one currency, and a priced row with no currency
+      is unauditable. Mirrors wsr_cost_single_currency: filter to price-bearing rows, then fail on multi-currency
+      or a missing currency.'
+    query: "SELECT 'gold_associate_price_promotion_current' AS table_name,\n       COUNT(DISTINCT currency_code)\
+      \ AS currencies\nFROM ai_assisted_store_associates.gold_associate_price_promotion_current\nWHERE\
+      \ base_price_amount IS NOT NULL OR effective_selling_price_amount IS NOT NULL\nHAVING COUNT(DISTINCT\
+      \ currency_code) > 1\n    OR COUNT(CASE WHEN currency_code IS NULL THEN 1 END) > 0"
+  - name: gold_price_customer_eligibility_safe
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_price_customer_eligibility_safe
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_price_promotion_current
+
+      WHERE customer_eligibility_status <> ''CUSTOMER_ELIGIBILITY_REQUIRES_AUTHORIZED_CONTEXT'''
+- name: gold_associate_product_inventory_current
+  physicalName: ai_assisted_store_associates.gold_associate_product_inventory_current
+  physicalType: view
+  description: Product × store current inventory context for associates. Base state comes from the latest
+    canonical-core inventory_position day snapshot; optional associate_context_event inventory overlays
+    supply fresher intra-day quantities when present.
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable product business key (SKU/item).
+  - name: sku
+    logicalType: string
+    physicalType: STRING
+  - name: gtin
+    logicalType: string
+    physicalType: STRING
+  - name: product_name
+    logicalType: string
+    physicalType: STRING
+  - name: brand
+    logicalType: string
+    physicalType: STRING
+  - name: category
+    logicalType: string
+    physicalType: STRING
+  - name: department
+    logicalType: string
+    physicalType: STRING
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key for the associate store scope.
+  - name: store_name
+    logicalType: string
+    physicalType: STRING
+  - name: region
+    logicalType: string
+    physicalType: STRING
+  - name: district
+    logicalType: string
+    physicalType: STRING
+  - name: quantity_on_hand
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: quantity_available_to_sell
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: Available-to-sell units after reservations.
+  - name: quantity_reserved
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: quantity_in_transit
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: stock_status
+    logicalType: string
+    physicalType: STRING
+    description: IN_STOCK, LOW_STOCK, OUT_OF_STOCK, or UNKNOWN.
+  - name: replenishment_indicator
+    logicalType: boolean
+    physicalType: BOOLEAN
+  - name: sales_floor_or_backroom_location
+    logicalType: string
+    physicalType: STRING
+    description: Optional free-text location_code from an inventory event. Not aisle/bay coordinates.
+  - name: location_basis
+    logicalType: string
+    physicalType: STRING
+    description: event_location_code when optional free-text location_code is present; not_modeled when
+      absent. No shelf/bay geo in ORDM.
+  - name: nearby_store_with_stock_id
+    logicalType: string
+    physicalType: STRING
+    description: Same-region active store with on-hand > 0 (qty then store_id). Not geo-nearest.
+  - name: nearby_store_on_hand
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+  - name: nearby_store_match_basis
+    logicalType: string
+    physicalType: STRING
+    description: same_region_on_hand when a peer store is suggested — not distance-ranked.
+  - name: snapshot_date_key
+    logicalType: date
+    physicalType: DATE
+  - name: inventory_basis
+    logicalType: string
+    physicalType: STRING
+    description: daily_snapshot (EOD inventory_position only) or event_overlay (intra-day associate_context_event).
+  - name: source_event_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_ingest_timestamp
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: current_state_updated_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+  - name: freshness_status
+    logicalType: string
+    physicalType: STRING
+    description: 'For event_overlay: lag bands. For daily_snapshot: calendar age of date_key (EOD semantics
+      — not live shelf).'
+  - name: freshness_lag_minutes
+    logicalType: number
+    physicalType: DOUBLE
+  - name: explanation
+    logicalType: string
+    physicalType: STRING
+    description: Human-readable provenance for associate UI display; states EOD vs overlay and nearby-match
+      rule.
+  - name: warning
+    logicalType: string
+    physicalType: STRING
+    description: Honesty warning for EOD grain, stale overlay, or incomplete location; NULL when none.
+  quality:
+  - name: gold_inv_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_grain_unique
+    query: 'SELECT product_id, store_id
+
+      FROM ai_assisted_store_associates.gold_associate_product_inventory_current
+
+      GROUP BY product_id, store_id
+
+      HAVING COUNT(*) > 1'
+  - name: gold_inv_stock_status_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_stock_status_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current
+
+      WHERE stock_status NOT IN (''IN_STOCK'', ''LOW_STOCK'', ''OUT_OF_STOCK'', ''UNKNOWN'')'
+  - name: gold_inv_basis_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_basis_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current
+
+      WHERE inventory_basis NOT IN (''daily_snapshot'', ''event_overlay'')'
+  - name: gold_inv_location_basis_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_location_basis_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current
+
+      WHERE location_basis NOT IN (''event_location_code'', ''not_modeled'')'
+  - name: gold_inv_nearby_basis_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_nearby_basis_domain
+    query: "SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current\nWHERE\
+      \ nearby_store_match_basis IS NOT NULL\n  AND nearby_store_match_basis NOT IN ('same_region_on_hand')"
+  - name: gold_inv_eod_warning_when_snapshot
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Daily snapshots must carry an honesty warning so UIs cannot treat them as live.
+    query: "SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current\nWHERE\
+      \ inventory_basis = 'daily_snapshot'\n  AND (warning IS NULL OR warning = '')"
+  - name: gold_inv_freshness_present
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_inv_freshness_present
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current
+
+      WHERE freshness_status IS NULL OR source_system IS NULL'
