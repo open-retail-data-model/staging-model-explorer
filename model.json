@@ -54789,7 +54789,7 @@
               "name": "store_id",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Local business date the interval belongs to.",
@@ -54798,7 +54798,7 @@
               "name": "business_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
               "comment": "Inclusive start of the planning interval (UTC).",
@@ -54807,7 +54807,7 @@
               "name": "interval_start_ts",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "TIMESTAMP"
             },
             {
               "comment": "Exclusive end of the planning interval (UTC).",
@@ -54816,7 +54816,7 @@
               "name": "interval_end_ts",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "TIMESTAMP"
             },
             {
               "comment": "Planning interval length in minutes.",
@@ -54825,7 +54825,7 @@
               "name": "interval_minutes",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
               "comment": "Department or zone within the store.",
@@ -54834,7 +54834,7 @@
               "name": "department_or_zone",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Workforce role the forecast was produced for.",
@@ -54843,7 +54843,7 @@
               "name": "role_code",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Workload driver the forecast is expressed in.",
@@ -54852,7 +54852,7 @@
               "name": "demand_driver",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Forecast driver units for the interval.",
@@ -54861,7 +54861,7 @@
               "name": "forecast_driver_units",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DECIMAL(18, 4)"
             },
             {
               "comment": "Observed driver units for the interval; NULL when no actuals source is available for the driver. STORE-TOTAL grain: actuals are joined on store/date/interval only, NOT on role or zone, so every per-role row on one interval repeats the SAME store total. Use it as a per-row diagnostic; summing it across roles multiply-counts the interval.",
@@ -54870,7 +54870,7 @@
               "name": "actual_driver_units",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DECIMAL(8, 2)"
             },
             {
               "comment": "Forecast minus actual driver units. Positive = over-forecast.",
@@ -54879,7 +54879,7 @@
               "name": "forecast_error",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DECIMAL(18, 4)"
             },
             {
               "comment": "Absolute percentage error for the interval; NULL when actuals are absent or zero. Aggregate as a weighted ratio of sums, not a mean of these row values.",
@@ -54888,7 +54888,7 @@
               "name": "ape",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
               "comment": "How the forecast row was produced.",
@@ -54897,7 +54897,7 @@
               "name": "forecast_method",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Reserved for a model-backed pipeline (forecast_method = model); NULL for heuristic rows (ADR 0028 \u00a74).",
@@ -54906,7 +54906,7 @@
               "name": "model_version",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "workforce_optimization_run.run_id that produced the forecast being scored.",
@@ -54915,7 +54915,7 @@
               "name": "optimization_run_id",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             }
           ],
           "comment": "Backtest accuracy for workforce demand forecasts when actuals exist. Actuals preference (same spirit as the forecast view): foot_traffic     -> CSS site-level footfall when css_schema is readable (this view does NOT hard-join CSS \u2014 adopters overlay CSS actuals in the notebook / pipeline; core actuals use order-line interval buckets and labor_actuals hours). transaction_count / pickup_orders -> customer_order_line units in interval else -> NULL actual (row excluded from MAPE denominator)",

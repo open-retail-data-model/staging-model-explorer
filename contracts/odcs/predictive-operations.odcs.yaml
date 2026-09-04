@@ -3285,39 +3285,69 @@ schema:
     type: businessDefinition
   properties:
   - name: store_id
+    logicalType: string
+    physicalType: STRING
     description: Durable store business key.
   - name: business_date
+    logicalType: date
+    physicalType: DATE
     description: Local business date the interval belongs to.
   - name: interval_start_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
     description: Inclusive start of the planning interval (UTC).
   - name: interval_end_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
     description: Exclusive end of the planning interval (UTC).
   - name: interval_minutes
+    logicalType: integer
+    physicalType: INT
     description: Planning interval length in minutes.
   - name: department_or_zone
+    logicalType: string
+    physicalType: STRING
     description: Department or zone within the store.
   - name: role_code
+    logicalType: string
+    physicalType: STRING
     description: Workforce role the forecast was produced for.
   - name: demand_driver
+    logicalType: string
+    physicalType: STRING
     description: Workload driver the forecast is expressed in.
   - name: forecast_driver_units
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Forecast driver units for the interval.
   - name: actual_driver_units
+    logicalType: number
+    physicalType: DECIMAL(8, 2)
     description: 'Observed driver units for the interval; NULL when no actuals source is available for
       the driver. STORE-TOTAL grain: actuals are joined on store/date/interval only, NOT on role or zone,
       so every per-role row on one interval repeats the SAME store total. Use it as a per-row diagnostic;
       summing it across roles multiply-counts the interval.'
   - name: forecast_error
+    logicalType: number
+    physicalType: DECIMAL(18, 4)
     description: Forecast minus actual driver units. Positive = over-forecast.
   - name: ape
+    logicalType: number
+    physicalType: DOUBLE
     description: Absolute percentage error for the interval; NULL when actuals are absent or zero. Aggregate
       as a weighted ratio of sums, not a mean of these row values.
   - name: forecast_method
+    logicalType: string
+    physicalType: STRING
     description: How the forecast row was produced.
   - name: model_version
+    logicalType: string
+    physicalType: STRING
     description: Reserved for a model-backed pipeline (forecast_method = model); NULL for heuristic rows
       (ADR 0028 §4).
   - name: optimization_run_id
+    logicalType: string
+    physicalType: STRING
     description: workforce_optimization_run.run_id that produced the forecast being scored.
 - name: gold_workforce_labor_requirement
   physicalName: predictive_operations.gold_workforce_labor_requirement
