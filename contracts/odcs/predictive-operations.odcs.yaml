@@ -3402,3 +3402,534 @@ schema:
   - name: coverage_rationale
     description: Why the standard sets this coverage (service, safety, or statutory rationale recorded
       on labor_standard).
+- name: mv_equipment_downtime
+  physicalName: predictive_operations.mv_equipment_downtime
+  physicalType: view
+  description: Equipment downtime measurement. Lower downtime = better asset performance.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: equipment_id
+    logicalType: string
+    businessName: Equipment ID
+    customProperties:
+    - property: synonyms
+      value:
+      - asset_id
+      - equipment
+      - asset
+    description: Durable business key for the equipment asset.
+  - name: equipment_name
+    logicalType: string
+    businessName: Equipment Name
+    customProperties:
+    - property: synonyms
+      value:
+      - asset_name
+      - name
+    description: Display name of the equipment.
+  - name: equipment_type
+    logicalType: string
+    businessName: Equipment Type
+    customProperties:
+    - property: synonyms
+      value:
+      - type
+      - asset_type
+      - category
+    description: 'Category: refrigeration, hvac, pos_terminal, self_checkout, oven, etc.'
+  - name: store_name
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - location
+      - store
+    description: Name of the store where the equipment is installed.
+  - name: criticality
+    logicalType: string
+    businessName: Criticality
+    customProperties:
+    - property: synonyms
+      value:
+      - priority
+      - importance
+    description: 'Impact level if the equipment fails: critical, high, medium, low.'
+  - name: equipment_status
+    logicalType: string
+    businessName: Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - operational_status
+    description: 'Current operational status: operational, degraded, out_of_service.'
+  - name: created_date
+    logicalType: date
+    businessName: Work Order Date
+    description: Date the associated work order was created.
+  - name: total_downtime_hours
+    logicalType: number
+    businessName: Total Downtime (Hours)
+    customProperties:
+    - property: synonyms
+      value:
+      - downtime
+      - total_downtime
+      - hours_down
+    description: Total equipment downtime in hours across work orders.
+  - name: avg_downtime_hours
+    logicalType: number
+    businessName: Avg Downtime per Event (Hours)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_downtime
+      - average_downtime
+    description: Average downtime per maintenance event in hours.
+  - name: equipment_count
+    logicalType: integer
+    businessName: Equipment Count
+    customProperties:
+    - property: synonyms
+      value:
+      - total_assets
+      - num_equipment
+      - asset_count
+    description: Number of distinct equipment assets.
+  - name: downtime_event_count
+    logicalType: integer
+    businessName: Downtime Events
+    customProperties:
+    - property: synonyms
+      value:
+      - outage_count
+      - incident_count
+    description: Number of work orders that caused downtime.
+- name: mv_maintenance_cost
+  physicalName: predictive_operations.mv_maintenance_cost
+  physicalType: view
+  description: Maintenance cost tracking per work order. Supports cost breakdown by type, equipment, and
+    store.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: work_order_id
+    logicalType: string
+    businessName: Work Order ID
+    customProperties:
+    - property: synonyms
+      value:
+      - wo_id
+      - work_order
+      - ticket
+    description: Durable business key for the work order.
+  - name: equipment_name
+    logicalType: string
+    businessName: Equipment
+    customProperties:
+    - property: synonyms
+      value:
+      - asset
+      - equipment
+    description: Name of the equipment asset.
+  - name: equipment_type
+    logicalType: string
+    businessName: Equipment Type
+    customProperties:
+    - property: synonyms
+      value:
+      - type
+      - asset_type
+    description: Category of equipment.
+  - name: store_name
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - location
+      - store
+    description: Store where the maintenance was performed.
+  - name: work_order_type
+    logicalType: string
+    businessName: Maintenance Type
+    customProperties:
+    - property: synonyms
+      value:
+      - type
+      - maintenance_category
+    description: 'Type of maintenance: preventive, corrective, emergency, inspection.'
+  - name: priority
+    logicalType: string
+    businessName: Priority
+    customProperties:
+    - property: synonyms
+      value:
+      - urgency
+    description: 'Work order priority: critical, high, medium, low.'
+  - name: currency_code
+    logicalType: string
+    businessName: Currency
+    customProperties:
+    - property: synonyms
+      value:
+      - currency
+    description: ISO currency code for cost amounts.
+  - name: created_date
+    logicalType: date
+    businessName: Created Date
+    description: Date the work order was created.
+  - name: completed_date
+    logicalType: date
+    businessName: Completed Date
+    description: Date the work order was completed.
+  - name: total_cost
+    logicalType: number
+    businessName: Total Cost
+    customProperties:
+    - property: synonyms
+      value:
+      - total_spend
+      - maintenance_spend
+    description: Total maintenance cost in base currency.
+  - name: avg_cost_per_wo
+    logicalType: number
+    businessName: Avg Cost per Work Order
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_cost
+      - cost_per_ticket
+    description: Average cost per completed work order.
+  - name: total_labor_hours
+    logicalType: number
+    businessName: Total Labor Hours
+    customProperties:
+    - property: synonyms
+      value:
+      - labor_hours
+      - work_hours
+    description: Total labor hours spent on maintenance.
+  - name: work_order_count
+    logicalType: integer
+    businessName: Work Orders
+    customProperties:
+    - property: synonyms
+      value:
+      - wo_count
+      - ticket_count
+    description: Number of completed work orders.
+- name: mv_store_risk
+  physicalName: predictive_operations.mv_store_risk
+  physicalType: view
+  description: Store operational risk measurement over time. Higher score = higher near-term risk. Heuristic
+    index, not a probability. Read the over-time series as DIRECTIONAL triage, not a metrologically stable
+    series — the sales discount-depth normalizer (cross-store p95) is re-derived per scoring run, so a
+    score can move across dates from a shifting fleet distribution as well as from the store itself (design
+    spec §4).
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location_id
+      - site_id
+    description: Durable business key for the store (portable cross-deployment key).
+  - name: store_name
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - location
+      - site
+    description: Display name of the store.
+  - name: region
+    logicalType: string
+    businessName: Region
+    customProperties:
+    - property: synonyms
+      value:
+      - area
+      - geo
+    description: Store region for roll-up.
+  - name: district
+    logicalType: string
+    businessName: District
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - territory
+    description: Store district for roll-up.
+  - name: operational_risk_tier
+    logicalType: string
+    businessName: Risk Tier
+    customProperties:
+    - property: synonyms
+      value:
+      - risk_level
+      - tier
+      - severity
+    description: 'Risk tier: UNKNOWN (no domain scored), LOW, MEDIUM, HIGH, CRITICAL.'
+  - name: top_risk_domains
+    logicalType: string
+    businessName: Top Risk Domains
+    customProperties:
+    - property: synonyms
+      value:
+      - primary_risk
+      - risk_drivers
+      - root_cause
+    description: Domains contributing most to the score (the Diagnose step).
+  - name: as_of_date
+    logicalType: date
+    businessName: As-of Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - snapshot_date
+    description: Snapshot date the score is computed for.
+  - name: horizon_days
+    logicalType: integer
+    businessName: Horizon (days)
+    customProperties:
+    - property: synonyms
+      value:
+      - horizon
+      - forward_window
+    description: Declared forward assessment horizon the score is interpreted against (7 in v1).
+  - name: domains_scored
+    logicalType: integer
+    businessName: Domains Scored
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage
+      - domains_present
+      - domain_count
+    description: How many domains had a present (non-NULL) sub-score feeding the composite (0-5; cx deferred);
+      lets a consumer gauge how complete a score's coverage is.
+  - name: avg_operational_risk_score
+    logicalType: number
+    businessName: Avg Risk Score
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_risk
+      - average_risk_score
+      - risk
+    description: Average Store Operational Risk Score (0-100) across the selected stores/dates. When averaged
+      across dates, treat as directional triage, not a stable series (the discount normalizer re-bases
+      per run — see the view comment / design spec §4).
+  - name: max_operational_risk_score
+    logicalType: number
+    businessName: Peak Risk Score
+    customProperties:
+    - property: synonyms
+      value:
+      - worst_risk
+      - peak_risk
+    description: Highest Store Operational Risk Score in the selection. Across dates, treat as directional
+      triage, not a stable series (the discount normalizer re-bases per run — see the view comment / design
+      spec §4).
+  - name: store_count
+    logicalType: integer
+    businessName: Store Count
+    customProperties:
+    - property: synonyms
+      value:
+      - num_stores
+      - total_stores
+    description: Number of distinct stores scored.
+  - name: high_risk_store_count
+    logicalType: integer
+    businessName: High-Risk Stores
+    customProperties:
+    - property: synonyms
+      value:
+      - at_risk_stores
+      - stores_at_risk
+      - flagged_stores
+    description: Number of distinct stores at HIGH or CRITICAL risk tier.
+  - name: avg_inventory_risk
+    logicalType: number
+    businessName: Avg Inventory Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - inventory_risk
+      - stockout_risk
+    description: Average inventory domain sub-score (0-100).
+  - name: avg_supply_chain_risk
+    logicalType: number
+    businessName: Avg Supply-Chain Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - supplier_risk
+      - procurement_risk
+    description: Average supply-chain domain sub-score (0-100).
+  - name: avg_sales_margin_risk
+    logicalType: number
+    businessName: Avg Sales/Margin Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_risk
+      - margin_risk
+    description: Average sales/margin domain sub-score (0-100).
+  - name: avg_equipment_risk
+    logicalType: number
+    businessName: Avg Equipment Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - asset_risk
+      - equipment_risk
+    description: Average equipment domain sub-score (0-100).
+  - name: avg_labor_risk
+    logicalType: number
+    businessName: Avg Labor Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - workforce_risk
+      - labor_risk
+      - staffing_risk
+    description: Average labor/workforce domain sub-score (0-100) from coverage shortfalls.
+  - name: avg_domains_scored
+    logicalType: number
+    businessName: Avg Domains Scored
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_coverage
+      - mean_domains_present
+    description: Average number of domains feeding the composite (0-5; cx deferred) — a coverage/quality
+      gauge for the scores in the selection.
+- name: mv_workforce_coverage
+  physicalName: predictive_operations.mv_workforce_coverage
+  physicalType: view
+  description: Workforce coverage vs required labor hours by store, role, and business date. Coverage
+    ratio is scheduled+recommended hours over required hours.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/predictive-operations/README.md
+    type: businessDefinition
+  - url: outcome-packages/predictive-operations/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - location
+      - store
+      - site
+    description: Durable store business key.
+  - name: role_code
+    businessName: Role
+    customProperties:
+    - property: synonyms
+      value:
+      - job_role
+      - position
+      - labor_role
+    description: Workforce role code.
+  - name: department_or_zone
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - department
+      - area
+    description: Department or zone within the store.
+  - name: business_date
+    businessName: Business Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - trading_date
+      - day
+    description: Local business date.
+  - name: shortfall_severity
+    logicalType: string
+    businessName: Shortfall Severity
+    customProperties:
+    - property: synonyms
+      value:
+      - severity
+      - risk_tier
+    description: none / low / medium / high / critical.
+  - name: required_labor_hours
+    logicalType: number
+    businessName: Required Hours
+    customProperties:
+    - property: synonyms
+      value:
+      - staffing_need_hours
+      - required_hours
+    description: Sum of required labor hours.
+  - name: covered_hours
+    logicalType: number
+    businessName: Covered Hours
+    customProperties:
+    - property: synonyms
+      value:
+      - scheduled_hours
+      - staffed_hours
+    description: Scheduled plus recommended hours overlapping demand.
+  - name: shortfall_hours
+    logicalType: number
+    businessName: Shortfall Hours
+    customProperties:
+    - property: synonyms
+      value:
+      - gap_hours
+      - unfilled_hours
+    description: Unmet required hours.
+  - name: coverage_ratio
+    logicalType: number
+    businessName: Coverage Ratio
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage_pct
+      - fill_rate
+    description: Covered hours / required hours.

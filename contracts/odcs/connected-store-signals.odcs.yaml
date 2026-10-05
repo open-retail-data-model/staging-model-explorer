@@ -8934,3 +8934,2186 @@ schema:
       \ IS NOT NULL\n    OR exit_count IS NOT NULL\n    OR peak_occupancy IS NOT NULL\n    OR avg_occupancy\
       \ IS NOT NULL\n    OR dwell_seconds_total IS NOT NULL\n    OR dwell_count IS NOT NULL\n    OR avg_dwell_seconds\
       \ IS NOT NULL\n  )"
+- name: mv_automation_response
+  physicalName: connected_store_signals.mv_automation_response
+  physicalType: view
+  description: 'Connected Store Signals automation control loop: firings, success rate, response latency
+    and breach magnitude across the sense -> evaluate -> act -> log loop, dimensioned by device, rule,
+    action target and severity.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key of the device that fired the loop.
+  - name: sensor_device_id
+    logicalType: string
+    businessName: Device
+    customProperties:
+    - property: synonyms
+      value:
+      - device
+      - sensor
+      - probe
+    description: Durable business key of the observing device whose reading breached the rule.
+  - name: store_zone_id
+    logicalType: string
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - area
+      - location_in_store
+    description: Durable id of the zone the observing device is installed in.
+  - name: device_type
+    logicalType: string
+    businessName: Device Type
+    customProperties:
+    - property: synonyms
+      value:
+      - sensor_type
+      - device_kind
+    description: Kind of device that triggered the firing, e.g. temperature for the cold-chain excursion
+      loop.
+  - name: evaluation_rule_id
+    logicalType: string
+    businessName: Rule
+    customProperties:
+    - property: synonyms
+      value:
+      - rule
+      - threshold
+      - alert_rule
+    description: Durable business key of the rule whose breach fired the action.
+  - name: rule_name
+    logicalType: string
+    businessName: Rule Name
+    customProperties:
+    - property: synonyms
+      value:
+      - rule_label
+      - condition_name
+    description: Human-readable rule name, e.g. an over-temperature excursion on a named device.
+  - name: report_type
+    logicalType: string
+    businessName: Report Type
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_type
+      - signal_type
+      - property
+    description: The GS1 CBV property the rule watches, e.g. gs1:Temperature. Shared vocabulary with sensor_report_interval,
+      so a rule and the readings it evaluates speak the same language.
+  - name: severity
+    logicalType: string
+    businessName: Severity
+    customProperties:
+    - property: synonyms
+      value:
+      - priority
+      - criticality
+    description: 'Operational severity of a breach: info, warning or critical.'
+  - name: condition_operator
+    logicalType: string
+    businessName: Condition
+    customProperties:
+    - property: synonyms
+      value:
+      - operator
+      - comparison
+    description: The comparison the rule applied to the observed value, e.g. greater_than.
+  - name: action_type
+    logicalType: string
+    businessName: Action Type
+    customProperties:
+    - property: synonyms
+      value:
+      - action_kind
+      - response_type
+    description: 'What kind of action fired: system_command, notification, webhook, ticket or log_only.
+      One breach can fan out to several action types.'
+  - name: target_entity_type
+    logicalType: string
+    businessName: Target Type
+    customProperties:
+    - property: synonyms
+      value:
+      - target_kind
+      - recipient_type
+    description: The kind of thing the action targeted -- actuator, role, person or external_system. Only
+      the actuator target carries a typed actuator FK (§A.5).
+  - name: command_type
+    logicalType: string
+    businessName: Command Type
+    customProperties:
+    - property: synonyms
+      value:
+      - actuator_command
+      - device_command
+    description: What the actuator was commanded to do, e.g. toggle_power. NULL for a non-actuator action
+      such as a notification.
+  - name: actuator_capability_id
+    logicalType: string
+    businessName: Actuator
+    customProperties:
+    - property: synonyms
+      value:
+      - actuator
+      - relay
+      - controller
+    description: Durable id of the actuator the command hit. NULL for non-actuator actions.
+  - name: execution_status
+    logicalType: string
+    businessName: Execution Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - outcome
+      - result
+    description: 'Outcome of the firing: success, failure, pending, timeout or skipped.'
+  - name: response_latency_band
+    logicalType: string
+    businessName: Response Latency Band
+    customProperties:
+    - property: synonyms
+      value:
+      - latency_band
+      - responsiveness
+    description: 'Automation responsiveness band from the firing latency: fast (<= 250 ms), normal (<=
+      1000 ms), slow (> 1000 ms), or unknown. This is act-response latency, NOT ingest freshness.'
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the breach that fired the loop.
+  - name: firing_count
+    logicalType: integer
+    businessName: Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - executions
+      - firings
+      - triggers
+    description: Realised automation firings in the grouping -- one per execution_log row. The primary
+      volume measure.
+  - name: rules_fired
+    logicalType: integer
+    businessName: Rules Fired
+    customProperties:
+    - property: synonyms
+      value:
+      - distinct_rules
+      - active_rules
+    description: Distinct rules that fired, counted on the durable rule id so a rule retuned mid-window
+      counts once.
+  - name: devices_with_firings
+    logicalType: integer
+    businessName: Devices With Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - devices
+      - affected_devices
+    description: Distinct observing devices whose readings fired a rule, on the durable device id.
+  - name: success_count
+    logicalType: integer
+    businessName: Successful Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - successes
+      - completed_firings
+    description: Firings whose target reported success.
+  - name: failure_count
+    logicalType: integer
+    businessName: Failed Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - failures
+      - errors
+    description: Firings whose target reported failure.
+  - name: success_rate
+    logicalType: number
+    businessName: Success Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - success_percentage
+      - completion_rate
+    description: Share of firings that succeeded, from the summed counts rather than an average of per-group
+      rates.
+  - name: actuator_firing_count
+    logicalType: integer
+    businessName: Actuator Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - physical_commands
+      - device_firings
+    description: Firings that drove a physical actuator (the typed-FK branch of the polymorphic target),
+      as opposed to a notification or webhook.
+  - name: notification_count
+    logicalType: integer
+    businessName: Notifications
+    customProperties:
+    - property: synonyms
+      value:
+      - alerts_sent
+      - notifications
+    description: Firings that raised a notification to a role or person rather than commanding a device.
+  - name: critical_firing_count
+    logicalType: integer
+    businessName: Critical Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - critical_alerts
+      - severe_firings
+    description: Firings from a rule marked critical, e.g. a cold-chain over-temperature excursion.
+  - name: avg_response_latency_ms
+    logicalType: number
+    businessName: Avg Response Latency (ms)
+    customProperties:
+    - property: synonyms
+      value:
+      - latency
+      - response_time
+      - responsiveness
+    description: Mean milliseconds from the breaching observation to the firing. Automation responsiveness,
+      NOT ingest latency.
+  - name: max_response_latency_ms
+    logicalType: integer
+    businessName: Max Response Latency (ms)
+    customProperties:
+    - property: synonyms
+      value:
+      - peak_latency
+      - worst_response
+    description: Worst-case response latency observed in the grouping.
+  - name: slow_response_count
+    logicalType: integer
+    businessName: Slow Responses
+    customProperties:
+    - property: synonyms
+      value:
+      - slow_firings
+      - laggy_responses
+    description: Firings that took longer than 1000 ms to respond -- a responsiveness concern worth isolating.
+  - name: avg_breach_margin
+    logicalType: number
+    businessName: Avg Breach Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_exceedance
+      - avg_overshoot
+    description: Mean signed difference of the observed value from the rule threshold, in the rule unit.
+      Positive means above threshold -- how far past the limit the readings that fired were, on average.
+  - name: max_breach_value
+    logicalType: number
+    businessName: Max Breach Value
+    customProperties:
+    - property: synonyms
+      value:
+      - peak_reading
+      - worst_reading
+    description: Highest observed value that fired a rule in the grouping, e.g. the peak temperature during
+      a cold-chain excursion.
+- name: mv_count_operations
+  physicalName: connected_store_signals.mv_count_operations
+  physicalType: view
+  description: 'RFID count execution by store, method and scope: session cadence, duration, observed units
+    and honest full-store zone coverage.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: count_method
+    logicalType: string
+    businessName: Count Method
+    customProperties:
+    - property: synonyms
+      value:
+      - method
+      - count_type
+      - reader_mode
+    description: handheld_sweep, fixed_window or robot_sweep.
+  - name: scope_type
+    logicalType: string
+    businessName: Scope Type
+    customProperties:
+    - property: synonyms
+      value:
+      - scope
+      - count_scope
+    description: full_store has a derivable zone plan; partial makes no plan-completion claim.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date on which the count session started.
+  - name: count_session_count
+    logicalType: integer
+    businessName: Count Session Count
+    customProperties:
+    - property: synonyms
+      value:
+      - counts_completed
+      - session_count
+      - count_attempts
+    description: Distinct bounded RFID count sessions.
+  - name: average_duration_minutes
+    logicalType: number
+    businessName: Average Count Duration (Minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - count_duration
+      - sweep_duration
+    description: Mean elapsed time from session start to end.
+  - name: units_observed
+    logicalType: integer
+    businessName: Units Observed
+    customProperties:
+    - property: synonyms
+      value:
+      - items_counted
+      - rfid_units
+    description: Serialized units observed across count sessions.
+  - name: zones_covered
+    logicalType: integer
+    businessName: Zones Covered
+    customProperties:
+    - property: synonyms
+      value:
+      - covered_zones
+      - zone_counts
+    description: Observed zone-session combinations.
+  - name: full_store_zone_coverage_rate
+    logicalType: number
+    businessName: Full-Store Zone Coverage
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage_rate
+      - count_coverage
+      - zone_completion
+    description: Covered zones divided by active planned zones for full-store sessions only. Partial sessions
+      are excluded.
+- name: mv_device_health
+  physicalName: connected_store_signals.mv_device_health
+  physicalType: view
+  description: 'Sensing-fleet health across all Connected Store Signals device types: uptime, coverage,
+    feed freshness, session integrity, calibration status and governance completeness. One view for the
+    whole estate.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: device_type
+    logicalType: string
+    businessName: Device Type
+    customProperties:
+    - property: synonyms
+      value:
+      - sensor_type
+      - equipment_type
+      - device_kind
+    description: 'The dimension that lets one view serve the whole estate: people_counter, occupancy_sensor,
+      temperature, humidity, co2, illuminance, energy_meter, door_contact, rfid_reader, shelf_sensor,
+      camera, esl_gateway.'
+  - name: sensing_technology
+    logicalType: string
+    businessName: Sensing Technology
+    customProperties:
+    - property: synonyms
+      value:
+      - technology
+      - sensor_technology
+      - method
+    description: How the device senses. Drives both the accuracy and the privacy profile.
+  - name: sensor_device_id
+    logicalType: string
+    businessName: Device
+    customProperties:
+    - property: synonyms
+      value:
+      - device
+      - sensor
+      - device_id
+    description: Durable device business key.
+  - name: store_zone_id
+    logicalType: string
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - area
+      - location_in_store
+    description: Durable id of the zone the device is installed in.
+  - name: device_status
+    logicalType: string
+    businessName: Device Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - state
+    description: active, inactive, faulty, maintenance or decommissioned.
+  - name: trading_date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the health observation.
+  - name: feed_freshness_status
+    logicalType: string
+    businessName: Feed Freshness
+    customProperties:
+    - property: synonyms
+      value:
+      - freshness
+      - feed_status
+      - pipeline_status
+    description: fresh (<= 60 min), delayed (<= 6 hr), stale (> 6 hr).
+  - name: calibration_status
+    logicalType: string
+    businessName: Calibration Status
+    customProperties:
+    - property: synonyms
+      value:
+      - calibration
+      - cal_status
+    description: current, expiring_soon (<= 30 days), expired, or unknown. Regulated metrology for vaccine
+      storage -- CDC/VFC requires recalibration or replacement per the certificate.
+  - name: manufacturer
+    logicalType: string
+    businessName: Manufacturer
+    customProperties:
+    - property: synonyms
+      value:
+      - vendor
+      - make
+      - oem
+    description: Device manufacturer. Useful for isolating a fleet-wide fault to one vendor.
+  - name: firmware_version
+    logicalType: string
+    businessName: Firmware Version
+    customProperties:
+    - property: synonyms
+      value:
+      - firmware
+      - software_version
+    description: Current firmware. A common cause of a step change in counting behaviour, so it is worth
+      grouping by when investigating a discontinuity.
+  - name: report_type
+    logicalType: string
+    businessName: Report Type
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_type
+      - signal_type
+      - sensor_report
+    description: 'What the device was reporting in these intervals: footfall, occupancy, dwell, temperature,
+      humidity and so on. PART OF THE SOURCE GRAIN, because one device can report more than one thing
+      -- filter on it when comparing interval counts across devices.'
+  - name: aggregation_level
+    logicalType: string
+    businessName: Aggregation Level
+    customProperties:
+    - property: synonyms
+      value:
+      - level
+      - spatial_level
+      - grain
+    description: 'The spatial level the intervals were reported at: site, area or object. PART OF THE
+      SOURCE GRAIN -- an entrance counter emits both its own area rows and the store''s site rows, so
+      interval counts are only comparable within one level.'
+  - name: sensing_method_code
+    logicalType: string
+    businessName: Sensing Method
+    customProperties:
+    - property: synonyms
+      value:
+      - deployment_method
+      - governance_method
+    description: Method from the governance record. Present so a fleet review and a privacy review read
+      the same row.
+  - name: device_count
+    logicalType: integer
+    businessName: Device Count
+    customProperties:
+    - property: synonyms
+      value:
+      - sensors
+      - fleet_size
+      - devices
+    description: Distinct devices in the grouping.
+  - name: online_rate
+    logicalType: number
+    businessName: Online Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - uptime
+      - availability
+      - online_percentage
+    description: Mean share of the interval devices were online, weighted by intervals reported so a device
+      that sent two rows cannot outvote one that sent ninety-six.
+  - name: coverage_rate
+    logicalType: number
+    businessName: Coverage Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage
+      - reporting_rate
+    description: Mean share of expected sensors that reported, weighted by intervals reported.
+  - name: missing_observation_rate
+    logicalType: number
+    businessName: Missing Observation Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - missing_rate
+      - data_loss_rate
+      - gap_rate
+    description: 'Share of expected observations that never arrived, computed from the SUMMED numerator
+      and denominator. The primary fleet KPI, so it must not be AVG(missing_observation_rate): that averages
+      per-device rates and gives a device expecting 4 observations the same weight as one expecting 400,
+      which understates a fleet-wide outage precisely when it matters.'
+  - name: valid_interval_share
+    logicalType: number
+    businessName: Valid Interval Share
+    customProperties:
+    - property: synonyms
+      value:
+      - validity_rate
+      - data_quality
+    description: Share of reported sensor intervals whose measurement was valid, from the summed counts
+      rather than an average of per-device shares. Degraded, invalid and imputed intervals remain in the
+      denominator. RFID events are excluded because their validity field represents non-stray reads; use
+      mv_item_visibility.stray_read_rate for RFID quality.
+  - name: feed_age_minutes
+    logicalType: integer
+    businessName: Feed Age (Minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - staleness
+      - age_minutes
+      - lag
+    description: Worst feed age in the grouping. Lower is fresher.
+  - name: avg_latency_seconds
+    logicalType: number
+    businessName: Avg Ingest Latency (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - latency
+      - ingest_lag
+      - processing_delay
+    description: Mean seconds between interval end and ingest, weighted by intervals reported.
+  - name: max_latency_seconds
+    logicalType: number
+    businessName: Max Ingest Latency (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - peak_latency
+      - worst_lag
+    description: Worst-case ingest latency observed.
+  - name: stale_device_count
+    logicalType: integer
+    businessName: Stale Devices
+    customProperties:
+    - property: synonyms
+      value:
+      - stale_count
+      - silent_devices
+      - unhealthy_devices
+    description: Devices with no data in over 6 hours.
+  - name: sequence_gap_count
+    logicalType: integer
+    businessName: Sequence Gaps
+    customProperties:
+    - property: synonyms
+      value:
+      - lost_messages
+      - seq_gaps
+      - message_loss
+    description: Source messages inferred missing within source sessions, summarized at interval grain.
+  - name: session_restart_count
+    logicalType: integer
+    businessName: Session Restarts
+    customProperties:
+    - property: synonyms
+      value:
+      - reboots
+      - restarts
+      - session_breaks
+    description: Device-days with more than one source_session_id.
+  - name: historical_message_count
+    logicalType: number
+    businessName: Historical Messages
+    customProperties:
+    - property: synonyms
+      value:
+      - buffered_messages
+      - historical_replay
+    description: Delivered source messages marked as buffered or historical.
+  - name: late_arrived_count
+    logicalType: number
+    businessName: Late-Arrived Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - late_data
+      - backfilled_intervals
+    description: Intervals that landed after their window closed. These feeds are not append-only -- vendors
+      document data arriving hours or days late.
+  - name: imputed_interval_count
+    logicalType: integer
+    businessName: Imputed Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - estimated_intervals
+      - modelled_intervals
+    description: Intervals whose value was modelled rather than measured.
+  - name: capped_interval_count
+    logicalType: integer
+    businessName: Capped Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - saturated_intervals
+      - ceiling_hits
+    description: Intervals that hit the hardware detection ceiling. A capped peak is not an exact peak.
+  - name: expired_calibration_count
+    logicalType: integer
+    businessName: Expired Calibrations
+    customProperties:
+    - property: synonyms
+      value:
+      - out_of_calibration
+      - calibration_overdue
+    description: Devices past their calibration validity date. For vaccine storage this is a compliance
+      failure, not a maintenance backlog item.
+  - name: out_of_service_count
+    logicalType: integer
+    businessName: Out-of-Service Devices
+    customProperties:
+    - property: synonyms
+      value:
+      - simulated_devices
+      - commissioning_devices
+    description: BACnet Out_Of_Service devices. Their Present_Value is SIMULATED, so any reading from
+      them is fabricated.
+  - name: missing_dpia_count
+    logicalType: integer
+    businessName: Devices Without a DPIA
+    customProperties:
+    - property: synonyms
+      value:
+      - governance_gaps
+      - no_dpia
+      - unassessed_devices
+    description: 'Active devices whose deployment has no completed impact assessment. COALESCE is load-bearing:
+      the deployment join is a LEFT JOIN, so a device with NO governance record at all yields NULL, and
+      a bare NOT NULL is NULL rather than TRUE -- the least-governed devices in the estate would have
+      been the ones this count silently omitted. A governance gap surfaced alongside fleet health, because
+      the two are reviewed by different people who need the same view.'
+- name: mv_inventory_accuracy
+  physicalName: connected_store_signals.mv_inventory_accuracy
+  physicalType: view
+  description: RFID observed-versus-book reconciliation. Inventory accuracy is restricted to aligned full-store
+    EOD counts; other sessions remain explicitly labeled agreement evidence.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: product_id
+    logicalType: string
+    businessName: Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+      - item
+    description: Durable product business key.
+  - name: department
+    logicalType: string
+    businessName: Department
+    customProperties:
+    - property: synonyms
+      value:
+      - dept
+      - merchandising_department
+    description: Product department resolved from the inventory snapshot's product version.
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - merchandising_category
+    description: Product merchandising category.
+  - name: reconciliation_date
+    businessName: Reconciliation Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - snapshot_date
+      - inventory_date
+    description: EOD inventory snapshot date used by the reconciliation; post-midnight closing counts
+      map to the preceding local date.
+  - name: reconciliation_basis
+    logicalType: string
+    businessName: Reconciliation Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - basis
+      - alignment
+      - count_basis
+    description: aligned_eod supports the inventory-accuracy label; misaligned supports observed-to-book
+      agreement only.
+  - name: reconciled_product_count
+    logicalType: integer
+    businessName: Reconciled Product Count
+    customProperties:
+    - property: synonyms
+      value:
+      - products_counted
+      - reconciliations
+    description: Latest daily product reconciliations in the grouping, one per reconciliation basis.
+  - name: observed_units
+    logicalType: integer
+    businessName: Observed Units
+    customProperties:
+    - property: synonyms
+      value:
+      - rfid_units
+      - physical_count
+      - observed_inventory
+    description: Distinct serialized units observed in the latest aligned full-store EOD counts.
+  - name: book_units
+    logicalType: number
+    businessName: Book Units EOD
+    customProperties:
+    - property: synonyms
+      value:
+      - system_units
+      - ledger_units
+      - book_inventory
+    description: End-of-day book quantity for the latest aligned full-store EOD counts; filtering prevents
+      the same snapshot from being repeated by misaligned evidence.
+  - name: absolute_unit_variance
+    logicalType: number
+    businessName: Absolute Unit Variance
+    customProperties:
+    - property: synonyms
+      value:
+      - count_variance
+      - inventory_variance
+      - unit_difference
+    description: Sum of absolute observed-versus-book unit differences for aligned full-store EOD counts.
+  - name: inventory_accuracy_pct
+    logicalType: number
+    businessName: Inventory Accuracy
+    customProperties:
+    - property: synonyms
+      value:
+      - inventory_accuracy_pct
+      - stock_accuracy
+      - ledger_accuracy
+    description: Weighted count agreement for aligned full-store EOD sessions only.
+  - name: observed_to_book_agreement_pct
+    logicalType: number
+    businessName: Observed-to-Book Agreement
+    customProperties:
+    - property: synonyms
+      value:
+      - agreement_rate
+      - count_agreement
+      - observed_book_match
+    description: Agreement proxy for sessions that are not aligned to the EOD book snapshot; not labeled
+      inventory accuracy.
+  - name: phantom_stock_rate
+    logicalType: number
+    businessName: Phantom Stock Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - phantom_rate
+      - ghost_inventory_rate
+    description: Share of aligned eligible product reconciliations with positive book stock and zero observed
+      units.
+- name: mv_item_visibility
+  physicalName: connected_store_signals.mv_item_visibility
+  physicalType: view
+  description: 'RFID item-visibility quality: read volume, unique visible items, attribution, unregistered
+    and stray rates, duplicates and freshness.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: product_id
+    logicalType: string
+    businessName: Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+      - item
+    description: Durable product key; NULL groups unregistered EPCs that could not resolve to a product.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the visibility observations.
+  - name: read_event_count
+    logicalType: integer
+    businessName: Read Event Count
+    customProperties:
+    - property: synonyms
+      value:
+      - reads
+      - rfid_events
+      - visibility_events
+    description: Deduplicated EPC × reader × second visibility events.
+  - name: visible_item_count
+    logicalType: integer
+    businessName: Visible Item Count
+    customProperties:
+    - property: synonyms
+      value:
+      - items_seen
+      - tagged_units_seen
+      - item_days
+    description: Daily distinct serialized items read. Sum across days is item-days, not globally distinct
+      items.
+  - name: unregistered_epc_rate
+    logicalType: number
+    businessName: Unregistered EPC Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - unknown_tag_rate
+      - uncommissioned_rate
+    description: Share of read events whose EPC has no commissioned registry row.
+  - name: stray_read_rate
+    logicalType: number
+    businessName: Stray Read Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - rf_bleed_rate
+      - misattribution_rate
+    description: Share of reads suspected to be RF bleed and excluded from location/presence state.
+  - name: duplicate_delivery_rate
+    logicalType: number
+    businessName: Duplicate Delivery Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - duplicate_rate
+      - redelivery_rate
+    description: Suppressed duplicate deliveries as a share of delivered plus retained event records.
+  - name: average_attribution_confidence
+    logicalType: number
+    businessName: Average Attribution Confidence
+    customProperties:
+    - property: synonyms
+      value:
+      - attribution_quality
+      - location_confidence
+    description: Read-count-weighted confidence that events belong to their stated read point.
+  - name: max_freshness_age_minutes
+    logicalType: integer
+    businessName: Maximum Freshness Age (Minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - feed_age
+      - read_age
+      - staleness_minutes
+    description: Oldest latest-event age among grouped store-product-days.
+- name: mv_on_shelf_availability
+  physicalName: connected_store_signals.mv_on_shelf_availability
+  physicalType: view
+  description: 'Observed on-shelf availability from shelf sensing: expected-vs-observed positions, OSA
+    %, full-OOS vs low-stock split, intraday floor, and denominator honesty (coverage and known-state
+    rates).'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the shelf observations.
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - merch_category
+    description: Merchandising category of the expected product. NULL groups positions whose product carries
+      no category.
+  - name: expected_positions
+    logicalType: integer
+    businessName: Expected Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - assigned_positions
+      - planned_positions
+    description: Shelf positions with an assignment effective on the trading date - the OSA denominator
+      universe.
+  - name: observed_positions
+    logicalType: integer
+    businessName: Observed Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - covered_positions
+    description: Expected positions with at least one capture that day.
+  - name: positions_unobserved
+    logicalType: integer
+    businessName: Unobserved Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - uncovered_positions
+      - coverage_gap
+    description: Expected positions with no capture that day - a coverage gap, never counted as available
+      or unavailable.
+  - name: positions_unknown
+    logicalType: integer
+    businessName: Unknown-State Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - unevaluable_positions
+    description: Observed positions whose day's LAST capture was unknown or invalid. The newest capture
+      wins; an unknown reading is the current truth, never replaced by an older good one.
+  - name: on_shelf_availability_pct
+    logicalType: number
+    businessName: On-Shelf Availability %
+    customProperties:
+    - property: synonyms
+      value:
+      - osa
+      - osa_pct
+      - availability
+      - shelf_availability
+    description: Positions in stock or low stock at the day's last known reading, over KNOWN positions
+      only. Unknown and unobserved positions never inflate this.
+  - name: full_oos_positions
+    logicalType: integer
+    businessName: Out-of-Stock Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_positions
+      - stockouts
+      - empty_positions
+    description: Positions fully out of stock at the day's last known reading. Kept separate from low
+      stock - two failure classes, not one boolean.
+  - name: low_stock_positions
+    logicalType: integer
+    businessName: Low-Stock Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - near_oos_positions
+      - below_min_positions
+    description: Positions below their minimum facing threshold but not empty at the day's last known
+      reading.
+  - name: osa_intraday_floor_pct
+    logicalType: number
+    businessName: OSA Intraday Floor %
+    customProperties:
+    - property: synonyms
+      value:
+      - worst_case_osa
+      - intraday_osa
+    description: Known positions never observed out of stock at ANY point in the day. The gap between
+      this and end-of-day OSA is the intraday masking a daily average hides.
+  - name: observation_coverage_pct
+    logicalType: number
+    businessName: Observation Coverage %
+    customProperties:
+    - property: synonyms
+      value:
+      - audit_coverage
+      - sensing_coverage
+    description: Share of expected positions captured at least once that day (the compliance-audit-coverage
+      KPI's sensing half).
+  - name: known_state_pct
+    logicalType: number
+    businessName: Known-State %
+    customProperties:
+    - property: synonyms
+      value:
+      - usable_reading_rate
+      - evaluable_rate
+    description: Share of observed positions whose day's last capture was usable. Publishes the honesty
+      of the OSA denominator.
+- name: mv_planogram_compliance
+  physicalName: connected_store_signals.mv_planogram_compliance
+  physicalType: view
+  description: 'Planogram execution compliance from shelf sensing, split across the four dimensions: right
+    product present, right position, right facing count, right price tag - plus the overall rate and BMV
+    allocation divergence.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the shelf observations.
+  - name: product_id
+    logicalType: string
+    businessName: Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+      - item
+    description: Durable product business key.
+  - name: products_measured
+    logicalType: integer
+    businessName: Products Measured
+    customProperties:
+    - property: synonyms
+      value:
+      - skus_measured
+      - products_observed
+    description: Distinct products with at least one observed position that day. Counted on the durable
+      id so no grouping fans it out.
+  - name: positions_expected
+    logicalType: integer
+    businessName: Positions Expected
+    customProperties:
+    - property: synonyms
+      value:
+      - assigned_positions
+      - planned_positions
+    description: Assigned position-days in the compliance denominator universe.
+  - name: positions_observed
+    logicalType: integer
+    businessName: Positions Observed
+    customProperties:
+    - property: synonyms
+      value:
+      - slots_observed
+    description: Position-days observed across the grouping.
+  - name: positions_unobserved
+    logicalType: integer
+    businessName: Unobserved Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - uncovered_positions
+      - coverage_gaps
+    description: Expected position-days with no capture. They are coverage gaps, never compliant or violating.
+  - name: positions_known
+    logicalType: integer
+    businessName: Known-State Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - evaluable_positions
+      - usable_positions
+    description: Observed position-days whose last capture was usable.
+  - name: overall_compliance_pct
+    logicalType: number
+    businessName: Overall Compliance %
+    customProperties:
+    - property: synonyms
+      value:
+      - planogram_compliance
+      - compliance_rate
+      - execution_compliance
+    description: Positions compliant on ALL FOUR dimensions, over positions where all four were evaluable.
+  - name: presence_compliance_pct
+    logicalType: number
+    businessName: Presence Compliance %
+    customProperties:
+    - property: synonyms
+      value:
+      - product_presence_rate
+      - right_product_rate
+    description: Right product present (in stock or low stock) at its assigned position.
+  - name: position_compliance_pct
+    logicalType: number
+    businessName: Position Compliance %
+    customProperties:
+    - property: synonyms
+      value:
+      - placement_compliance
+      - right_position_rate
+    description: No misplaced product detected at the position (the right-position dimension).
+  - name: facing_compliance_pct
+    logicalType: number
+    businessName: Facing Compliance %
+    customProperties:
+    - property: synonyms
+      value:
+      - facings_rate
+      - right_facings_rate
+    description: Observed facings meet the expected facing count from the slot assignment.
+  - name: price_tag_compliance_pct
+    logicalType: number
+    businessName: Price Tag Compliance %
+    customProperties:
+    - property: synonyms
+      value:
+      - tag_compliance
+      - right_tag_rate
+    description: No price-tag mismatch flagged by shelf vision. The authoritative displayed-price comparison
+      lives in the price-accuracy metric view.
+  - name: positions_unknown
+    logicalType: integer
+    businessName: Unknown-State Positions
+    customProperties:
+    - property: synonyms
+      value:
+      - unevaluable_positions
+    description: Position-days whose last capture was unknown or invalid - excluded from every compliance
+      denominator, published so partial sensing is visible.
+  - name: observation_coverage_pct
+    logicalType: number
+    businessName: Observation Coverage %
+    customProperties:
+    - property: synonyms
+      value:
+      - compliance_audit_coverage
+      - sensing_coverage
+    description: Share of expected position-days captured at least once.
+  - name: known_state_pct
+    logicalType: number
+    businessName: Known-State %
+    customProperties:
+    - property: synonyms
+      value:
+      - evaluable_rate
+      - usable_reading_rate
+    description: Share of observed position-days whose last capture was usable.
+  - name: products_allocation_divergent
+    logicalType: integer
+    businessName: Products Diverging From Allocation
+    customProperties:
+    - property: synonyms
+      value:
+      - allocation_mismatches
+      - bmv_divergence
+    description: Product-days whose summed expected facings differ from BMV planogram allocated facings.
+      A flagged conversation between space planning and execution, never a correction (ADR-B).
+- name: mv_price_accuracy
+  physicalName: connected_store_signals.mv_price_accuracy
+  physicalType: view
+  description: 'ESL price-display accuracy from the observation audit trail: end-of-day match rate, overcharge/undercharge
+    split, mismatch magnitudes, correction times, and ack sync latency.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the price-display observations.
+  - name: currency_code
+    logicalType: string
+    businessName: Currency
+    customProperties:
+    - property: synonyms
+      value:
+      - currency
+      - iso_currency
+      - reporting_currency
+    description: ISO 4217 currency of the label's last daily price observation.
+  - name: labels_observed
+    logicalType: integer
+    businessName: Labels Observed
+    customProperties:
+    - property: synonyms
+      value:
+      - esl_labels_seen
+      - labels_checked
+    description: Label-days with at least one price observation from any evidence path (ack, shelf CV,
+      manual audit).
+  - name: labels_evaluable
+    logicalType: integer
+    businessName: Labels Evaluable
+    customProperties:
+    - property: synonyms
+      value:
+      - labels_compared
+      - price_checks_evaluable
+    description: Observed label-days whose last observation carried an evaluable displayed-versus-record
+      comparison.
+  - name: price_match_rate
+    logicalType: number
+    businessName: Price Match Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - price_accuracy
+      - match_rate
+      - display_accuracy
+    description: Labels whose day's LAST observation matched the captured price of record, over labels
+      where the comparison was evaluable. The HB130-style price accuracy figure.
+  - name: labels_mismatched
+    logicalType: integer
+    businessName: Labels Mismatched (EOD)
+    customProperties:
+    - property: synonyms
+      value:
+      - mismatched_labels
+      - wrong_price_labels
+    description: Labels ending the day displaying a price different from the captured price of record.
+  - name: labels_overcharging
+    logicalType: integer
+    businessName: Labels Overcharging
+    customProperties:
+    - property: synonyms
+      value:
+      - overcharges
+      - price_too_high
+    description: End-of-day mismatches where the displayed price EXCEEDS the price of record. Never netted
+      against undercharges - regulators treat the directions asymmetrically.
+  - name: labels_undercharging
+    logicalType: integer
+    businessName: Labels Undercharging
+    customProperties:
+    - property: synonyms
+      value:
+      - undercharges
+      - price_too_low
+    description: End-of-day mismatches where the displayed price is BELOW the price of record.
+  - name: max_mismatch_amount
+    logicalType: number
+    businessName: Largest Mismatch Amount
+    customProperties:
+    - property: synonyms
+      value:
+      - worst_mismatch
+      - biggest_price_error
+    description: Largest absolute displayed-vs-record gap at end of day. Returns NULL when the grouping
+      spans currencies; group by Currency for monetary analysis.
+  - name: avg_correction_hours
+    logicalType: number
+    businessName: Average Correction Hours
+    customProperties:
+    - property: synonyms
+      value:
+      - time_to_correct
+      - mismatch_fix_time
+    description: 'Label-weighted mean correction time: first mismatch to first subsequent match on the
+      same day.'
+  - name: max_open_mismatch_hours
+    logicalType: number
+    businessName: Longest Open Mismatch (Hours)
+    customProperties:
+    - property: synonyms
+      value:
+      - oldest_mismatch
+      - mismatch_aging
+    description: Longest still-uncorrected mismatch age across the grouping, aged to the day's last evidence,
+      not to the reader's wall clock.
+  - name: sync_latency_p95_seconds
+    logicalType: number
+    businessName: Sync Latency p95 (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - ack_latency_p95
+      - price_update_latency
+    description: WORST grouped store-day p95 of price-of-record-effective to label ack. Percentiles cannot
+      be re-aggregated, so grouping reports the worst constituent, not a recomputed percentile. Latency
+      evidence is only as granular as the captured price authority's effective timestamp.
+  - name: ack_observation_count
+    logicalType: integer
+    businessName: Ack Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - acks
+      - platform_acks
+    description: Platform-acknowledged display confirmations - the only evidence path that measures sync
+      latency.
+  - name: audit_observation_count
+    logicalType: integer
+    businessName: Manual Audit Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - manual_checks
+      - price_audits
+    description: Human price checks. Disagreement between evidence paths is signal, not noise.
+- name: mv_store_foot_traffic
+  physicalName: connected_store_signals.mv_store_foot_traffic
+  physicalType: view
+  description: In-store footfall, dwell and occupancy at STORE level (one row per store per trading date).
+    Store totals only -- zone detail is in mv_zone_foot_traffic, and the two must never be summed together
+    because footfall does not sum across zones (a shopper traversing five zones is counted five times).
+    Aggregate-only and never person-level.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - business_date
+      - day
+    description: Business date of the measurement, derived from the UTC instant plus the store UTC offset.
+  - name: fiscal_year
+    logicalType: integer
+    businessName: Fiscal Year
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_year
+      - year
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_week
+      - week
+    description: NRF 4-5-4 week identifier (fiscal_year * 100 + fiscal_week).
+  - name: day_of_week
+    logicalType: integer
+    businessName: Day of Week
+    customProperties:
+    - property: synonyms
+      value:
+      - weekday
+      - dow
+    description: ISO day of week (1 = Monday .. 7 = Sunday).
+  - name: counting_unit
+    logicalType: string
+    businessName: Counting Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - count_basis
+      - count_unit
+    description: 'What one count represents: person, group, device or object. A footfall number is uninterpretable
+      without this -- with group counting enabled, a count is of visitor GROUPS, not people.'
+  - name: staff_exclusion_enabled
+    logicalType: boolean
+    businessName: Staff Excluded
+    customProperties:
+    - property: synonyms
+      value:
+      - excludes_staff
+      - staff_filtered
+    description: TRUE if staff are excluded from footfall. Rows with different values must not be compared
+      without noting it.
+  - name: footfall
+    logicalType: integer
+    businessName: Footfall
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic
+      - visitors
+      - shoppers
+      - foot_traffic
+      - visits
+    description: Store shopper count. Additive over time and across stores.
+  - name: entries
+    logicalType: integer
+    businessName: Entries
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic_in
+      - ins
+      - arrivals
+    description: Measured entries.
+  - name: exits
+    logicalType: integer
+    businessName: Exits
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic_out
+      - outs
+      - departures
+    description: Measured exits. NULL for non-directional sensors, which cannot measure them -- not zero.
+  - name: visitors_adjusted
+    logicalType: integer
+    businessName: Visitors (Staff Excluded)
+    customProperties:
+    - property: synonyms
+      value:
+      - net_visitors
+      - customer_count
+    description: Count after staff adjustment.
+  - name: staff_count
+    logicalType: integer
+    businessName: Staff Detections
+    customProperties:
+    - property: synonyms
+      value:
+      - employees_detected
+      - associates_detected
+    description: Staff detections identified and excluded.
+  - name: peak_occupancy
+    logicalType: integer
+    businessName: Peak Occupancy
+    customProperties:
+    - property: synonyms
+      value:
+      - max_occupancy
+      - peak_people
+      - busiest
+    description: 'Highest simultaneous occupancy in the store. Semi-additive: a MAX over intervals, never
+      a SUM.'
+  - name: avg_occupancy
+    logicalType: number
+    businessName: Average Occupancy
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_occupancy
+      - typical_occupancy
+    description: Mean simultaneous occupancy, weighted by canonical interval duration. Never average interval
+      averages without their durations.
+  - name: avg_dwell_seconds
+    logicalType: number
+    businessName: Average Dwell (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - dwell_time
+      - time_in_store
+      - linger_time
+    description: Mean dwell time. Computed from the stored SUM and COUNT so it re-aggregates correctly
+      at any grain -- a pre-computed average could not.
+  - name: uptime
+    logicalType: number
+    businessName: Sensor Uptime
+    customProperties:
+    - property: synonyms
+      value:
+      - availability
+      - sensor_uptime
+      - online_rate
+    description: Mean share of the interval the sensors were online, weighted by interval MINUTES so a
+      15-minute outage does not carry the same weight as an hour-long one. Read this before trusting a
+      low count.
+  - name: avg_coverage
+    logicalType: number
+    businessName: Sensor Coverage
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage
+      - reporting_rate
+      - completeness
+    description: Mean share of expected sensors that reported, weighted by interval MINUTES. A low value
+      means the count is partial, not low.
+  - name: valid_interval_share
+    logicalType: number
+    businessName: Valid Interval Share
+    customProperties:
+    - property: synonyms
+      value:
+      - data_quality
+      - validity_rate
+    description: Share of intervals whose measurement was valid. Orthogonal to arrival completeness --
+      a sensor can be complete but invalid.
+  - name: interval_count
+    logicalType: integer
+    businessName: Interval Count
+    customProperties:
+    - property: synonyms
+      value:
+      - intervals
+      - periods
+      - observation_count
+    description: Number of source intervals behind the row. The denominator for coverage questions.
+- name: mv_traffic_sales_productivity
+  physicalName: connected_store_signals.mv_traffic_sales_productivity
+  physicalType: view
+  description: Store-day traffic against sales. Publishes sales and units per entry; no conversion rate
+    is exposed until ORDM has canonical transaction or receipt count.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - business_date
+      - day
+    description: Business date.
+  - name: fiscal_year
+    logicalType: integer
+    businessName: Fiscal Year
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_year
+      - year
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_week
+      - week
+    description: NRF 4-5-4 week identifier.
+  - name: day_of_week
+    logicalType: integer
+    businessName: Day of Week
+    customProperties:
+    - property: synonyms
+      value:
+      - weekday
+      - dow
+    description: ISO day of week (1 = Monday .. 7 = Sunday).
+  - name: is_holiday
+    logicalType: boolean
+    businessName: Holiday
+    customProperties:
+    - property: synonyms
+      value:
+      - holiday_flag
+      - is_bank_holiday
+    description: TRUE on a recognised retail holiday. Traffic comparisons across a holiday boundary are
+      not like-for-like.
+  - name: promo_active_flag
+    logicalType: boolean
+    businessName: Promotion Active
+    customProperties:
+    - property: synonyms
+      value:
+      - on_promo
+      - promotion_running
+      - promo
+    description: TRUE if any product at the store-day carried a real promotion (the NO_PROMO sentinel
+      is excluded).
+  - name: counting_unit
+    logicalType: string
+    businessName: Counting Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - count_basis
+      - count_unit
+    description: 'What one count represents: person, group, device or object.'
+  - name: visits
+    logicalType: integer
+    businessName: Visits
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic
+      - visitors
+      - entries
+      - footfall
+    description: Store entries -- the denominator for every per-visitor measure here.
+  - name: net_sales
+    logicalType: number
+    businessName: Net Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue
+      - sales
+      - net_revenue
+      - turnover
+    description: Net revenue after discount, in the single reporting currency.
+  - name: gross_sales
+    logicalType: number
+    businessName: Gross Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_revenue
+      - gross
+    description: Revenue before promotional discount.
+  - name: units_sold
+    logicalType: integer
+    businessName: Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - units
+      - quantity
+      - items_sold
+    description: Units sold. NOTE this is an ITEM count, not a basket count -- which is exactly why it
+      cannot stand in as the conversion numerator.
+  - name: sales_per_entry
+    logicalType: number
+    businessName: Sales per Entry
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue_per_entry
+      - spend_per_entry
+    description: Net revenue divided by measured entries.
+  - name: units_per_entry
+    logicalType: number
+    businessName: Units per Entry
+    customProperties:
+    - property: synonyms
+      value:
+      - items_per_entry
+      - quantity_per_entry
+    description: Units divided by entries.
+  - name: sales_per_footfall
+    logicalType: number
+    businessName: Sales per Footfall
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue_per_footfall
+      - spend_per_footfall
+    description: Net revenue divided by measured footfall. Available when entry direction is not observed.
+  - name: units_per_footfall
+    logicalType: number
+    businessName: Units per Footfall
+    customProperties:
+    - property: synonyms
+      value:
+      - items_per_footfall
+      - quantity_per_footfall
+    description: Units divided by measured footfall. Items are not transactions.
+  - name: avg_dwell_seconds
+    logicalType: number
+    businessName: Average Dwell (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - dwell_time
+      - time_in_store
+    description: Mean dwell time, recomputed from the stored SUM and COUNT so it re-aggregates correctly
+      at any grain. Not AVG(avg_dwell_seconds), which would average averages and give a near-empty store-day
+      the same weight as a busy one.
+  - name: peak_occupancy
+    logicalType: integer
+    businessName: Peak Occupancy
+    customProperties:
+    - property: synonyms
+      value:
+      - max_occupancy
+      - busiest
+    description: Highest simultaneous occupancy. Semi-additive -- a MAX, never a SUM.
+  - name: traffic_vs_py
+    logicalType: number
+    businessName: Traffic vs Prior Year
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic_growth
+      - yoy_traffic
+      - footfall_growth
+    description: Footfall growth against the equivalent NRF fiscal week and weekday last year, not a calendar
+      date shift.
+  - name: discount_rate
+    logicalType: number
+    businessName: Discount Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - markdown_rate
+      - promo_depth
+    description: Promotional discount as a share of gross revenue. Pairs with promo_active_flag to read
+      traffic lift against margin cost.
+  - name: avg_coverage
+    logicalType: number
+    businessName: Sensor Coverage
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage
+      - completeness
+    description: Mean share of expected sensors reporting, weighted by interval MINUTES so a store-day
+      with little observed time cannot outvote a full one. A low-coverage day must not be compared against
+      a complete one.
+  - name: store_day_count
+    logicalType: integer
+    businessName: Store Days
+    customProperties:
+    - property: synonyms
+      value:
+      - days
+      - observation_count
+    description: Number of store-days in the grouping.
+- name: mv_zone_foot_traffic
+  physicalName: connected_store_signals.mv_zone_foot_traffic
+  physicalType: view
+  description: In-store footfall, dwell, occupancy and density at ZONE level (one row per zone per trading
+    date). ZONE FOOTFALL DOES NOT SUM TO A STORE TOTAL -- a shopper traversing five zones is counted five
+    times, so use mv_store_foot_traffic for store totals and use this view to compare zones with each
+    other. Aggregate-only and never person-level.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: store_zone_id
+    logicalType: string
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - area
+      - department
+      - in_store_area
+    description: Durable in-store zone id.
+  - name: zone_type
+    businessName: Zone Type
+    customProperties:
+    - property: synonyms
+      value:
+      - zone_kind
+      - area_type
+      - space_type
+    description: 'Depth in the spatial hierarchy: entrance, area, department, aisle, bay, shelf_position,
+      queue, fitting_room.'
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - business_date
+      - day
+    description: Business date of the measurement, derived from the UTC instant plus the store UTC offset.
+  - name: counting_unit
+    logicalType: string
+    businessName: Counting Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - count_basis
+      - count_unit
+    description: 'What one count represents: person, group, device or object. A footfall number is uninterpretable
+      without this -- with group counting enabled, a count is of visitor GROUPS, not people.'
+  - name: staff_exclusion_enabled
+    logicalType: boolean
+    businessName: Staff Excluded
+    customProperties:
+    - property: synonyms
+      value:
+      - excludes_staff
+      - staff_filtered
+    description: TRUE if staff are excluded from footfall. Rows with different values must not be compared
+      without noting it.
+  - name: zone_footfall
+    logicalType: integer
+    businessName: Zone Footfall
+    customProperties:
+    - property: synonyms
+      value:
+      - zone_traffic
+      - zone_visitors
+      - zone_shoppers
+    description: Zone shopper count. Additive over TIME within one zone. NOT additive across zones --
+      summing zones overstates the store, because one shopper appears in every zone entered.
+  - name: entries
+    logicalType: integer
+    businessName: Zone Entries
+    customProperties:
+    - property: synonyms
+      value:
+      - zone_ins
+      - arrivals
+    description: Measured entries into the zone.
+  - name: exits
+    logicalType: integer
+    businessName: Zone Exits
+    customProperties:
+    - property: synonyms
+      value:
+      - zone_outs
+      - departures
+    description: Measured exits from the zone. NULL for non-directional sensors, which cannot measure
+      them -- not zero.
+  - name: passersby
+    logicalType: integer
+    businessName: Pass-by Traffic
+    customProperties:
+    - property: synonyms
+      value:
+      - outside_traffic
+      - walk_by
+      - pass_by
+    description: Traffic passing the zone without entering. Interpretation depends on the row's pass-by
+      convention -- vendors define this two opposite ways, one including entrants and one excluding them.
+  - name: capture_rate
+    logicalType: number
+    businessName: Capture Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - draw_rate
+      - pull_in_rate
+      - walk_in_rate
+    description: Share of pass-by traffic that entered the zone. Only meaningful where the pass-by convention
+      is uniform across the grouped rows.
+  - name: peak_occupancy
+    logicalType: integer
+    businessName: Peak Occupancy
+    customProperties:
+    - property: synonyms
+      value:
+      - max_occupancy
+      - peak_people
+      - busiest
+    description: 'Highest simultaneous occupancy in the zone. Semi-additive: a MAX over intervals, never
+      a SUM. A store peak comes from mv_store_foot_traffic, not a MAX over zones -- zones peak at different
+      moments.'
+  - name: avg_occupancy
+    logicalType: number
+    businessName: Average Occupancy
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_occupancy
+      - typical_occupancy
+    description: Mean simultaneous occupancy, weighted by canonical interval duration. Never average interval
+      averages without their durations.
+  - name: avg_dwell_seconds
+    logicalType: number
+    businessName: Average Dwell (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - dwell_time
+      - time_in_zone
+      - linger_time
+    description: Mean dwell time in the zone. Computed from the stored SUM and COUNT so it re-aggregates
+      correctly at any grain -- a pre-computed average could not.
+  - name: engagement_rate
+    logicalType: number
+    businessName: Engagement Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - engaged_share
+      - interaction_rate
+    description: Share of dwell observations exceeding the engagement threshold. The denominator is dwell
+      observations, not footfall, because not every counted shopper produces a dwell observation.
+  - name: avg_daily_footfall_per_sqm
+    logicalType: number
+    businessName: Avg Daily Footfall per m2
+    customProperties:
+    - property: synonyms
+      value:
+      - traffic_density
+      - footfall_density
+      - density
+    description: Traffic density, per zone-DAY. The denominator is the sum of area over the grouped zone-days,
+      so grouping a week of one zone gives that zone's AVERAGE DAILY density, not its weekly total density
+      -- which is why the measure is named for the day. Requires a recorded zone area.
+  - name: area_sqm_days
+    logicalType: number
+    businessName: Area m2-Days
+    customProperties:
+    - property: synonyms
+      value:
+      - area_days
+      - density_denominator
+    description: 'The explicit denominator behind the density measure: zone area summed over the grouped
+      zone-days. Published so the weighting is visible rather than implied.'
+  - name: peak_capacity_utilisation
+    logicalType: number
+    businessName: Peak Capacity Utilisation
+    customProperties:
+    - property: synonyms
+      value:
+      - capacity_used
+      - utilisation
+      - crowding
+    description: Peak occupancy as a share of the zone's recorded capacity. A MAX, never averaged across
+      zones of different capacity.
+  - name: uptime
+    logicalType: number
+    businessName: Sensor Uptime
+    customProperties:
+    - property: synonyms
+      value:
+      - availability
+      - sensor_uptime
+      - online_rate
+    description: Mean share of the interval the sensors were online, weighted by interval MINUTES so a
+      15-minute outage does not carry the same weight as an hour-long one. Read this before trusting a
+      low count.
+  - name: avg_coverage
+    logicalType: number
+    businessName: Sensor Coverage
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage
+      - reporting_rate
+      - completeness
+    description: Mean share of expected sensors that reported, weighted by interval MINUTES. A low value
+      means the count is partial, not low.
+  - name: interval_count
+    logicalType: integer
+    businessName: Interval Count
+    customProperties:
+    - property: synonyms
+      value:
+      - intervals
+      - periods
+      - observation_count
+    description: Number of source intervals behind the row. The denominator for coverage questions.

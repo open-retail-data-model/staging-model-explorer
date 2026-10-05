@@ -3373,3 +3373,428 @@ schema:
       for a cycle_service_level target it is an approximation (per-cycle probability vs the time-based
       in-stock rate) — see gap_is_approximate. Uses the default segment target, so read as an enterprise-default
       gap, not a segment-accurate one.
+- name: mv_forecast_accuracy
+  physicalName: smarter_demand_and_inventory_decisions.mv_forecast_accuracy
+  physicalType: view
+  description: 'Forecast accuracy by planning unit and ABC/XYZ segment. Error KPIs (WMAPE, bias) are volume-weighted
+    ratios of sums, the retail-standard convention — not a mean of per-row percentages. IMPORTANT: filter
+    to a single grain_type when a deployment populates more than one planning grain (e.g. store_sku AND
+    dc_product), otherwise measures sum across overlapping grains and double-count.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: planning_unit_id
+    logicalType: string
+    businessName: Planning Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - dfu_id
+      - planning_unit
+      - forecast_unit
+    description: Planning unit business key.
+  - name: forecast_date_key
+    logicalType: date
+    businessName: Forecast Date
+    customProperties:
+    - property: synonyms
+      value:
+      - period
+      - forecast_period
+      - week
+    description: Forecast period.
+  - name: grain_type
+    logicalType: string
+    businessName: Planning Grain
+    customProperties:
+    - property: synonyms
+      value:
+      - planning_grain
+      - grain
+      - hierarchy_level
+    description: Planning grain of the unit (store_sku, dc_product, account_product_region). Filter to
+      ONE grain before aggregating measures to avoid cross-grain double-counting.
+  - name: abc_class
+    logicalType: string
+    businessName: ABC Class
+    customProperties:
+    - property: synonyms
+      value:
+      - volume_tier
+      - abc
+    description: Volume tier A/B/C.
+  - name: xyz_class
+    logicalType: string
+    businessName: XYZ Class
+    customProperties:
+    - property: synonyms
+      value:
+      - variability_tier
+      - xyz
+    description: Variability tier X/Y/Z.
+  - name: wmape
+    logicalType: number
+    businessName: WMAPE
+    customProperties:
+    - property: synonyms
+      value:
+      - weighted_mape
+      - error_rate
+      - wape
+    description: 'Weighted mean absolute percentage error: SUM(|actual - forecast|) / SUM(|actual|). The
+      retail-standard volume-weighted error; well-defined when individual actuals are zero, unlike per-row
+      MAPE.'
+  - name: accuracy_pct
+    logicalType: number
+    businessName: Accuracy %
+    customProperties:
+    - property: synonyms
+      value:
+      - forecast_accuracy
+      - fit
+    description: Volume-weighted forecast accuracy (1 - WMAPE), 0-1.
+  - name: weighted_bias_pct
+    logicalType: number
+    businessName: Weighted Bias %
+    customProperties:
+    - property: synonyms
+      value:
+      - forecast_bias
+      - weighted_bias
+      - bias_pct
+    description: 'Volume-weighted forecast bias: SUM(forecast - actual) / SUM(actual), a 0-1 fraction.
+      Positive = over-forecast (excess inventory), negative = under-forecast (stockout risk). Named weighted_bias_pct
+      (not bias_pct) to avoid the same-name/different-scale collision with forecast_accuracy.bias_pct,
+      which is whole percentage points.'
+  - name: planning_unit_count
+    logicalType: integer
+    businessName: Planning Unit Count
+    customProperties:
+    - property: synonyms
+      value:
+      - dfu_count
+      - unit_count
+    description: Number of distinct planning units evaluated.
+- name: mv_forecast_bias_inventory_impact
+  physicalName: smarter_demand_and_inventory_decisions.mv_forecast_bias_inventory_impact
+  physicalType: view
+  description: Implied inventory and lost-sales impact from forecast bias.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: abc_class
+    logicalType: string
+    businessName: ABC Class
+    customProperties:
+    - property: synonyms
+      value:
+      - volume_tier
+      - abc
+    description: Volume tier A/B/C.
+  - name: xyz_class
+    logicalType: string
+    businessName: XYZ Class
+    customProperties:
+    - property: synonyms
+      value:
+      - variability_tier
+      - xyz
+    description: Variability tier X/Y/Z.
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - sku
+      - item_id
+      - product
+    description: Product business key.
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site
+      - store
+    description: Store business key.
+  - name: total_bias_impact
+    logicalType: number
+    businessName: Total Bias Impact
+    customProperties:
+    - property: synonyms
+      value:
+      - bias_dollar_impact
+      - bias_exposure
+    description: Sum of bias-driven inventory value impact, reporting currency.
+  - name: total_inventory_value
+    logicalType: number
+    businessName: Total Inventory Value
+    customProperties:
+    - property: synonyms
+      value:
+      - inventory_value
+      - stock_value
+    description: Total on-hand inventory value, reporting currency.
+  - name: weighted_bias_pct
+    logicalType: number
+    businessName: Weighted Bias %
+    customProperties:
+    - property: synonyms
+      value:
+      - weighted_bias
+      - forecast_bias
+      - mean_bias
+    description: 'Inventory-value-weighted forecast bias: SUM(bias x inventory_value) / SUM(inventory_value).
+      A ratio of sums, not a mean of per-row percentages — consistent with the A6 ratio-of-sums convention
+      in the other governed metric views. Weighting by inventory value ties bias to the exposure it drives
+      in this impact view.'
+- name: mv_inventory_optimization
+  physicalName: smarter_demand_and_inventory_decisions.mv_inventory_optimization
+  physicalType: view
+  description: Inventory optimization KPIs with policy targets. Days-of-supply is a portfolio ratio of
+    sums (on-hand / daily sell rate), not a mean of per-SKU ratios.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - sku
+      - item_id
+      - product
+    description: Product business key.
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site
+      - store
+    description: Store business key.
+  - name: abc_class
+    logicalType: string
+    businessName: ABC Class
+    customProperties:
+    - property: synonyms
+      value:
+      - volume_tier
+      - abc
+    description: Volume tier A/B/C.
+  - name: inventory_position_status
+    logicalType: string
+    businessName: Status
+    customProperties:
+    - property: synonyms
+      value:
+      - health_status
+      - stock_status
+    description: Inventory health status.
+  - name: days_of_supply
+    logicalType: number
+    businessName: Days of Supply
+    customProperties:
+    - property: synonyms
+      value:
+      - dos
+      - days_cover
+      - days_of_cover
+    description: 'Portfolio days of supply: total on-hand units / total daily sell rate. A ratio of sums
+      (volume-weighted), not a mean of per-SKU ratios.'
+  - name: days_of_supply_with_transit
+    logicalType: number
+    businessName: Days of Supply (incl. Transit)
+    customProperties:
+    - property: synonyms
+      value:
+      - dos_with_transit
+      - total_dos
+    description: 'Portfolio days of supply including in-transit units: (on-hand + in-transit) / total
+      daily sell rate.'
+  - name: total_overstock_units
+    logicalType: number
+    businessName: Overstock Units
+    customProperties:
+    - property: synonyms
+      value:
+      - excess_units
+      - overstock_quantity
+    description: Total units on hand above policy max across the group (a quantity, not a currency value).
+  - name: total_inventory_value
+    logicalType: number
+    businessName: Total Inventory Value
+    customProperties:
+    - property: synonyms
+      value:
+      - inventory_value
+      - stock_value
+    description: Total on-hand inventory value, reporting currency.
+- name: mv_lost_sales
+  physicalName: smarter_demand_and_inventory_decisions.mv_lost_sales
+  physicalType: view
+  description: Lost sales units and revenue from out-of-stock episodes.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - merch_category
+    description: Product category.
+  - name: oos_cause
+    logicalType: string
+    businessName: OOS Cause
+    customProperties:
+    - property: synonyms
+      value:
+      - stockout_cause
+      - root_cause
+    description: Root cause of the stockout.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - week
+      - fiscal_period
+      - period
+    description: Fiscal week identifier (YYYYWW).
+  - name: total_lost_units
+    logicalType: number
+    businessName: Lost Units
+    customProperties:
+    - property: synonyms
+      value:
+      - lost_volume
+      - missed_units
+    description: Total estimated lost units.
+  - name: total_lost_revenue
+    logicalType: number
+    businessName: Lost Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - lost_sales_dollars
+      - revenue_at_risk
+    description: Total estimated lost revenue, reporting currency.
+  - name: total_oos_events
+    logicalType: integer
+    businessName: OOS Events
+    customProperties:
+    - property: synonyms
+      value:
+      - stockout_events
+      - oos_count
+    description: Number of out-of-stock episodes.
+- name: mv_oos_rate
+  physicalName: smarter_demand_and_inventory_decisions.mv_oos_rate
+  physicalType: view
+  description: Reactive OOS rate and stockout SKU-day counts by store and category.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/README.md
+    type: businessDefinition
+  - url: outcome-packages/smarter-demand-and-inventory-decisions/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site
+      - store
+    description: Store business key.
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - merch_category
+    description: Product category.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - week
+      - fiscal_period
+      - period
+    description: Fiscal week identifier (YYYYWW).
+  - name: oos_rate_pct
+    logicalType: number
+    businessName: OOS Rate %
+    customProperties:
+    - property: synonyms
+      value:
+      - stockout_rate
+      - oos_rate
+      - availability_gap
+    description: 'Out-of-stock rate as a ratio of sums: total stockout SKU-days / total SKU-days (0-1).
+      Volume-weighted, not a mean of per-group rates.'
+  - name: total_stockout_sku_days
+    logicalType: integer
+    businessName: Stockout SKU-Days
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_sku_days
+      - stockout_days
+    description: Total stockout SKU-days.
+  - name: total_sku_days
+    logicalType: integer
+    businessName: Total SKU-Days
+    customProperties:
+    - property: synonyms
+      value:
+      - sku_days
+      - observation_days
+    description: Total product-store-day observations.

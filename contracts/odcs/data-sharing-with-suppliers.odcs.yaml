@@ -2827,3 +2827,409 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+- name: mv_data_product_revenue
+  physicalName: data_sharing_with_suppliers.mv_data_product_revenue
+  physicalType: view
+  description: Entitled data-monetization KPIs (licensed data revenue, contract utilisation, realised
+    price per consumption unit, data share of total monetised value) by data product, supplier and fiscal
+    period.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: principal_id
+    logicalType: string
+    businessName: Principal ID
+    customProperties:
+    - property: synonyms
+      value:
+      - principal
+      - partner_group
+      - licensee
+    description: Governance principal entitled to the row. gold_data_product_revenue emits one row PER
+      entitled principal, so a deploy-time row filter narrows this to the querying group; if two principals
+      hold a licence covering the same product x supplier x period, aggregating WITHOUT filtering on principal_id
+      would double-count the shared revenue. Always scope by principal (the row filter) before summing.
+  - name: data_product_id
+    logicalType: string
+    businessName: Data Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - data_product
+      - product_licensed
+    description: Durable data-product business key.
+  - name: data_product_name
+    logicalType: string
+    businessName: Data Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product_name
+      - offering
+    description: Display name of the licensed data product.
+  - name: data_product_category
+    logicalType: string
+    businessName: Data Product Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - offering_type
+    description: 'Kind of data product. One of: media_measurement, demand_collaboration, category_benchmark,
+      audience_insight.'
+  - name: pricing_model
+    logicalType: string
+    businessName: Pricing Model
+    customProperties:
+    - property: synonyms
+      value:
+      - charge_model
+      - rate_type
+    description: 'How the product is charged. One of: subscription_flat, per_consumption_unit, tiered,
+      revenue_share.'
+  - name: supplier_scope_id
+    logicalType: string
+    businessName: Supplier Scope
+    customProperties:
+    - property: synonyms
+      value:
+      - supplier
+      - vendor
+    description: Durable supplier business key the licence is scoped to; NULL for a licence spanning every
+      supplier the product covers.
+  - name: fiscal_year
+    logicalType: integer
+    businessName: Fiscal Year
+    customProperties:
+    - property: synonyms
+      value:
+      - year
+      - fy
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_period
+    logicalType: integer
+    businessName: Fiscal Period
+    customProperties:
+    - property: synonyms
+      value:
+      - period
+      - retail_month
+    description: NRF fiscal period / retail month (1-12).
+  - name: subscription_status
+    logicalType: string
+    businessName: Subscription Status
+    customProperties:
+    - property: synonyms
+      value:
+      - licence_status
+      - contract_status
+    description: 'Licence lifecycle at the latest version. One of: active, suspended, expired (pending
+      and cancelled licences are excluded upstream).'
+  - name: data_revenue_amount
+    logicalType: number
+    businessName: Data Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - data_revenue
+      - licensing_revenue
+      - monetization_revenue
+    description: Total revenue billed from metered data-product consumption, reporting/base currency.
+  - name: contracted_price_amount
+    logicalType: number
+    businessName: Contracted Value
+    customProperties:
+    - property: synonyms
+      value:
+      - contract_value
+      - committed_revenue
+    description: Total negotiated contract value for the periods in scope, reporting/base currency.
+  - name: consumption_units
+    logicalType: integer
+    businessName: Consumption (Units)
+    customProperties:
+    - property: synonyms
+      value:
+      - usage
+      - metered_units
+      - consumption
+    description: Total metered consumption in the data product's consumption unit.
+  - name: media_spend_net
+    logicalType: number
+    businessName: Retail Media Spend
+    customProperties:
+    - property: synonyms
+      value:
+      - media_spend
+      - ad_spend
+    description: Total retail-media net spend by the same advertiser from the Commerce Media Networks
+      package (NULL if absent). Allocated per licence row by revenue share, so it is additive rather than
+      fanning the advertiser total onto every row. The reconciliation GUARANTEE (per-row allocations sum
+      to the advertiser's actual spend) holds at the underlying gold view, which is what dpr_media_allocation_reconciles
+      checks; here the media of rows whose usage was withheld by the disclosure floor is intentionally
+      excluded, so with any suppression present this SUM is strictly LESS than the advertiser's actual
+      spend. That keeps every measure in this view over one consistent, disclosable row population.
+  - name: total_monetised_value
+    logicalType: number
+    businessName: Total Monetised Value
+    customProperties:
+    - property: synonyms
+      value:
+      - total_value
+      - wallet
+    description: 'Total value of the supplier relationship = data revenue + retail-media spend, reporting/base
+      currency. BOTH terms are COALESCEd to 0, deliberately and symmetrically: at this aggregate layer
+      an absent component means ''no KNOWN value of that kind'', not ''unknown total''. Either can legitimately
+      be NULL over a whole group — only advertiser-scoped licences carry media (so every other data product,
+      and any deployment where Commerce Media Networks is unpopulated, has no media at all), and a paid-but-unused
+      licence has media with no revenue. A bare addition NULLs this headline KPI in both cases even though
+      real value exists. NOTE this DIFFERS from the row-level gold_data_product_revenue.total_monetised_value,
+      which NULL-propagates: per row, ''known total or nothing'' is the honest reading, whereas a KPI
+      that vanishes whenever one component is missing is not usable. Use data_revenue_share_pct (still
+      NULL without media) to tell whether the media term contributed, and the two component measures to
+      see the split.'
+  - name: realised_price_per_unit
+    logicalType: number
+    businessName: Realised Price per Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - unit_price
+      - effective_rate
+      - yield_per_unit
+    description: Revenue yield per metered consumption unit = data_revenue_amount / consumption_units.
+      Aggregated as a ratio of sums, so it is a true weighted average across whatever grain is grouped.
+  - name: data_revenue_share_pct
+    logicalType: number
+    businessName: Data Share of Monetised Value %
+    customProperties:
+    - property: synonyms
+      value:
+      - data_share
+      - share_of_wallet
+    description: Data revenue as a share of total monetised value = data_revenue_amount / (data_revenue_amount
+      + media_spend_net). NULL when the retail-media signal is absent.
+- name: mv_joint_demand_plan
+  physicalName: data_sharing_with_suppliers.mv_joint_demand_plan
+  physicalType: view
+  description: Entitled joint demand-planning KPIs (consensus demand, party plans, disagreement, consensus
+    lift over statistical baseline) by supplier, product and fiscal week.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: principal_id
+    logicalType: string
+    businessName: Principal ID
+    customProperties:
+    - property: synonyms
+      value:
+      - principal
+      - partner_group
+    description: Governance principal entitled to the row. gold_joint_demand_plan emits one row PER entitled
+      principal, so a deploy-time row filter narrows this to the querying group; if two principals are
+      entitled to the same supplier x product x week, aggregating WITHOUT filtering on principal_id would
+      double-count the shared demand. Always scope by principal (the row filter) before summing.
+  - name: supplier_id
+    logicalType: string
+    businessName: Supplier ID
+    customProperties:
+    - property: synonyms
+      value:
+      - supplier
+      - vendor
+    description: Durable supplier business key.
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+    description: Durable product business key.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - week
+      - fiscal_week
+    description: Fiscal week identifier = fiscal_year * 100 + fiscal_week.
+  - name: consensus_qty
+    logicalType: integer
+    businessName: Consensus Demand (Units)
+    customProperties:
+    - property: synonyms
+      value:
+      - consensus_demand
+      - agreed_units
+      - joint_forecast
+    description: Total agreed consensus demand quantity.
+  - name: consensus_value_net
+    logicalType: number
+    businessName: Consensus Demand (Value)
+    customProperties:
+    - property: synonyms
+      value:
+      - consensus_value
+      - agreed_value
+    description: Total agreed consensus net value, reporting/base currency.
+  - name: retailer_qty
+    logicalType: integer
+    businessName: Retailer Plan (Units)
+    customProperties:
+    - property: synonyms
+      value:
+      - retailer_forecast
+      - buyer_plan
+    description: Total latest retailer-submitted demand quantity.
+  - name: supplier_qty
+    logicalType: integer
+    businessName: Supplier Plan (Units)
+    customProperties:
+    - property: synonyms
+      value:
+      - supplier_forecast
+      - vendor_plan
+    description: Total latest supplier-submitted demand quantity.
+  - name: statistical_forecast_qty
+    logicalType: number
+    businessName: Statistical Baseline (Units)
+    customProperties:
+    - property: synonyms
+      value:
+      - baseline_forecast
+      - stat_forecast
+    description: Total statistical demand baseline from the Smarter Demand package (NULL if absent).
+  - name: plan_disagreement_pct
+    logicalType: number
+    businessName: Plan Disagreement %
+    customProperties:
+    - property: synonyms
+      value:
+      - party_variance
+      - plan_gap
+    description: Retailer-vs-supplier disagreement = (retailer_qty - supplier_qty) / supplier_qty.
+  - name: consensus_lift_pct
+    logicalType: number
+    businessName: Consensus Lift over Baseline %
+    customProperties:
+    - property: synonyms
+      value:
+      - collaboration_lift
+      - consensus_uplift
+    description: 'Collaboration value: consensus demand lift over the statistical baseline = (consensus_qty
+      - statistical_forecast_qty) / statistical_forecast_qty.'
+- name: mv_supplier_media_report
+  physicalName: data_sharing_with_suppliers.mv_supplier_media_report
+  physicalType: view
+  description: Entitled supplier media-measurement KPIs (impressions, spend, attributed sales, ROAS, iROAS)
+    by advertiser and campaign.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: advertiser_id
+    logicalType: string
+    businessName: Advertiser ID
+    customProperties:
+    - property: synonyms
+      value:
+      - advertiser
+      - supplier_brand
+    description: Durable advertiser business key.
+  - name: campaign_id
+    logicalType: string
+    businessName: Campaign ID
+    customProperties:
+    - property: synonyms
+      value:
+      - campaign
+    description: Durable campaign business key.
+  - name: impressions
+    logicalType: integer
+    businessName: Impressions
+    customProperties:
+    - property: synonyms
+      value:
+      - imps
+    description: Total impressions.
+  - name: clicks
+    logicalType: integer
+    businessName: Clicks
+    customProperties:
+    - property: synonyms
+      value:
+      - click_count
+    description: Total clicks.
+  - name: conversions
+    logicalType: integer
+    businessName: Conversions
+    customProperties:
+    - property: synonyms
+      value:
+      - conv
+    description: Attributed conversions.
+  - name: media_spend_net
+    logicalType: number
+    businessName: Media Spend (Net)
+    customProperties:
+    - property: synonyms
+      value:
+      - spend
+      - ad_spend
+    description: Net media spend, reporting/base currency.
+  - name: attributed_net_sales
+    logicalType: number
+    businessName: Attributed Net Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - attributed_sales
+    description: Attributed net sales, reporting/base currency.
+  - name: incremental_sales
+    logicalType: number
+    businessName: Incremental Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - causal_sales
+    description: Incremental sales from experiments, reporting/base currency.
+  - name: roas_net
+    logicalType: number
+    businessName: ROAS (Net)
+    customProperties:
+    - property: synonyms
+      value:
+      - roas
+      - return_on_ad_spend
+    description: Return on ad spend = attributed_net_sales / media_spend_net.
+  - name: iroas
+    logicalType: number
+    businessName: iROAS
+    customProperties:
+    - property: synonyms
+      value:
+      - incremental_roas
+    description: Incremental ROAS = incremental_sales / media_spend_net.

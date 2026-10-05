@@ -1321,3 +1321,452 @@ schema:
     query: 'SELECT * FROM promote_with_purpose.gold_zone_engagement_weekly
 
       WHERE conversion_rate < 0 OR conversion_rate > 1'
+- name: mv_location_offer_performance
+  physicalName: promote_with_purpose.mv_location_offer_performance
+  physicalType: view
+  description: Location-based offer delivery funnel and its four rates, by offer configuration, store
+    and fiscal week.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/promote-with-purpose/README.md
+    type: businessDefinition
+  - url: outcome-packages/promote-with-purpose/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: location_offer_id
+    logicalType: string
+    businessName: Offer ID
+    customProperties:
+    - property: synonyms
+      value:
+      - offer_id
+      - offer
+      - location_offer
+    description: Durable business key for the location-triggered offer.
+  - name: promotion_id
+    logicalType: string
+    businessName: Promotion ID
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_id
+      - promotion
+      - deal_id
+    description: Durable business key of the promotion this offer delivers.
+  - name: trigger_type
+    logicalType: string
+    businessName: Trigger Type
+    customProperties:
+    - property: synonyms
+      value:
+      - trigger
+      - signal_type
+      - fire_condition
+    description: 'Device signal that fires the offer: geofence_enter, geofence_exit, dwell, beacon_proximity.'
+  - name: channel
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - delivery_channel
+      - medium
+      - send_channel
+    description: 'Delivery channel: push, sms, email, in_app.'
+  - name: status
+    logicalType: string
+    businessName: Offer Status
+    customProperties:
+    - property: synonyms
+      value:
+      - offer_status
+      - lifecycle_state
+      - state
+    description: 'Offer lifecycle state: draft, active, paused, ended.'
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site
+      - store
+    description: Durable business key for the store where the events occurred.
+  - name: store_name
+    logicalType: string
+    businessName: Store Name
+    customProperties:
+    - property: synonyms
+      value:
+      - location_name
+      - site_name
+    description: Display name of the store.
+  - name: region
+    logicalType: string
+    businessName: Region
+    customProperties:
+    - property: synonyms
+      value:
+      - area
+      - territory
+      - market
+    description: Geographic region the store belongs to.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - week
+      - retail_week
+      - fiscal_period
+    description: NRF 4-5-4 fiscal week identifier (fiscal_year * 100 + fiscal_week).
+  - name: trigger_events
+    logicalType: integer
+    businessName: Triggers
+    customProperties:
+    - property: synonyms
+      value:
+      - triggers
+      - trigger_count
+      - fires
+    description: Number of times the offer's trigger condition fired.
+  - name: delivered_events
+    logicalType: integer
+    businessName: Delivered
+    customProperties:
+    - property: synonyms
+      value:
+      - deliveries
+      - sends
+      - delivered_count
+    description: Number of offers actually delivered to a customer.
+  - name: suppressed_events
+    logicalType: integer
+    businessName: Suppressed
+    customProperties:
+    - property: synonyms
+      value:
+      - suppressions
+      - blocked
+      - throttled
+    description: Number of triggers suppressed by consent, frequency caps or quiet hours.
+  - name: redemptions
+    logicalType: integer
+    businessName: Redemptions
+    customProperties:
+    - property: synonyms
+      value:
+      - redeemed
+      - conversions
+      - redemption_count
+    description: Number of delivered offers redeemed against a transaction.
+  - name: unique_customers_reached
+    logicalType: integer
+    businessName: Customers Reached
+    customProperties:
+    - property: synonyms
+      value:
+      - reach
+      - audience_reached
+      - customers
+    description: Pseudonymous customers with a delivered offer, summed across store-weeks (a customer
+      reached in two stores counts twice).
+  - name: delivery_rate
+    logicalType: number
+    businessName: Delivery Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - send_rate
+      - delivery_ratio
+      - pass_rate
+    description: Delivered / (delivered + suppressed). Ratio of sums, not an average of per-row rates.
+  - name: open_rate
+    logicalType: number
+    businessName: Open Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - engagement_rate
+      - open_ratio
+    description: Opened / delivered. Ratio of sums, not an average of per-row rates.
+  - name: redemption_rate
+    logicalType: number
+    businessName: Redemption Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - conversion_rate
+      - redeem_rate
+      - take_rate
+    description: Redemptions / delivered. Ratio of sums, not an average of per-row rates.
+  - name: suppression_rate
+    logicalType: number
+    businessName: Suppression Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - throttle_rate
+      - block_rate
+      - suppression_ratio
+    description: Suppressed / (delivered + suppressed). Ratio of sums, not an average of per-row rates.
+  - name: attributed_sales_amount
+    logicalType: number
+    businessName: Attributed Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - redemption_sales
+      - attributed_revenue
+      - offer_revenue
+    description: Net revenue on transactions attributed to a redeemed offer, in the reporting/base currency.
+- name: mv_promo_roi
+  physicalName: promote_with_purpose.mv_promo_roi
+  physicalType: view
+  description: 'Post-promotion ROI by promotion: incremental margin against trade spend, with cannibalization
+    and forward-buy drag.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/promote-with-purpose/README.md
+    type: businessDefinition
+  - url: outcome-packages/promote-with-purpose/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: promo_id
+    logicalType: string
+    businessName: Promotion ID
+    customProperties:
+    - property: synonyms
+      value:
+      - promotion_id
+      - deal_id
+      - promo
+    description: Durable business key for the promotion.
+  - name: promo_name
+    logicalType: string
+    businessName: Promotion Name
+    customProperties:
+    - property: synonyms
+      value:
+      - promotion_name
+      - campaign_name
+      - deal_name
+    description: Display name of the promotion.
+  - name: promo_type
+    logicalType: string
+    businessName: Promotion Type
+    customProperties:
+    - property: synonyms
+      value:
+      - mechanic
+      - deal_type
+      - promotion_mechanic
+    description: Promotion mechanic (for example TPR, feature, display).
+  - name: funding_type
+    logicalType: string
+    businessName: Funding Type
+    customProperties:
+    - property: synonyms
+      value:
+      - funding_mechanism
+      - trade_funding
+      - deal_funding
+    description: How the promotion is funded (for example scan-down, bill-back).
+  - name: funded_by
+    logicalType: string
+    businessName: Funded By
+    customProperties:
+    - property: synonyms
+      value:
+      - funding_party
+      - payer
+      - sponsor
+    description: 'Party bearing the trade spend: retailer, supplier or shared.'
+  - name: incremental_units
+    logicalType: number
+    businessName: Incremental Units
+    customProperties:
+    - property: synonyms
+      value:
+      - lift_units
+      - uplift
+      - incremental_volume
+    description: 'Promoted units above the trailing non-promoted baseline. Not clamped: negative means
+      the promotion lost volume.'
+  - name: incremental_revenue
+    logicalType: number
+    businessName: Incremental Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - lift_revenue
+      - uplift_revenue
+      - incremental_sales
+    description: Revenue above baseline, in the reporting/base currency.
+  - name: incremental_margin
+    logicalType: number
+    businessName: Incremental Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - lift_margin
+      - uplift_margin
+      - incremental_profit
+    description: Margin above baseline, in the reporting/base currency. Not clamped.
+  - name: trade_spend
+    logicalType: number
+    businessName: Trade Spend
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_spend
+      - trade_investment
+      - deal_cost
+    description: Planned trade spend allocated to the promotion, in the reporting/base currency.
+  - name: roi
+    logicalType: number
+    businessName: ROI
+    customProperties:
+    - property: synonyms
+      value:
+      - return_on_investment
+      - return_on_spend
+      - ROAS
+    description: Incremental margin per unit of trade spend. Ratio of sums, so large and small promotions
+      are weighted by their actual spend.
+  - name: cannibalization_margin
+    logicalType: number
+    businessName: Cannibalization Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - cannibalisation
+      - substitution_loss
+      - cannibal_drag
+    description: Margin lost on substitute SKUs in the same category during the promotion window.
+  - name: forward_buy_margin
+    logicalType: number
+    businessName: Forward Buy Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - pantry_loading
+      - pull_forward
+      - forward_buy_drag
+    description: Margin lost on promoted SKUs in the weeks after the promotion (pantry loading).
+  - name: net_incremental_margin
+    logicalType: number
+    businessName: Net Incremental Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - net_margin
+      - true_lift
+      - net_profit_impact
+    description: Incremental margin less cannibalization and forward-buy drag. Negative means the promotion
+      destroyed value.
+- name: mv_zone_engagement
+  physicalName: promote_with_purpose.mv_zone_engagement
+  physicalType: view
+  description: 'Weekly location-zone engagement: active offers, triggers, pseudonymous reach and trigger-to-redemption
+    conversion.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/promote-with-purpose/README.md
+    type: businessDefinition
+  - url: outcome-packages/promote-with-purpose/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: zone_id
+    logicalType: string
+    businessName: Zone ID
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - geofence_id
+      - area_id
+    description: Durable business key for the location zone.
+  - name: zone_type
+    logicalType: string
+    businessName: Zone Type
+    customProperties:
+    - property: synonyms
+      value:
+      - geofence_type
+      - area_type
+      - zone_kind
+    description: 'Zone geometry kind: store_radius, polygon, beacon, mall_common_area.'
+  - name: store_id
+    logicalType: string
+    businessName: Anchor Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site
+      - store
+    description: Durable business key of the store the zone is anchored to.
+  - name: fiscal_week_id
+    logicalType: integer
+    businessName: Fiscal Week
+    customProperties:
+    - property: synonyms
+      value:
+      - week
+      - retail_week
+      - fiscal_period
+    description: NRF 4-5-4 fiscal week identifier (fiscal_year * 100 + fiscal_week).
+  - name: active_offers
+    logicalType: integer
+    businessName: Active Offers
+    customProperties:
+    - property: synonyms
+      value:
+      - live_offers
+      - running_offers
+      - offer_count
+    description: Distinct active location offers with events in the zone-week.
+  - name: trigger_events
+    logicalType: integer
+    businessName: Triggers
+    customProperties:
+    - property: synonyms
+      value:
+      - triggers
+      - entries
+      - trigger_count
+    description: Number of trigger events recorded in the zone-week.
+  - name: unique_customers
+    logicalType: integer
+    businessName: Customers Engaged
+    customProperties:
+    - property: synonyms
+      value:
+      - reach
+      - engaged_customers
+      - audience
+    description: Pseudonymous customers engaged, summed across zone-weeks (a customer active in two weeks
+      counts twice).
+  - name: conversion_rate
+    logicalType: number
+    businessName: Conversion Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - trigger_conversion
+      - redeem_rate
+      - conversion
+    description: Redemptions / triggers. Ratio of sums; the numerator is reconstructed from the stored
+      DECIMAL(9,4) rate, so it carries that rounding.

@@ -1632,3 +1632,1666 @@ schema:
       GROUP BY date_key
 
       HAVING COUNT(*) > 1'
+- name: mv_aggregation_features
+  physicalName: balancing_margin_and_volume.mv_aggregation_features
+  physicalType: view
+  description: Cross-sectional aggregations (store, category, brand level).
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+    description: Universal article identifier.
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - store_id
+    description: Universal store identifier.
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+    description: Daily grain.
+  - name: category
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+    description: Top-level merchandising category.
+  - name: subcategory
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - product_subcategory
+    description: Merchandising subcategory.
+  - name: brand
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - brand_name
+    description: Product brand.
+  - name: store_avg_discount_pct
+    logicalType: number
+    businessName: Store Avg Discount %
+    customProperties:
+    - property: synonyms
+      value:
+      - store_markdown_depth
+    description: Average discount percentage across the store.
+  - name: store_total_units_sold
+    logicalType: number
+    businessName: Store Total Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - store_volume
+    description: Total units sold across all products in the store.
+  - name: store_total_revenue
+    logicalType: number
+    businessName: Store Total Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - store_sales
+    description: Total revenue across all products in the store.
+  - name: category_units_sold
+    logicalType: number
+    businessName: Category Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - category_volume
+    description: Total volume of the category.
+  - name: category_revenue
+    logicalType: number
+    businessName: Category Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - category_sales
+    description: Total revenue of the category.
+  - name: category_avg_effective_price
+    logicalType: number
+    businessName: Category Avg Effective Price
+    customProperties:
+    - property: synonyms
+      value:
+      - category_asp
+    description: The volume-weighted average price of the category.
+  - name: subcategory_units_sold
+    logicalType: number
+    businessName: Subcategory Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - subcategory_volume
+    description: Total volume of the subcategory.
+  - name: subcategory_revenue
+    logicalType: number
+    businessName: Subcategory Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - subcategory_sales
+    description: Total revenue of the subcategory.
+  - name: subcategory_avg_effective_price
+    logicalType: number
+    businessName: Subcategory Avg Effective Price
+    customProperties:
+    - property: synonyms
+      value:
+      - subcategory_asp
+    description: The volume-weighted average price of the subcategory.
+  - name: brand_units_sold
+    logicalType: number
+    businessName: Brand Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - brand_volume
+    description: Total volume sold for the brand.
+  - name: brand_revenue
+    logicalType: number
+    businessName: Brand Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - brand_sales
+    description: Total revenue of the brand.
+  - name: brand_avg_effective_price
+    logicalType: number
+    businessName: Brand Avg Effective Price
+    customProperties:
+    - property: synonyms
+      value:
+      - brand_asp
+    description: The volume-weighted average price of the brand.
+  - name: brand_promo_count_active
+    logicalType: integer
+    businessName: Brand Promo Count Active
+    customProperties:
+    - property: synonyms
+      value:
+      - brand_active_promotions
+    description: Number of active promotions currently running for the brand.
+- name: mv_assortment_performance
+  physicalName: balancing_margin_and_volume.mv_assortment_performance
+  physicalType: view
+  description: Assortment performance metrics.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_id
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - site_id
+    description: Universal store identifier
+  - name: category
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - merch_category
+      - department
+    description: Merchandising category
+  - name: store_format
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - format_type
+    description: Store format or classification
+  - name: avg_revenue_per_sqft
+    logicalType: number
+    businessName: Avg Revenue per SqFt
+    customProperties:
+    - property: synonyms
+      value:
+      - space_productivity
+      - sales_per_sqft
+    description: Sales revenue generated per allocated square foot
+  - name: avg_revenue_per_facing
+    logicalType: number
+    businessName: Avg Revenue per Facing
+    customProperties:
+    - property: synonyms
+      value:
+      - facing_productivity
+      - sales_per_facing
+    description: Sales revenue generated per allocated shelf facing
+  - name: days_on_hand
+    logicalType: number
+    businessName: Days on Hand
+    customProperties:
+    - property: synonyms
+      value:
+      - doh
+      - inventory_days
+    description: Estimated days of inventory on hand based on sales velocity
+  - name: weeks_of_supply
+    logicalType: number
+    businessName: Weeks of Supply
+    customProperties:
+    - property: synonyms
+      value:
+      - wos
+      - weeks_of_cover
+    description: Estimated weeks of inventory supply based on sales velocity
+  - name: avg_allocated_facings
+    logicalType: number
+    businessName: Avg Allocated Facings
+    customProperties:
+    - property: synonyms
+      value:
+      - facings
+      - shelf_space
+    description: Average number of facings allocated on planogram
+  - name: avg_allocated_sqft
+    logicalType: number
+    businessName: Avg Allocated Sqft
+    customProperties:
+    - property: synonyms
+      value:
+      - sqft
+      - allocated_space
+    description: Average square footage allocated on planogram
+  - name: baseline_velocity_units_per_day
+    logicalType: number
+    businessName: Baseline Velocity (units/day)
+    customProperties:
+    - property: synonyms
+      value:
+      - base_volume
+      - non_promo_velocity
+    description: 28-day non-promo observed mean units/day (ratio-of-sums), a heuristic baseline proxy
+  - name: margin_contribution_pct
+    logicalType: number
+    businessName: Margin Contribution Pct
+    customProperties:
+    - property: synonyms
+      value:
+      - margin_contribution
+      - profit_contribution
+    description: 14-day realized gross-margin rate = margin$ / rate-bearing revenue (ratio-of-sums; denominator
+      excludes days with no gross-margin rate so it isn't biased down)
+- name: mv_assortment_recommendations
+  physicalName: balancing_margin_and_volume.mv_assortment_recommendations
+  physicalType: view
+  description: Assortment optimization recommendations.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - sku
+      - article_id
+      - item_id
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - branch_id
+    description: Universal store identifier
+  - name: category
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - department
+      - merch_category
+    description: Product category
+  - name: recommendation
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - assortment_action
+      - action
+      - decision
+    description: Rule-based assortment action (KEEP / DROP / EXPAND)
+  - name: sku_count
+    logicalType: integer
+    businessName: SKU Count
+    customProperties:
+    - property: synonyms
+      value:
+      - unique_items
+      - item_count
+      - assortment_size
+    description: Number of unique SKUs (counts distinct product_ids across the filtered set of stores,
+      as the underlying table is at product x store grain)
+  - name: drop_candidate_sku_count
+    logicalType: integer
+    businessName: DROP-candidate SKU Count
+    customProperties:
+    - property: synonyms
+      value:
+      - delist_candidates
+      - drop_skus
+    description: Unique SKUs the rule flags as DROP candidates (slow mover + weak margin)
+- name: mv_competitor_analysis
+  physicalName: balancing_margin_and_volume.mv_competitor_analysis
+  physicalType: view
+  description: Competitive intelligence metrics and price gaps.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - store_id
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+      - calendar_day
+    description: Daily grain
+  - name: competitor_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_id
+      - comp_retailer_code
+    description: Competitor identifier
+  - name: is_comp_on_promo
+    logicalType: boolean
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_discount_flag
+    description: Boolean indicating if the competitor is currently running a promotion
+  - name: is_comp_price_below_own
+    logicalType: boolean
+    customProperties:
+    - property: synonyms
+      value:
+      - undercut_flag
+      - cheaper_competitor_flag
+    description: True if the competitor is pricing lower than our effective price
+  - name: price_gap_trend_flag
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - gap_movement_indicator
+    description: Indicator of price gap directionality
+  - name: avg_competitor_price
+    logicalType: number
+    businessName: Average Competitor Price
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_current_asp
+      - comp_selling_price
+    description: Average regular price of the competitor
+  - name: avg_price_gap
+    logicalType: number
+    businessName: Average Price Gap
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_price_difference
+      - rival_delta_value
+    description: Average absolute price gap versus competitor
+  - name: total_dollar_price_gap
+    logicalType: number
+    businessName: Total Dollar Price Gap
+    customProperties:
+    - property: synonyms
+      value:
+      - aggregate_competitor_variance
+      - total_rival_dollar_difference
+    description: Total dollar price gap weighted by volume
+  - name: volume_weighted_cpi
+    logicalType: number
+    businessName: Volume Weighted CPI
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_adjusted_comp_index
+      - demand_weighted_rival_ratio
+    description: Volume-weighted Competitor Price Index (CPI)
+  - name: avg_assortment_overlap_pct
+    logicalType: number
+    businessName: Average Assortment Overlap
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_overlap
+    description: Average assortment overlap percentage
+  - name: total_exclusive_skus
+    logicalType: integer
+    businessName: Total Exclusive SKUs
+    customProperties:
+    - property: synonyms
+      value:
+      - exclusive_items
+    description: Number of exclusive SKUs
+- name: mv_lagging_features
+  physicalName: balancing_margin_and_volume.mv_lagging_features
+  physicalType: view
+  description: Time-shifted lag features for elasticity model training.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - sku
+    description: Universal article identifier.
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+    description: Universal store identifier.
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - calendar_day
+    description: Daily grain.
+  - name: lagged_net_sales_7d
+    logicalType: number
+    businessName: Lagged Net Sales (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_revenue_7d
+    description: Net sales from previous periods offset by 7 days.
+  - name: lagged_net_sales_14d
+    logicalType: number
+    businessName: Lagged Net Sales (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_revenue_14d
+    description: Net sales from previous periods offset by 14 days.
+  - name: lagged_net_sales_28d
+    logicalType: number
+    businessName: Lagged Net Sales (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_revenue_28d
+    description: Net sales from previous periods offset by 28 days.
+  - name: lagged_net_sales_90d
+    logicalType: number
+    businessName: Lagged Net Sales (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_revenue_90d
+    description: Net sales from previous periods offset by 90 days.
+  - name: lagged_gross_margin_pct_7d
+    logicalType: number
+    businessName: Lagged Gross Margin Pct (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_margin_7d
+    description: Gross margin from previous periods offset by 7 days.
+  - name: lagged_gross_margin_pct_14d
+    logicalType: number
+    businessName: Lagged Gross Margin Pct (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_margin_14d
+    description: Gross margin from previous periods offset by 14 days.
+  - name: lagged_gross_margin_pct_28d
+    logicalType: number
+    businessName: Lagged Gross Margin Pct (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_margin_28d
+    description: Gross margin from previous periods offset by 28 days.
+  - name: lagged_gross_margin_pct_90d
+    logicalType: number
+    businessName: Lagged Gross Margin Pct (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_margin_90d
+    description: Gross margin from previous periods offset by 90 days.
+  - name: lagged_units_sold_7d
+    logicalType: number
+    businessName: Lagged Units Sold (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_sales_volume_7d
+    description: Total units sold offset by 7 days.
+  - name: lagged_units_sold_14d
+    logicalType: number
+    businessName: Lagged Units Sold (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_sales_volume_14d
+    description: Total units sold offset by 14 days.
+  - name: lagged_units_sold_28d
+    logicalType: number
+    businessName: Lagged Units Sold (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_sales_volume_28d
+    description: Total units sold offset by 28 days.
+  - name: lagged_units_sold_90d
+    logicalType: number
+    businessName: Lagged Units Sold (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_sales_volume_90d
+    description: Total units sold offset by 90 days.
+  - name: lagged_effective_price_7d
+    logicalType: number
+    businessName: Lagged Effective Price (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_average_selling_price_7d
+    description: Average effective price offset by 7 days.
+  - name: lagged_effective_price_14d
+    logicalType: number
+    businessName: Lagged Effective Price (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_average_selling_price_14d
+    description: Average effective price offset by 14 days.
+  - name: lagged_effective_price_28d
+    logicalType: number
+    businessName: Lagged Effective Price (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_average_selling_price_28d
+    description: Average effective price offset by 28 days.
+  - name: lagged_effective_price_90d
+    logicalType: number
+    businessName: Lagged Effective Price (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_average_selling_price_90d
+    description: Average effective price offset by 90 days.
+  - name: lagged_baseline_velocity_7d
+    logicalType: number
+    businessName: Lagged Baseline Velocity (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_velocity_7d
+    description: Baseline velocity from previous periods offset by 7 days.
+  - name: lagged_baseline_velocity_14d
+    logicalType: number
+    businessName: Lagged Baseline Velocity (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_velocity_14d
+    description: Baseline velocity from previous periods offset by 14 days.
+  - name: lagged_baseline_velocity_28d
+    logicalType: number
+    businessName: Lagged Baseline Velocity (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_velocity_28d
+    description: Baseline velocity from previous periods offset by 28 days.
+  - name: lagged_baseline_velocity_90d
+    logicalType: number
+    businessName: Lagged Baseline Velocity (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_velocity_90d
+    description: Baseline velocity from previous periods offset by 90 days.
+  - name: lagged_margin_contribution_7d
+    logicalType: number
+    businessName: Lagged Margin Contribution (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_margin_contribution_7d
+    description: Margin contribution from previous periods offset by 7 days.
+  - name: lagged_margin_contribution_14d
+    logicalType: number
+    businessName: Lagged Margin Contribution (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_margin_contribution_14d
+    description: Margin contribution from previous periods offset by 14 days.
+  - name: lagged_margin_contribution_28d
+    logicalType: number
+    businessName: Lagged Margin Contribution (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_margin_contribution_28d
+    description: Margin contribution from previous periods offset by 28 days.
+  - name: lagged_margin_contribution_90d
+    logicalType: number
+    businessName: Lagged Margin Contribution (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - lagged_prior_margin_contribution_90d
+    description: Margin contribution from previous periods offset by 90 days.
+- name: mv_outcome_variables
+  physicalName: balancing_margin_and_volume.mv_outcome_variables
+  physicalType: view
+  description: Computed ML outputs, elasticity coefficients, and recommendations.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - store_id
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+      - calendar_day
+    description: Daily grain
+  - name: promo_sk
+    logicalType: integer
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_sk
+    description: Surrogate key for the promotion
+  - name: promo_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - campaign_code
+      - promo_id
+    description: Active promotion identifier
+  - name: avg_recommended_price
+    logicalType: number
+    businessName: Average Recommended Price
+    customProperties:
+    - property: synonyms
+      value:
+      - optimal_suggested_price
+      - model_target_price
+    description: Average recommended optimal price
+  - name: total_predicted_revenue
+    logicalType: number
+    businessName: Predicted Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - forecasted_sales_dollars
+      - expected_revenue_total
+    description: Predicted revenue at the optimal price point
+  - name: predicted_revenue_lift
+    logicalType: number
+    businessName: Predicted Revenue Lift
+    customProperties:
+    - property: synonyms
+      value:
+      - simulated_revenue_gain
+      - expected_incremental_dollars
+    description: Predicted incremental revenue lift ($)
+  - name: avg_recommended_discount
+    logicalType: number
+    businessName: Recommended Discount %
+    customProperties:
+    - property: synonyms
+      value:
+      - suggested_markdown_depth
+      - optimal_promo_pct
+    description: Average recommended discount percentage
+  - name: base_elasticity
+    logicalType: number
+    businessName: Base Elasticity
+    customProperties:
+    - property: synonyms
+      value:
+      - regular_price_sensitivity
+      - organic_ped
+    description: Base price elasticity of demand
+  - name: promo_elasticity
+    logicalType: number
+    businessName: Promo Elasticity
+    customProperties:
+    - property: synonyms
+      value:
+      - discount_sensitivity
+      - markdown_ped
+    description: Promotional price elasticity of demand
+  - name: volume_weighted_cross_elasticity
+    logicalType: number
+    businessName: Volume Weighted Cross Elasticity
+    customProperties:
+    - property: synonyms
+      value:
+      - cannibalization_factor
+      - halo_effect_metric
+    description: Volume-weighted average cross elasticity proxy
+  - name: total_pricing_headroom
+    logicalType: number
+    businessName: Total Pricing Headroom
+    customProperties:
+    - property: synonyms
+      value:
+      - unrealized_margin_dollars
+      - left_on_table_value
+    description: Total pricing headroom (revenue left on table)
+  - name: predicted_profit_lift
+    logicalType: number
+    businessName: Predicted Profit Lift
+    customProperties:
+    - property: synonyms
+      value:
+      - simulated_profit_gain
+      - expected_margin_increase
+    description: Predicted incremental profit lift at optimal price
+  - name: elasticity_confidence_spread
+    logicalType: number
+    businessName: Elasticity Confidence Spread
+    customProperties:
+    - property: synonyms
+      value:
+      - model_certainty_band
+      - ped_error_margin
+    description: Spread between upper and lower elasticity confidence intervals
+  - name: pricing_power_index
+    logicalType: number
+    businessName: Pricing Power Index
+    customProperties:
+    - property: synonyms
+      value:
+      - lerner_monopoly_power
+      - brand_pricing_strength
+    description: Pricing Power Index (Lerner Index Deviation)
+  - name: incremental_profit_rom
+    logicalType: number
+    businessName: Return on Markdown
+    customProperties:
+    - property: synonyms
+      value:
+      - return_on_markdown_pct
+      - promo_profit_roi
+    description: Incremental Profit Return on Markdown (ROM)
+- name: mv_price_actuals
+  physicalName: balancing_margin_and_volume.mv_price_actuals
+  physicalType: view
+  description: Daily price points and margin actuals.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - store_id
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+      - calendar_day
+    description: Daily grain
+  - name: price_change_direction
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - markdown_or_markup_indicator
+    description: Indicator of whether the price increased, decreased, or remained flat
+  - name: average_selling_price
+    logicalType: number
+    businessName: Average Selling Price
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_asp
+      - net_price_per_unit
+    description: Volume-weighted Average Selling Price (ASP)
+  - name: avg_base_price
+    logicalType: number
+    businessName: Average Base Price
+    customProperties:
+    - property: synonyms
+      value:
+      - original_ticket_price
+      - regular_shelf_price
+    description: Average base price
+  - name: weighted_gross_margin_rate
+    logicalType: number
+    businessName: Weighted Gross Margin %
+    customProperties:
+    - property: synonyms
+      value:
+      - profit_margin_pct
+      - margin_rate_blended
+    description: Weighted gross margin percentage
+  - name: total_cost
+    logicalType: number
+    businessName: Total Cost
+    customProperties:
+    - property: synonyms
+      value:
+      - cogs_total
+      - inventory_cost_value
+    description: Total cost of goods sold
+  - name: total_net_sales
+    logicalType: number
+    businessName: Total Net Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_revenue
+      - net_dollars_earned
+    description: Total net sales value
+  - name: total_gross_profit
+    logicalType: number
+    businessName: Total Gross Profit
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_margin_dollars
+      - profit_dollars_earned
+    description: Total gross profit in local currency
+  - name: avg_realized_discount
+    logicalType: number
+    businessName: Average Realized Discount %
+    customProperties:
+    - property: synonyms
+      value:
+      - average_markdown_amt
+      - mean_discount_value
+    description: Average realized discount percentage
+  - name: avg_log_effective_price
+    logicalType: number
+    businessName: Log Effective Price
+    customProperties:
+    - property: synonyms
+      value:
+      - ln_price_metric
+      - logarithmic_price
+    description: Average log transformation of effective price
+  - name: avg_price_change_magnitude_pct
+    logicalType: number
+    businessName: Price Change Magnitude %
+    customProperties:
+    - property: synonyms
+      value:
+      - ticket_change_size_pct
+      - price_delta_ratio
+    description: The percentage change in price compared to the previous period
+  - name: avg_days_since_last_price_change
+    logicalType: number
+    businessName: Days Since Last Price Change
+    customProperties:
+    - property: synonyms
+      value:
+      - ticket_age_days
+      - price_stability_duration
+    description: Tracks the decay of consumer shock as they adapt to new prices
+  - name: avg_price_barrier_proximity
+    logicalType: number
+    businessName: Price Barrier Proximity
+    customProperties:
+    - property: synonyms
+      value:
+      - psychological_threshold_distance
+      - charm_price_gap
+    description: Proximity to psychological boundaries like .99
+- name: mv_rolling_features
+  physicalName: balancing_margin_and_volume.mv_rolling_features
+  physicalType: view
+  description: Rolling window averages and stockout rates.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+    description: Universal article identifier.
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+    description: Universal store identifier.
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+    description: Daily grain.
+  - name: avg_units_sold_28d
+    logicalType: number
+    businessName: Avg Units Sold (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - daily_volume
+    description: Average daily units sold.
+  - name: avg_units_sold_7d
+    logicalType: number
+    businessName: Avg Units Sold (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - daily_volume_7d
+    description: Average daily units sold over trailing 7 days.
+  - name: avg_units_sold_14d
+    logicalType: number
+    businessName: Avg Units Sold (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - daily_volume_14d
+    description: Average daily units sold over trailing 14 days.
+  - name: avg_units_sold_90d
+    logicalType: number
+    businessName: Avg Units Sold (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - daily_volume_90d
+    description: Average daily units sold over trailing 90 days.
+  - name: avg_price_28d
+    logicalType: number
+    businessName: Avg Price (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - average_unit_price
+    description: Average effective price.
+  - name: avg_price_7d
+    logicalType: number
+    businessName: Avg Price (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - average_unit_price_7d
+    description: Average effective price over trailing 7 days.
+  - name: avg_price_14d
+    logicalType: number
+    businessName: Avg Price (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - average_unit_price_14d
+    description: Average effective price over trailing 14 days.
+  - name: avg_price_90d
+    logicalType: number
+    businessName: Avg Price (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - average_unit_price_90d
+    description: Average effective price over trailing 90 days.
+  - name: demand_velocity_28d
+    logicalType: number
+    businessName: Demand Velocity (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_velocity
+    description: A normalized measure of demand speed.
+  - name: demand_velocity_7d
+    logicalType: number
+    businessName: Demand Velocity (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_velocity_7d
+    description: A normalized measure of demand speed over trailing 7 days.
+  - name: demand_velocity_14d
+    logicalType: number
+    businessName: Demand Velocity (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_velocity_14d
+    description: A normalized measure of demand speed over trailing 14 days.
+  - name: demand_velocity_90d
+    logicalType: number
+    businessName: Demand Velocity (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_velocity_90d
+    description: A normalized measure of demand speed over trailing 90 days.
+  - name: stockout_rate_28d
+    logicalType: number
+    businessName: Stockout Rate (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_percentage
+    description: The percentage of days out-of-stock.
+  - name: stockout_rate_7d
+    logicalType: number
+    businessName: Stockout Rate (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_percentage_7d
+    description: The percentage of days out-of-stock over trailing 7 days.
+  - name: stockout_rate_14d
+    logicalType: number
+    businessName: Stockout Rate (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_percentage_14d
+    description: The percentage of days out-of-stock over trailing 14 days.
+  - name: stockout_rate_90d
+    logicalType: number
+    businessName: Stockout Rate (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_percentage_90d
+    description: The percentage of days out-of-stock over trailing 90 days.
+  - name: avg_competitor_price_28d
+    logicalType: number
+    businessName: Avg Competitor Price (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_comp_price
+    description: Average of the tracked competitor's price.
+  - name: avg_competitor_price_7d
+    logicalType: number
+    businessName: Avg Competitor Price (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_comp_price_7d
+    description: Average of the tracked competitor's price over trailing 7 days.
+  - name: avg_competitor_price_14d
+    logicalType: number
+    businessName: Avg Competitor Price (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_comp_price_14d
+    description: Average of the tracked competitor's price over trailing 14 days.
+  - name: avg_competitor_price_90d
+    logicalType: number
+    businessName: Avg Competitor Price (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_comp_price_90d
+    description: Average of the tracked competitor's price over trailing 90 days.
+  - name: promo_frequency_28d
+    logicalType: number
+    businessName: Promo Frequency (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_density
+    description: The percentage of days on promotion.
+  - name: promo_frequency_7d
+    logicalType: number
+    businessName: Promo Frequency (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_density_7d
+    description: The percentage of days on promotion over trailing 7 days.
+  - name: promo_frequency_14d
+    logicalType: number
+    businessName: Promo Frequency (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_density_14d
+    description: The percentage of days on promotion over trailing 14 days.
+  - name: promo_frequency_90d
+    logicalType: number
+    businessName: Promo Frequency (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_density_90d
+    description: The percentage of days on promotion over trailing 90 days.
+  - name: sum_net_sales_7d
+    logicalType: number
+    businessName: Sum Net Sales (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - weekly_sales_7d
+    description: Total net sales over trailing 7 days.
+  - name: sum_net_sales_14d
+    logicalType: number
+    businessName: Sum Net Sales (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - weekly_sales_14d
+    description: Total net sales over trailing 14 days.
+  - name: sum_net_sales_28d
+    logicalType: number
+    businessName: Sum Net Sales (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - weekly_sales_28d
+    description: Total net sales over trailing 28 days.
+  - name: sum_net_sales_90d
+    logicalType: number
+    businessName: Sum Net Sales (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - weekly_sales_90d
+    description: Total net sales over trailing 90 days.
+  - name: avg_gross_margin_pct_7d
+    logicalType: number
+    businessName: Avg Gross Margin Pct (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_profit_margin_7d
+    description: Average gross margin rate over trailing 7 days.
+  - name: avg_gross_margin_pct_14d
+    logicalType: number
+    businessName: Avg Gross Margin Pct (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_profit_margin_14d
+    description: Average gross margin rate over trailing 14 days.
+  - name: avg_gross_margin_pct_28d
+    logicalType: number
+    businessName: Avg Gross Margin Pct (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_profit_margin_28d
+    description: Average gross margin rate over trailing 28 days.
+  - name: avg_gross_margin_pct_90d
+    logicalType: number
+    businessName: Avg Gross Margin Pct (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_profit_margin_90d
+    description: Average gross margin rate over trailing 90 days.
+  - name: avg_rolling_sales_velocity_7d
+    logicalType: number
+    businessName: Avg Rolling Sales Velocity (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_velocity_7d
+    description: Average Sales velocity over trailing 7 days.
+  - name: avg_rolling_sales_velocity_14d
+    logicalType: number
+    businessName: Avg Rolling Sales Velocity (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_velocity_14d
+    description: Average Sales velocity over trailing 14 days.
+  - name: avg_rolling_sales_velocity_28d
+    logicalType: number
+    businessName: Avg Rolling Sales Velocity (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_velocity_28d
+    description: Average Sales velocity over trailing 28 days.
+  - name: avg_rolling_sales_velocity_90d
+    logicalType: number
+    businessName: Avg Rolling Sales Velocity (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_velocity_90d
+    description: Average Sales velocity over trailing 90 days.
+  - name: avg_rolling_stockout_rate_7d
+    logicalType: number
+    businessName: Avg Rolling Stockout Rate (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_stockout_7d
+    description: Percentage of days stocked out over trailing 7 days.
+  - name: avg_rolling_stockout_rate_14d
+    logicalType: number
+    businessName: Avg Rolling Stockout Rate (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_stockout_14d
+    description: Percentage of days stocked out over trailing 14 days.
+  - name: avg_rolling_stockout_rate_28d
+    logicalType: number
+    businessName: Avg Rolling Stockout Rate (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_stockout_28d
+    description: Percentage of days stocked out over trailing 28 days.
+  - name: avg_rolling_stockout_rate_90d
+    logicalType: number
+    businessName: Avg Rolling Stockout Rate (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_14d_stockout_90d
+    description: Percentage of days stocked out over trailing 90 days.
+  - name: comp_price_trend_7d
+    logicalType: number
+    businessName: Rolling Market Minimum Price (7d)
+    customProperties:
+    - property: synonyms
+      value:
+      - rolling_comp_price_7d
+      - market_min_trend_7d
+    description: Rolling market minimum competitor price over trailing 7 days.
+  - name: comp_price_trend_14d
+    logicalType: number
+    businessName: Rolling Market Minimum Price (14d)
+    customProperties:
+    - property: synonyms
+      value:
+      - rolling_comp_price_14d
+      - market_min_trend_14d
+    description: Rolling market minimum competitor price over trailing 14 days.
+  - name: comp_price_trend_28d
+    logicalType: number
+    businessName: Rolling Market Minimum Price (28d)
+    customProperties:
+    - property: synonyms
+      value:
+      - rolling_comp_price_28d
+      - market_min_trend_28d
+    description: Rolling market minimum competitor price over trailing 28 days.
+  - name: comp_price_trend_90d
+    logicalType: number
+    businessName: Rolling Market Minimum Price (90d)
+    customProperties:
+    - property: synonyms
+      value:
+      - rolling_comp_price_90d
+      - market_min_trend_90d
+    description: Rolling market minimum competitor price over trailing 90 days.
+- name: mv_sales_actuals
+  physicalName: balancing_margin_and_volume.mv_sales_actuals
+  physicalType: view
+  description: Grain-level sales and volume actuals.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - store_id
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+      - calendar_day
+    description: Daily grain
+  - name: fiscal_season
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_season
+      - merch_season
+    description: Retail merchandising half-year season (spring = fiscal periods 1-6, fall = 7-12), conformed
+      on fiscal_calendar.
+  - name: fiscal_period
+    description: Fiscal period or month
+  - name: total_units_sold
+    logicalType: number
+    businessName: Total Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - overall_volume
+      - total_quantity_moved
+    description: Total units sold
+  - name: total_net_sales
+    logicalType: number
+    businessName: Total Net Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_revenue
+    description: Total net sales in local currency
+  - name: total_discount_value
+    logicalType: number
+    businessName: Total Discount Value
+    customProperties:
+    - property: synonyms
+      value:
+      - total_savings_amount
+    description: Total discount value in local currency
+  - name: total_gross_sales
+    logicalType: number
+    businessName: Total Gross Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - pre_discount_revenue
+      - ticket_sales_value
+    description: Total gross sales value
+  - name: markdown_rate
+    logicalType: number
+    businessName: Markdown Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - discount_percentage
+      - markdown_depth_ratio
+    description: Markdown discount value as a percentage of gross sales
+  - name: total_returns
+    logicalType: number
+    businessName: Total Returns
+    customProperties:
+    - property: synonyms
+      value:
+      - refunded_units
+      - returned_items_count
+    description: Total units returned
+  - name: net_units_sold
+    logicalType: number
+    businessName: Net Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - kept_volume
+      - post_returns_quantity
+    description: Net units sold after returns
+  - name: stockout_adjusted_demand
+    logicalType: number
+    businessName: Stockout-Adjusted Demand
+    customProperties:
+    - property: synonyms
+      value:
+      - unconstrained_demand_estimate
+      - lost_sales_adjusted_volume
+    description: Estimated unconstrained demand adjusting for stockouts
+  - name: total_baseline_units_sold
+    logicalType: number
+    businessName: Total Baseline Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - organic_volume
+      - non_promo_base_demand
+    description: De-seasonalized and de-promoted normal demand.
+  - name: total_incremental_lift_units
+    logicalType: number
+    businessName: Total Incremental Lift Units
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_driven_extra_volume
+      - campaign_lift_quantity
+    description: Extra units sold attributable specifically to a promotion.
+  - name: avg_stockout_pct_day
+    logicalType: number
+    businessName: Avg Stockout Pct per Day
+    customProperties:
+    - property: synonyms
+      value:
+      - shelf_empty_duration_pct
+      - oos_time_ratio
+    description: Percentage of the day the product was out of stock on shelf.
+  - name: sell_through_pct
+    logicalType: number
+    businessName: Sell-Through Pct
+    customProperties:
+    - property: synonyms
+      value:
+      - sell_through_rate
+      - str
+      - sell_through
+      - season_to_date_sell_through
+      - rolling_90d_sell_through_pct
+      - fiscal_season_sell_through_pct
+    description: 'Units sold as a percentage of units received (ratio of sums) over the query''s grouping/filter
+      window. No rolling or seasonal logic is baked in: group by the fiscal_season dimension for season-to-date
+      sell-through, or filter date_key to a trailing window (e.g. 90 days) for rolling sell-through. Replaces
+      the former identical rolling_90d_sell_through_pct + fiscal_season_sell_through_pct measures, whose
+      names implied window/season logic the expr never carried.'
+- name: mv_trend_features
+  physicalName: balancing_margin_and_volume.mv_trend_features
+  physicalType: view
+  description: Macro trends and modeled baseline feedback loops.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    description: Surrogate key for the product.
+  - name: store_sk
+    logicalType: integer
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+    description: Universal article identifier.
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+    description: Universal store identifier.
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - snapshot_date
+    description: Daily grain.
+  - name: subcategory_units_sold
+    logicalType: number
+    businessName: Subcategory Units Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - subcat_volume
+    description: Units sold for the subcategory.

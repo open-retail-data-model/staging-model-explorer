@@ -3553,3 +3553,354 @@ schema:
     description: gpd_candidate_price_nonnegative
     query: "SELECT * FROM agentic_commerce.gold_product_discovery_candidate_current\nWHERE current_list_price_amount\
       \ IS NOT NULL\n  AND current_list_price_amount < 0"
+- name: mv_agent_performance
+  physicalName: agentic_commerce.mv_agent_performance
+  physicalType: view
+  description: 'Per-agent performance for agent-to-agent commerce: participation, success rate, and time
+    to completion by role, operator, and trust status.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: a2a_agent_id
+    logicalType: string
+    businessName: Agent ID
+    customProperties:
+    - property: synonyms
+      value:
+      - agent
+      - bot_id
+      - agent_id
+    description: Durable business key for the agent.
+  - name: agent_role
+    logicalType: string
+    businessName: Agent Role
+    customProperties:
+    - property: synonyms
+      value:
+      - role
+      - side
+      - party
+    description: 'Which side the agent acts for: buyer_agent or seller_agent.'
+  - name: operator_name
+    logicalType: string
+    businessName: Operator
+    customProperties:
+    - property: synonyms
+      value:
+      - operator
+      - provider
+      - platform
+    description: Organization or platform operating the agent.
+  - name: trust_status
+    logicalType: string
+    businessName: Trust Status
+    customProperties:
+    - property: synonyms
+      value:
+      - trust
+      - verification_status
+      - trust_level
+    description: 'Verification/trust state: unverified, verified, suspended, revoked.'
+  - name: agent_count
+    logicalType: integer
+    businessName: Agent Count
+    customProperties:
+    - property: synonyms
+      value:
+      - num_agents
+      - total_agents
+    description: Number of distinct agents.
+  - name: total_sessions_participated
+    logicalType: integer
+    businessName: Sessions Participated
+    customProperties:
+    - property: synonyms
+      value:
+      - participations
+      - involvement_count
+    description: Total agent-session participations (a session with two agents counts for both).
+  - name: total_sessions_completed
+    logicalType: integer
+    businessName: Sessions Completed
+    customProperties:
+    - property: synonyms
+      value:
+      - completed_participations
+      - wins
+    description: Total participations that ended in a completed session.
+  - name: success_rate
+    logicalType: number
+    businessName: Success Rate (pooled)
+    customProperties:
+    - property: synonyms
+      value:
+      - win_rate
+      - completion_rate
+      - pooled_success_rate
+    description: 'Pooled success rate across the selected agents: total completed participations / total
+      participations. Weights each session equally (a busy agent counts more), which is what most users
+      expect from a rate.'
+  - name: avg_success_rate_per_agent
+    logicalType: number
+    businessName: Avg Success Rate (per-agent mean)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_success_rate
+      - macro_success_rate
+    description: Mean of per-agent success rates — each agent weighs equally regardless of session volume,
+      so a one-session agent counts as much as a 500-session one. Use success_rate for the pooled rate.
+  - name: avg_time_to_completion_minutes
+    logicalType: number
+    businessName: Avg Time to Completion (per-agent mean, min)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_deal_time
+      - negotiation_speed
+    description: Mean of per-agent average minutes from session start to completion, on completed sessions
+      — each agent weighs equally regardless of volume. Completion is the terminal lifecycle timestamp,
+      which can trail the acceptance event.
+- name: mv_negotiation_economics
+  physicalName: agentic_commerce.mv_negotiation_economics
+  physicalType: view
+  description: 'Agent-to-agent negotiation economics: agreed value, price concession, and quantity for
+    sessions that reached an accepted price.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: a2a_session_id
+    logicalType: string
+    businessName: Session ID
+    customProperties:
+    - property: synonyms
+      value:
+      - session
+      - negotiation_id
+    description: Durable business key for the agent-to-agent session.
+  - name: communication_channel
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - medium
+    description: 'Communication channel between the agents: api, marketplace, direct, voice.'
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - SKU
+      - item_id
+      - product
+    description: Durable business key for the agreed product.
+  - name: agreed_currency_code
+    logicalType: string
+    businessName: Currency
+    customProperties:
+    - property: synonyms
+      value:
+      - currency
+      - ccy
+    description: ISO 4217 reporting currency of the agreed price.
+  - name: session_date
+    logicalType: date
+    businessName: Session Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+    description: Calendar date the session started.
+  - name: agreed_session_count
+    logicalType: integer
+    businessName: Agreed Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - deals
+      - closed_negotiations
+    description: Number of sessions that reached an accepted price.
+  - name: total_agreed_value
+    logicalType: number
+    businessName: Total Agreed Value
+    customProperties:
+    - property: synonyms
+      value:
+      - gmv
+      - total_value
+      - negotiated_value
+    description: Sum of agreed price times agreed quantity, in the reporting currency.
+  - name: avg_agreed_price
+    logicalType: number
+    businessName: Avg Agreed Price
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_price
+      - average_deal_price
+    description: Average accepted unit price across sessions.
+  - name: avg_price_concession
+    logicalType: number
+    businessName: Avg Price Concession
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_discount
+      - concession_rate
+      - negotiation_savings
+    description: Average reduction from the seller's opening offer to the accepted price, as a fraction.
+      Higher = the seller gave more ground from its opening quote.
+  - name: total_agreed_quantity
+    logicalType: integer
+    businessName: Total Agreed Quantity
+    customProperties:
+    - property: synonyms
+      value:
+      - units
+      - total_units
+      - quantity
+    description: Sum of agreed quantity across sessions.
+- name: mv_negotiation_outcomes
+  physicalName: agentic_commerce.mv_negotiation_outcomes
+  physicalType: view
+  description: 'Agent-to-agent negotiation outcomes per session: completion rate, human-escalation rate,
+    and time to completion.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: a2a_session_id
+    logicalType: string
+    businessName: Session ID
+    customProperties:
+    - property: synonyms
+      value:
+      - session
+      - negotiation_id
+      - session_id
+    description: Durable business key for the agent-to-agent session.
+  - name: session_status
+    logicalType: string
+    businessName: Session Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - state
+      - outcome
+    description: 'Lifecycle status: initiated, negotiating, agreed, completed, abandoned, failed, expired.'
+  - name: communication_channel
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - medium
+      - interface
+    description: 'Communication channel between the agents: api, marketplace, direct, voice.'
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - SKU
+      - item_id
+      - product
+    description: Durable business key for the primary product under negotiation.
+  - name: session_date
+    logicalType: date
+    businessName: Session Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - initiated_date
+    description: Calendar date the session started.
+  - name: session_count
+    logicalType: integer
+    businessName: Session Count
+    customProperties:
+    - property: synonyms
+      value:
+      - negotiations
+      - total_sessions
+      - num_sessions
+    description: Number of agent-to-agent sessions.
+  - name: completed_count
+    logicalType: integer
+    businessName: Completed Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - wins
+      - closed_deals
+      - successful_sessions
+    description: Number of sessions that reached completed status.
+  - name: completion_rate
+    logicalType: number
+    businessName: Completion Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - win_rate
+      - conversion_rate
+      - session_completion_rate
+    description: Fraction of sessions that completed (reached a transaction).
+  - name: human_escalation_rate
+    logicalType: number
+    businessName: Human Escalation Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - escalation_rate
+      - handoff_rate
+      - human_in_loop_rate
+    description: Fraction of sessions that escalated to a human. Lower = more autonomous.
+  - name: avg_time_to_completion_minutes
+    logicalType: number
+    businessName: Avg Time to Completion (min)
+    customProperties:
+    - property: synonyms
+      value:
+      - time_to_close
+      - negotiation_duration
+      - avg_deal_time
+    description: Average minutes from session start to completion, for completed sessions. Completion
+      is the terminal lifecycle timestamp, which can trail the acceptance event.
+  - name: avg_counter_offers
+    logicalType: number
+    businessName: Avg Counter-Offers
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_rounds
+      - negotiation_rounds
+      - back_and_forth
+    description: Average number of counter-offers per session (negotiation intensity).

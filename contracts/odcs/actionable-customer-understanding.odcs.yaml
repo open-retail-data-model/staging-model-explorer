@@ -2675,3 +2675,977 @@ schema:
     query: 'SELECT COUNT(*) AS pairwise_affinity_rows
 
       FROM actionable_customer_understanding.gold_product_affinity_pairwise'
+- name: mv_competitive_position
+  physicalName: actionable_customer_understanding.mv_competitive_position
+  physicalType: view
+  description: Observation-native competitive price, promotion, distribution, availability, assortment,
+    match-quality and detection-bound measures by category, durable competitor, observed channel and fiscal
+    period. Price remains on national all-channel rows; measure_scope is price, promotion, assortment,
+    or promotion_assortment. Assortment rollups across competitors or channels are presence-weighted per-grain
+    averages, not own-catalog unions.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - merchandising_category
+      - product_category
+    description: Own merchandising category captured by the version-specific price product or source observation.
+  - name: competitor_id
+    logicalType: string
+    businessName: Competitor ID
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_id
+      - competitor
+    description: Durable competitor business key, stable across SCD2 versions.
+  - name: competitor_name
+    logicalType: string
+    businessName: Competitor Name
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_name
+      - banner_name
+    description: Competitor display name effective at fiscal-period end.
+  - name: channel_code
+    logicalType: string
+    businessName: Observation Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - sales_channel
+      - competitive_channel
+    description: Source-observed channel for promotion and assortment; all for national competitor-price
+      observations.
+  - name: fiscal_year
+    logicalType: integer
+    businessName: Fiscal Year
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_year
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_period
+    logicalType: integer
+    businessName: Fiscal Period
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_period
+    description: NRF 4-5-4 fiscal period within the fiscal year.
+  - name: period_start_date
+    logicalType: date
+    businessName: Period Start Date
+    customProperties:
+    - property: synonyms
+      value:
+      - period_start
+    description: First date of the fiscal period.
+  - name: period_end_date
+    logicalType: date
+    businessName: Period End Date
+    customProperties:
+    - property: synonyms
+      value:
+      - period_end
+    description: Last date of the fiscal period and competitor-name as-of date.
+  - name: currency_code
+    logicalType: string
+    businessName: Currency
+    customProperties:
+    - property: synonyms
+      value:
+      - reporting_currency
+      - base_currency
+    description: ISO 4217 reporting currency where the available monetary observation families agree.
+  - name: measure_scope
+    logicalType: string
+    businessName: Measure Scope
+    customProperties:
+    - property: synonyms
+      value:
+      - row_measure_scope
+      - observation_family_scope
+    description: 'Reachable observation-family scope: price, promotion, assortment, or promotion_assortment.
+      Use with channel_code because national price cannot co-occur with source-channel promotion/assortment.'
+  - name: price_index_basis
+    logicalType: string
+    businessName: Price Index Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - price_basis
+    description: 'Regular-price basis: own list price versus competitor MRP.'
+  - name: price_coverage_basis
+    logicalType: string
+    businessName: Price Coverage Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - coverage_basis
+    description: Usable regular-price products divided by observed matched price products.
+  - name: promo_sov_basis
+    logicalType: string
+    businessName: Promotion SOV Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_presence_basis
+      - share_of_voice_basis
+    description: Promoted product-day presence over own product-days covered by any competitor observation;
+      placement and spend bases are not blended.
+  - name: distribution_basis
+    logicalType: string
+    businessName: Distribution Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - points_of_availability_basis
+    description: Observed listing locations and unmatched listed competitor items; no fabricated ACV weighting.
+  - name: availability_basis
+    logicalType: string
+    businessName: Availability Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - stock_basis
+    description: Listed assortment observations with an explicit stock state.
+  - name: assortment_basis
+    logicalType: string
+    businessName: Assortment Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - overlap_basis
+      - match_floor_basis
+    description: Observed active own products versus observed competitor items using exact/equivalent
+      matches at confidence 0.80 or higher.
+  - name: detection_basis
+    logicalType: string
+    businessName: Detection Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - detection_bound_basis
+      - freshness_basis
+    description: Upper-bound lag from displayed promotion start or the prior assortment observation; not
+      event-time certainty.
+  - name: channel_basis
+    logicalType: string
+    businessName: Channel Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - geography_channel_basis
+    description: Distinguishes national all-channel price rows from source-observed promotion and assortment
+      channels.
+  - name: price_index_vs_competitor
+    logicalType: number
+    businessName: Price Index vs Competitor
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_price_index
+      - price_parity_index
+    description: Arithmetic mean of usable product-day own-list/competitor-MRP price relatives, unweighted
+      across observations; 100 is regular-price parity.
+  - name: sales_weighted_price_index_vs_competitor
+    logicalType: number
+    businessName: Sales-Weighted Price Index
+    customProperties:
+    - property: synonyms
+      value:
+      - weighted_competitor_price_index
+    description: Own-unit-weighted arithmetic mean of usable product-day own-list/competitor-MRP price
+      relatives; not a ratio of aggregate price totals.
+  - name: price_observation_coverage_pct
+    logicalType: number
+    businessName: Usable Price-Product Coverage %
+    customProperties:
+    - property: synonyms
+      value:
+      - price_coverage
+      - matched_price_coverage
+    description: Usable price-product counts divided by observed matched price-product counts; no cap.
+  - name: promo_sov_pct
+    logicalType: number
+    businessName: Promotion Share of Voice %
+    customProperties:
+    - property: synonyms
+      value:
+      - promotion_sov
+      - promo_presence_share
+    description: Own promoted product-day presence divided by own plus competitor promoted presence over
+      the same observation-coverage product-days.
+  - name: avg_discount_depth_pct
+    logicalType: number
+    businessName: Average Competitor Discount Depth %
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_discount_depth
+    description: Arithmetic mean of observed or ingest-derived competitor-promotion discount-depth percentages
+      with known depth.
+  - name: listed_share_pct
+    logicalType: number
+    businessName: Observed Listed Share %
+    customProperties:
+    - property: synonyms
+      value:
+      - listing_rate
+      - listed_presence_share
+    description: Listed observations divided by all assortment observations.
+  - name: availability_rate_pct
+    logicalType: number
+    businessName: Observed Availability Rate %
+    customProperties:
+    - property: synonyms
+      value:
+      - in_stock_rate
+      - observed_availability
+    description: Available listed observations divided by listed observations with known stock state.
+  - name: assortment_overlap_pct
+    logicalType: number
+    businessName: Assortment Overlap %
+    customProperties:
+    - property: synonyms
+      value:
+      - range_overlap
+      - matched_assortment_share
+    description: Confidence-qualified active-own matched listings divided by observed active-own product-periods.
+      Rollups across competitors or channels are presence-weighted averages, not a union over the own
+      catalog.
+  - name: assortment_uniqueness_pct
+    logicalType: number
+    businessName: Own Assortment Uniqueness %
+    customProperties:
+    - property: synonyms
+      value:
+      - range_uniqueness
+      - differentiated_assortment_share
+    description: Observed active-own product-periods without a confidence-qualified competitor listing.
+      Rollups across competitors or channels are presence-weighted averages, not a union over the own
+      catalog.
+  - name: assortment_jaccard_index_pct
+    logicalType: number
+    businessName: Assortment Jaccard Index %
+    customProperties:
+    - property: synonyms
+      value:
+      - jaccard_similarity
+      - symmetric_assortment_overlap
+    description: Product-space intersection divided by observed active-own products plus unmatched competitor
+      items. Rollups across competitors or channels are presence-weighted averages, not a set union.
+  - name: match_coverage_pct
+    logicalType: number
+    businessName: Competitor Item Match Coverage %
+    customProperties:
+    - property: synonyms
+      value:
+      - entity_resolution_coverage
+      - assortment_match_coverage
+    description: Listed competitor item-periods with exact/equivalent matches at confidence 0.80 or higher.
+  - name: share_of_search_avg_rank
+    logicalType: number
+    businessName: Average Search Rank
+    customProperties:
+    - property: synonyms
+      value:
+      - search_visibility_rank
+      - digital_shelf_rank
+    description: Ratio-of-sums average rank where digital-shelf observations provide search position.
+  - name: avg_detection_lag_upper_bound_days
+    logicalType: number
+    businessName: Average Detection-Lag Upper Bound (Days)
+    customProperties:
+    - property: synonyms
+      value:
+      - time_to_detect
+      - detection_bound_days
+    description: Average upper bound across promotion starts and observed assortment state changes; cadence
+      is published separately.
+  - name: avg_promotion_detection_lag_days
+    logicalType: number
+    businessName: Average Promotion Detection-Lag Bound (Days)
+    customProperties:
+    - property: synonyms
+      value:
+      - promotion_time_to_detect
+      - promo_detection_bound_days
+    description: Mean upper bound from displayed promotion start to observation; exposed separately because
+      promotion and assortment bounds are not interchangeable.
+  - name: avg_assortment_detection_lag_days
+    logicalType: number
+    businessName: Average Assortment Detection-Lag Bound (Days)
+    customProperties:
+    - property: synonyms
+      value:
+      - assortment_time_to_detect
+      - listing_detection_bound_days
+    description: Mean prior-observation interval when listing or availability changed; exposed separately
+      from promotion detection.
+  - name: avg_observation_cadence_days
+    logicalType: number
+    businessName: Average Assortment Observation Cadence (Days)
+    customProperties:
+    - property: synonyms
+      value:
+      - crawl_cadence_days
+      - observation_interval
+    description: Elapsed days between consecutive assortment observations for the same durable competitor
+      item, location and channel.
+  - name: points_of_availability_count
+    logicalType: integer
+    businessName: Points of Availability
+    customProperties:
+    - property: synonyms
+      value:
+      - distribution_points
+      - availability_points
+    description: Observed listed location-points summed across selected category/competitor/channel periods;
+      national v1 uses ALL.
+  - name: listed_channel_count
+    logicalType: integer
+    businessName: Listed Channels
+    customProperties:
+    - property: synonyms
+      value:
+      - channel_points_of_availability
+      - distribution_channel_count
+    description: Distinct source-observed channels with a listed item for one category, competitor and
+      fiscal period. Group by those dimensions; this context count is repeated across channel rows and
+      is not additive.
+  - name: valid_price_observation_count
+    logicalType: integer
+    businessName: Valid Price Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - usable_price_pairs
+    description: Positive regular-price pairs in the same reporting currency.
+  - name: valid_price_product_count
+    logicalType: integer
+    businessName: Valid Price Products
+    customProperties:
+    - property: synonyms
+      value:
+      - usable_price_products
+    description: Distinct usable price products summed as product-period counts.
+  - name: observed_price_product_count
+    logicalType: integer
+    businessName: Observed Price Products
+    customProperties:
+    - property: synonyms
+      value:
+      - price_coverage_denominator
+    description: Distinct matched price products summed as product-period counts.
+  - name: matched_units
+    logicalType: number
+    businessName: Matched Own Units
+    customProperties:
+    - property: synonyms
+      value:
+      - price_matched_units
+    description: Own units sold on usable regular-price-pair product-days.
+  - name: competitor_observation_count
+    logicalType: integer
+    businessName: Competitor Price Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - price_crawl_observations
+    description: Competitor price rows represented by the selected gold grains.
+  - name: own_promo_presence_count
+    logicalType: integer
+    businessName: Own Promo Presence Count
+    customProperties:
+    - property: synonyms
+      value:
+      - own_promo_product_days
+    description: Own promoted product-days on comparable competitor-promotion observations.
+  - name: competitor_promo_presence_count
+    logicalType: integer
+    businessName: Competitor Promo Presence Count
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_promo_product_days
+    description: Comparable matched competitor promotion product-days.
+  - name: competitor_promotion_observation_count
+    logicalType: integer
+    businessName: Competitor Promotion Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - promo_observations
+    description: All source promotion observations, including category-only placements.
+  - name: assortment_observation_count
+    logicalType: integer
+    businessName: Assortment Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - listing_observations
+    description: All listing and availability observations.
+  - name: listed_observation_count
+    logicalType: integer
+    businessName: Listed Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - listing_presence_count
+    description: Assortment observations explicitly marked listed.
+  - name: available_observation_count
+    logicalType: integer
+    businessName: Available Listed Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - in_stock_observations
+    description: Listed observations explicitly marked available.
+  - name: out_of_stock_observation_count
+    logicalType: integer
+    businessName: Out-of-Stock Listed Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_observations
+    description: Listed observations explicitly marked unavailable.
+  - name: stock_flagged_observation_count
+    logicalType: integer
+    businessName: Stock-State-Known Listed Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - availability_denominator
+    description: Listed observations with a non-null availability state.
+  - name: competitor_listed_item_count
+    logicalType: integer
+    businessName: Competitor Listed Item-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_assortment_items
+    description: Distinct listed competitor items summed across gold periods.
+  - name: matched_listed_product_count
+    logicalType: integer
+    businessName: Matched Listed Product-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - assortment_intersection_count
+    description: Distinct own products with confidence-qualified competitor listings, summed across periods.
+  - name: matched_listed_inactive_product_count
+    logicalType: integer
+    businessName: Matched Listed Inactive Own Product-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - inactive_matched_listing_count
+      - excluded_overlap_matches
+    description: Confidence-qualified competitor listings whose matched own product is outside the active
+      period-end catalog; excluded from overlap but published for audit.
+  - name: observed_own_product_count
+    logicalType: integer
+    businessName: Observed Active Own Product-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - matchable_own_products
+      - observed_own_assortment
+    description: Active own products represented by at least one assortment observation; denominator for
+      overlap and uniqueness.
+  - name: unmatched_listed_item_count
+    logicalType: integer
+    businessName: Unmatched Listed Item-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - assortment_gap_count
+    description: Distinct listed competitor items without a confidence-qualified exact/equivalent match.
+  - name: own_catalog_product_count
+    logicalType: integer
+    businessName: Own Catalog Product-Periods
+    customProperties:
+    - property: synonyms
+      value:
+      - own_assortment_denominator
+    description: Distinct active own products for one category and fiscal period. Group by those dimensions;
+      this context count is repeated across competitor/channel rows and is not additive.
+  - name: assortment_state_change_count
+    logicalType: integer
+    businessName: Observed Assortment State Changes
+    customProperties:
+    - property: synonyms
+      value:
+      - competitor_move_count
+    description: Listing or availability changes versus the prior observation for the same durable competitor
+      item.
+  - name: detection_lag_observation_count
+    logicalType: integer
+    businessName: Detection-Bound Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - detection_denominator
+    description: Promotion and assortment change observations with a computable upper-bound lag.
+  - name: observation_interval_count
+    logicalType: integer
+    businessName: Assortment Observation Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - cadence_denominator
+    description: Consecutive assortment-observation intervals used for cadence.
+  - name: circular_print_promo_count
+    logicalType: integer
+    businessName: Print Circular Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - print_feature_count
+    description: Observed print-circular promotion placements.
+  - name: circular_digital_promo_count
+    logicalType: integer
+    businessName: Digital Circular Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - digital_feature_count
+    description: Observed digital-circular promotion placements.
+  - name: onsite_promo_count
+    logicalType: integer
+    businessName: Onsite Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - web_promo_count
+    description: Observed onsite promotion placements.
+  - name: in_store_promo_count
+    logicalType: integer
+    businessName: In-Store Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - store_promo_count
+    description: Observed in-store promotion placements.
+  - name: email_app_promo_count
+    logicalType: integer
+    businessName: Email/App Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - direct_digital_promo_count
+    description: Observed email or app promotion placements.
+  - name: other_promo_count
+    logicalType: integer
+    businessName: Other Promotions
+    customProperties:
+    - property: synonyms
+      value:
+      - other_promotion_count
+    description: Observed promotion placements in other vehicles.
+- name: mv_market_share
+  physicalName: actionable_customer_understanding.mv_market_share
+  physicalType: view
+  description: Current restatement-resolved market share by provider market definition, geography, category,
+    non-total subject and provider period. Total-category inputs are denominator-only and are not served.
+    Licensed benchmark data remains internal-use-only by default.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: record_source
+    logicalType: string
+    businessName: Benchmark Source
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_source
+      - provider_source
+    description: Licensed source-system namespace; required to interpret methodology and usage rights.
+  - name: market_definition
+    logicalType: string
+    businessName: Market Definition
+    customProperties:
+    - property: synonyms
+      value:
+      - measured_market
+      - market_universe
+    description: Measured store/channel universe supplied by the benchmark source; always display with
+      share.
+  - name: geography_level
+    logicalType: string
+    businessName: Geography Level
+    customProperties:
+    - property: synonyms
+      value:
+      - market_level
+      - geo_level
+    description: Provider geography hierarchy level.
+  - name: geography_code
+    logicalType: string
+    businessName: Geography
+    customProperties:
+    - property: synonyms
+      value:
+      - market_geography
+      - geo_code
+    description: Provider or adopter geography identifier at the stated level.
+  - name: category_ref
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - merchandising_category
+      - benchmark_category
+    description: Adopter-owned mapping from the benchmark category to the own merchandising hierarchy.
+  - name: subject_type
+    logicalType: string
+    businessName: Subject Type
+    customProperties:
+    - property: synonyms
+      value:
+      - share_subject_type
+      - entity_type
+    description: 'Served benchmark subject: own banner, competitor banner, brand, or private label. Total-category
+      cells are denominator-only inputs.'
+  - name: subject_id
+    logicalType: string
+    businessName: Subject
+    customProperties:
+    - property: synonyms
+      value:
+      - banner_or_brand
+      - share_subject
+    description: Source identifier for the served non-total subject.
+  - name: competitor_id
+    logicalType: string
+    businessName: Competitor ID
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_id
+      - competitor
+    description: Durable competitor business key when a competitor-banner subject is mapped to BMV identity.
+  - name: competitor_name
+    logicalType: string
+    businessName: Competitor Name
+    customProperties:
+    - property: synonyms
+      value:
+      - rival_name
+      - banner_name
+    description: Competitor display name effective at provider period end.
+  - name: period_type
+    logicalType: string
+    businessName: Provider Period Type
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_period_type
+      - benchmark_period_type
+    description: Provider period vocabulary; it is not relabeled as an own fiscal period.
+  - name: period_end_date
+    logicalType: date
+    businessName: Provider Period End
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_period_end
+      - benchmark_period_end
+    description: Provider-defined period end date.
+  - name: currency_code
+    logicalType: string
+    businessName: Currency
+    customProperties:
+    - property: synonyms
+      value:
+      - reporting_currency
+      - base_currency
+    description: ISO 4217 reporting/base currency for additive sales measures.
+  - name: market_share_basis
+    logicalType: string
+    businessName: Market Share Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - share_basis
+    description: Subject sales divided by the matching total-category sales cell.
+  - name: license_posture
+    logicalType: string
+    businessName: License Posture
+    customProperties:
+    - property: synonyms
+      value:
+      - data_usage_posture
+      - sharing_posture
+    description: Default usage boundary for licensed benchmark cells and their derivatives.
+  - name: market_share_pct
+    logicalType: number
+    businessName: Market Share %
+    customProperties:
+    - property: synonyms
+      value:
+      - share_of_market
+      - sales_share
+    description: Subject sales divided by matching total-category sales. Group by subject; period rollups
+      are market-size-weighted ratio-of-sums.
+  - name: market_share_sales_amount
+    logicalType: number
+    businessName: Subject Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - benchmark_subject_sales
+      - share_numerator
+    description: Additive measured sales for the selected subject cells.
+  - name: market_size_sales_amount
+    logicalType: number
+    businessName: Measured Market Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - benchmark_market_size
+      - share_denominator
+    description: Matching total-category sales denominator. Group by subject before combining multiple
+      subjects.
+  - name: subject_unit_volume
+    logicalType: number
+    businessName: Subject Unit Volume
+    customProperties:
+    - property: synonyms
+      value:
+      - benchmark_units
+      - subject_units
+    description: Additive measured unit volume for the selected subject cells.
+  - name: benchmark_cell_count
+    logicalType: integer
+    businessName: Benchmark Cells
+    customProperties:
+    - property: synonyms
+      value:
+      - market_cell_count
+      - measurement_cell_count
+    description: Current logical benchmark cells represented by the selected dimensions.
+- name: mv_product_affinity
+  physicalName: actionable_customer_understanding.mv_product_affinity
+  physicalType: view
+  description: 'Customer→product affinity reach and strength by category / brand / driver / band: how
+    many customers and products carry an affinity, their average purchase-history affinity score and recency
+    weight, and the units/spend behind them. Means are ratio-of-sums and re-aggregate at any grain.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - department
+    description: Product merchandising category (durable current label).
+  - name: subcategory
+    logicalType: string
+    businessName: Subcategory
+    customProperties:
+    - property: synonyms
+      value:
+      - product_subcategory
+    description: Product merchandising subcategory (durable current label).
+  - name: brand
+    logicalType: string
+    businessName: Brand
+    customProperties:
+    - property: synonyms
+      value:
+      - product_brand
+      - label
+    description: Product brand (durable current label).
+  - name: primary_driver
+    logicalType: string
+    businessName: Affinity Driver
+    customProperties:
+    - property: synonyms
+      value:
+      - driver
+      - affinity_source
+      - signal
+    description: What the affinity is derived from. v1 is always PURCHASE_HISTORY; browse-behavior and
+      latent/embedding (ML) drivers are a documented follow-on.
+  - name: affinity_band
+    logicalType: string
+    businessName: Affinity Band
+    customProperties:
+    - property: synonyms
+      value:
+      - affinity_tier
+      - strength_band
+    description: 'Coarse affinity strength bucket: high (>= 0.6) / medium (>= 0.2) / low.'
+  - name: customer_product_pairs
+    logicalType: integer
+    businessName: Customer-Product Pairs
+    customProperties:
+    - property: synonyms
+      value:
+      - affinity_pairs
+      - pairs
+    description: Count of (customer × product) affinity rows. Additive over the dimensions.
+  - name: distinct_customers
+    logicalType: integer
+    businessName: Customers with Affinity
+    customProperties:
+    - property: synonyms
+      value:
+      - customers
+      - reach
+      - audience_size
+    description: Distinct customers carrying an affinity on the selected slice (keyed on the durable pseudonymous
+      profile_id).
+  - name: distinct_products
+    logicalType: integer
+    businessName: Products with Affinity
+    customProperties:
+    - property: synonyms
+      value:
+      - products
+      - sku_reach
+    description: Distinct products carrying an affinity on the selected slice.
+  - name: avg_affinity_score
+    logicalType: number
+    businessName: Average Affinity Score
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_affinity
+      - affinity_strength
+    description: Mean purchase-history affinity score (0..1). Ratio-of-sums, so it re-aggregates at any
+      grain.
+  - name: avg_recency_weight
+    logicalType: number
+    businessName: Average Recency Weight
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_recency
+      - recency
+    description: Mean recency-decay weight (0..1) across the affinity rows. Ratio-of-sums.
+  - name: total_affinity_units
+    logicalType: integer
+    businessName: Units Behind Affinity
+    customProperties:
+    - property: synonyms
+      value:
+      - units
+      - quantity
+    description: Total units purchased across the affinity rows on the slice.
+  - name: total_affinity_spend
+    logicalType: number
+    businessName: Spend Behind Affinity
+    customProperties:
+    - property: synonyms
+      value:
+      - spend
+      - revenue
+      - net_amount
+    description: Total net spend behind the affinity rows on the slice, in the reporting/base currency.
+- name: mv_segment_performance
+  physicalName: actionable_customer_understanding.mv_segment_performance
+  physicalType: view
+  description: 'Per behavioral-segment size and activatable reach: total members, gate-eligible members,
+    and activatable penetration.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: audience_id
+    logicalType: string
+    businessName: Segment ID
+    customProperties:
+    - property: synonyms
+      value:
+      - segment_id
+      - audience
+    description: Durable segment/audience business key.
+  - name: audience_name
+    logicalType: string
+    businessName: Segment Name
+    customProperties:
+    - property: synonyms
+      value:
+      - segment_name
+    description: Human-readable segment name.
+  - name: segmentation_basis
+    logicalType: string
+    businessName: Segmentation Basis
+    customProperties:
+    - property: synonyms
+      value:
+      - segment_type
+      - basis
+    description: The axis the segment is built on (behavioral, value_rfm, lifecycle, predictive, ...).
+  - name: member_count
+    logicalType: integer
+    businessName: Members
+    customProperties:
+    - property: synonyms
+      value:
+      - segment_size
+      - audience_size
+    description: Distinct customers currently in the segment (latest as-of snapshot).
+  - name: reachable_member_count
+    logicalType: integer
+    businessName: Reachable Members
+    customProperties:
+    - property: synonyms
+      value:
+      - activatable_members
+      - addressable_members
+    description: Distinct members who clear the consent+preference+reachability activation gate on an
+      OWNED channel (email/sms/phone/postal). Channel-agnostic analytics/personalization consent alone
+      does not make a member reachable.
+  - name: activatable_penetration
+    logicalType: number
+    businessName: Activatable Penetration
+    customProperties:
+    - property: synonyms
+      value:
+      - reach_rate
+      - addressable_rate
+    description: 'Share of segment members that are activatable (ratio-of-sums: reachable / total, not
+      an avg of per-row ratios). A non-addressable (analytics-only) segment has no reachable members,
+      so this reads 0 by design, not a data gap.'

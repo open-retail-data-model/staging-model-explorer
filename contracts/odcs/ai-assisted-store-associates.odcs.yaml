@@ -2156,3 +2156,446 @@ schema:
     query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_product_inventory_current
 
       WHERE freshness_status IS NULL OR source_system IS NULL'
+- name: mv_associate_action_performance
+  physicalName: ai_assisted_store_associates.mv_associate_action_performance
+  physicalType: view
+  description: 'Next Best Action effectiveness at store x zone x associate x trading date x action_type:
+    how many actions were generated, their acceptance and completion rates, average time-to-first-response,
+    and realized monetary outcome. Break down by associate for individual effectiveness or by zone for
+    the staffing signal. Rates are ratio-of-sums and re-aggregate at any grain.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - business_date
+      - day
+    description: Business date the action was generated.
+  - name: action_type
+    logicalType: string
+    businessName: Action Type
+    customProperties:
+    - property: synonyms
+      value:
+      - task_type
+      - action
+      - task_class
+    description: 'The Next Best Action task class: customer_assist, restock_shelf, bopis_fulfill, safety_loss_prevention,
+      maintenance_cleaning, price_check, queue_bust, clienteling.'
+  - name: associate_id
+    logicalType: string
+    businessName: Associate
+    customProperties:
+    - property: synonyms
+      value:
+      - associate
+      - worker
+      - team_member
+      - employee
+    description: Durable associate business key (not the version-specific surrogate). NULL for actions
+      generated but never routed. Break down here for per-associate effectiveness.
+  - name: store_zone_id
+    logicalType: string
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - area
+      - department
+      - location_zone
+    description: Durable target-zone id. Break down here for the staffing signal — rejections concentrated
+      in one zone. NULL when the action had no target zone.
+  - name: actions_generated
+    logicalType: integer
+    businessName: Actions Generated
+    customProperties:
+    - property: synonyms
+      value:
+      - tasks
+      - prompts
+      - actions
+      - suggestions
+    description: Count of Next Best Actions dispatched. Additive over time, store and action type.
+  - name: actions_accepted
+    logicalType: integer
+    businessName: Actions Accepted
+    customProperties:
+    - property: synonyms
+      value:
+      - accepted
+      - taken
+    description: Actions the associate accepted.
+  - name: actions_completed
+    logicalType: integer
+    businessName: Actions Completed
+    customProperties:
+    - property: synonyms
+      value:
+      - completed
+      - done
+      - fulfilled
+    description: Actions that reached completed status.
+  - name: acceptance_rate
+    logicalType: number
+    businessName: Acceptance Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - accept_rate
+      - take_rate
+    description: Share of generated actions the associate accepted. Ratio-of-sums.
+  - name: completion_rate
+    logicalType: number
+    businessName: Completion Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - complete_rate
+      - fulfilment_rate
+    description: Share of generated actions completed. Ratio-of-sums.
+  - name: avg_response_seconds
+    logicalType: number
+    businessName: Average Response (Seconds)
+    customProperties:
+    - property: synonyms
+      value:
+      - response_time
+      - time_to_respond
+      - latency
+    description: Mean time from action dispatch to first associate response, computed from the stored
+      total and count so it re-aggregates correctly at any grain.
+  - name: realized_outcome_value
+    logicalType: number
+    businessName: Realized Outcome Value
+    customProperties:
+    - property: synonyms
+      value:
+      - outcome_value
+      - attributed_revenue
+      - roi_value
+    description: Sum of monetary outcomes attributed to actions (e.g. closed-sale value). Single reporting
+      currency (see outcome_currency_code on the gold view).
+  - name: sales_closed
+    logicalType: integer
+    businessName: Sales Closed
+    customProperties:
+    - property: synonyms
+      value:
+      - closed_sales
+      - conversions
+    description: Count of actions resolved as a closed sale.
+- name: mv_associate_inventory_availability
+  physicalName: ai_assisted_store_associates.mv_associate_inventory_availability
+  physicalType: view
+  description: Associate-facing product availability KPIs by store and stock status.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - store
+    description: Durable store business key for the associate store scope.
+  - name: store_name
+    logicalType: string
+    businessName: Store Name
+    customProperties:
+    - property: synonyms
+      value:
+      - location_name
+    description: Current store name from the conformed store master.
+  - name: product_id
+    logicalType: string
+    businessName: Product ID
+    customProperties:
+    - property: synonyms
+      value:
+      - SKU
+      - item_id
+    description: Durable product business key (SKU/item).
+  - name: product_name
+    logicalType: string
+    businessName: Product Name
+    customProperties:
+    - property: synonyms
+      value:
+      - item_name
+      - sku_name
+    description: Current product name from the conformed product master.
+  - name: stock_status
+    logicalType: string
+    businessName: Stock Status
+    customProperties:
+    - property: synonyms
+      value:
+      - availability_status
+      - inventory_status
+    description: IN_STOCK, LOW_STOCK, OUT_OF_STOCK, or UNKNOWN.
+  - name: freshness_status
+    logicalType: string
+    businessName: Freshness Status
+    customProperties:
+    - property: synonyms
+      value:
+      - data_freshness
+    description: Lag band for event overlays; calendar age of date_key for daily snapshots.
+  - name: quantity_on_hand
+    logicalType: number
+    businessName: On Hand
+    customProperties:
+    - property: synonyms
+      value:
+      - on_hand_units
+    description: On-hand units before reservations.
+  - name: quantity_available_to_sell
+    logicalType: number
+    businessName: Available to Sell
+    customProperties:
+    - property: synonyms
+      value:
+      - ATS
+      - available_units
+    description: Available-to-sell units after reservations.
+  - name: out_of_stock_skus
+    logicalType: integer
+    businessName: Out of Stock SKUs
+    customProperties:
+    - property: synonyms
+      value:
+      - oos_count
+    description: Product-store rows currently at OUT_OF_STOCK.
+  - name: low_stock_skus
+    logicalType: integer
+    businessName: Low Stock SKUs
+    customProperties:
+    - property: synonyms
+      value:
+      - low_stock_count
+    description: Product-store rows currently at LOW_STOCK.
+- name: mv_associate_lookup_audit_metrics
+  physicalName: ai_assisted_store_associates.mv_associate_lookup_audit_metrics
+  physicalType: view
+  description: Associate lookup authorization and reliability metrics from the audit trail.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: capability
+    logicalType: string
+    businessName: Capability
+    customProperties:
+    - property: synonyms
+      value:
+      - lookup_type
+      - intent
+    description: Which lookup the associate invoked (inventory, price/promotion, order status, operational
+      context).
+  - name: access_decision
+    logicalType: string
+    businessName: Access Decision
+    customProperties:
+    - property: synonyms
+      value:
+      - auth_decision
+      - allow_deny
+    description: Whether the policy layer allowed or denied the lookup.
+  - name: access_reason_code
+    logicalType: string
+    businessName: Reason Code
+    customProperties:
+    - property: synonyms
+      value:
+      - deny_reason
+      - policy_reason
+    description: Policy reason accompanying the decision — why a lookup was denied or narrowed.
+  - name: response_status
+    logicalType: string
+    businessName: Response Status
+    customProperties:
+    - property: synonyms
+      value:
+      - lookup_status
+    description: Outcome of the served lookup (e.g. OK, PARTIAL_RESULT), independent of the access decision.
+  - name: associate_role
+    logicalType: string
+    businessName: Associate Role
+    customProperties:
+    - property: synonyms
+      value:
+      - role
+    description: Role of the requesting associate, for role-scoped access review.
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+    description: Durable store business key the lookup was scoped to.
+  - name: channel
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - request_channel
+    description: Client channel the request arrived on (handheld, kiosk, desktop).
+  - name: lookup_count
+    logicalType: integer
+    businessName: Lookup Count
+    customProperties:
+    - property: synonyms
+      value:
+      - request_count
+    description: Total audited lookups in the selection.
+  - name: denied_count
+    logicalType: integer
+    businessName: Denied Lookups
+    customProperties:
+    - property: synonyms
+      value:
+      - access_denied_count
+    description: Lookups the policy layer denied — the access-review numerator.
+  - name: avg_latency_ms
+    logicalType: number
+    businessName: Avg Latency (ms)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_latency
+    description: Mean end-to-end lookup latency in milliseconds, against the real-time serving target.
+  - name: partial_result_count
+    logicalType: integer
+    businessName: Partial Results
+    customProperties:
+    - property: synonyms
+      value:
+      - partial_count
+    description: Lookups served with a partial result, typically store-scope narrowing.
+- name: mv_associate_lookup_freshness
+  physicalName: ai_assisted_store_associates.mv_associate_lookup_freshness
+  physicalType: view
+  description: Associate Real-Time Data Access feed freshness. Tracks lag and SLA state by feed and store.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/ai-assisted-store-associates/README.md
+    type: businessDefinition
+  - url: outcome-packages/ai-assisted-store-associates/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: feed_name
+    logicalType: string
+    businessName: Feed Name
+    customProperties:
+    - property: synonyms
+      value:
+      - data_source
+      - pipeline
+      - domain_feed
+    description: Associate context feed being monitored.
+  - name: store_id
+    logicalType: string
+    businessName: Store ID
+    customProperties:
+    - property: synonyms
+      value:
+      - location_id
+      - store
+    description: Store scope for the freshness observation.
+  - name: freshness_status
+    logicalType: string
+    businessName: Freshness Status
+    customProperties:
+    - property: synonyms
+      value:
+      - feed_status
+      - staleness_status
+    description: fresh (<60 min), delayed (60-1440 min), stale (>1440 min).
+  - name: sla_state
+    logicalType: string
+    businessName: SLA State
+    customProperties:
+    - property: synonyms
+      value:
+      - sla_status
+      - threshold_state
+    description: within_sla or breach relative to the 60-minute associate lookup objective.
+  - name: freshness_lag_minutes
+    logicalType: number
+    businessName: Freshness Lag (Minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - lag_minutes
+      - age_minutes
+    description: Minutes since last successful ingest for the feed.
+  - name: event_count
+    logicalType: integer
+    businessName: Event Count
+    customProperties:
+    - property: synonyms
+      value:
+      - row_count
+      - volume
+    description: Rows contributing to the freshness observation.
+  - name: stale_feed_count
+    logicalType: integer
+    businessName: Stale Feeds
+    customProperties:
+    - property: synonyms
+      value:
+      - stale_count
+    description: Feeds with lag over 24 hours.
+  - name: sla_breach_count
+    logicalType: integer
+    businessName: SLA Breaches
+    customProperties:
+    - property: synonyms
+      value:
+      - breach_count
+      - sla_violations
+    description: Feeds exceeding the 60-minute associate freshness objective.
