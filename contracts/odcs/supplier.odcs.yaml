@@ -69,6 +69,11 @@ schema:
     physicalType: STRING
     required: false
     description: 'Type of supplier. Allowed values: manufacturer, distributor, wholesaler, importer, broker.'
+    quality:
+    - type: text
+      dimension: validity
+      severity: error
+      description: 'Allowed values: manufacturer, distributor, wholesaler, importer, broker.'
   - name: country_code
     logicalType: string
     physicalType: STRING

@@ -4,8 +4,8 @@
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). The retail-media
 FACTS + metrics built on this package's co-located retail-media dimensions (advertiser, campaign, ad_group,
-creative, placement, experiment, experiment_cell, delivery_channel, keyword, audience — gold; ADR 0021) + silver marketing
-(promotion) and core product/store/profile and the sales facts.
+creative, placement, experiment, experiment_cell, delivery_channel, keyword — gold; ADR 0021) + silver marketing
+dimensions (promotion, audience per ADR 0022) and core product/store/profile and the sales facts.
 
 ## Tables & views
 
@@ -20,7 +20,6 @@ creative, placement, experiment, experiment_cell, delivery_channel, keyword, aud
 | `experiment_cell` | one current version per cell (SCD2) | no | Treatment/control/holdout cell of an experiment; traffic allocation. |
 | `delivery_channel` | one row per delivery-channel code (Type 1) | no | Coarse distribution channel / environment (`onsite_web`/`offsite`/`in_store_screen`/`dooh`…); IAB Site/App/DOOH axis. |
 | `keyword` | one current version per keyword (SCD2) | no | Search bid keyword an ad group targets (`match_type`, status, bid); enables keyword/query-level reporting. |
-| `audience` | one current version per audience (SCD2) | no | Retail-media targeting segment: type, origin, size estimate, addressability. Single-outcome gold (ADR 0021). |
 | `media_event` | one typed ad event | yes (restricted) | Impression/view/click/play spine (event_type discriminates); MRC/IAB viewability + IVT; nullable experiment link; parent link for click→impression. |
 | `conversion_event` | one commerce event | yes (restricted) | Paid-attribution measurement projection of the conversion-relevant subset (purchase/atc/pdp/visit/signup) — the clean-room-keyed CVR denominator + `attributed_outcome` FK target. Raw touch occurrence lives in canonical-core `interaction.touchpoint` (ADR 0029); a lineage/dedup reconciliation is a deferred follow-on. |
 | `attributed_outcome` | order-line × method × window × touchpoint | yes (restricted) | Conformed attribution: same-SKU/halo/new-to-brand, click-or-view basis, declared windows; gross + net. |

@@ -4373,7 +4373,8 @@ schema:
     logicalType: integer
     physicalType: BIGINT
     required: false
-    description: FK to marketing.audience.audience_sk (targeted segment), if audience-targeted.
+    description: FK to marketing.audience.audience_sk (targeted segment from shared marketing dimension),
+      if audience-targeted.
     relationships:
     - to: audience.audience_sk
       type: foreignKey

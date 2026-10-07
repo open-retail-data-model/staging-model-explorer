@@ -58,9 +58,13 @@ sum without checking `aggregation_level`**.
 | `gold_zone_traffic_current` | One store × zone × trading date | Zone-level traffic with density and engagement. |
 | `gold_store_traffic_daily_shared` | One store × trading date | Disclosure-controlled shared store traffic. |
 | `gold_zone_traffic_shared` | One store × zone × trading date | Disclosure-controlled shared zone traffic. |
+| `gold_zone_traffic_interval_shared` | One disclosure-approved canonical area interval | Disclosure-controlled zone traffic at interval grain. Unlike the daily shared views, suppressed, invalid and sub-policy-duration intervals are omitted entirely rather than emitted with NULL measures, because the interval start and duration would otherwise disclose the protected cell. |
 | `gold_traffic_sales_productivity_current` | One store × trading date | Sales and units per entry and per footfall. It exposes no conversion surface. |
 | `gold_css_device_health` | One device version × report type × aggregation level × trading date | Whole-estate fleet health: uptime, coverage, freshness, session integrity, calibration, governance gaps. Report type and level are in the grain because one device can report more than one thing at more than one level. |
 | `gold_css_automation_response` | One realised firing (`execution_log` grain) | The sense → evaluate → act → log loop as one row: the firing decorated with the action, rule, actuator and the observation that breached the threshold. Every parent is resolved AS OF the firing, so the threshold and payload shown are the versions that actually ran. |
+| `gold_css_environmental_compliance_daily` | One store × device × measured subject × equipment × report type × current rule × trading date (one canonical series per device and property: device level, else subject level, finest cadence) | Daily compliance of a monitored asset against the current control rule: reading counts, min/max/avg, breach intervals, minutes outside range, share in range, and an `is_compliant` flag (NULL when no rule applies). |
+| `gold_css_excursion_episodes` | One excursion episode (maximal contiguous breach run per device × measured subject × rule) | Excursions as coherent events: start, end, duration, worst reading and how far past the limit it went, firings triggered by the episode intervals (a late firing still counts), and time to the first successful action. |
+| `gold_css_rule_effectiveness_daily` | One store × rule × trading date | Control-loop performance per rule: firings, successful firings, physical-command firings, latency, and ratio-of-sums success components. |
 | `mv_store_foot_traffic` | store × date | Store totals. Separate from the zone view because a metric view cannot require a filter, so one combined view let `SELECT footfall` return the store total plus every zone total. |
 | `mv_zone_foot_traffic` | store × zone × date | Zone detail, for comparing and ranking zones and for density. Zone footfall does NOT sum to a store total. |
 | `mv_traffic_sales_productivity` | store × date | Metric view over traffic-sales productivity. |
@@ -72,6 +76,10 @@ sum without checking `aggregation_level`**.
 | `mv_on_shelf_availability` | store × category × date | Metric view over additive OSA counters and denominator-honesty measures. |
 | `mv_planogram_compliance` | store × product × date | Metric view over recomposable compliance measures and share-of-shelf context. |
 | `mv_price_accuracy` | store × currency × date | Metric view over label accuracy, over/undercharge, correction, and sync-latency measures. |
+| `mv_environmental_compliance` | store × device × measured subject × report type × current rule × date | Metric view over daily environmental compliance: device-rule-days in and out of range, breach counts, compliance share. |
+| `mv_excursion_episodes` | device × measured subject × rule × episode start date | Metric view over excursion episodes: frequency, duration, successful-action share (a firing credited to the episode succeeded; not proof it ended the excursion), and response latency. |
+| `mv_phantom_stock_candidates` | store × product × reconciliation date × reason | Metric view over RFID phantom-stock investigation candidates. Candidates are investigation signals, never autonomous inventory adjustments. |
+| `mv_oos_episodes` | store × zone × product × episode | Metric view over observed shelf out-of-stock episodes: duration, detection method, and investigation flags, sliceable by episode_start_date (store-local trading date) and candidate_severity. |
 
 ## Telemetry integrity terms
 
@@ -114,6 +122,9 @@ sum without checking `aggregation_level`**.
 | **Acknowledgement** | Platform evidence that a label update or displayed state was accepted/reported. It measures delivery evidence, not independent proof that pixels on the shelf match; shelf CV and manual audit remain separate sources. |
 | **Displayed disclosure** | Indicator and optional text observed on the label alongside price. It records display evidence and does not by itself declare legal compliance. |
 | **Latest-capture-wins** | Current-state rule that selects the newest capture before evaluating usability. A newer unknown, invalid, or occluded reading remains current and never revives an older good reading. |
+| **Confidence score** | Platform-specific reliability score for a shelf capture. Used to rank captures when several are available; it is not comparable across platforms. |
+| **Is stale** | The observation age exceeds the method-specific freshness window (for example 120 minutes for fixed devices, 1440 for mobile). Stale readings should not drive operational action without verification. |
+| **Fully compliant position** | A position that is evaluable and compliant on all four dimensions: presence, position, facings and price tag. The strictest compliance gate. |
 
 ## Counting terms
 
@@ -203,6 +214,17 @@ reuses the existing device registry rather than redefining one.
 | **Action target** (`target_entity_type`, `target_entity_id`) | A **polymorphic** reference — the target can be an `actuator`, `role`, `person` or `external_system`. The `actuator` case additionally carries a typed `actuator_capability_sk` FK; the others carry only the id pair (standards §A.5 adjudicated exception). |
 | **Payload template vs response** (`payload_template`, `response_payload`) | The template is the command/message to send (on `automation_action`); the response is what the target actually returned (on `execution_log`). |
 | **Execution log** (`execution_log`) | **Append-only** audit ledger: one row per realised firing, with `execution_status` (`success`/`failure`/`pending`/`timeout`/`skipped`), rendered `response_payload`, and `latency_ms`. Parent FKs are nullable so a log row survives the retirement of the action or actuator it references. |
+
+## Environmental monitoring terms
+
+| Term | Definition |
+|---|---|
+| **Excursion episode** | A maximal contiguous run of breaching intervals for one device × measured subject × rule. A breaching interval joins the episode only when it starts exactly where the previous one ended, so one in-range or missing interval ends the episode. Breaches are evaluated from the readings against the rule, so an excursion appears even if automation never fired. |
+| **Compliance share** (`share_intervals_in_range`) | `(evaluated_interval_count - breach_interval_count) / evaluated_interval_count` for one device-day and rule. Roll up as a ratio of sums, never an average of daily shares. 1.0 means the asset never left the configured range. NULL when there are no valid readings. |
+| **Compliant day** (`is_compliant`) | TRUE when no valid reading breached the current rule on the day, FALSE otherwise, NULL when no rule applies or no valid reading was evaluated (for example a unit mismatch). Compliance is measured against the adopter-configured rule, not against any specific regulation; regulatory cold-chain evidence (for example vaccine-storage logging) remains the adopter's responsibility. |
+| **Time to first successful action** (`minutes_to_first_successful_action`) | Minutes from episode start to the first automation firing with `execution_status = 'success'`. NULL when no firing credited to the episode succeeded. Firings are credited by their triggering interval, so a firing that lands after the last breaching interval still counts. |
+| **Has successful action** (`has_successful_action`) | TRUE when a firing triggered by one of the episode intervals succeeded. It shows the loop responded, not that the response ended the excursion. |
+| **Physical command vs notification** | Firings are classified by the action target: an `actuator` target is a physical command (for example a compressor relay); a `role` or `person` target is a notification. One rule can own both, so the counts need not sum to firings. |
 
 ## Privacy and governance terms
 

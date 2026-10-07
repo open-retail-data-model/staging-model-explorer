@@ -433,7 +433,7 @@ schema:
   physicalType: table
   description: 'Connected Store Signals ESL endpoint registry (SCD2): display capability and gateway homing
     for electronic shelf labels. Displayed state lives in esl_price_observation; no actuation surface
-    (draft ADR-C).'
+    (ADR 0041).'
   tags:
   - master
   authoritativeDefinitions:
@@ -1017,8 +1017,8 @@ schema:
   physicalName: connected_store_signals.esl_price_observation
   physicalType: table
   description: 'Connected Store Signals append-only price-display audit fact: what each ESL displayed,
-    when, by which evidence path, against the captured price of record. Observation-only ESL layer (draft
-    ADR-C, extending ADR 0030).'
+    when, by which evidence path, against the captured price of record. Observation-only ESL layer (ADR
+    0041, extending ADR 0030).'
   tags:
   - transactional
   authoritativeDefinitions:
@@ -1785,6 +1785,28 @@ schema:
     query: SELECT r.* FROM connected_store_signals.evaluation_rule r LEFT JOIN connected_store_signals.sensor_device
       d ON r.sensor_device_sk = d.sensor_device_sk WHERE r.sensor_device_sk IS NOT NULL AND d.sensor_device_sk
       IS NULL
+  - name: ecd_rule_reading_uom_mismatch
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: ecd_rule_reading_uom_mismatch
+    query: "SELECT r.evaluation_rule_id, r.uom_code AS rule_uom, s.uom AS reading_uom\nFROM connected_store_signals.evaluation_rule\
+      \ r\nJOIN (SELECT DISTINCT sensor_device_id, report_type, uom\n      FROM connected_store_signals.sensor_report_interval)\
+      \ s\n  ON s.sensor_device_id = r.sensor_device_id AND s.report_type = r.report_type\nWHERE r.is_current\
+      \ = TRUE AND COALESCE(r.is_enabled, TRUE) = TRUE\n  AND r.uom_code IS NOT NULL AND s.uom IS NOT\
+      \ NULL AND r.uom_code <> s.uom"
+  - name: iot_cross_device_rules_unevaluated
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: iot_cross_device_rules_unevaluated
+    query: 'SELECT COUNT(*) AS cross_device_rules_unevaluated
+
+      FROM connected_store_signals.evaluation_rule
+
+      WHERE is_current = TRUE AND COALESCE(is_enabled, TRUE) = TRUE AND sensor_device_id IS NULL'
 - name: execution_log
   physicalName: connected_store_signals.execution_log
   physicalType: table
@@ -4952,12 +4974,46 @@ schema:
       \ = p.sensing_disclosure_policy_id\n AND f.trading_date >= p.effective_from_date\n AND (p.effective_to_date\
       \ IS NULL OR f.trading_date < p.effective_to_date)\nWHERE f.report_type = 'gs1:Count'\n  AND p.sensing_disclosure_policy_sk\
       \ IS NULL"
+  - name: iot_series_excluded_valid_intervals
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: iot_series_excluded_valid_intervals
+    query: "SELECT COUNT(*) AS series_excluded_valid_intervals\nFROM (SELECT measurement_validity, value,\
+      \ report_type,\n             CASE aggregation_level WHEN 'device' THEN 0 WHEN 'subject' THEN 1 ELSE\
+      \ 2 END * 100000 + interval_minutes AS series_key,\n             MIN(CASE aggregation_level WHEN\
+      \ 'device' THEN 0 WHEN 'subject' THEN 1 ELSE 2 END * 100000 + interval_minutes) OVER (PARTITION\
+      \ BY sensor_device_id, report_type) AS chosen_series_key\n      FROM connected_store_signals.sensor_report_interval)\
+      \ s\nWHERE s.series_key <> s.chosen_series_key\n  AND s.measurement_validity = 'valid' AND s.value\
+      \ IS NOT NULL\n  AND s.report_type IN (SELECT DISTINCT report_type FROM connected_store_signals.evaluation_rule\n\
+      \                        WHERE is_current = TRUE AND COALESCE(is_enabled, TRUE) = TRUE)"
+  - name: iot_series_history_loss_intervals
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: iot_series_history_loss_intervals
+    query: "SELECT COUNT(*) AS series_history_loss_intervals\nFROM (SELECT sensor_device_id, report_type,\
+      \ subject_type, subject_id, measurement_validity, value,\n             CASE aggregation_level WHEN\
+      \ 'device' THEN 0 WHEN 'subject' THEN 1 ELSE 2 END * 100000 + interval_minutes AS series_key,\n\
+      \             MIN(CASE aggregation_level WHEN 'device' THEN 0 WHEN 'subject' THEN 1 ELSE 2 END *\
+      \ 100000 + interval_minutes) OVER (PARTITION BY sensor_device_id, report_type) AS chosen_series_key\n\
+      \      FROM connected_store_signals.sensor_report_interval) s\nJOIN (SELECT DISTINCT sensor_device_id,\
+      \ report_type, subject_type, subject_id\n      FROM (SELECT sensor_device_id, report_type, subject_type,\
+      \ subject_id, measurement_validity, value,\n             CASE aggregation_level WHEN 'device' THEN\
+      \ 0 WHEN 'subject' THEN 1 ELSE 2 END * 100000 + interval_minutes AS series_key,\n             MIN(CASE\
+      \ aggregation_level WHEN 'device' THEN 0 WHEN 'subject' THEN 1 ELSE 2 END * 100000 + interval_minutes)\
+      \ OVER (PARTITION BY sensor_device_id, report_type) AS chosen_series_key\n      FROM connected_store_signals.sensor_report_interval)\
+      \ c\n      WHERE c.series_key = c.chosen_series_key) cs\n  ON cs.sensor_device_id = s.sensor_device_id\
+      \ AND cs.report_type = s.report_type\n  AND cs.subject_type = s.subject_type AND cs.subject_id =\
+      \ s.subject_id\nWHERE s.series_key <> s.chosen_series_key\n  AND s.measurement_validity = 'valid'\
+      \ AND s.value IS NOT NULL\n  AND s.report_type IN (SELECT DISTINCT report_type FROM connected_store_signals.evaluation_rule\n\
+      \                        WHERE is_current = TRUE AND COALESCE(is_enabled, TRUE) = TRUE)"
 - name: shelf_position_assignment
   physicalName: connected_store_signals.shelf_position_assignment
   physicalType: table
   description: 'Connected Store Signals slot-level expected shelf state (SCD2): product, expected and
     minimum facings per shelf-position zone. Execution contract for Smart Shelf compliance; distinct from
-    BMV planogram allocation intent (ADR-B).'
+    BMV planogram allocation intent (ADR 0040).'
   tags:
   - association
   authoritativeDefinitions:
@@ -5076,7 +5132,7 @@ schema:
     required: false
     description: 'Logical reference to the BMV planogram business key this assignment was derived from,
       when assignment_source = planogram. Not a FK: BMV planogram is allocation intent at a different
-      grain (ADR-B); reconciliation is read-only gold-to-gold (ADR 0024).'
+      grain (ADR 0040); reconciliation is read-only gold-to-gold (ADR 0024).'
   - name: assignment_status
     logicalType: string
     physicalType: STRING
@@ -5263,8 +5319,8 @@ schema:
   physicalName: connected_store_signals.shelf_state_observation
   physicalType: table
   description: Connected Store Signals restatable positional shelf-state fact at shelf-position zone ×
-    product × capture instant × device grain. Outside the sensor_report_interval envelope by design (draft
-    ADR-A / ADR 0036).
+    product × capture instant × device grain. Outside the sensor_report_interval envelope by design (ADR
+    0039 / ADR 0036).
   tags:
   - transactional
   authoritativeDefinitions:
@@ -6348,42 +6404,58 @@ schema:
   - name: rfid_count_session_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Surrogate key for the bounded RFID count session.
   - name: rfid_count_session_id
     logicalType: string
     physicalType: STRING
+    description: 'Durable key: store_id|source_session_id.'
   - name: source_session_id
     logicalType: string
     physicalType: STRING
+    description: 'Source session identifier. For fixed windows without one: count_method|primary_sensor_device_id
+      or _ALL|unix_timestamp(started_at_ts).'
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: primary_sensor_device_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Surrogate key of the initiating or primary sensor device. The complete device set derives
+      from events.
   - name: primary_sensor_device_id
     logicalType: string
     physicalType: STRING
+    description: Durable id of the initiating or primary device.
   - name: count_method
     logicalType: string
     physicalType: STRING
+    description: 'RFID count method. Allowed values: handheld_sweep, fixed_window, robot_sweep.'
   - name: scope_type
     logicalType: string
     physicalType: STRING
+    description: Representable scope claim. full_store has a derivable zone plan; partial makes no plan
+      claim.
   - name: started_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Session start as a UTC instant.
   - name: ended_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Session end as a UTC instant.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the session start.
   - name: duration_minutes
     logicalType: integer
     physicalType: INT
+    description: Session duration in minutes from started_at_ts to ended_at_ts.
   - name: planned_zones
     logicalType: integer
     physicalType: BIGINT
@@ -6392,9 +6464,12 @@ schema:
   - name: zones_covered
     logicalType: integer
     physicalType: BIGINT
+    description: Zones where read events were observed. For full_store scope, intersection of observed
+      zones with planned zones; for partial scope, all observed zones.
   - name: zones_missed
     logicalType: integer
     physicalType: BIGINT
+    description: Planned zones with no observed read events. NULL for partial_scope sessions.
   - name: zone_coverage_rate
     logicalType: number
     physicalType: DOUBLE
@@ -6402,18 +6477,24 @@ schema:
   - name: units_observed
     logicalType: integer
     physicalType: BIGINT
+    description: Count of distinct serialized items (tagged_item_id) observed during the session, excluding
+      stray reads.
   - name: devices_observed
     logicalType: integer
     physicalType: BIGINT
+    description: Count of distinct sensor devices that reported read events in the session.
   - name: first_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the first non-stray read event in the session.
   - name: last_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the last non-stray read event in the session.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_css_automation_response
   physicalName: connected_store_signals.gold_css_automation_response
   physicalType: view
@@ -6454,6 +6535,7 @@ schema:
   - name: device_status
     logicalType: string
     physicalType: STRING
+    description: 'Status of the observing device at firing time: active, inactive, failed.'
   - name: execution_log_id
     logicalType: string
     physicalType: STRING
@@ -6485,9 +6567,11 @@ schema:
   - name: response_payload
     logicalType: string
     physicalType: STRING
+    description: The actual payload delivered when the action fired (JSON or string representation).
   - name: automation_action_id
     logicalType: string
     physicalType: STRING
+    description: Durable id of the automation action that fired.
   - name: action_type
     logicalType: string
     physicalType: STRING
@@ -6510,6 +6594,7 @@ schema:
   - name: payload_template
     logicalType: string
     physicalType: STRING
+    description: Template used to generate response_payload.
   - name: evaluation_rule_id
     logicalType: string
     physicalType: STRING
@@ -6525,6 +6610,7 @@ schema:
   - name: condition_operator
     logicalType: string
     physicalType: STRING
+    description: The comparison applied by the rule (e.g. greater_than, less_than, inside_range).
   - name: severity
     logicalType: string
     physicalType: STRING
@@ -6537,12 +6623,16 @@ schema:
   - name: threshold_value_upper
     logicalType: number
     physicalType: DOUBLE
+    description: Upper bound for inside_range or outside_range operators, in the rule unit.
   - name: time_window_seconds
     logicalType: integer
     physicalType: INT
+    description: 'Rule time_window_seconds: the sustained-breach window that must hold before the rule
+      fires.'
   - name: rule_uom_code
     logicalType: string
     physicalType: STRING
+    description: UN/CEFACT unit code for the rule threshold (e.g. CEL for Celsius, NUM for count).
   - name: actuator_capability_id
     logicalType: string
     physicalType: STRING
@@ -6556,6 +6646,7 @@ schema:
   - name: actuator_status
     logicalType: string
     physicalType: STRING
+    description: 'Status of the actuator at firing time: active, inactive, failed, or unknown.'
   - name: equipment_id
     logicalType: string
     physicalType: STRING
@@ -6569,6 +6660,7 @@ schema:
   - name: sensor_report_interval_id
     logicalType: string
     physicalType: STRING
+    description: Durable id of the interval that triggered the firing (survives across SCD2 versions).
   - name: breach_value
     logicalType: number
     physicalType: DOUBLE
@@ -6577,9 +6669,11 @@ schema:
   - name: breach_uom
     logicalType: string
     physicalType: STRING
+    description: UN/CEFACT unit code for the breach_value (e.g. CEL for Celsius, NUM for count).
   - name: interval_end_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: End timestamp of the triggering canonical interval.
   - name: breach_margin
     logicalType: number
     physicalType: DOUBLE
@@ -6589,6 +6683,7 @@ schema:
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_css_device_health
   physicalName: connected_store_signals.gold_css_device_health
   physicalType: view
@@ -6606,22 +6701,33 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: device_type
     logicalType: string
     physicalType: STRING
     description: The dimension that lets ONE view serve the whole estate. IoT, RFID and Smart Shelf add
       rows here, not new views.
   - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    description: Business date of the device health observation.
   - name: report_type
     logicalType: string
     physicalType: STRING
+    description: Measurement type (e.g. gs1:Count for traffic sensors, gs1:Temperature for environmental
+      monitoring).
   - name: aggregation_level
     logicalType: string
     physicalType: STRING
+    description: Reporting granularity level.
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
+    description: Durable device business key.
   - name: sensor_device_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Device surrogate key.
   - name: sensing_technology
     logicalType: string
     physicalType: STRING
@@ -6629,15 +6735,19 @@ schema:
   - name: device_status
     logicalType: string
     physicalType: STRING
+    description: 'Current status of the device: active, inactive, retired, or maintenance.'
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable zone where the device is installed.
   - name: manufacturer
     logicalType: string
     physicalType: STRING
+    description: Device manufacturer name.
   - name: model
     logicalType: string
     physicalType: STRING
+    description: Device model identifier.
   - name: firmware_version
     logicalType: string
     physicalType: STRING
@@ -6646,11 +6756,19 @@ schema:
   - name: battery_powered
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the device is battery-powered; FALSE if mains-powered or wired.
   - name: intervals_reported
+    logicalType: integer
+    physicalType: BIGINT
+    description: Count of canonical intervals this device reported data in.
   - name: observations_expected
     logicalType: integer
     physicalType: BIGINT
+    description: Expected observation count based on device expected reporting frequency for the day.
   - name: observations_received
+    logicalType: integer
+    physicalType: BIGINT
+    description: Actual count of observations delivered.
   - name: missing_observation_rate
     logicalType: number
     physicalType: DOUBLE
@@ -6660,19 +6778,28 @@ schema:
   - name: avg_uptime_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Mean share of canonical interval duration the device was online.
   - name: avg_coverage_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Mean share of expected sensors in the deployment group that reported alongside this device.
   - name: valid_intervals
+    logicalType: integer
+    physicalType: BIGINT
     description: Count of intervals whose measurement was valid. Retained with invalid_intervals so valid-interval
       share can be re-aggregated from summed components.
   - name: valid_interval_share
+    logicalType: number
+    physicalType: DOUBLE
+    description: Share of reported intervals marked as measurement_validity = valid.
   - name: invalid_intervals
     logicalType: integer
     physicalType: BIGINT
+    description: Count of intervals marked measurement_validity = invalid.
   - name: imputed_intervals
     logicalType: integer
     physicalType: BIGINT
+    description: Count of intervals marked is_imputed = TRUE (modelled rather than measured).
   - name: observed_zero_intervals
     logicalType: integer
     physicalType: BIGINT
@@ -6684,9 +6811,13 @@ schema:
     physicalType: BIGINT
     description: Intervals that hit the hardware detection ceiling. A capped peak is NOT an exact peak.
   - name: late_arrived_intervals
+    logicalType: integer
+    physicalType: BIGINT
     description: Intervals that landed after their window closed. These feeds are NOT append-only; vendors
       document data arriving hours or days late.
   - name: historical_message_count
+    logicalType: integer
+    physicalType: BIGINT
     description: Delivered source messages marked as buffered or historical.
   - name: bad_quality_message_count
     logicalType: integer
@@ -6695,10 +6826,23 @@ schema:
   - name: max_restatement_version
     logicalType: integer
     physicalType: INT
+    description: Highest restatement_version encountered in the device data for the day.
   - name: last_interval_end_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: End timestamp of the most recent interval.
   - name: last_ingest_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Ingest timestamp of the most recent data arrival.
   - name: avg_latency_seconds
+    logicalType: number
+    physicalType: DOUBLE
+    description: Mean latency from event timestamp to ingest timestamp.
   - name: max_latency_seconds
+    logicalType: integer
+    physicalType: BIGINT
+    description: Maximum latency for any event.
   - name: feed_age_minutes
     logicalType: integer
     physicalType: INT
@@ -6716,6 +6860,9 @@ schema:
     physicalType: BOOLEAN
     description: TRUE when more than one source session appears in the device-day.
   - name: source_message_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Total count of source messages delivered for the device on the trading_date.
   - name: sequence_gap_count
     logicalType: integer
     physicalType: BIGINT
@@ -6727,9 +6874,11 @@ schema:
   - name: calibration_valid_to
     logicalType: date
     physicalType: DATE
+    description: Calibration expiration date for the device.
   - name: calibration_certificate_id
     logicalType: string
     physicalType: STRING
+    description: Identifier of the calibration certificate.
   - name: accuracy_tolerance
     logicalType: number
     physicalType: DOUBLE
@@ -6756,12 +6905,15 @@ schema:
   - name: sensing_deployment_id
     logicalType: string
     physicalType: STRING
+    description: Durable id of the deployment this device belongs to.
   - name: sensing_method_code
     logicalType: string
     physicalType: STRING
+    description: Method code for the sensing technology (e.g. RFID, infrared, thermal).
   - name: deployment_status
     logicalType: string
     physicalType: STRING
+    description: 'Status of the deployment: active, pilot, retired.'
   - name: dpia_completed_flag
     logicalType: boolean
     physicalType: BOOLEAN
@@ -6775,6 +6927,7 @@ schema:
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
   quality:
   - name: css_device_health_grain
     type: sql
@@ -6790,6 +6943,641 @@ schema:
       GROUP BY sensor_device_sk, trading_date, report_type, aggregation_level
 
       HAVING COUNT(*) > 1'
+- name: gold_css_environmental_compliance_daily
+  physicalName: connected_store_signals.gold_css_environmental_compliance_daily
+  physicalType: view
+  description: 'GRAIN: one row per store × sensor_device × measured subject (subject_type, subject_id)
+    × equipment × report_type × current evaluation_rule × trading_date. A device-property pair with no
+    current rule yields one row with evaluation_rule_id NULL and is_compliant NULL; a pair watched by
+    two rules (for example a high and a low limit) yields one row per rule.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key.
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable device business key of the environmental/temperature sensor.
+  - name: subject_type
+    logicalType: string
+    physicalType: STRING
+    description: Kind of measured subject within the device (for example point for a refrigerated case).
+      Part of the grain.
+  - name: subject_id
+    logicalType: string
+    physicalType: STRING
+    description: Measured subject within the device, interpreted per subject_type (for example one case
+      on a multi-channel logger). Part of the grain.
+  - name: equipment_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable equipment business key (refrigeration unit) that the sensor monitors. NULL for
+      ambient sensors.
+  - name: report_type
+    logicalType: string
+    physicalType: STRING
+    description: The environmental property measured (e.g. gs1:Temperature). Matches the report_type evaluation_rule
+      watches.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    description: Business date of the compliance observation.
+  - name: reading_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: All intervals the device reported for the property on the day, any measurement_validity.
+  - name: valid_reading_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Intervals with measurement_validity = valid and a non-NULL value. Denominator for the
+      value statistics.
+  - name: min_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: Lowest valid reading of the day, in the measurement unit. Invalid, degraded and imputed
+      intervals are excluded.
+  - name: max_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: Highest valid reading of the day, in the measurement unit. For a cold-chain upper limit
+      this is the peak temperature.
+  - name: avg_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Mean valid reading of the day: value_sum / valid_reading_count_for_avg.'
+  - name: value_sum
+    logicalType: number
+    physicalType: DOUBLE
+    description: Sum of valid readings. Carried with valid_reading_count_for_avg so the mean re-aggregates
+      correctly at any grain.
+  - name: valid_reading_count_for_avg
+    logicalType: integer
+    physicalType: BIGINT
+    description: Denominator of avg_value; equals valid_reading_count. Carried for transparent re-aggregation.
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the current enabled rule this row is evaluated against. NULL when no current
+      rule watches the device and property. Part of the grain.
+  - name: condition_operator
+    logicalType: string
+    physicalType: STRING
+    description: The comparison applied by the rule (e.g. greater_than, inside_range). NULL if no rule.
+  - name: threshold_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: Lower bound or single threshold from the rule, in the measurement unit. NULL if no rule.
+  - name: threshold_value_upper
+    logicalType: number
+    physicalType: DOUBLE
+    description: Upper bound for inside_range or outside_range operators. NULL otherwise.
+  - name: uom_code
+    logicalType: string
+    physicalType: STRING
+    description: UN/CEFACT unit code (e.g. CEL for Celsius). From the rule when present.
+  - name: time_window_seconds
+    logicalType: integer
+    physicalType: INT
+    description: 'Sustained-breach window from the rule, carried for context. Not applied here: a single
+      breaching interval counts.'
+  - name: evaluated_interval_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Valid intervals evaluated against a rule. Denominator of share_intervals_in_range; carried
+      so the compliance rate re-aggregates as a ratio of sums.
+  - name: breach_interval_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Valid intervals whose value satisfies the rule firing condition. Evaluated from the readings,
+      independent of whether automation fired.
+  - name: minutes_outside_range
+    logicalType: integer
+    physicalType: BIGINT
+    description: 'Sum of interval_minutes over breaching intervals: total minutes the asset was beyond
+      the rule limit on the day.'
+  - name: share_intervals_in_range
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Share of evaluated valid intervals that did not breach: (evaluated - breaches) / evaluated.
+      NULL when no rule applies or no valid readings exist.'
+  - name: is_compliant
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when no valid reading breached the rule on the day, FALSE when at least one did,
+      NULL when no rule applies or there were no valid readings. Measured against the configured rule,
+      not a regulation.
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: When the view was evaluated.
+  quality:
+  - name: ecd_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_grain_unique
+    query: 'SELECT store_id, sensor_device_id, subject_type, subject_id, equipment_id, report_type, evaluation_rule_id,
+      trading_date, COUNT(*) AS n
+
+      FROM connected_store_signals.gold_css_environmental_compliance_daily
+
+      GROUP BY store_id, sensor_device_id, subject_type, subject_id, equipment_id, report_type, evaluation_rule_id,
+      trading_date
+
+      HAVING COUNT(*) > 1'
+  - name: ecd_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_keys_not_null
+    query: 'SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily
+
+      WHERE store_id IS NULL OR sensor_device_id IS NULL OR report_type IS NULL OR trading_date IS NULL'
+  - name: ecd_count_hierarchy
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_count_hierarchy
+    query: "SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily\nWHERE breach_interval_count\
+      \ < 0\n   OR breach_interval_count > evaluated_interval_count\n   OR evaluated_interval_count >\
+      \ valid_reading_count\n   OR valid_reading_count > reading_count"
+  - name: ecd_share_recomputes
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_share_recomputes
+    query: "SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily\nWHERE share_intervals_in_range\
+      \ IS NOT NULL\n  AND ABS(share_intervals_in_range\n          - (evaluated_interval_count - breach_interval_count)\
+      \ / CAST(evaluated_interval_count AS DOUBLE)) > 1e-9"
+  - name: ecd_minutes_outside_bounded
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_minutes_outside_bounded
+    query: "SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily\nWHERE minutes_outside_range\
+      \ < 0\n   OR minutes_outside_range > 1500\n   OR (breach_interval_count = 0 AND minutes_outside_range\
+      \ <> 0)\n   OR (breach_interval_count > 0 AND minutes_outside_range = 0)"
+  - name: ecd_compliance_flag_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_compliance_flag_consistency
+    query: "SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily\nWHERE (is_compliant\
+      \ IS NULL) <> (evaluation_rule_id IS NULL OR evaluated_interval_count = 0)\n   OR (is_compliant\
+      \ = TRUE AND breach_interval_count > 0)\n   OR (is_compliant = FALSE AND breach_interval_count =\
+      \ 0)"
+  - name: ecd_value_stats_ordered
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: ecd_value_stats_ordered
+    query: 'SELECT * FROM connected_store_signals.gold_css_environmental_compliance_daily
+
+      WHERE min_value > max_value OR avg_value < min_value OR avg_value > max_value'
+  - name: ecd_unruled_share
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ecd_unruled_share
+    query: 'SELECT AVG(CASE WHEN evaluation_rule_id IS NULL THEN 1.0 ELSE 0.0 END) AS unruled_share
+
+      FROM connected_store_signals.gold_css_environmental_compliance_daily'
+  - name: ecd_row_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: ecd_row_count
+    query: SELECT COUNT(*) AS ecd_row_count FROM connected_store_signals.gold_css_environmental_compliance_daily
+  - name: iot_breach_episode_reconciliation
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: iot_breach_episode_reconciliation
+    query: "SELECT COALESCE(d.evaluation_rule_id, e.evaluation_rule_id) AS evaluation_rule_id, d.breaches,\
+      \ e.episode_intervals\nFROM (SELECT evaluation_rule_id, SUM(breach_interval_count) AS breaches\n\
+      \      FROM connected_store_signals.gold_css_environmental_compliance_daily\n      WHERE evaluation_rule_id\
+      \ IS NOT NULL GROUP BY evaluation_rule_id) d\nFULL OUTER JOIN (SELECT evaluation_rule_id, SUM(interval_count)\
+      \ AS episode_intervals\n      FROM connected_store_signals.gold_css_excursion_episodes GROUP BY\
+      \ evaluation_rule_id) e\n  ON d.evaluation_rule_id = e.evaluation_rule_id\nWHERE COALESCE(d.breaches,\
+      \ 0) <> COALESCE(e.episode_intervals, 0)"
+  - name: iot_multi_subject_ruled_series
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: iot_multi_subject_ruled_series
+    query: "SELECT COUNT(*) AS multi_subject_ruled_series\nFROM (SELECT sensor_device_id, report_type\n\
+      \      FROM connected_store_signals.gold_css_environmental_compliance_daily\n      WHERE evaluation_rule_id\
+      \ IS NOT NULL\n      GROUP BY sensor_device_id, report_type\n      HAVING COUNT(DISTINCT subject_type\
+      \ || '|' || subject_id) > 1) m"
+- name: gold_css_excursion_episodes
+  physicalName: connected_store_signals.gold_css_excursion_episodes
+  physicalType: view
+  description: 'GRAIN: one row per excursion episode: a maximal run of contiguous breaching intervals
+    for one sensor_device × measured subject (subject_type, subject_id) × current evaluation_rule. A multi-channel
+    device reporting the same property for several subjects (for example two cases on one logger) gets
+    separate episodes per subject.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key of the device that reported the episode.
+  - name: sensor_device_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable device business key of the sensor that detected the excursion.
+  - name: subject_type
+    logicalType: string
+    physicalType: STRING
+    description: Kind of measured subject within the device (for example point for a refrigerated case).
+      Part of the grain.
+  - name: subject_id
+    logicalType: string
+    physicalType: STRING
+    description: Measured subject within the device, interpreted per subject_type (for example one case
+      on a multi-channel logger). Part of the grain.
+  - name: equipment_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable equipment business key being monitored (the asset experiencing the excursion).
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the rule whose breach defined this episode.
+  - name: report_type
+    logicalType: string
+    physicalType: STRING
+    description: The monitored property of the episode, for example gs1:Temperature.
+  - name: condition_operator
+    logicalType: string
+    physicalType: STRING
+    description: Firing condition of the rule that defines the breach, for example greater_than.
+  - name: episode_start_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp of the first breaching interval in the episode.
+  - name: episode_end_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp of the last breaching interval in the episode. Episodes are maximal contiguous
+      runs; a gap >1 interval_minutes ends the episode.
+  - name: trading_date_of_start
+    logicalType: date
+    physicalType: DATE
+    description: Business date of the episode start, for time-zone-aware period grouping.
+  - name: interval_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Contiguous breaching intervals in the episode.
+  - name: duration_minutes
+    logicalType: integer
+    physicalType: BIGINT
+    description: Sum of interval_minutes across the episode intervals.
+  - name: peak_value
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'Worst reading in the episode in the direction of the rule: the maximum for upper limits
+      and ranges, the minimum for lower limits.'
+  - name: peak_exceedance
+    logicalType: number
+    physicalType: DOUBLE
+    description: 'How far the episode went past the rule limit, in the rule unit: peak minus threshold
+      for upper limits, threshold minus trough for lower limits, the larger excess for outside_range.
+      NULL for equality and inside_range rules.'
+  - name: firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Non-skipped execution_log firings of the episode rule whose triggering interval is one
+      of the episode intervals.
+  - name: successful_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings in the episode window with execution_status = success.
+  - name: failed_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings in the episode window with execution_status = failure.
+  - name: first_firing_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Timestamp of the first automation firing triggered by this episode. NULL if no firings
+      occurred.
+  - name: minutes_to_first_successful_action
+    logicalType: integer
+    physicalType: INT
+    description: Minutes from episode start to the first successful firing triggered by an episode interval.
+      NULL when none succeeded.
+  - name: has_successful_action
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when at least one firing triggered by an episode interval succeeded. Evidence that
+      the loop responded, not proof that it ended the excursion.
+  - name: is_open_at_dataset_end
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the episode ends at the latest interval the device reported for this property,
+      meaning the excursion may still be ongoing.
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: When the view was evaluated.
+  quality:
+  - name: exe_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_grain_unique
+    query: 'SELECT sensor_device_id, subject_type, subject_id, evaluation_rule_id, episode_start_ts, COUNT(*)
+      AS n
+
+      FROM connected_store_signals.gold_css_excursion_episodes
+
+      GROUP BY sensor_device_id, subject_type, subject_id, evaluation_rule_id, episode_start_ts
+
+      HAVING COUNT(*) > 1'
+  - name: exe_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_keys_not_null
+    query: 'SELECT * FROM connected_store_signals.gold_css_excursion_episodes
+
+      WHERE sensor_device_id IS NULL OR evaluation_rule_id IS NULL OR episode_start_ts IS NULL OR episode_end_ts
+      IS NULL'
+  - name: exe_no_overlap
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_no_overlap
+    query: "SELECT a.sensor_device_id, a.subject_type, a.subject_id, a.evaluation_rule_id, a.episode_start_ts\n\
+      FROM connected_store_signals.gold_css_excursion_episodes a\nJOIN connected_store_signals.gold_css_excursion_episodes\
+      \ b\n  ON a.sensor_device_id = b.sensor_device_id\n  AND a.subject_type = b.subject_type\n  AND\
+      \ a.subject_id = b.subject_id\n  AND a.evaluation_rule_id = b.evaluation_rule_id\n  AND a.episode_start_ts\
+      \ < b.episode_start_ts\n  AND b.episode_start_ts < a.episode_end_ts"
+  - name: exe_shape
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_shape
+    query: "SELECT * FROM connected_store_signals.gold_css_excursion_episodes\nWHERE episode_end_ts <=\
+      \ episode_start_ts\n   OR interval_count < 1\n   OR duration_minutes <> TIMESTAMPDIFF(MINUTE, episode_start_ts,\
+      \ episode_end_ts)"
+  - name: exe_firings_bounded
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_firings_bounded
+    query: "SELECT * FROM connected_store_signals.gold_css_excursion_episodes\nWHERE firings < 0 OR successful_firings\
+      \ < 0 OR failed_firings < 0\n   OR successful_firings + failed_firings > firings"
+  - name: exe_resolution_consistency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_resolution_consistency
+    query: "SELECT * FROM connected_store_signals.gold_css_excursion_episodes\nWHERE has_successful_action\
+      \ <> (successful_firings > 0)\n   OR (minutes_to_first_successful_action IS NULL) <> (successful_firings\
+      \ = 0)"
+  - name: exe_peak_exceedance_non_negative
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: exe_peak_exceedance_non_negative
+    query: "SELECT * FROM connected_store_signals.gold_css_excursion_episodes\nWHERE peak_exceedance IS\
+      \ NOT NULL\n  AND (peak_exceedance < 0\n       OR (peak_exceedance = 0 AND condition_operator NOT\
+      \ IN ('greater_than_or_equal', 'less_than_or_equal')))"
+  - name: exe_unanswered_share
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: exe_unanswered_share
+    query: 'SELECT AVG(CASE WHEN firings = 0 THEN 1.0 ELSE 0.0 END) AS unanswered_episode_share
+
+      FROM connected_store_signals.gold_css_excursion_episodes'
+  - name: exe_row_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: exe_row_count
+    query: SELECT COUNT(*) AS exe_row_count FROM connected_store_signals.gold_css_excursion_episodes
+- name: gold_css_rule_effectiveness_daily
+  physicalName: connected_store_signals.gold_css_rule_effectiveness_daily
+  physicalType: view
+  description: 'GRAIN: one row per store × evaluation_rule (durable id) × trading_date.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: evaluation_rule_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the control-loop rule. Multiple rows per store if several rules fire.
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key of the interval that triggered the firings.
+  - name: trading_date
+    logicalType: date
+    physicalType: DATE
+    description: Business date of the interval that triggered the firings.
+  - name: firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Non-skipped execution_log firings of the rule on the day, the same definition as gold_css_excursion_episodes.firings.
+  - name: successful_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings that completed with execution_status = success.
+  - name: failed_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings that completed with execution_status = failure.
+  - name: other_status_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings with status pending or timeout (skipped firings are excluded from this view).
+  - name: distinct_actions
+    logicalType: integer
+    physicalType: BIGINT
+    description: 'Distinct automation_action_id values that fired off this rule on the day. A distinct
+      count: do not sum across days or rules.'
+  - name: physical_command_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings where target_entity_type = actuator (physical device commands, not notifications
+      or webhooks).
+  - name: notification_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings whose action targets a role or person (alerts, not physical actuation).
+  - name: avg_latency_ms
+    logicalType: number
+    physicalType: DOUBLE
+    description: Mean milliseconds from the breaching observation to the firing. Automation-loop responsiveness,
+      not ingest latency.
+  - name: latency_ms_sum
+    logicalType: integer
+    physicalType: BIGINT
+    description: Sum of latency_ms over firings with a recorded latency. Numerator of the ratio-of-sums
+      mean latency for rollups.
+  - name: latency_measured_firings
+    logicalType: integer
+    physicalType: BIGINT
+    description: Firings with a non-NULL latency_ms. Denominator of the ratio-of-sums mean latency for
+      rollups.
+  - name: max_latency_ms
+    logicalType: integer
+    physicalType: BIGINT
+    description: Worst-case response latency observed for this rule on the day.
+  - name: success_rate_numerator
+    logicalType: integer
+    physicalType: BIGINT
+    description: Successful firings (execution_status = success). Numerator of the ratio-of-sums success
+      rate.
+  - name: success_rate_denominator
+    logicalType: integer
+    physicalType: BIGINT
+    description: Completed firings (success, failure or timeout). Denominator of the ratio-of-sums success
+      rate; pending and skipped are excluded.
+  - name: fresh_as_of_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: When the view was evaluated.
+  quality:
+  - name: red_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_grain_unique
+    query: 'SELECT store_id, evaluation_rule_id, trading_date, COUNT(*) AS n
+
+      FROM connected_store_signals.gold_css_rule_effectiveness_daily
+
+      GROUP BY store_id, evaluation_rule_id, trading_date
+
+      HAVING COUNT(*) > 1'
+  - name: red_keys_not_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_keys_not_null
+    query: 'SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily
+
+      WHERE store_id IS NULL OR evaluation_rule_id IS NULL OR trading_date IS NULL'
+  - name: red_firing_counts_non_negative
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_firing_counts_non_negative
+    query: "SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily\nWHERE firings < 0\
+      \ OR successful_firings < 0 OR failed_firings < 0 OR other_status_firings < 0\n   OR distinct_actions\
+      \ < 0 OR physical_command_firings < 0 OR notification_firings < 0"
+  - name: red_status_counts_sum
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_status_counts_sum
+    query: 'SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily
+
+      WHERE (successful_firings + failed_firings + other_status_firings) <> firings'
+  - name: red_latency_reasonable
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_latency_reasonable
+    query: "SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily\nWHERE (avg_latency_ms\
+      \ IS NOT NULL AND avg_latency_ms < 0)\n   OR (max_latency_ms IS NOT NULL AND max_latency_ms < 0)\n\
+      \   OR (avg_latency_ms IS NOT NULL AND max_latency_ms IS NOT NULL AND avg_latency_ms > max_latency_ms)"
+  - name: red_latency_rollup_inputs_consistent
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_latency_rollup_inputs_consistent
+    query: "SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily\nWHERE latency_measured_firings\
+      \ < 0\n   OR latency_measured_firings > firings\n   OR (latency_measured_firings = 0) <> (avg_latency_ms\
+      \ IS NULL)\n   OR (latency_measured_firings > 0\n       AND ABS(latency_ms_sum / CAST(latency_measured_firings\
+      \ AS DOUBLE) - avg_latency_ms) > 1e-6)"
+  - name: red_success_rate_inputs_bounded
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: red_success_rate_inputs_bounded
+    query: 'SELECT * FROM connected_store_signals.gold_css_rule_effectiveness_daily
+
+      WHERE success_rate_numerator < 0 OR success_rate_denominator < 0 OR success_rate_numerator > success_rate_denominator'
+  - name: red_row_count
+    type: sql
+    dimension: accuracy
+    severity: info
+    description: red_row_count
+    query: SELECT COUNT(*) AS red_row_count FROM connected_store_signals.gold_css_rule_effectiveness_daily
 - name: gold_inventory_accuracy_daily
   physicalName: connected_store_signals.gold_inventory_accuracy_daily
   physicalType: view
@@ -6813,40 +7601,57 @@ schema:
   - name: rfid_count_session_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Surrogate key of the RFID count session.
   - name: rfid_count_session_id
     logicalType: string
     physicalType: STRING
+    description: 'Durable key of the count session: store_id|source_session_id.'
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the session start.
   - name: session_end_local_date
+    logicalType: date
+    physicalType: DATE
+    description: Business date when the session ended in store local time.
   - name: reconciliation_date
+    logicalType: date
+    physicalType: DATE
     description: EOD inventory snapshot date used for the comparison. Sessions ending 00:00-02:59 local
       reconcile to the preceding local date.
   - name: department
     logicalType: string
     physicalType: STRING
+    description: Merchandise department classification.
   - name: category
     logicalType: string
     physicalType: STRING
+    description: Merchandise category classification.
   - name: subcategory
     logicalType: string
     physicalType: STRING
+    description: Merchandise subcategory classification.
   - name: scope_type
     logicalType: string
     physicalType: STRING
+    description: 'Count scope: full_store or partial indicates whether the session aimed to cover the
+      entire store.'
   - name: reconciliation_basis
     logicalType: string
     physicalType: STRING
@@ -6859,15 +7664,20 @@ schema:
   - name: observed_units
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct serialized items observed for this product during the session.
   - name: book_units_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: End-of-day book inventory units for the product at reconciliation_date.
   - name: unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: 'Difference: observed_units - book_units_eod. Positive = over book, negative = under
+      book.'
   - name: absolute_unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: Absolute value of unit_variance.
   - name: inventory_accuracy_pct
     logicalType: number
     physicalType: DOUBLE
@@ -6883,9 +7693,11 @@ schema:
   - name: is_record_inaccuracy
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when observed_units <> book_units_eod (record discrepancy).
   - name: reconciled_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp when the record was reconciled.
 - name: gold_inventory_accuracy_daily_latest
   physicalName: connected_store_signals.gold_inventory_accuracy_daily_latest
   physicalType: view
@@ -6906,32 +7718,45 @@ schema:
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: reconciliation_date
+    logicalType: date
+    physicalType: DATE
     description: Daily EOD snapshot date at the one-row-per-store/product/date/basis metric-support grain.
   - name: reconciliation_basis
     logicalType: string
     physicalType: STRING
+    description: 'Reconciliation basis: aligned_eod for full-store sessions in the declared window; misaligned
+      for others.'
   - name: department
     logicalType: string
     physicalType: STRING
+    description: Merchandise department classification.
   - name: category
     logicalType: string
     physicalType: STRING
+    description: Merchandise category classification.
   - name: subcategory
     logicalType: string
     physicalType: STRING
+    description: Merchandise subcategory classification.
   - name: rfid_count_session_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Surrogate key of the latest session selected within the store, product, reconciliation_date,
+      and basis.
   - name: rfid_count_session_id
     logicalType: string
     physicalType: STRING
@@ -6939,40 +7764,55 @@ schema:
   - name: session_trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the latest session selected for this store-product-reconciliation_date.
   - name: session_end_local_date
+    logicalType: date
+    physicalType: DATE
+    description: Session end date in store local time.
   - name: scope_type
     logicalType: string
     physicalType: STRING
+    description: 'Count scope of the latest session: full_store or partial.'
   - name: eligible_tagged_units
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct active serialized units eligible for the count.
   - name: observed_units
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct items observed in the latest session for this product.
   - name: book_units_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: End-of-day book units at reconciliation_date.
   - name: unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: 'Difference: observed_units - book_units_eod.'
   - name: absolute_unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: Absolute value of unit_variance.
   - name: inventory_accuracy_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Observed-versus-EOD-book agreement for aligned_eod rows only; NULL for misaligned sessions.
   - name: observed_to_book_agreement_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Agreement evidence for misaligned sessions; it must not be labeled inventory accuracy.
   - name: is_phantom_stock
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when an aligned eligible product has positive EOD book stock and zero observed units.
   - name: is_record_inaccuracy
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when observed_units <> book_units_eod.
   - name: reconciled_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp when the latest record was reconciled.
 - name: gold_item_current_state
   physicalName: connected_store_signals.gold_item_current_state
   physicalType: view
@@ -6995,48 +7835,63 @@ schema:
   - name: tagged_item_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Serialized item surrogate key.
   - name: tagged_item_id
     logicalType: string
     physicalType: STRING
+    description: Durable EPC Pure Identity URI (serialized item business key).
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Zone surrogate key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable zone business key.
   - name: sensor_device_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Device surrogate key.
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
+    description: Durable device business key.
   - name: sensing_deployment_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Deployment surrogate key.
   - name: sensing_deployment_id
     logicalType: string
     physicalType: STRING
+    description: Durable deployment business key.
   - name: latest_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the most recent RFID read event.
   - name: latest_ingest_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Ingest timestamp of the most recent read event.
   - name: latest_biz_step_uri
     logicalType: string
     physicalType: STRING
+    description: GS1 CBV business step URI of the latest event (e.g., urn:epcglobal:cbv:bizstep:receiving).
   - name: derived_disposition_uri
     logicalType: string
     physicalType: STRING
@@ -7045,9 +7900,11 @@ schema:
   - name: latest_direction_code
     logicalType: string
     physicalType: STRING
+    description: Direction code if the latest event was directional (e.g., enter, exit).
   - name: attribution_confidence
     logicalType: number
     physicalType: DOUBLE
+    description: Platform confidence score for the zone attribution.
   - name: zone_source
     logicalType: string
     physicalType: STRING
@@ -7056,12 +7913,16 @@ schema:
   - name: is_mobile_platform
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the latest read came from a mobile reader.
   - name: freshness_window_minutes
+    logicalType: integer
+    physicalType: INT
     description: Configured freshness window selected from the latest reader platform; starter defaults
       are 120 minutes fixed and 1440 minutes mobile.
   - name: freshness_age_minutes
     logicalType: integer
     physicalType: INT
+    description: Minutes since latest_event_ts at the evaluation clock.
   - name: derived_presence_state
     logicalType: string
     physicalType: STRING
@@ -7069,9 +7930,11 @@ schema:
   - name: recalled_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp when a recall disposition was applied (NULL if not recalled).
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_item_visibility_daily
   physicalName: connected_store_signals.gold_item_visibility_daily
   physicalType: view
@@ -7092,45 +7955,59 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the RFID read events.
   - name: read_event_count
     logicalType: integer
     physicalType: BIGINT
+    description: Total RFID read events for this product at the store on the trading_date.
   - name: distinct_items_read
     logicalType: integer
     physicalType: BIGINT
+    description: Count of distinct serialized items observed.
   - name: unregistered_read_count
     logicalType: integer
     physicalType: BIGINT
+    description: Read events for items not yet registered in tagged_item master.
   - name: stray_read_count
     logicalType: integer
     physicalType: BIGINT
+    description: Read events suspected to be RF bleed from another location.
   - name: raw_ping_count
     logicalType: integer
     physicalType: BIGINT
+    description: Source RF pings before upstream deduplication.
   - name: duplicate_delivery_count
     logicalType: integer
     physicalType: BIGINT
+    description: Duplicate source messages re-delivered (distinct from sequence gaps).
   - name: avg_attribution_confidence
     logicalType: number
     physicalType: DOUBLE
+    description: Mean confidence score for zone attribution across all read events.
   - name: arrival_lag_seconds_p95
     logicalType: number
     physicalType: DOUBLE
+    description: 95th percentile latency from read timestamp to ingest timestamp.
   - name: latest_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Most recent read event timestamp for this product.
   - name: freshness_age_minutes
     logicalType: integer
     physicalType: INT
+    description: Minutes since latest_event_ts at the evaluation clock.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_observed_oos_episodes
   physicalName: connected_store_signals.gold_observed_oos_episodes
   physicalType: view
@@ -7150,66 +8027,95 @@ schema:
   - name: oos_episode_id
     logicalType: string
     physicalType: STRING
+    description: Durable unique identifier for the OOS episode.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable shelf-position zone business key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: episode_start_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: UTC timestamp when the out-of-stock state was first detected.
+  - name: episode_start_date
+    logicalType: date
+    physicalType: DATE
+    description: Store-local trading date of the first out-of-stock observation. The date the book-units
+      join uses; slice episodes by day on this, not on a cast of episode_start_ts.
   - name: episode_recovery_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: UTC timestamp when the product returned to in_stock or low_stock; NULL if is_ongoing
+      = TRUE.
   - name: is_ongoing
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the out-of-stock condition persists at the evaluation clock.
   - name: episode_duration_minutes
     logicalType: integer
     physicalType: INT
+    description: Duration from episode_start_ts to episode_recovery_ts or to fresh_as_of_ts if ongoing.
   - name: last_oos_observed_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Latest timestamp an out-of-stock state was observed for this episode.
   - name: supporting_observation_count
     logicalType: integer
     physicalType: BIGINT
+    description: Number of observations that contributed to detecting or confirming this episode.
   - name: supporting_device_count
     logicalType: integer
     physicalType: BIGINT
+    description: Number of distinct devices that contributed observations.
   - name: min_confidence_score
     logicalType: number
     physicalType: DOUBLE
+    description: Minimum confidence score across observations supporting this episode.
   - name: detection_method
     logicalType: string
     physicalType: STRING
+    description: 'How the episode was detected: smart_shelf, rfid, or other.'
   - name: candidate_reason
     logicalType: string
     physicalType: STRING
+    description: phantom_stock when EOD book units were positive at episode start, otherwise unknown.
   - name: candidate_severity
     logicalType: string
     physicalType: STRING
+    description: 'Severity band by episode duration: high (24 hours or more), medium (4 hours or more),
+      low otherwise.'
   - name: data_quality_flag
     logicalType: boolean
     physicalType: BOOLEAN
+    description: 'TRUE when any supporting observation was degraded: a suspected data quality issue, matching
+      the SDI oos_event contract.'
   - name: evidence_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the most recent supporting evidence.
   - name: book_units_eod_at_start
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: EOD book inventory units at the episode start date.
   - name: is_phantom_stock_candidate
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when positive book stock existed with zero observed units.
   - name: record_source
     logicalType: string
     physicalType: STRING
+    description: Source system of the episode record.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_osa_daily_current
   physicalName: connected_store_signals.gold_osa_daily_current
   physicalType: view
@@ -7227,60 +8133,82 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the shelf observations.
   - name: category
     logicalType: string
     physicalType: STRING
+    description: Product merchandising category. NULL groups positions with no category assignment.
   - name: expected_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Shelf positions with an active assignment for the store-date-category.
   - name: observed_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Expected positions that had at least one observation on the trading_date.
   - name: positions_unobserved
     logicalType: integer
     physicalType: BIGINT
+    description: Expected positions with no capture that day — a coverage gap, never counted as available.
   - name: positions_known
     logicalType: integer
     physicalType: BIGINT
+    description: Observed positions whose latest capture was a usable state (valid measurement and not
+      unknown).
   - name: positions_unknown
     logicalType: integer
     physicalType: BIGINT
+    description: Observed positions whose latest capture was unknown or invalid — latest-capture-wins
+      rule applies.
   - name: positions_available_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions in in_stock or low_stock state at the latest valid capture of the day.
   - name: positions_low_stock_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions in low_stock state at the latest valid capture of the day.
   - name: positions_oos_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions in out_of_stock state at the latest valid capture of the day.
   - name: positions_misplaced_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions showing a misplaced product at the latest capture of the day (rare by
+      construction).
   - name: positions_oos_any_time
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions that were observed in out_of_stock state at ANY point in the day.
   - name: positions_known_oos_any_time
     logicalType: integer
     physicalType: BIGINT
+    description: Subset of positions_known that were OOS at any point; numerator for intraday floor.
   - name: osa_pct_eod
     logicalType: number
     physicalType: DOUBLE
+    description: 'On-shelf availability at end-of-day: positions_available_eod / positions_known.'
   - name: osa_pct_intraday_floor
     logicalType: number
     physicalType: DOUBLE
+    description: 'Worst-case availability: positions never observed OOS during the day / positions_known.'
   - name: observation_coverage_pct
     logicalType: number
     physicalType: DOUBLE
+    description: 'Share of expected positions captured at least once: observed_positions / expected_positions.'
   - name: known_state_pct
     logicalType: number
     physicalType: DOUBLE
+    description: 'Share of observed positions in a known state: positions_known / observed_positions.'
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_planogram_compliance_current
   physicalName: connected_store_signals.gold_planogram_compliance_current
   physicalType: view
@@ -7298,93 +8226,123 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the shelf observations.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: positions_expected
     logicalType: integer
     physicalType: BIGINT
+    description: Shelf positions with an assignment for this product on the trading_date.
   - name: positions_observed
     logicalType: integer
     physicalType: BIGINT
+    description: Positions with at least one observation on the trading_date.
   - name: positions_unobserved
     logicalType: integer
     physicalType: BIGINT
+    description: Expected positions with no capture — a coverage gap.
   - name: positions_known
     logicalType: integer
     physicalType: BIGINT
+    description: Observed positions with a usable state (valid measurement and not unknown).
   - name: positions_unknown
     logicalType: integer
     physicalType: BIGINT
+    description: Observed positions whose latest capture was unknown or invalid.
   - name: observation_coverage_pct
     logicalType: number
     physicalType: DOUBLE
+    description: 'Share of expected positions observed: observed_positions / positions_expected.'
   - name: known_state_pct
     logicalType: number
     physicalType: DOUBLE
+    description: 'Share of observed positions in a known state: positions_known / observed_positions.'
   - name: expected_facings_total
     logicalType: integer
     physicalType: BIGINT
+    description: Sum of expected facings from all assignments for this product.
   - name: observed_facings_total
     logicalType: integer
     physicalType: BIGINT
+    description: Sum of observed facings from all observations for this product.
   - name: presence_evaluable
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions evaluable for presence (usable observation).
   - name: presence_compliant
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions where shelf_state is in_stock or low_stock.
   - name: presence_compliance_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Share of evaluable positions with product present.
   - name: position_evaluable
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions evaluable for misplacement.
   - name: position_compliant
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions with no misplacement detected.
   - name: position_compliance_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Share of evaluable positions without misplacement.
   - name: facing_evaluable
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions evaluable for facing compliance.
   - name: facing_compliant
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions where observed_facings >= expected_facings.
   - name: facing_compliance_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Share of evaluable positions meeting facing targets.
   - name: price_tag_evaluable
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions evaluable for price-tag compliance.
   - name: price_tag_compliant
     logicalType: integer
     physicalType: BIGINT
+    description: Count of positions with no price mismatch detected.
   - name: price_tag_compliance_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Share of evaluable positions with correct price display.
   - name: fully_evaluable_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Positions evaluable on all four dimensions (presence, position, facings, price).
   - name: fully_compliant_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Positions compliant on all four evaluable dimensions.
   - name: overall_compliance_pct
     logicalType: number
     physicalType: DOUBLE
+    description: Share of fully-evaluable positions that are fully compliant.
   - name: bmv_allocated_facings
     logicalType: integer
     physicalType: INT
+    description: Facings allocated to this product in BMV planogram for comparison context.
   - name: is_allocation_divergent
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when CSS expected_facings_total differs materially from bmv_allocated_facings.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_price_accuracy_current
   physicalName: connected_store_signals.gold_price_accuracy_current
   physicalType: view
@@ -7402,80 +8360,106 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the price observations.
   - name: currency_code
     logicalType: string
     physicalType: STRING
+    description: ISO 4217 reporting currency code.
   - name: labels_observed
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct ESL labels with at least one price observation.
   - name: price_observations
     logicalType: integer
     physicalType: BIGINT
+    description: Total price observations captured from labels.
   - name: ack_observations
     logicalType: integer
     physicalType: BIGINT
+    description: Price observations from platform acknowledgement evidence.
   - name: cv_observations
     logicalType: integer
     physicalType: BIGINT
+    description: Price observations from computer-vision shelf audits.
   - name: audit_observations
     logicalType: integer
     physicalType: BIGINT
+    description: Price observations from manual audits.
   - name: labels_evaluable
     logicalType: integer
     physicalType: BIGINT
+    description: Labels with a price of record for matching.
   - name: labels_matched_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Labels where displayed price matched the price of record at end-of-day.
   - name: labels_mismatched_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Labels where displayed price did NOT match the price of record at end-of-day.
   - name: price_match_rate_eod
     logicalType: number
     physicalType: DOUBLE
+    description: 'Share of evaluable labels matched at EOD: labels_matched_eod / labels_evaluable.'
   - name: labels_overcharging_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Labels displaying a price higher than the price of record.
   - name: labels_undercharging_eod
     logicalType: integer
     physicalType: BIGINT
+    description: Labels displaying a price lower than the price of record.
   - name: avg_mismatch_abs_amount
     logicalType: number
     physicalType: DOUBLE
+    description: Average absolute price difference on mismatched labels.
   - name: max_mismatch_abs_amount
     logicalType: number
     physicalType: DECIMAL(18, 4)
+    description: Maximum absolute price difference on any mismatched label.
   - name: avg_correction_hours
     logicalType: number
     physicalType: DOUBLE
+    description: Average hours from detection to price correction across corrected labels.
   - name: correction_hours_total
     logicalType: number
     physicalType: DOUBLE
+    description: Cumulative hours from detection to correction across all corrected labels.
   - name: labels_corrected
     logicalType: integer
     physicalType: BIGINT
+    description: Count of labels that were corrected after detection.
   - name: max_open_mismatch_hours
     logicalType: number
     physicalType: DOUBLE
+    description: Hours elapsed on the longest-open (uncorrected) mismatch.
   - name: sync_latency_p50_seconds
     logicalType: number
     physicalType: DOUBLE
+    description: Median latency from price update to label display acknowledgement.
   - name: sync_latency_p95_seconds
     logicalType: number
     physicalType: DOUBLE
+    description: 95th percentile latency from price update to label display acknowledgement.
   - name: sync_latency_max_seconds
     logicalType: integer
     physicalType: BIGINT
+    description: Maximum latency from price update to label display acknowledgement.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_receiving_verification
   physicalName: connected_store_signals.gold_receiving_verification
   physicalType: view
-  description: Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store ×
-    product × day evidence and are never guessed onto overlapping shipments.
+  description: 'GRAIN: one row per linked shipment line, or one row per store × product × trading day
+    of unlinked receiving reads (verification_tier says which). Linked rows are shipment-line evidence.
+    Unlinked receiving reads remain honest store × product × day evidence and are never guessed onto overlapping
+    shipments.'
   tags:
   - gold
   authoritativeDefinitions:
@@ -7487,10 +8471,54 @@ schema:
     type: businessDefinition
   properties:
   - name: verification_tier
+    logicalType: string
+    physicalType: STRING
     description: linked_shipment supports over/short verification; unlinked_window_evidence is evidence
       only and is never guessed onto a shipment.
+  - name: shipment_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the purchase order or shipment.
+  - name: shipment_line_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key of the shipment line.
+  - name: shipment_line_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable id of the shipment line.
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key where receiving was observed.
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable product business key.
+  - name: window_start_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Start of the receiving window interval (UTC).
+  - name: window_end_ts
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: End of the receiving window interval (UTC).
   - name: expected_units
+    logicalType: integer
+    physicalType: INT
     description: Shipment-line quantity for linked evidence; NULL for unlinked receiving windows.
+  - name: observed_units
+    logicalType: integer
+    physicalType: BIGINT
+    description: Distinct serialized items observed within the receiving window.
+  - name: unit_variance
+    logicalType: integer
+    physicalType: BIGINT
+    description: 'Difference: observed_units - expected_units.'
+  - name: verification_status
+    logicalType: string
+    physicalType: STRING
+    description: 'Outcome of the receiving verification: matched, over_received, short_received.'
 - name: gold_rfid_oos_candidates
   physicalName: connected_store_signals.gold_rfid_oos_candidates
   physicalType: view
@@ -7511,58 +8539,81 @@ schema:
   - name: rfid_oos_candidate_id
     logicalType: string
     physicalType: STRING
+    description: Durable unique identifier for the candidate record.
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: reconciliation_date
+    logicalType: date
+    physicalType: DATE
+    description: EOD date of the reconciliation.
   - name: rfid_count_session_sk
     logicalType: integer
     physicalType: BIGINT
+    description: RFID count session surrogate key.
   - name: rfid_count_session_id
     logicalType: string
     physicalType: STRING
+    description: Durable RFID count session business key.
   - name: eligible_tagged_units
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct serialized items eligible for the count.
   - name: observed_units
     logicalType: integer
     physicalType: BIGINT
+    description: Distinct eligible items observed during the count session.
   - name: book_units_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: End-of-day book inventory units at the reconciliation_date.
   - name: absolute_unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: 'Absolute difference: |observed_units - book_units_eod|.'
   - name: detection_method
     logicalType: string
     physicalType: STRING
+    description: 'Detection method: rfid.'
   - name: candidate_reason
     logicalType: string
     physicalType: STRING
+    description: 'Always phantom_stock: positive EOD book stock with zero qualified physical evidence.'
   - name: candidate_severity
     logicalType: string
     physicalType: STRING
+    description: 'Severity band by EOD book units with no physical evidence: high (10 or more), medium
+      (3 or more), low otherwise. Illustrative demo bands.'
   - name: data_quality_flag
     logicalType: boolean
     physicalType: BOOLEAN
+    description: 'Always TRUE: a phantom-stock candidate is by definition a suspected book-record data
+      quality issue (SDI oos_event contract).'
   - name: evidence_at_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the supporting evidence.
   - name: record_source
     logicalType: string
     physicalType: STRING
+    description: Source system of the candidate record.
   - name: load_timestamp
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the candidate was loaded into the warehouse.
 - name: gold_share_of_shelf_current
   physicalName: connected_store_signals.gold_share_of_shelf_current
   physicalType: view
@@ -7580,24 +8631,31 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: category
     logicalType: string
     physicalType: STRING
+    description: Merchandising category.
   - name: brand
     logicalType: string
     physicalType: STRING
+    description: Brand name.
   - name: brand_facing_count
     logicalType: integer
     physicalType: BIGINT
+    description: Total facings for this brand within the category.
   - name: category_facing_count
     logicalType: integer
     physicalType: BIGINT
+    description: Total facings for the entire category.
   - name: share_of_shelf_pct
     logicalType: number
     physicalType: DOUBLE
+    description: 'Brand facings as a percentage of category total: brand_facing_count / category_facing_count.'
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_shelf_state_current
   physicalName: connected_store_signals.gold_shelf_state_current
   physicalType: view
@@ -7615,118 +8673,164 @@ schema:
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Shelf-position zone surrogate key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable shelf-position zone business key.
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: sensor_device_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Sensor device surrogate key.
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
+    description: Durable device business key.
   - name: is_mobile_platform
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the capture came from a mobile device (handheld or robot); FALSE for fixed shelf
+      cameras.
   - name: zone_source
     logicalType: string
     physicalType: STRING
+    description: 'How the shelf position was attributed: fixed device placement, operator declaration,
+      or mobile-platform localization.'
   - name: source_capture_id
     logicalType: string
     physicalType: STRING
+    description: Unique identifier from the vendor capture.
   - name: observation_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: UTC timestamp of the shelf observation.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the observation.
   - name: shelf_state
     logicalType: string
     physicalType: STRING
+    description: 'Latest captured shelf state: in_stock, low_stock, out_of_stock, misplaced, or unknown.'
   - name: observed_facing_count
     logicalType: integer
     physicalType: INT
+    description: Observed number of visible product facings.
   - name: estimated_unit_count
     logicalType: number
     physicalType: DOUBLE
+    description: Estimated total units on shelf based on facings and depth observations.
   - name: estimated_weight_grams
     logicalType: number
     physicalType: DOUBLE
+    description: Estimated total weight of products on shelf.
   - name: pick_count_since_prior
     logicalType: integer
     physicalType: INT
+    description: Number of pick events observed since the prior observation at this position.
   - name: put_count_since_prior
     logicalType: integer
     physicalType: INT
+    description: Number of put/replenishment events observed since the prior observation at this position.
   - name: min_facing_threshold
     logicalType: integer
     physicalType: INT
+    description: Minimum facing count threshold used for low-stock determination.
   - name: is_gap_detected
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if a gap or missing section was detected in the facing arrangement.
   - name: is_misplaced_detected
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if a product other than expected was detected at this position.
   - name: is_price_tag_mismatch_detected
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the displayed price did not match the expected price.
   - name: measurement_validity
     logicalType: string
     physicalType: STRING
+    description: 'Validity of the measurement: valid, degraded, invalid, or imputed.'
   - name: confidence_score
     logicalType: number
     physicalType: DOUBLE
+    description: Platform-specific confidence score for the observation (0-100 or equivalent).
   - name: coverage_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Estimated percentage of the shelf position the device could observe.
   - name: is_usable
     logicalType: boolean
     physicalType: BOOLEAN
+    description: 'TRUE if the observation is usable for compliance evaluation: measurement_validity <>
+      invalid AND shelf_state <> unknown.'
   - name: shelf_position_assignment_id
     logicalType: string
     physicalType: STRING
+    description: Durable id of the expected assignment in effect at observation time.
   - name: expected_facing_count
     logicalType: integer
     physicalType: INT
+    description: Expected number of facings from the assignment active at observation time.
   - name: min_facing_count
     logicalType: integer
     physicalType: INT
+    description: Minimum facing count from the assignment active at observation time.
   - name: assignment_source
     logicalType: string
     physicalType: STRING
+    description: 'Source of the expected assignment: plano, bmv, or system.'
   - name: is_presence_compliant
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if the shelf_state is in_stock or low_stock (product present); NULL if not usable.
   - name: is_position_compliant
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if no misplacement was detected; NULL if not usable or misplacement state unknown.
   - name: is_facing_compliant
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if observed_facing_count >= expected_facing_count; NULL if not usable or facing
+      data missing.
   - name: is_price_tag_compliant
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if no price mismatch was detected; NULL if not usable or price data missing.
   - name: freshness_window_minutes
+    logicalType: integer
+    physicalType: INT
+    description: 'Platform-dependent freshness window: typically 120 minutes for fixed devices, 1440 minutes
+      for mobile.'
   - name: freshness_age_minutes
     logicalType: integer
     physicalType: INT
+    description: Minutes since observation_ts was captured at the evaluation clock.
   - name: is_stale
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if freshness_age_minutes exceeds the freshness_window_minutes.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_shelf_vs_system_variance_daily
   physicalName: connected_store_signals.gold_shelf_vs_system_variance_daily
   physicalType: view
@@ -7745,42 +8849,56 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the shelf observation and EOD book snapshot.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: observed_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Shelf positions observed for this product on the trading_date.
   - name: known_positions
     logicalType: integer
     physicalType: BIGINT
+    description: Observed positions with a usable state (not unknown or invalid).
   - name: positions_oos
     logicalType: integer
     physicalType: BIGINT
+    description: Known positions in out-of-stock state.
   - name: observed_units_on_shelf
     logicalType: number
     physicalType: DOUBLE
+    description: Estimated total units observed on shelf from all known positions.
   - name: book_units_eod
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: End-of-day book inventory units from inventory systems.
   - name: unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: 'Difference: observed_units_on_shelf - book_units_eod (positive = over book, negative
+      = under book).'
   - name: absolute_unit_variance
     logicalType: number
     physicalType: DECIMAL(12, 3)
+    description: Absolute value of unit_variance.
   - name: is_phantom_stock
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when book_units_eod > 0 AND observed_units_on_shelf = 0.
   - name: is_over_book
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when observed_units_on_shelf > book_units_eod.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_store_traffic_daily_current
   physicalName: connected_store_signals.gold_store_traffic_daily_current
   physicalType: view
@@ -7807,24 +8925,31 @@ schema:
   - name: fiscal_year
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal year for the trading date.
   - name: fiscal_period
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal period for the trading date.
   - name: fiscal_week
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal week number (1-53 or 1-52) within the fiscal year.
   - name: fiscal_week_id
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal week identifier, embedded with fiscal year for cross-year grouping.
   - name: fiscal_week_index
     logicalType: integer
     physicalType: INT
+    description: Monotonic index for fiscal weeks, used to order fiscal weeks across calendar years.
   - name: day_of_week
     logicalType: integer
     physicalType: INT
+    description: ISO day of week for the trading date (1 = Monday, 7 = Sunday).
   - name: is_holiday
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when the trading date is a recognised retail holiday.
   - name: footfall_count
     logicalType: integer
     physicalType: BIGINT
@@ -7882,6 +9007,7 @@ schema:
   - name: footfall_delta_py
     logicalType: integer
     physicalType: BIGINT
+    description: 'Absolute difference: footfall_count - footfall_count_py. Prior-year change in count.'
   - name: footfall_growth_py
     logicalType: number
     physicalType: DOUBLE
@@ -7932,6 +9058,8 @@ schema:
   - name: is_zero_observed
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when footfall_count = 0 AND any interval within the day carried is_zero_observed
+      = TRUE. Distinguishes a measured zero from an offline sensor.
   - name: interval_count
     logicalType: integer
     physicalType: BIGINT
@@ -8124,57 +9252,75 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the productivity observation.
   - name: fiscal_year
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal year for the trading date.
   - name: fiscal_week
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal week number within the fiscal year.
   - name: fiscal_week_id
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal week identifier.
   - name: fiscal_week_index
     logicalType: integer
     physicalType: INT
+    description: Monotonic fiscal week index.
   - name: day_of_week
     logicalType: integer
     physicalType: INT
+    description: ISO day of week for the trading date.
   - name: is_holiday
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when the trading date is a recognised retail holiday.
   - name: footfall_count
     logicalType: integer
     physicalType: BIGINT
+    description: Measured store footfall for the day. NOT a sum over zones.
   - name: entry_count
     logicalType: integer
     physicalType: BIGINT
+    description: Measured entries for the day.
   - name: exit_count
     logicalType: integer
     physicalType: BIGINT
+    description: Measured exits for the day. NULL when entry direction is not observed.
   - name: visitor_count_adjusted
     logicalType: integer
     physicalType: BIGINT
+    description: Footfall after staff exclusion.
   - name: avg_dwell_seconds
     logicalType: number
     physicalType: DOUBLE
+    description: Mean dwell duration in seconds.
   - name: dwell_seconds_total
     logicalType: integer
     physicalType: BIGINT
+    description: Sum of all dwell durations for re-aggregation.
   - name: dwell_count
     logicalType: integer
     physicalType: BIGINT
+    description: Count of dwell observations for re-aggregation.
   - name: peak_occupancy
     logicalType: integer
     physicalType: BIGINT
+    description: Highest simultaneous occupancy for the day.
   - name: avg_occupancy
     logicalType: number
     physicalType: DOUBLE
+    description: Duration-weighted mean simultaneous occupancy.
   - name: interval_minutes_total
     logicalType: integer
     physicalType: BIGINT
+    description: Total duration of valid traffic intervals.
   - name: occupancy_interval_minutes_total
     logicalType: integer
     physicalType: BIGINT
@@ -8188,12 +9334,15 @@ schema:
   - name: interval_count
     logicalType: integer
     physicalType: BIGINT
+    description: Number of intervals aggregated for the day.
   - name: footfall_count_py
     logicalType: integer
     physicalType: BIGINT
+    description: Footfall on the equivalent NRF fiscal week and weekday in the prior year.
   - name: footfall_growth_py
     logicalType: number
     physicalType: DOUBLE
+    description: 'Fractional growth: (footfall_count - footfall_count_py) / footfall_count_py.'
   - name: units
     logicalType: integer
     physicalType: BIGINT
@@ -8201,6 +9350,7 @@ schema:
   - name: gross_revenue
     logicalType: number
     physicalType: DECIMAL(18, 2)
+    description: Gross sales revenue before discounts at the store-day.
   - name: net_revenue
     logicalType: number
     physicalType: DECIMAL(18, 2)
@@ -8208,6 +9358,7 @@ schema:
   - name: discount_amount
     logicalType: number
     physicalType: DECIMAL(18, 2)
+    description: Total discounts applied at the store-day.
   - name: currency_code
     logicalType: string
     physicalType: STRING
@@ -8239,24 +9390,31 @@ schema:
   - name: counting_unit
     logicalType: string
     physicalType: STRING
+    description: 'What one traffic count represents: person, group, device or object.'
   - name: staff_exclusion_enabled
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if staff were excluded from the traffic count.
   - name: avg_coverage_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Mean share of expected traffic sensors that reported.
   - name: valid_interval_share
     logicalType: number
     physicalType: DOUBLE
+    description: Share of intervals whose traffic measurement was valid.
   - name: complete_interval_share
     logicalType: number
     physicalType: DOUBLE
+    description: Share of intervals where all data had fully landed.
   - name: is_zero_observed
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when footfall_count = 0 AND any interval carried is_zero_observed = TRUE.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
   quality:
   - name: productivity_single_currency
     type: sql
@@ -8285,54 +9443,71 @@ schema:
   - name: unaccounted_exit_id
     logicalType: string
     physicalType: STRING
+    description: Durable unique identifier for the unaccounted exit event.
   - name: tagged_item_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Serialized item surrogate key.
   - name: tagged_item_id
     logicalType: string
     physicalType: STRING
+    description: Durable EPC Pure Identity URI (serialized item business key).
   - name: product_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Product surrogate key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Zone surrogate key where the exit was detected.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable zone business key where the exit was detected.
   - name: sensor_device_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Device surrogate key that detected the exit.
   - name: sensor_device_id
     logicalType: string
     physicalType: STRING
+    description: Durable device business key.
   - name: exit_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: UTC timestamp of the exit event.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the exit event.
   - name: direction_confidence
     logicalType: number
     physicalType: DOUBLE
+    description: Confidence score for the exit direction detection.
   - name: attribution_confidence
     logicalType: number
     physicalType: DOUBLE
+    description: Confidence score for the store-zone attribution.
   - name: disposition_uri
     logicalType: string
     physicalType: STRING
+    description: GS1 CBV disposition URI (e.g. active, damaged, stolen).
   - name: biz_step_uri
     logicalType: string
     physicalType: STRING
+    description: GS1 CBV business step URI describing the event context.
   - name: exception_reason
     logicalType: string
     physicalType: STRING
@@ -8358,39 +9533,54 @@ schema:
   - name: store_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Store surrogate key.
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_sk
     logicalType: integer
     physicalType: BIGINT
+    description: Zone surrogate key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable zone business key.
   - name: zone_code
     logicalType: string
     physicalType: STRING
+    description: Zone code from the current dimension version.
   - name: zone_name
     logicalType: string
     physicalType: STRING
+    description: Human-readable zone name.
   - name: zone_type
     logicalType: string
     physicalType: STRING
+    description: Depth or role in the spatial hierarchy.
   - name: is_sales_floor
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when the zone is customer-accessible selling space.
   - name: last_counted_date
     logicalType: date
     physicalType: DATE
+    description: Most recent trading_date on which this zone was covered by a count session.
   - name: days_since_last_count
     logicalType: integer
     physicalType: INT
+    description: Calendar days between last_counted_date and fresh_as_of_ts.
   - name: target_cadence_days
+    logicalType: integer
+    physicalType: INT
     description: Configured reference cadence for RFID count sessions; the starter default is seven days.
   - name: is_overdue
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when days_since_last_count > target_cadence_days.
   - name: count_lookback_days
+    logicalType: integer
+    physicalType: INT
     description: Configured wall-clock lookback used by count_sessions_in_lookback; the starter default
       is 30 days.
   - name: count_sessions_in_lookback
@@ -8400,9 +9590,11 @@ schema:
   - name: lifetime_units_observed
     logicalType: integer
     physicalType: BIGINT
+    description: Cumulative distinct items ever observed in this zone across all sessions.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_zone_item_presence_current
   physicalName: connected_store_signals.gold_zone_item_presence_current
   physicalType: view
@@ -8420,27 +9612,35 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
+    description: Durable zone business key.
   - name: product_id
     logicalType: string
     physicalType: STRING
+    description: Durable product business key.
   - name: units_present
     logicalType: integer
     physicalType: BIGINT
+    description: Count of distinct serialized items currently attributed as present in the zone.
   - name: oldest_supporting_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the oldest read supporting current presence.
   - name: newest_supporting_event_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: Timestamp of the newest read supporting current presence.
   - name: max_freshness_age_minutes
     logicalType: integer
     physicalType: INT
+    description: Minutes since the newest supporting event at the evaluation clock.
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
 - name: gold_zone_traffic_current
   physicalName: connected_store_signals.gold_zone_traffic_current
   physicalType: view
@@ -8458,34 +9658,56 @@ schema:
   - name: store_id
     logicalType: string
     physicalType: STRING
+    description: Durable store business key.
   - name: store_zone_id
     logicalType: string
     physicalType: STRING
     description: Durable zone business key -- the SCD2-safe join key. Prefer this over the surrogate.
   - name: latest_store_zone_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key of the zone version effective at the latest interval of the trading_date.
   - name: zone_code
+    logicalType: string
+    physicalType: STRING
     description: Zone code as emitted by the source system.
   - name: zone_name
+    logicalType: string
+    physicalType: STRING
+    description: Human-readable zone name from the version effective at the latest interval.
   - name: zone_type
+    logicalType: string
+    physicalType: STRING
     description: 'Depth in the spatial hierarchy: entrance, area, department, aisle, bay, shelf_position,
       queue, fitting_room.'
   - name: parent_zone_id
+    logicalType: string
+    physicalType: STRING
     description: Durable id of the containing zone.
   - name: hierarchy_depth
+    logicalType: integer
+    physicalType: INT
     description: Materialised depth (0 = site), so consumers avoid a recursive CTE.
   - name: is_sales_floor
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: TRUE when the zone is customer-accessible selling space.
   - name: trading_date
     logicalType: date
     physicalType: DATE
+    description: Business date of the zone traffic observation.
   - name: fiscal_year
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal year for the trading date.
   - name: fiscal_week_id
     logicalType: integer
     physicalType: INT
+    description: NRF fiscal week identifier.
   - name: day_of_week
     logicalType: integer
     physicalType: INT
+    description: ISO day of week for the trading date.
   - name: footfall_count
     logicalType: integer
     physicalType: BIGINT
@@ -8493,9 +9715,11 @@ schema:
   - name: entry_count
     logicalType: integer
     physicalType: BIGINT
+    description: Measured entries into the zone for the day.
   - name: exit_count
     logicalType: integer
     physicalType: BIGINT
+    description: Measured exits from the zone for the day. NULL when the zone sensors are non-directional.
   - name: passersby_count
     logicalType: integer
     physicalType: BIGINT
@@ -8512,12 +9736,15 @@ schema:
   - name: dwell_seconds_total
     logicalType: integer
     physicalType: BIGINT
+    description: Sum of dwell durations in the zone. Numerator for zone-level dwell re-aggregation.
   - name: dwell_count
     logicalType: integer
     physicalType: BIGINT
+    description: Count of distinct dwell observations in the zone. Denominator for zone-level dwell re-aggregation.
   - name: avg_dwell_seconds
     logicalType: number
     physicalType: DOUBLE
+    description: dwell_seconds_total / dwell_count for the zone-day.
   - name: engaged_count
     logicalType: integer
     physicalType: BIGINT
@@ -8570,24 +9797,31 @@ schema:
   - name: counting_unit
     logicalType: string
     physicalType: STRING
+    description: 'What one count represents: person, group, device or object.'
   - name: staff_exclusion_enabled
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE if staff were excluded from the operational count behind this zone-day row.
   - name: avg_uptime_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Mean share of canonical interval duration the zone sensors were online.
   - name: avg_coverage_ratio
     logicalType: number
     physicalType: DOUBLE
+    description: Mean share of expected sensors that reported for the zone.
   - name: valid_interval_share
     logicalType: number
     physicalType: DOUBLE
+    description: Share of intervals whose measurement was valid for the zone.
   - name: is_zero_observed
     logicalType: boolean
     physicalType: BOOLEAN
+    description: TRUE when footfall_count = 0 AND any interval carried is_zero_observed = TRUE.
   - name: interval_count
     logicalType: integer
     physicalType: BIGINT
+    description: Source intervals behind the zone-day aggregation.
   - name: interval_minutes_total
     logicalType: integer
     physicalType: BIGINT
@@ -8616,6 +9850,7 @@ schema:
   - name: fresh_as_of_ts
     logicalType: timestamp
     physicalType: TIMESTAMP
+    description: When the view was evaluated.
   quality:
   - name: css_zone_traffic_grain
     type: sql
@@ -8751,16 +9986,28 @@ schema:
     physicalType: STRING
     description: Durable zone business key.
   - name: zone_code
+    logicalType: string
+    physicalType: STRING
     description: Zone code from the version effective for the measured intervals.
   - name: zone_name
+    logicalType: string
+    physicalType: STRING
     description: Human-readable zone name.
   - name: zone_type
+    logicalType: string
+    physicalType: STRING
     description: Depth or role of the zone in the in-store spatial hierarchy.
   - name: parent_zone_id
+    logicalType: string
+    physicalType: STRING
     description: Durable id of the containing zone.
   - name: hierarchy_depth
+    logicalType: integer
+    physicalType: INT
     description: Materialised zone depth, where zero is the site.
   - name: is_sales_floor
+    logicalType: boolean
+    physicalType: BOOLEAN
     description: TRUE when the zone is customer-accessible selling space.
   - name: trading_date
     logicalType: date
@@ -9164,9 +10411,9 @@ schema:
     - property: synonyms
       value:
       - success_percentage
-      - completion_rate
-    description: Share of firings that succeeded, from the summed counts rather than an average of per-group
-      rates.
+      - firing_success_share
+    description: Successful firings / all logged firings (every execution_status, including pending, timeout
+      and skipped), from summed counts.
   - name: actuator_firing_count
     logicalType: integer
     businessName: Actuator Firings
@@ -9425,6 +10672,7 @@ schema:
       - state
     description: active, inactive, faulty, maintenance or decommissioned.
   - name: trading_date
+    logicalType: date
     businessName: Trading Date
     customProperties:
     - property: synonyms
@@ -9583,7 +10831,7 @@ schema:
       - processing_delay
     description: Mean seconds between interval end and ingest, weighted by intervals reported.
   - name: max_latency_seconds
-    logicalType: number
+    logicalType: integer
     businessName: Max Ingest Latency (Seconds)
     customProperties:
     - property: synonyms
@@ -9622,7 +10870,7 @@ schema:
       - session_breaks
     description: Device-days with more than one source_session_id.
   - name: historical_message_count
-    logicalType: number
+    logicalType: integer
     businessName: Historical Messages
     customProperties:
     - property: synonyms
@@ -9631,7 +10879,7 @@ schema:
       - historical_replay
     description: Delivered source messages marked as buffered or historical.
   - name: late_arrived_count
-    logicalType: number
+    logicalType: integer
     businessName: Late-Arrived Intervals
     customProperties:
     - property: synonyms
@@ -9692,6 +10940,495 @@ schema:
       a bare NOT NULL is NULL rather than TRUE -- the least-governed devices in the estate would have
       been the ones this count silently omitted. A governance gap surfaced alongside fleet health, because
       the two are reviewed by different people who need the same view.'
+- name: mv_environmental_compliance
+  physicalName: connected_store_signals.mv_environmental_compliance
+  physicalType: view
+  description: 'Environmental and cold-chain compliance: readings in range, breach counts and compliance
+    share against the configured control rule across monitored assets.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - location
+      - site
+      - branch
+    description: Durable store business key.
+  - name: sensor_device_id
+    logicalType: string
+    businessName: Device
+    customProperties:
+    - property: synonyms
+      value:
+      - device
+      - probe
+      - sensor
+      - temperature_probe
+    description: Durable business key of the temperature or environmental sensor.
+  - name: subject_id
+    logicalType: string
+    businessName: Measured Subject
+    customProperties:
+    - property: synonyms
+      value:
+      - subject
+      - channel
+      - monitored_point
+    description: Measured subject within the device, interpreted per subject_type (for example one case
+      on a multi-channel logger). Slices a multi-channel device by channel.
+  - name: equipment_id
+    logicalType: string
+    businessName: Equipment
+    customProperties:
+    - property: synonyms
+      value:
+      - asset
+      - unit
+      - equipment
+      - refrigeration_unit
+    description: Durable business key of the refrigeration or maintained asset the sensor monitors. NULL
+      for ambient sensing.
+  - name: report_type
+    logicalType: string
+    businessName: Report Type
+    customProperties:
+    - property: synonyms
+      value:
+      - measurement_type
+      - sensor_type
+      - property
+    description: The environmental property measured, e.g. gs1:Temperature. Shared vocabulary with evaluation_rule,
+      so a reading and its rule speak the same language.
+  - name: trading_date
+    logicalType: date
+    businessName: Trading Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - business_date
+    description: Business date of the compliance observation.
+  - name: evaluation_rule_id
+    logicalType: string
+    businessName: Rule
+    customProperties:
+    - property: synonyms
+      value:
+      - control_rule
+      - threshold_rule
+    description: 'Rule the row is evaluated against. Reading and minute measures are per rule: a device
+      watched by two rules contributes its readings once per rule, so filter or group by rule when comparing
+      devices.'
+  - name: condition_operator
+    logicalType: string
+    businessName: Rule Operator
+    customProperties:
+    - property: synonyms
+      value:
+      - operator
+      - comparison
+      - rule_type
+    description: 'The comparison the applicable rule applies: greater_than, less_than, inside_range, outside_range,
+      etc.'
+  - name: threshold_value
+    logicalType: number
+    businessName: Threshold Value
+    customProperties:
+    - property: synonyms
+      value:
+      - limit
+      - setpoint
+      - threshold
+    description: The lower bound or single threshold from the control rule, in the measurement unit.
+  - name: uom_code
+    logicalType: string
+    businessName: Unit
+    customProperties:
+    - property: synonyms
+      value:
+      - unit
+      - unit_of_measure
+    description: UN/CEFACT Recommendation 20 unit code, e.g. CEL for Celsius.
+  - name: is_compliant
+    logicalType: boolean
+    businessName: Compliant
+    customProperties:
+    - property: synonyms
+      value:
+      - in_range
+      - meets_threshold
+      - passes_check
+    description: TRUE when no valid reading breached the rule on the day, FALSE when one did, NULL when
+      no rule applies or no valid reading was evaluated.
+  - name: reading_count
+    logicalType: integer
+    businessName: Total Readings
+    customProperties:
+    - property: synonyms
+      value:
+      - observations
+      - intervals
+      - data_points
+    description: 'Total intervals, counted once per rule: a device watched by two rules contributes its
+      readings twice. Filter or group by evaluation_rule_id for a per-device count.'
+  - name: valid_reading_count
+    logicalType: integer
+    businessName: Valid Readings
+    customProperties:
+    - property: synonyms
+      value:
+      - valid_observations
+      - valid_intervals
+    description: Valid intervals, counted once per rule (see Total Readings). Denominator of the average
+      reading; the compliance rate divides by evaluated intervals.
+  - name: min_reading
+    logicalType: number
+    businessName: Min Reading
+    customProperties:
+    - property: synonyms
+      value:
+      - minimum
+      - low_point
+    description: Lowest value observed during the day.
+  - name: max_reading
+    logicalType: number
+    businessName: Max Reading
+    customProperties:
+    - property: synonyms
+      value:
+      - maximum
+      - peak_reading
+      - high_point
+    description: Highest value observed during the day. For cold-chain, this is the peak excursion.
+  - name: avg_reading
+    logicalType: number
+    businessName: Average Reading
+    customProperties:
+    - property: synonyms
+      value:
+      - mean
+      - average
+      - center
+    description: Mean valid reading across the grouping, computed as a ratio of sums so it re-aggregates
+      correctly.
+  - name: breach_count
+    logicalType: integer
+    businessName: Breaching Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - excursions
+      - violations
+      - out_of_range_intervals
+    description: Valid intervals whose value breached the rule limit. Evaluated from readings, independent
+      of automation firings.
+  - name: minutes_out_of_range
+    logicalType: integer
+    businessName: Minutes Out of Range
+    customProperties:
+    - property: synonyms
+      value:
+      - breach_duration
+      - excursion_time
+    description: 'Minutes beyond the rule limit, summed per rule: minutes where two rules both breach
+      are counted for each rule.'
+  - name: compliance_rate
+    logicalType: number
+    businessName: Compliance Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - in_range_rate
+      - share_in_range
+    description: Share of evaluated valid intervals in range across the grouping (ratio of sums, not an
+      average of daily shares).
+  - name: compliant_device_rule_days
+    logicalType: integer
+    businessName: Compliant Device-Rule-Days
+    customProperties:
+    - property: synonyms
+      value:
+      - devices_fully_compliant
+      - compliant_count
+    description: Count of device x rule x day rows with is_compliant = TRUE. A device watched by two rules
+      contributes one row per rule.
+  - name: breaching_device_rule_days
+    logicalType: integer
+    businessName: Device-Rule-Days With Breaches
+    customProperties:
+    - property: synonyms
+      value:
+      - devices_with_breaches
+      - non_compliant_count
+    description: Count of device x rule x day rows with is_compliant = FALSE. A device can appear here
+      for one rule and as compliant for another.
+  - name: compliance_status_known_count
+    logicalType: integer
+    businessName: Device-Rule-Days Evaluated
+    customProperties:
+    - property: synonyms
+      value:
+      - assessed_devices
+      - devices_with_rules
+    description: Count of device-day-rule rows with a current rule and at least one valid reading (is_compliant
+      is not NULL).
+- name: mv_excursion_episodes
+  physicalName: connected_store_signals.mv_excursion_episodes
+  physicalType: view
+  description: 'Excursion episodes: characterising cold-chain breaches as contiguous events and measuring
+    how the control loop responded. A successful firing shows the loop responded; it is not proof that
+    it ended the excursion.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: sensor_device_id
+    logicalType: string
+    businessName: Device
+    customProperties:
+    - property: synonyms
+      value:
+      - device
+      - probe
+      - sensor
+    description: Durable business key of the temperature sensor that detected the excursion.
+  - name: subject_id
+    logicalType: string
+    businessName: Measured Subject
+    customProperties:
+    - property: synonyms
+      value:
+      - subject
+      - channel
+      - monitored_point
+    description: Measured subject within the device, interpreted per subject_type (for example one case
+      on a multi-channel logger). Slices a multi-channel device by channel.
+  - name: equipment_id
+    logicalType: string
+    businessName: Equipment
+    customProperties:
+    - property: synonyms
+      value:
+      - asset
+      - unit
+      - equipment
+    description: Durable business key of the refrigeration unit or maintained asset experiencing the excursion.
+  - name: evaluation_rule_id
+    logicalType: string
+    businessName: Rule
+    customProperties:
+    - property: synonyms
+      value:
+      - rule
+      - threshold
+      - control_rule
+    description: Durable id of the rule whose breach defined this episode.
+  - name: trading_date_of_start
+    logicalType: date
+    businessName: Episode Start Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - start_date
+    description: Business date when the episode began (first breaching interval).
+  - name: report_type
+    logicalType: string
+    businessName: Report Type
+    customProperties:
+    - property: synonyms
+      value:
+      - property
+      - measurement_type
+    description: Monitored property of the episode, for example gs1:Temperature.
+  - name: has_successful_action
+    logicalType: boolean
+    businessName: Has Successful Action
+    customProperties:
+    - property: synonyms
+      value:
+      - action_succeeded
+      - loop_responded
+    description: TRUE when a firing triggered by one of the episode intervals succeeded (the firing may
+      land after the last breaching interval). Evidence the loop responded, not proof that it ended the
+      excursion.
+  - name: is_open_at_dataset_end
+    logicalType: boolean
+    businessName: Open at Data End
+    customProperties:
+    - property: synonyms
+      value:
+      - ongoing
+      - in_progress
+      - unfinished
+    description: TRUE if the episode was still ongoing at the end of available data (has not yet ended).
+      Use to exclude ongoing episodes from analysis of completed events.
+  - name: episode_count
+    logicalType: integer
+    businessName: Episodes
+    customProperties:
+    - property: synonyms
+      value:
+      - excursions
+      - events
+      - breaches
+    description: Number of distinct excursion episodes in the grouping.
+  - name: episodes_with_successful_action
+    logicalType: integer
+    businessName: Episodes With Successful Action
+    customProperties:
+    - property: synonyms
+      value:
+      - answered_episodes
+    description: Count of episodes with at least one successful firing triggered by an episode interval.
+  - name: episodes_without_successful_action
+    logicalType: integer
+    businessName: Episodes Without Successful Action
+    customProperties:
+    - property: synonyms
+      value:
+      - unanswered_episodes
+    description: Count of episodes with no successful firing triggered by an episode interval.
+  - name: avg_episode_duration_minutes
+    logicalType: number
+    businessName: Avg Episode Duration (min)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_excursion_time
+      - mean_duration
+    description: Mean duration of episodes in the grouping, from first to last breaching interval.
+  - name: max_episode_duration_minutes
+    logicalType: integer
+    businessName: Max Episode Duration (min)
+    customProperties:
+    - property: synonyms
+      value:
+      - longest_episode
+      - worst_duration
+    description: Longest-running excursion in the grouping.
+  - name: total_breach_intervals
+    logicalType: integer
+    businessName: Breach Intervals
+    customProperties:
+    - property: synonyms
+      value:
+      - total_intervals
+      - cumulative_breaches
+    description: Total number of individual breaching intervals across all episodes. A measure of total
+      breach volume.
+  - name: avg_intervals_per_episode
+    logicalType: number
+    businessName: Avg Intervals per Episode
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_run_length
+      - mean_intervals
+    description: Mean number of consecutive intervals per episode.
+  - name: peak_excursion_value
+    logicalType: number
+    businessName: Peak Excursion Value
+    customProperties:
+    - property: synonyms
+      value:
+      - worst_reading
+      - maximum_breach
+    description: 'Worst reading across episodes in the direction of the rule limit. For a cold-chain upper
+      limit, the highest excursion temperature. Only meaningful within one evaluation_rule_id (or one
+      report_type with same-direction rules): MAX across upper- and lower-limit rules hides the worst
+      low excursion.'
+  - name: avg_peak_excursion_magnitude
+    logicalType: number
+    businessName: Avg Peak Exceedance
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_overshoot
+      - mean_margin
+    description: 'Mean distance past the rule limit at the worst reading of each episode, in the rule
+      unit. Indicates typical excursion severity. Only meaningful within one report_type: averaging across
+      properties mixes units (for example degrees and percent humidity).'
+  - name: firings_in_episodes
+    logicalType: integer
+    businessName: Control-Loop Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - automation_events
+      - control_actions
+    description: Total automation firings triggered by breaches in the episodes.
+  - name: successful_firings
+    logicalType: integer
+    businessName: Successful Firings
+    customProperties:
+    - property: synonyms
+      value:
+      - completed_actions
+      - successful_controls
+    description: Automation actions that completed with execution_status = 'success'.
+  - name: action_success_rate
+    logicalType: number
+    businessName: Episode Firing Success Share
+    customProperties:
+    - property: synonyms
+      value:
+      - episode_firing_success_share
+      - share_of_episode_firings_successful
+    description: 'Share of firings credited to episodes that succeeded: successful / all non-skipped firings
+      (pending, failure and timeout count as not successful), ratio of sums. Not the completion success
+      rate of gold_css_rule_effectiveness_daily, which divides by completed firings only (success, failure,
+      timeout).'
+  - name: avg_minutes_to_first_successful_action
+    logicalType: number
+    businessName: Avg Minutes to First Successful Action
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_response_time
+      - time_to_first_success
+    description: Mean time from episode start to the first successful automation action. NULL episodes
+      (those with no successful action) are excluded from the average.
+  - name: avg_first_response_time_minutes
+    logicalType: number
+    businessName: Avg First Response Time (min)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_response_delay
+      - mean_detection_time
+    description: Mean time from episode start to the very first firing (successful or not). Measures automation
+      trigger speed.
 - name: mv_inventory_accuracy
   physicalName: connected_store_signals.mv_inventory_accuracy
   physicalType: view
@@ -9746,6 +11483,7 @@ schema:
       - merchandising_category
     description: Product merchandising category.
   - name: reconciliation_date
+    logicalType: date
     businessName: Reconciliation Date
     customProperties:
     - property: synonyms
@@ -10096,6 +11834,324 @@ schema:
       - evaluable_rate
     description: Share of observed positions whose day's last capture was usable. Publishes the honesty
       of the OSA denominator.
+- name: mv_oos_episodes
+  physicalName: connected_store_signals.mv_oos_episodes
+  physicalType: view
+  description: 'Out-of-stock shelf episodes: detection, duration, investigation candidate flags, and data
+    quality. One row per episode with aggregated supporting evidence.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: store_zone_id
+    logicalType: string
+    businessName: Zone
+    customProperties:
+    - property: synonyms
+      value:
+      - zone
+      - section
+      - location_id
+    description: Durable shelf-position zone business key.
+  - name: product_id
+    logicalType: string
+    businessName: Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+      - item
+    description: Durable product business key.
+  - name: detection_method
+    logicalType: string
+    businessName: Detection Method
+    customProperties:
+    - property: synonyms
+      value:
+      - method
+      - source
+      - detection_source
+    description: 'How the episode was detected: smart_shelf or other sensing modality.'
+  - name: candidate_reason
+    logicalType: string
+    businessName: Candidate Reason
+    customProperties:
+    - property: synonyms
+      value:
+      - reason
+      - trigger
+      - investigation_reason
+    description: phantom_stock when EOD book units were positive at episode start, otherwise unknown.
+  - name: episode_start_date
+    logicalType: date
+    businessName: Episode Start Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - start_date
+    description: Store-local trading date the out-of-stock episode started.
+  - name: candidate_severity
+    logicalType: string
+    businessName: Candidate Severity
+    customProperties:
+    - property: synonyms
+      value:
+      - severity
+      - priority
+      - severity_band
+    description: 'Severity band by episode duration: high (24 hours or more), medium (4 hours or more),
+      low otherwise.'
+  - name: episode_count
+    logicalType: integer
+    businessName: Episode Count
+    customProperties:
+    - property: synonyms
+      value:
+      - episodes
+      - gaps
+      - oos_count
+    description: Number of distinct out-of-stock episodes in the grouping.
+  - name: ongoing_episodes
+    logicalType: integer
+    businessName: Ongoing Episodes
+    customProperties:
+    - property: synonyms
+      value:
+      - active_episodes
+      - open_gaps
+    description: Count of episodes still in progress at the evaluation clock.
+  - name: total_episode_duration_minutes
+    logicalType: integer
+    businessName: Total Episode Duration (minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - total_duration
+      - cumulative_minutes
+    description: Sum of all episode durations; useful for trend analysis.
+  - name: avg_episode_duration_minutes
+    logicalType: number
+    businessName: Average Episode Duration (minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_duration
+      - avg_duration
+    description: Mean duration per episode; indicates typical gap length.
+  - name: max_episode_duration_minutes
+    logicalType: integer
+    businessName: Maximum Episode Duration (minutes)
+    customProperties:
+    - property: synonyms
+      value:
+      - longest_duration
+      - max_duration
+    description: Duration of the longest single out-of-stock episode.
+  - name: total_supporting_observations
+    logicalType: integer
+    businessName: Total Supporting Observations
+    customProperties:
+    - property: synonyms
+      value:
+      - total_observations
+      - evidence_count
+    description: Cumulative observation count across all episodes; volume of evidence.
+  - name: avg_supporting_devices
+    logicalType: number
+    businessName: Average Supporting Devices
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_devices
+      - device_count
+    description: Mean number of distinct devices contributing evidence per episode.
+  - name: phantom_stock_candidate_count
+    logicalType: integer
+    businessName: Phantom Stock Candidate Episodes
+    customProperties:
+    - property: synonyms
+      value:
+      - phantom_episodes
+      - phantom_count
+    description: Number of episodes also flagged as phantom stock candidates (positive book with zero
+      observed).
+  - name: high_severity_count
+    logicalType: integer
+    businessName: High Severity Episodes
+    customProperties:
+    - property: synonyms
+      value:
+      - high_priority
+      - urgent_episodes
+    description: Number of episodes at high severity (severity bands are high, medium, low).
+  - name: suspect_quality_count
+    logicalType: integer
+    businessName: Suspect Quality Episodes
+    customProperties:
+    - property: synonyms
+      value:
+      - low_quality
+      - needs_verification
+    description: Episodes with any degraded supporting observation; verify before acting.
+  - name: min_confidence_score_avg
+    logicalType: number
+    businessName: Average Minimum Confidence
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_confidence
+      - quality_score
+    description: Mean of the minimum confidence scores across episodes; lower values indicate less certain
+      observations.
+- name: mv_phantom_stock_candidates
+  physicalName: connected_store_signals.mv_phantom_stock_candidates
+  physicalType: view
+  description: 'RFID phantom stock investigation candidates: positive EOD book stock with zero qualified
+    physical evidence. These are investigation signals and must not be treated as autonomous inventory
+    adjustments.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/connected-store-signals/README.md
+    type: businessDefinition
+  - url: outcome-packages/connected-store-signals/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: store_id
+    logicalType: string
+    businessName: Store
+    customProperties:
+    - property: synonyms
+      value:
+      - store
+      - site
+      - location
+    description: Durable store business key.
+  - name: product_id
+    logicalType: string
+    businessName: Product
+    customProperties:
+    - property: synonyms
+      value:
+      - product
+      - sku
+      - item
+    description: Durable product business key.
+  - name: reconciliation_date
+    logicalType: date
+    businessName: Reconciliation Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - day
+      - snapshot_date
+    description: EOD inventory snapshot date that revealed the phantom stock candidate.
+  - name: candidate_reason
+    logicalType: string
+    businessName: Candidate Reason
+    customProperties:
+    - property: synonyms
+      value:
+      - reason
+      - trigger
+      - flag_reason
+    description: 'Always phantom_stock for RFID candidates: positive EOD book stock with zero qualified
+      physical evidence.'
+  - name: candidate_count
+    logicalType: integer
+    businessName: Candidate Count
+    customProperties:
+    - property: synonyms
+      value:
+      - candidates
+      - investigations
+    description: Number of distinct phantom stock candidates in the grouping.
+  - name: eligible_units_total
+    logicalType: integer
+    businessName: Eligible Serialized Units
+    customProperties:
+    - property: synonyms
+      value:
+      - eligible_items
+      - tagged_units
+    description: Total distinct serialized items in scope for all candidates.
+  - name: observed_units_total
+    logicalType: integer
+    businessName: Observed Units
+    customProperties:
+    - property: synonyms
+      value:
+      - observed_items
+      - rfid_units
+    description: Total distinct serialized units observed across all candidates.
+  - name: book_units_total
+    logicalType: number
+    businessName: Book Units Total
+    customProperties:
+    - property: synonyms
+      value:
+      - ledger_units
+      - system_inventory
+    description: Total end-of-day book inventory across all candidates.
+  - name: absolute_variance_total
+    logicalType: number
+    businessName: Total Absolute Variance
+    customProperties:
+    - property: synonyms
+      value:
+      - total_variance
+      - variance
+    description: Sum of absolute observed-versus-book unit differences across all candidates.
+  - name: avg_absolute_variance
+    logicalType: number
+    businessName: Average Absolute Variance
+    customProperties:
+    - property: synonyms
+      value:
+      - mean_variance
+      - avg_variance
+    description: Mean absolute unit variance per candidate; indicates typical magnitude of discrepancies.
+  - name: high_severity_count
+    logicalType: integer
+    businessName: High Severity Candidates
+    customProperties:
+    - property: synonyms
+      value:
+      - high_priority
+      - urgent_candidates
+    description: Number of candidates at high severity (severity bands are high, medium, low).
+  - name: suspect_quality_count
+    logicalType: integer
+    businessName: Suspect Quality Candidates
+    customProperties:
+    - property: synonyms
+      value:
+      - low_quality
+      - needs_verification
+    description: Candidates flagged as a suspected data quality issue. Every RFID phantom-stock candidate
+      is, by definition, a suspected book-record error.
 - name: mv_planogram_compliance
   physicalName: connected_store_signals.mv_planogram_compliance
   physicalType: view
@@ -10270,7 +12326,7 @@ schema:
       - allocation_mismatches
       - bmv_divergence
     description: Product-days whose summed expected facings differ from BMV planogram allocated facings.
-      A flagged conversation between space planning and execution, never a correction (ADR-B).
+      A flagged conversation between space planning and execution, never a correction (ADR 0040).
 - name: mv_price_accuracy
   physicalName: connected_store_signals.mv_price_accuracy
   physicalType: view
@@ -10917,6 +12973,7 @@ schema:
       - in_store_area
     description: Durable in-store zone id.
   - name: zone_type
+    logicalType: string
     businessName: Zone Type
     customProperties:
     - property: synonyms

@@ -2883,7 +2883,7 @@ schema:
     physicalType: DOUBLE
     description: Labor/workforce sub-score, 0-100, higher = riskier. A transparent HEURISTIC INDEX built
       from coverage shortfall plus critical-interval escalators, not a calibrated probability. Feeds gold_store_operational_risk.labor_risk
-      (ADR 0034).
+      (ADR 0043).
 - name: gold_maintenance_effectiveness
   physicalName: predictive_operations.gold_maintenance_effectiveness
   physicalType: view

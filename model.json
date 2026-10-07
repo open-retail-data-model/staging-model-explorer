@@ -8711,7 +8711,13 @@
             },
             {
               "comment": "Type of supplier. Allowed values: manufacturer, distributor, wholesaler, importer, broker.",
-              "enum_values": [],
+              "enum_values": [
+                "manufacturer",
+                "distributor",
+                "wholesaler",
+                "importer",
+                "broker"
+              ],
               "fk": false,
               "name": "supplier_type",
               "pii": false,
@@ -29169,7 +29175,7 @@
               "type": "STRING"
             },
             {
-              "comment": "FK to marketing.audience.audience_sk (targeted segment), if audience-targeted.",
+              "comment": "FK to marketing.audience.audience_sk (targeted segment from shared marketing dimension), if audience-targeted.",
               "enum_values": [],
               "fk": true,
               "name": "audience_sk",
@@ -32355,6 +32361,198 @@
           "name": "eslp_ack_cv_disagreement",
           "severity": "metric",
           "table": "esl_price_observation"
+        },
+        {
+          "column": null,
+          "name": "ecd_grain_unique",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_keys_not_null",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_count_hierarchy",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_share_recomputes",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_minutes_outside_bounded",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_compliance_flag_consistency",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_value_stats_ordered",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_rule_reading_uom_mismatch",
+          "severity": "warn",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "ecd_unruled_share",
+          "severity": "metric",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "ecd_row_count",
+          "severity": "metric",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "exe_grain_unique",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_keys_not_null",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_no_overlap",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_shape",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_firings_bounded",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_resolution_consistency",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_peak_exceedance_non_negative",
+          "severity": "error",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "iot_breach_episode_reconciliation",
+          "severity": "error",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "iot_cross_device_rules_unevaluated",
+          "severity": "metric",
+          "table": "evaluation_rule"
+        },
+        {
+          "column": null,
+          "name": "iot_multi_subject_ruled_series",
+          "severity": "metric",
+          "table": "gold_css_environmental_compliance_daily"
+        },
+        {
+          "column": null,
+          "name": "iot_series_excluded_valid_intervals",
+          "severity": "metric",
+          "table": "sensor_report_interval"
+        },
+        {
+          "column": null,
+          "name": "iot_series_history_loss_intervals",
+          "severity": "metric",
+          "table": "sensor_report_interval"
+        },
+        {
+          "column": null,
+          "name": "exe_unanswered_share",
+          "severity": "metric",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "exe_row_count",
+          "severity": "metric",
+          "table": "gold_css_excursion_episodes"
+        },
+        {
+          "column": null,
+          "name": "red_grain_unique",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_keys_not_null",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_firing_counts_non_negative",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_status_counts_sum",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_latency_reasonable",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_latency_rollup_inputs_consistent",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_success_rate_inputs_bounded",
+          "severity": "error",
+          "table": "gold_css_rule_effectiveness_daily"
+        },
+        {
+          "column": null,
+          "name": "red_row_count",
+          "severity": "metric",
+          "table": "gold_css_rule_effectiveness_daily"
         }
       ],
       "contract_path": "contracts/odcs/connected-store-signals.odcs.yaml",
@@ -33580,7 +33778,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "Connected Store Signals ESL endpoint registry (SCD2): display capability and gateway homing for electronic shelf labels. Displayed state lives in esl_price_observation; no actuation surface (draft ADR-C).",
+          "comment": "Connected Store Signals ESL endpoint registry (SCD2): display capability and gateway homing for electronic shelf labels. Displayed state lives in esl_price_observation; no actuation surface (ADR 0041).",
           "consumes_tables": [
             {
               "table": "store",
@@ -34191,7 +34389,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "Connected Store Signals append-only price-display audit fact: what each ESL displayed, when, by which evidence path, against the captured price of record. Observation-only ESL layer (draft ADR-C, extending ADR 0030).",
+          "comment": "Connected Store Signals append-only price-display audit fact: what each ESL displayed, when, by which evidence path, against the captured price of record. Observation-only ESL layer (ADR 0041, extending ADR 0030).",
           "consumes_tables": [
             {
               "table": "product",
@@ -37378,7 +37576,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Logical reference to the BMV planogram business key this assignment was derived from, when assignment_source = planogram. Not a FK: BMV planogram is allocation intent at a different grain (ADR-B); reconciliation is read-only gold-to-gold (ADR 0024).",
+              "comment": "Logical reference to the BMV planogram business key this assignment was derived from, when assignment_source = planogram. Not a FK: BMV planogram is allocation intent at a different grain (ADR 0040); reconciliation is read-only gold-to-gold (ADR 0024).",
               "enum_values": [],
               "fk": false,
               "name": "planogram_id",
@@ -37481,7 +37679,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "Connected Store Signals slot-level expected shelf state (SCD2): product, expected and minimum facings per shelf-position zone. Execution contract for Smart Shelf compliance; distinct from BMV planogram allocation intent (ADR-B).",
+          "comment": "Connected Store Signals slot-level expected shelf state (SCD2): product, expected and minimum facings per shelf-position zone. Execution contract for Smart Shelf compliance; distinct from BMV planogram allocation intent (ADR 0040).",
           "consumes_tables": [
             {
               "table": "product",
@@ -37908,7 +38106,7 @@
               "type": "TIMESTAMP"
             }
           ],
-          "comment": "Connected Store Signals restatable positional shelf-state fact at shelf-position zone \u00d7 product \u00d7 capture instant \u00d7 device grain. Outside the sensor_report_interval envelope by design (draft ADR-A / ADR 0036).",
+          "comment": "Connected Store Signals restatable positional shelf-state fact at shelf-position zone \u00d7 product \u00d7 capture instant \u00d7 device grain. Outside the sensor_report_interval envelope by design (ADR 0039 / ADR 0036).",
           "consumes_tables": [
             {
               "table": "product",
@@ -38331,7 +38529,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Surrogate key for the bounded RFID count session.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_count_session_sk",
@@ -38340,7 +38538,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable key: store_id|source_session_id.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_count_session_id",
@@ -38349,7 +38547,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Source session identifier. For fixed windows without one: count_method|primary_sensor_device_id or _ALL|unix_timestamp(started_at_ts).",
               "enum_values": [],
               "fk": false,
               "name": "source_session_id",
@@ -38358,7 +38556,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -38367,7 +38565,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -38376,7 +38574,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Surrogate key of the initiating or primary sensor device. The complete device set derives from events.",
               "enum_values": [],
               "fk": false,
               "name": "primary_sensor_device_sk",
@@ -38385,7 +38583,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable id of the initiating or primary device.",
               "enum_values": [],
               "fk": false,
               "name": "primary_sensor_device_id",
@@ -38394,7 +38592,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "RFID count method. Allowed values: handheld_sweep, fixed_window, robot_sweep.",
               "enum_values": [],
               "fk": false,
               "name": "count_method",
@@ -38403,7 +38601,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Representable scope claim. full_store has a derivable zone plan; partial makes no plan claim.",
               "enum_values": [],
               "fk": false,
               "name": "scope_type",
@@ -38412,7 +38610,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Session start as a UTC instant.",
               "enum_values": [],
               "fk": false,
               "name": "started_at_ts",
@@ -38421,7 +38619,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Session end as a UTC instant.",
               "enum_values": [],
               "fk": false,
               "name": "ended_at_ts",
@@ -38430,7 +38628,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Business date of the session start.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -38439,7 +38637,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Session duration in minutes from started_at_ts to ended_at_ts.",
               "enum_values": [],
               "fk": false,
               "name": "duration_minutes",
@@ -38457,7 +38655,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Zones where read events were observed. For full_store scope, intersection of observed zones with planned zones; for partial scope, all observed zones.",
               "enum_values": [],
               "fk": false,
               "name": "zones_covered",
@@ -38466,7 +38664,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Planned zones with no observed read events. NULL for partial_scope sessions.",
               "enum_values": [],
               "fk": false,
               "name": "zones_missed",
@@ -38484,7 +38682,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of distinct serialized items (tagged_item_id) observed during the session, excluding stray reads.",
               "enum_values": [],
               "fk": false,
               "name": "units_observed",
@@ -38493,7 +38691,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of distinct sensor devices that reported read events in the session.",
               "enum_values": [],
               "fk": false,
               "name": "devices_observed",
@@ -38502,7 +38700,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the first non-stray read event in the session.",
               "enum_values": [],
               "fk": false,
               "name": "first_event_ts",
@@ -38511,7 +38709,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the last non-stray read event in the session.",
               "enum_values": [],
               "fk": false,
               "name": "last_event_ts",
@@ -38520,7 +38718,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -38589,7 +38787,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Status of the observing device at firing time: active, inactive, failed.",
               "enum_values": [],
               "fk": false,
               "name": "device_status",
@@ -38652,7 +38850,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "The actual payload delivered when the action fired (JSON or string representation).",
               "enum_values": [],
               "fk": false,
               "name": "response_payload",
@@ -38661,7 +38859,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable id of the automation action that fired.",
               "enum_values": [],
               "fk": false,
               "name": "automation_action_id",
@@ -38706,7 +38904,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Template used to generate response_payload.",
               "enum_values": [],
               "fk": false,
               "name": "payload_template",
@@ -38742,7 +38940,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "The comparison applied by the rule (e.g. greater_than, less_than, inside_range).",
               "enum_values": [],
               "fk": false,
               "name": "condition_operator",
@@ -38769,7 +38967,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Upper bound for inside_range or outside_range operators, in the rule unit.",
               "enum_values": [],
               "fk": false,
               "name": "threshold_value_upper",
@@ -38778,7 +38976,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Rule time_window_seconds: the sustained-breach window that must hold before the rule fires.",
               "enum_values": [],
               "fk": false,
               "name": "time_window_seconds",
@@ -38787,7 +38985,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "UN/CEFACT unit code for the rule threshold (e.g. CEL for Celsius, NUM for count).",
               "enum_values": [],
               "fk": false,
               "name": "rule_uom_code",
@@ -38814,7 +39012,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Status of the actuator at firing time: active, inactive, failed, or unknown.",
               "enum_values": [],
               "fk": false,
               "name": "actuator_status",
@@ -38841,7 +39039,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable id of the interval that triggered the firing (survives across SCD2 versions).",
               "enum_values": [],
               "fk": false,
               "name": "sensor_report_interval_id",
@@ -38859,7 +39057,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "UN/CEFACT unit code for the breach_value (e.g. CEL for Celsius, NUM for count).",
               "enum_values": [],
               "fk": false,
               "name": "breach_uom",
@@ -38868,7 +39066,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "End timestamp of the triggering canonical interval.",
               "enum_values": [],
               "fk": false,
               "name": "interval_end_ts",
@@ -38886,7 +39084,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -38919,7 +39117,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -38937,16 +39135,16 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the device health observation.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Measurement type (e.g. gs1:Count for traffic sensors, gs1:Temperature for environmental monitoring).",
               "enum_values": [],
               "fk": false,
               "name": "report_type",
@@ -38955,7 +39153,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Reporting granularity level.",
               "enum_values": [],
               "fk": false,
               "name": "aggregation_level",
@@ -38964,7 +39162,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable device business key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_id",
@@ -38973,13 +39171,13 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Device surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_sk",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "How the device senses. Drives both the accuracy and the privacy profile.",
@@ -38991,7 +39189,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Current status of the device: active, inactive, retired, or maintenance.",
               "enum_values": [],
               "fk": false,
               "name": "device_status",
@@ -39000,7 +39198,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable zone where the device is installed.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -39009,7 +39207,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Device manufacturer name.",
               "enum_values": [],
               "fk": false,
               "name": "manufacturer",
@@ -39018,7 +39216,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Device model identifier.",
               "enum_values": [],
               "fk": false,
               "name": "model",
@@ -39036,7 +39234,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the device is battery-powered; FALSE if mains-powered or wired.",
               "enum_values": [],
               "fk": false,
               "name": "battery_powered",
@@ -39045,16 +39243,16 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Count of canonical intervals this device reported data in.",
               "enum_values": [],
               "fk": false,
               "name": "intervals_reported",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Expected observation count based on device expected reporting frequency for the day.",
               "enum_values": [],
               "fk": false,
               "name": "observations_expected",
@@ -39063,13 +39261,13 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Actual count of observations delivered.",
               "enum_values": [],
               "fk": false,
               "name": "observations_received",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "1 - (observations_received / observations_expected). The primary fleet KPI. Re-aggregate it by summing the two component columns, never by averaging this ratio: an average lets a device expecting 4 observations outvote one expecting 400, which understates a fleet-wide outage.",
@@ -39081,7 +39279,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Mean share of canonical interval duration the device was online.",
               "enum_values": [],
               "fk": false,
               "name": "avg_uptime_ratio",
@@ -39090,7 +39288,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Mean share of expected sensors in the deployment group that reported alongside this device.",
               "enum_values": [],
               "fk": false,
               "name": "avg_coverage_ratio",
@@ -39105,19 +39303,19 @@
               "name": "valid_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of reported intervals marked as measurement_validity = valid.",
               "enum_values": [],
               "fk": false,
               "name": "valid_interval_share",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of intervals marked measurement_validity = invalid.",
               "enum_values": [],
               "fk": false,
               "name": "invalid_intervals",
@@ -39126,7 +39324,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of intervals marked is_imputed = TRUE (modelled rather than measured).",
               "enum_values": [],
               "fk": false,
               "name": "imputed_intervals",
@@ -39159,7 +39357,7 @@
               "name": "late_arrived_intervals",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Delivered source messages marked as buffered or historical.",
@@ -39168,7 +39366,7 @@
               "name": "historical_message_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Delivered source messages marked bad or stale by the source.",
@@ -39180,7 +39378,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Highest restatement_version encountered in the device data for the day.",
               "enum_values": [],
               "fk": false,
               "name": "max_restatement_version",
@@ -39189,40 +39387,40 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "End timestamp of the most recent interval.",
               "enum_values": [],
               "fk": false,
               "name": "last_interval_end_ts",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Ingest timestamp of the most recent data arrival.",
               "enum_values": [],
               "fk": false,
               "name": "last_ingest_ts",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Mean latency from event timestamp to ingest timestamp.",
               "enum_values": [],
               "fk": false,
               "name": "avg_latency_seconds",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Maximum latency for any event.",
               "enum_values": [],
               "fk": false,
               "name": "max_latency_seconds",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Minutes since this device last landed data.",
@@ -39261,13 +39459,13 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Total count of source messages delivered for the device on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "source_message_count",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Source messages inferred missing within source sessions, summed from interval-level summaries.",
@@ -39288,7 +39486,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Calibration expiration date for the device.",
               "enum_values": [],
               "fk": false,
               "name": "calibration_valid_to",
@@ -39297,7 +39495,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Identifier of the calibration certificate.",
               "enum_values": [],
               "fk": false,
               "name": "calibration_certificate_id",
@@ -39351,7 +39549,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Durable id of the deployment this device belongs to.",
               "enum_values": [],
               "fk": false,
               "name": "sensing_deployment_id",
@@ -39360,7 +39558,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Method code for the sensing technology (e.g. RFID, infrared, thermal).",
               "enum_values": [],
               "fk": false,
               "name": "sensing_method_code",
@@ -39369,7 +39567,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Status of the deployment: active, pilot, retired.",
               "enum_values": [],
               "fk": false,
               "name": "deployment_status",
@@ -39396,7 +39594,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -39433,34 +39631,7 @@
         {
           "columns": [
             {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "rfid_count_session_sk",
-              "pii": false,
-              "pk": false,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "rfid_count_session_id",
-              "pii": false,
-              "pk": false,
-              "type": "STRING"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "store_sk",
-              "pii": false,
-              "pk": false,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -39469,25 +39640,52 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable device business key of the environmental/temperature sensor.",
               "enum_values": [],
               "fk": false,
-              "name": "product_sk",
-              "pii": false,
-              "pk": false,
-              "type": "BIGINT"
-            },
-            {
-              "comment": "",
-              "enum_values": [],
-              "fk": false,
-              "name": "product_id",
+              "name": "sensor_device_id",
               "pii": false,
               "pk": false,
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Kind of measured subject within the device (for example point for a refrigerated case). Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Measured subject within the device, interpreted per subject_type (for example one case on a multi-channel logger). Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable equipment business key (refrigeration unit) that the sensor monitors. NULL for ambient sensors.",
+              "enum_values": [],
+              "fk": false,
+              "name": "equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The environmental property measured (e.g. gs1:Temperature). Matches the report_type evaluation_rule watches.",
+              "enum_values": [],
+              "fk": false,
+              "name": "report_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date of the compliance observation.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -39496,13 +39694,679 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "All intervals the device reported for the property on the day, any measurement_validity.",
+              "enum_values": [],
+              "fk": false,
+              "name": "reading_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Intervals with measurement_validity = valid and a non-NULL value. Denominator for the value statistics.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_reading_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Lowest valid reading of the day, in the measurement unit. Invalid, degraded and imputed intervals are excluded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "min_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Highest valid reading of the day, in the measurement unit. For a cold-chain upper limit this is the peak temperature.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Mean valid reading of the day: value_sum / valid_reading_count_for_avg.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Sum of valid readings. Carried with valid_reading_count_for_avg so the mean re-aggregates correctly at any grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "value_sum",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Denominator of avg_value; equals valid_reading_count. Carried for transparent re-aggregation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "valid_reading_count_for_avg",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable id of the current enabled rule this row is evaluated against. NULL when no current rule watches the device and property. Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The comparison applied by the rule (e.g. greater_than, inside_range). NULL if no rule.",
+              "enum_values": [],
+              "fk": false,
+              "name": "condition_operator",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Lower bound or single threshold from the rule, in the measurement unit. NULL if no rule.",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Upper bound for inside_range or outside_range operators. NULL otherwise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "threshold_value_upper",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "UN/CEFACT unit code (e.g. CEL for Celsius). From the rule when present.",
+              "enum_values": [],
+              "fk": false,
+              "name": "uom_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Sustained-breach window from the rule, carried for context. Not applied here: a single breaching interval counts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "time_window_seconds",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Valid intervals evaluated against a rule. Denominator of share_intervals_in_range; carried so the compliance rate re-aggregates as a ratio of sums.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluated_interval_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Valid intervals whose value satisfies the rule firing condition. Evaluated from the readings, independent of whether automation fired.",
+              "enum_values": [],
+              "fk": false,
+              "name": "breach_interval_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Sum of interval_minutes over breaching intervals: total minutes the asset was beyond the rule limit on the day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minutes_outside_range",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Share of evaluated valid intervals that did not breach: (evaluated - breaches) / evaluated. NULL when no rule applies or no valid readings exist.",
+              "enum_values": [],
+              "fk": false,
+              "name": "share_intervals_in_range",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "TRUE when no valid reading breached the rule on the day, FALSE when at least one did, NULL when no rule applies or there were no valid readings. Measured against the configured rule, not a regulation.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_compliant",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the view was evaluated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 sensor_device \u00d7 measured subject (subject_type, subject_id) \u00d7 equipment \u00d7 report_type \u00d7 current evaluation_rule \u00d7 trading_date. A device-property pair with no current rule yields one row with evaluation_rule_id NULL and is_compliant NULL; a pair watched by two rules (for example a high and a low limit) yields one row per rule.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_css_environmental_compliance_daily",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable store business key of the device that reported the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable device business key of the sensor that detected the excursion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "sensor_device_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Kind of measured subject within the device (for example point for a refrigerated case). Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Measured subject within the device, interpreted per subject_type (for example one case on a multi-channel logger). Part of the grain.",
+              "enum_values": [],
+              "fk": false,
+              "name": "subject_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable equipment business key being monitored (the asset experiencing the excursion).",
+              "enum_values": [],
+              "fk": false,
+              "name": "equipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the rule whose breach defined this episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "The monitored property of the episode, for example gs1:Temperature.",
+              "enum_values": [],
+              "fk": false,
+              "name": "report_type",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Firing condition of the rule that defines the breach, for example greater_than.",
+              "enum_values": [],
+              "fk": false,
+              "name": "condition_operator",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "UTC timestamp of the first breaching interval in the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "UTC timestamp of the last breaching interval in the episode. Episodes are maximal contiguous runs; a gap >1 interval_minutes ends the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Business date of the episode start, for time-zone-aware period grouping.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date_of_start",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Contiguous breaching intervals in the episode.",
+              "enum_values": [],
+              "fk": false,
+              "name": "interval_count",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Sum of interval_minutes across the episode intervals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "duration_minutes",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Worst reading in the episode in the direction of the rule: the maximum for upper limits and ranges, the minimum for lower limits.",
+              "enum_values": [],
+              "fk": false,
+              "name": "peak_value",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "How far the episode went past the rule limit, in the rule unit: peak minus threshold for upper limits, threshold minus trough for lower limits, the larger excess for outside_range. NULL for equality and inside_range rules.",
+              "enum_values": [],
+              "fk": false,
+              "name": "peak_exceedance",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Non-skipped execution_log firings of the episode rule whose triggering interval is one of the episode intervals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings in the episode window with execution_status = success.",
+              "enum_values": [],
+              "fk": false,
+              "name": "successful_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings in the episode window with execution_status = failure.",
+              "enum_values": [],
+              "fk": false,
+              "name": "failed_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Timestamp of the first automation firing triggered by this episode. NULL if no firings occurred.",
+              "enum_values": [],
+              "fk": false,
+              "name": "first_firing_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "Minutes from episode start to the first successful firing triggered by an episode interval. NULL when none succeeded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "minutes_to_first_successful_action",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "TRUE when at least one firing triggered by an episode interval succeeded. Evidence that the loop responded, not proof that it ended the excursion.",
+              "enum_values": [],
+              "fk": false,
+              "name": "has_successful_action",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "TRUE when the episode ends at the latest interval the device reported for this property, meaning the excursion may still be ongoing.",
+              "enum_values": [],
+              "fk": false,
+              "name": "is_open_at_dataset_end",
+              "pii": false,
+              "pk": false,
+              "type": "BOOLEAN"
+            },
+            {
+              "comment": "When the view was evaluated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per excursion episode: a maximal run of contiguous breaching intervals for one sensor_device \u00d7 measured subject (subject_type, subject_id) \u00d7 current evaluation_rule. A multi-channel device reporting the same property for several subjects (for example two cases on one logger) gets separate episodes per subject.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_css_excursion_episodes",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Durable id of the control-loop rule. Multiple rows per store if several rules fire.",
+              "enum_values": [],
+              "fk": false,
+              "name": "evaluation_rule_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key of the interval that triggered the firings.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date of the interval that triggered the firings.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Non-skipped execution_log firings of the rule on the day, the same definition as gold_css_excursion_episodes.firings.",
+              "enum_values": [],
+              "fk": false,
+              "name": "firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings that completed with execution_status = success.",
+              "enum_values": [],
+              "fk": false,
+              "name": "successful_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings that completed with execution_status = failure.",
+              "enum_values": [],
+              "fk": false,
+              "name": "failed_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings with status pending or timeout (skipped firings are excluded from this view).",
+              "enum_values": [],
+              "fk": false,
+              "name": "other_status_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Distinct automation_action_id values that fired off this rule on the day. A distinct count: do not sum across days or rules.",
+              "enum_values": [],
+              "fk": false,
+              "name": "distinct_actions",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings where target_entity_type = actuator (physical device commands, not notifications or webhooks).",
+              "enum_values": [],
+              "fk": false,
+              "name": "physical_command_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings whose action targets a role or person (alerts, not physical actuation).",
+              "enum_values": [],
+              "fk": false,
+              "name": "notification_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Mean milliseconds from the breaching observation to the firing. Automation-loop responsiveness, not ingest latency.",
+              "enum_values": [],
+              "fk": false,
+              "name": "avg_latency_ms",
+              "pii": false,
+              "pk": false,
+              "type": "DOUBLE"
+            },
+            {
+              "comment": "Sum of latency_ms over firings with a recorded latency. Numerator of the ratio-of-sums mean latency for rollups.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_ms_sum",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Firings with a non-NULL latency_ms. Denominator of the ratio-of-sums mean latency for rollups.",
+              "enum_values": [],
+              "fk": false,
+              "name": "latency_measured_firings",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Worst-case response latency observed for this rule on the day.",
+              "enum_values": [],
+              "fk": false,
+              "name": "max_latency_ms",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Successful firings (execution_status = success). Numerator of the ratio-of-sums success rate.",
+              "enum_values": [],
+              "fk": false,
+              "name": "success_rate_numerator",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Completed firings (success, failure or timeout). Denominator of the ratio-of-sums success rate; pending and skipped are excluded.",
+              "enum_values": [],
+              "fk": false,
+              "name": "success_rate_denominator",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "When the view was evaluated.",
+              "enum_values": [],
+              "fk": false,
+              "name": "fresh_as_of_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            }
+          ],
+          "comment": "GRAIN: one row per store \u00d7 evaluation_rule (durable id) \u00d7 trading_date.",
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
+          "layer": "gold",
+          "materialized": false,
+          "name": "gold_css_rule_effectiveness_daily",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
+              "comment": "Surrogate key of the RFID count session.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable key of the count session: store_id|source_session_id.",
+              "enum_values": [],
+              "fk": false,
+              "name": "rfid_count_session_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Store surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Product surrogate key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Business date of the session start.",
+              "enum_values": [],
+              "fk": false,
+              "name": "trading_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Business date when the session ended in store local time.",
               "enum_values": [],
               "fk": false,
               "name": "session_end_local_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
               "comment": "EOD inventory snapshot date used for the comparison. Sessions ending 00:00-02:59 local reconcile to the preceding local date.",
@@ -39511,10 +40375,10 @@
               "name": "reconciliation_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Merchandise department classification.",
               "enum_values": [],
               "fk": false,
               "name": "department",
@@ -39523,7 +40387,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandise category classification.",
               "enum_values": [],
               "fk": false,
               "name": "category",
@@ -39532,7 +40396,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandise subcategory classification.",
               "enum_values": [],
               "fk": false,
               "name": "subcategory",
@@ -39541,7 +40405,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Count scope: full_store or partial indicates whether the session aimed to cover the entire store.",
               "enum_values": [],
               "fk": false,
               "name": "scope_type",
@@ -39568,7 +40432,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Distinct serialized items observed for this product during the session.",
               "enum_values": [],
               "fk": false,
               "name": "observed_units",
@@ -39577,7 +40441,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "End-of-day book inventory units for the product at reconciliation_date.",
               "enum_values": [],
               "fk": false,
               "name": "book_units_eod",
@@ -39586,7 +40450,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Difference: observed_units - book_units_eod. Positive = over book, negative = under book.",
               "enum_values": [],
               "fk": false,
               "name": "unit_variance",
@@ -39595,7 +40459,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Absolute value of unit_variance.",
               "enum_values": [],
               "fk": false,
               "name": "absolute_unit_variance",
@@ -39631,7 +40495,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE when observed_units <> book_units_eod (record discrepancy).",
               "enum_values": [],
               "fk": false,
               "name": "is_record_inaccuracy",
@@ -39640,7 +40504,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Timestamp when the record was reconciled.",
               "enum_values": [],
               "fk": false,
               "name": "reconciled_at_ts",
@@ -39677,7 +40541,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -39686,7 +40550,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -39695,7 +40559,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Product surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -39704,7 +40568,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -39719,10 +40583,10 @@
               "name": "reconciliation_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Reconciliation basis: aligned_eod for full-store sessions in the declared window; misaligned for others.",
               "enum_values": [],
               "fk": false,
               "name": "reconciliation_basis",
@@ -39731,7 +40595,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandise department classification.",
               "enum_values": [],
               "fk": false,
               "name": "department",
@@ -39740,7 +40604,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandise category classification.",
               "enum_values": [],
               "fk": false,
               "name": "category",
@@ -39749,7 +40613,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandise subcategory classification.",
               "enum_values": [],
               "fk": false,
               "name": "subcategory",
@@ -39758,7 +40622,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Surrogate key of the latest session selected within the store, product, reconciliation_date, and basis.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_count_session_sk",
@@ -39776,7 +40640,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the latest session selected for this store-product-reconciliation_date.",
               "enum_values": [],
               "fk": false,
               "name": "session_trading_date",
@@ -39785,16 +40649,16 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Session end date in store local time.",
               "enum_values": [],
               "fk": false,
               "name": "session_end_local_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Count scope of the latest session: full_store or partial.",
               "enum_values": [],
               "fk": false,
               "name": "scope_type",
@@ -39803,7 +40667,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Distinct active serialized units eligible for the count.",
               "enum_values": [],
               "fk": false,
               "name": "eligible_tagged_units",
@@ -39812,7 +40676,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Distinct items observed in the latest session for this product.",
               "enum_values": [],
               "fk": false,
               "name": "observed_units",
@@ -39821,7 +40685,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "End-of-day book units at reconciliation_date.",
               "enum_values": [],
               "fk": false,
               "name": "book_units_eod",
@@ -39830,7 +40694,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Difference: observed_units - book_units_eod.",
               "enum_values": [],
               "fk": false,
               "name": "unit_variance",
@@ -39839,7 +40703,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Absolute value of unit_variance.",
               "enum_values": [],
               "fk": false,
               "name": "absolute_unit_variance",
@@ -39848,7 +40712,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Observed-versus-EOD-book agreement for aligned_eod rows only; NULL for misaligned sessions.",
               "enum_values": [],
               "fk": false,
               "name": "inventory_accuracy_pct",
@@ -39857,7 +40721,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Agreement evidence for misaligned sessions; it must not be labeled inventory accuracy.",
               "enum_values": [],
               "fk": false,
               "name": "observed_to_book_agreement_pct",
@@ -39866,7 +40730,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "TRUE when an aligned eligible product has positive EOD book stock and zero observed units.",
               "enum_values": [],
               "fk": false,
               "name": "is_phantom_stock",
@@ -39875,7 +40739,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE when observed_units <> book_units_eod.",
               "enum_values": [],
               "fk": false,
               "name": "is_record_inaccuracy",
@@ -39884,7 +40748,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Timestamp when the latest record was reconciled.",
               "enum_values": [],
               "fk": false,
               "name": "reconciled_at_ts",
@@ -39921,7 +40785,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Serialized item surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "tagged_item_sk",
@@ -39930,7 +40794,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable EPC Pure Identity URI (serialized item business key).",
               "enum_values": [],
               "fk": false,
               "name": "tagged_item_id",
@@ -39939,7 +40803,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Product surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -39948,7 +40812,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -39957,7 +40821,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -39966,7 +40830,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -39975,7 +40839,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Zone surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_sk",
@@ -39984,7 +40848,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable zone business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -39993,7 +40857,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Device surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_sk",
@@ -40002,7 +40866,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable device business key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_id",
@@ -40011,7 +40875,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Deployment surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "sensing_deployment_sk",
@@ -40020,7 +40884,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable deployment business key.",
               "enum_values": [],
               "fk": false,
               "name": "sensing_deployment_id",
@@ -40029,7 +40893,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the most recent RFID read event.",
               "enum_values": [],
               "fk": false,
               "name": "latest_event_ts",
@@ -40038,7 +40902,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Ingest timestamp of the most recent read event.",
               "enum_values": [],
               "fk": false,
               "name": "latest_ingest_ts",
@@ -40047,7 +40911,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "GS1 CBV business step URI of the latest event (e.g., urn:epcglobal:cbv:bizstep:receiving).",
               "enum_values": [],
               "fk": false,
               "name": "latest_biz_step_uri",
@@ -40065,7 +40929,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Direction code if the latest event was directional (e.g., enter, exit).",
               "enum_values": [],
               "fk": false,
               "name": "latest_direction_code",
@@ -40074,7 +40938,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Platform confidence score for the zone attribution.",
               "enum_values": [],
               "fk": false,
               "name": "attribution_confidence",
@@ -40092,7 +40956,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the latest read came from a mobile reader.",
               "enum_values": [],
               "fk": false,
               "name": "is_mobile_platform",
@@ -40107,10 +40971,10 @@
               "name": "freshness_window_minutes",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Minutes since latest_event_ts at the evaluation clock.",
               "enum_values": [],
               "fk": false,
               "name": "freshness_age_minutes",
@@ -40128,7 +40992,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Timestamp when a recall disposition was applied (NULL if not recalled).",
               "enum_values": [],
               "fk": false,
               "name": "recalled_at_ts",
@@ -40137,7 +41001,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -40174,7 +41038,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -40183,7 +41047,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -40192,7 +41056,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the RFID read events.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -40201,7 +41065,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Total RFID read events for this product at the store on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "read_event_count",
@@ -40210,7 +41074,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of distinct serialized items observed.",
               "enum_values": [],
               "fk": false,
               "name": "distinct_items_read",
@@ -40219,7 +41083,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Read events for items not yet registered in tagged_item master.",
               "enum_values": [],
               "fk": false,
               "name": "unregistered_read_count",
@@ -40228,7 +41092,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Read events suspected to be RF bleed from another location.",
               "enum_values": [],
               "fk": false,
               "name": "stray_read_count",
@@ -40237,7 +41101,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Source RF pings before upstream deduplication.",
               "enum_values": [],
               "fk": false,
               "name": "raw_ping_count",
@@ -40246,7 +41110,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Duplicate source messages re-delivered (distinct from sequence gaps).",
               "enum_values": [],
               "fk": false,
               "name": "duplicate_delivery_count",
@@ -40255,7 +41119,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Mean confidence score for zone attribution across all read events.",
               "enum_values": [],
               "fk": false,
               "name": "avg_attribution_confidence",
@@ -40264,7 +41128,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "95th percentile latency from read timestamp to ingest timestamp.",
               "enum_values": [],
               "fk": false,
               "name": "arrival_lag_seconds_p95",
@@ -40273,7 +41137,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Most recent read event timestamp for this product.",
               "enum_values": [],
               "fk": false,
               "name": "latest_event_ts",
@@ -40282,7 +41146,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Minutes since latest_event_ts at the evaluation clock.",
               "enum_values": [],
               "fk": false,
               "name": "freshness_age_minutes",
@@ -40291,7 +41155,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -40324,7 +41188,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable unique identifier for the OOS episode.",
               "enum_values": [],
               "fk": false,
               "name": "oos_episode_id",
@@ -40333,7 +41197,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -40342,7 +41206,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable shelf-position zone business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -40351,7 +41215,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -40360,7 +41224,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "UTC timestamp when the out-of-stock state was first detected.",
               "enum_values": [],
               "fk": false,
               "name": "episode_start_ts",
@@ -40369,7 +41233,16 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Store-local trading date of the first out-of-stock observation. The date the book-units join uses; slice episodes by day on this, not on a cast of episode_start_ts.",
+              "enum_values": [],
+              "fk": false,
+              "name": "episode_start_date",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "UTC timestamp when the product returned to in_stock or low_stock; NULL if is_ongoing = TRUE.",
               "enum_values": [],
               "fk": false,
               "name": "episode_recovery_ts",
@@ -40378,7 +41251,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the out-of-stock condition persists at the evaluation clock.",
               "enum_values": [],
               "fk": false,
               "name": "is_ongoing",
@@ -40387,7 +41260,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Duration from episode_start_ts to episode_recovery_ts or to fresh_as_of_ts if ongoing.",
               "enum_values": [],
               "fk": false,
               "name": "episode_duration_minutes",
@@ -40396,7 +41269,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Latest timestamp an out-of-stock state was observed for this episode.",
               "enum_values": [],
               "fk": false,
               "name": "last_oos_observed_ts",
@@ -40405,7 +41278,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Number of observations that contributed to detecting or confirming this episode.",
               "enum_values": [],
               "fk": false,
               "name": "supporting_observation_count",
@@ -40414,7 +41287,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Number of distinct devices that contributed observations.",
               "enum_values": [],
               "fk": false,
               "name": "supporting_device_count",
@@ -40423,7 +41296,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Minimum confidence score across observations supporting this episode.",
               "enum_values": [],
               "fk": false,
               "name": "min_confidence_score",
@@ -40432,7 +41305,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "How the episode was detected: smart_shelf, rfid, or other.",
               "enum_values": [],
               "fk": false,
               "name": "detection_method",
@@ -40441,7 +41314,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "phantom_stock when EOD book units were positive at episode start, otherwise unknown.",
               "enum_values": [],
               "fk": false,
               "name": "candidate_reason",
@@ -40450,7 +41323,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Severity band by episode duration: high (24 hours or more), medium (4 hours or more), low otherwise.",
               "enum_values": [],
               "fk": false,
               "name": "candidate_severity",
@@ -40459,7 +41332,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE when any supporting observation was degraded: a suspected data quality issue, matching the SDI oos_event contract.",
               "enum_values": [],
               "fk": false,
               "name": "data_quality_flag",
@@ -40468,7 +41341,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the most recent supporting evidence.",
               "enum_values": [],
               "fk": false,
               "name": "evidence_at_ts",
@@ -40477,7 +41350,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "EOD book inventory units at the episode start date.",
               "enum_values": [],
               "fk": false,
               "name": "book_units_eod_at_start",
@@ -40486,7 +41359,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "TRUE when positive book stock existed with zero observed units.",
               "enum_values": [],
               "fk": false,
               "name": "is_phantom_stock_candidate",
@@ -40495,7 +41368,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Source system of the episode record.",
               "enum_values": [],
               "fk": false,
               "name": "record_source",
@@ -40504,7 +41377,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -40537,7 +41410,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -40546,7 +41419,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the shelf observations.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -40555,7 +41428,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Product merchandising category. NULL groups positions with no category assignment.",
               "enum_values": [],
               "fk": false,
               "name": "category",
@@ -40564,7 +41437,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Shelf positions with an active assignment for the store-date-category.",
               "enum_values": [],
               "fk": false,
               "name": "expected_positions",
@@ -40573,7 +41446,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Expected positions that had at least one observation on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "observed_positions",
@@ -40582,7 +41455,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Expected positions with no capture that day \u2014 a coverage gap, never counted as available.",
               "enum_values": [],
               "fk": false,
               "name": "positions_unobserved",
@@ -40591,7 +41464,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Observed positions whose latest capture was a usable state (valid measurement and not unknown).",
               "enum_values": [],
               "fk": false,
               "name": "positions_known",
@@ -40600,7 +41473,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Observed positions whose latest capture was unknown or invalid \u2014 latest-capture-wins rule applies.",
               "enum_values": [],
               "fk": false,
               "name": "positions_unknown",
@@ -40609,7 +41482,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions in in_stock or low_stock state at the latest valid capture of the day.",
               "enum_values": [],
               "fk": false,
               "name": "positions_available_eod",
@@ -40618,7 +41491,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions in low_stock state at the latest valid capture of the day.",
               "enum_values": [],
               "fk": false,
               "name": "positions_low_stock_eod",
@@ -40627,7 +41500,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions in out_of_stock state at the latest valid capture of the day.",
               "enum_values": [],
               "fk": false,
               "name": "positions_oos_eod",
@@ -40636,7 +41509,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions showing a misplaced product at the latest capture of the day (rare by construction).",
               "enum_values": [],
               "fk": false,
               "name": "positions_misplaced_eod",
@@ -40645,7 +41518,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions that were observed in out_of_stock state at ANY point in the day.",
               "enum_values": [],
               "fk": false,
               "name": "positions_oos_any_time",
@@ -40654,7 +41527,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Subset of positions_known that were OOS at any point; numerator for intraday floor.",
               "enum_values": [],
               "fk": false,
               "name": "positions_known_oos_any_time",
@@ -40663,7 +41536,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "On-shelf availability at end-of-day: positions_available_eod / positions_known.",
               "enum_values": [],
               "fk": false,
               "name": "osa_pct_eod",
@@ -40672,7 +41545,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Worst-case availability: positions never observed OOS during the day / positions_known.",
               "enum_values": [],
               "fk": false,
               "name": "osa_pct_intraday_floor",
@@ -40681,7 +41554,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of expected positions captured at least once: observed_positions / expected_positions.",
               "enum_values": [],
               "fk": false,
               "name": "observation_coverage_pct",
@@ -40690,7 +41563,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of observed positions in a known state: positions_known / observed_positions.",
               "enum_values": [],
               "fk": false,
               "name": "known_state_pct",
@@ -40699,7 +41572,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -40728,7 +41601,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -40737,7 +41610,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the shelf observations.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -40746,7 +41619,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -40755,7 +41628,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Shelf positions with an assignment for this product on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "positions_expected",
@@ -40764,7 +41637,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Positions with at least one observation on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "positions_observed",
@@ -40773,7 +41646,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Expected positions with no capture \u2014 a coverage gap.",
               "enum_values": [],
               "fk": false,
               "name": "positions_unobserved",
@@ -40782,7 +41655,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Observed positions with a usable state (valid measurement and not unknown).",
               "enum_values": [],
               "fk": false,
               "name": "positions_known",
@@ -40791,7 +41664,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Observed positions whose latest capture was unknown or invalid.",
               "enum_values": [],
               "fk": false,
               "name": "positions_unknown",
@@ -40800,7 +41673,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of expected positions observed: observed_positions / positions_expected.",
               "enum_values": [],
               "fk": false,
               "name": "observation_coverage_pct",
@@ -40809,7 +41682,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of observed positions in a known state: positions_known / observed_positions.",
               "enum_values": [],
               "fk": false,
               "name": "known_state_pct",
@@ -40818,7 +41691,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Sum of expected facings from all assignments for this product.",
               "enum_values": [],
               "fk": false,
               "name": "expected_facings_total",
@@ -40827,7 +41700,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Sum of observed facings from all observations for this product.",
               "enum_values": [],
               "fk": false,
               "name": "observed_facings_total",
@@ -40836,7 +41709,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of positions evaluable for presence (usable observation).",
               "enum_values": [],
               "fk": false,
               "name": "presence_evaluable",
@@ -40845,7 +41718,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of positions where shelf_state is in_stock or low_stock.",
               "enum_values": [],
               "fk": false,
               "name": "presence_compliant",
@@ -40854,7 +41727,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of evaluable positions with product present.",
               "enum_values": [],
               "fk": false,
               "name": "presence_compliance_pct",
@@ -40863,7 +41736,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of positions evaluable for misplacement.",
               "enum_values": [],
               "fk": false,
               "name": "position_evaluable",
@@ -40872,7 +41745,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of positions with no misplacement detected.",
               "enum_values": [],
               "fk": false,
               "name": "position_compliant",
@@ -40881,7 +41754,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of evaluable positions without misplacement.",
               "enum_values": [],
               "fk": false,
               "name": "position_compliance_pct",
@@ -40890,7 +41763,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of positions evaluable for facing compliance.",
               "enum_values": [],
               "fk": false,
               "name": "facing_evaluable",
@@ -40899,7 +41772,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of positions where observed_facings >= expected_facings.",
               "enum_values": [],
               "fk": false,
               "name": "facing_compliant",
@@ -40908,7 +41781,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of evaluable positions meeting facing targets.",
               "enum_values": [],
               "fk": false,
               "name": "facing_compliance_pct",
@@ -40917,7 +41790,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of positions evaluable for price-tag compliance.",
               "enum_values": [],
               "fk": false,
               "name": "price_tag_evaluable",
@@ -40926,7 +41799,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of positions with no price mismatch detected.",
               "enum_values": [],
               "fk": false,
               "name": "price_tag_compliant",
@@ -40935,7 +41808,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of evaluable positions with correct price display.",
               "enum_values": [],
               "fk": false,
               "name": "price_tag_compliance_pct",
@@ -40944,7 +41817,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Positions evaluable on all four dimensions (presence, position, facings, price).",
               "enum_values": [],
               "fk": false,
               "name": "fully_evaluable_positions",
@@ -40953,7 +41826,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Positions compliant on all four evaluable dimensions.",
               "enum_values": [],
               "fk": false,
               "name": "fully_compliant_positions",
@@ -40962,7 +41835,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of fully-evaluable positions that are fully compliant.",
               "enum_values": [],
               "fk": false,
               "name": "overall_compliance_pct",
@@ -40971,7 +41844,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Facings allocated to this product in BMV planogram for comparison context.",
               "enum_values": [],
               "fk": false,
               "name": "bmv_allocated_facings",
@@ -40980,7 +41853,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE when CSS expected_facings_total differs materially from bmv_allocated_facings.",
               "enum_values": [],
               "fk": false,
               "name": "is_allocation_divergent",
@@ -40989,7 +41862,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -41018,7 +41891,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -41027,7 +41900,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the price observations.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -41036,7 +41909,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "ISO 4217 reporting currency code.",
               "enum_values": [],
               "fk": false,
               "name": "currency_code",
@@ -41045,7 +41918,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Distinct ESL labels with at least one price observation.",
               "enum_values": [],
               "fk": false,
               "name": "labels_observed",
@@ -41054,7 +41927,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Total price observations captured from labels.",
               "enum_values": [],
               "fk": false,
               "name": "price_observations",
@@ -41063,7 +41936,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Price observations from platform acknowledgement evidence.",
               "enum_values": [],
               "fk": false,
               "name": "ack_observations",
@@ -41072,7 +41945,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Price observations from computer-vision shelf audits.",
               "enum_values": [],
               "fk": false,
               "name": "cv_observations",
@@ -41081,7 +41954,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Price observations from manual audits.",
               "enum_values": [],
               "fk": false,
               "name": "audit_observations",
@@ -41090,7 +41963,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Labels with a price of record for matching.",
               "enum_values": [],
               "fk": false,
               "name": "labels_evaluable",
@@ -41099,7 +41972,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Labels where displayed price matched the price of record at end-of-day.",
               "enum_values": [],
               "fk": false,
               "name": "labels_matched_eod",
@@ -41108,7 +41981,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Labels where displayed price did NOT match the price of record at end-of-day.",
               "enum_values": [],
               "fk": false,
               "name": "labels_mismatched_eod",
@@ -41117,7 +41990,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Share of evaluable labels matched at EOD: labels_matched_eod / labels_evaluable.",
               "enum_values": [],
               "fk": false,
               "name": "price_match_rate_eod",
@@ -41126,7 +41999,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Labels displaying a price higher than the price of record.",
               "enum_values": [],
               "fk": false,
               "name": "labels_overcharging_eod",
@@ -41135,7 +42008,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Labels displaying a price lower than the price of record.",
               "enum_values": [],
               "fk": false,
               "name": "labels_undercharging_eod",
@@ -41144,7 +42017,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Average absolute price difference on mismatched labels.",
               "enum_values": [],
               "fk": false,
               "name": "avg_mismatch_abs_amount",
@@ -41153,7 +42026,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Maximum absolute price difference on any mismatched label.",
               "enum_values": [],
               "fk": false,
               "name": "max_mismatch_abs_amount",
@@ -41162,7 +42035,7 @@
               "type": "DECIMAL(18, 4)"
             },
             {
-              "comment": "",
+              "comment": "Average hours from detection to price correction across corrected labels.",
               "enum_values": [],
               "fk": false,
               "name": "avg_correction_hours",
@@ -41171,7 +42044,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Cumulative hours from detection to correction across all corrected labels.",
               "enum_values": [],
               "fk": false,
               "name": "correction_hours_total",
@@ -41180,7 +42053,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Count of labels that were corrected after detection.",
               "enum_values": [],
               "fk": false,
               "name": "labels_corrected",
@@ -41189,7 +42062,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Hours elapsed on the longest-open (uncorrected) mismatch.",
               "enum_values": [],
               "fk": false,
               "name": "max_open_mismatch_hours",
@@ -41198,7 +42071,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Median latency from price update to label display acknowledgement.",
               "enum_values": [],
               "fk": false,
               "name": "sync_latency_p50_seconds",
@@ -41207,7 +42080,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "95th percentile latency from price update to label display acknowledgement.",
               "enum_values": [],
               "fk": false,
               "name": "sync_latency_p95_seconds",
@@ -41216,7 +42089,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Maximum latency from price update to label display acknowledgement.",
               "enum_values": [],
               "fk": false,
               "name": "sync_latency_max_seconds",
@@ -41225,7 +42098,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -41260,7 +42133,70 @@
               "name": "verification_tier",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable id of the purchase order or shipment.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shipment_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Surrogate key of the shipment line.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shipment_line_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable id of the shipment line.",
+              "enum_values": [],
+              "fk": false,
+              "name": "shipment_line_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key where receiving was observed.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Start of the receiving window interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "window_start_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
+            },
+            {
+              "comment": "End of the receiving window interval (UTC).",
+              "enum_values": [],
+              "fk": false,
+              "name": "window_end_ts",
+              "pii": false,
+              "pk": false,
+              "type": "TIMESTAMP"
             },
             {
               "comment": "Shipment-line quantity for linked evidence; NULL for unlinked receiving windows.",
@@ -41269,10 +42205,37 @@
               "name": "expected_units",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
+            },
+            {
+              "comment": "Distinct serialized items observed within the receiving window.",
+              "enum_values": [],
+              "fk": false,
+              "name": "observed_units",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Difference: observed_units - expected_units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "unit_variance",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Outcome of the receiving verification: matched, over_received, short_received.",
+              "enum_values": [],
+              "fk": false,
+              "name": "verification_status",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
             }
           ],
-          "comment": "Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store \u00d7 product \u00d7 day evidence and are never guessed onto overlapping shipments.",
+          "comment": "GRAIN: one row per linked shipment line, or one row per store \u00d7 product \u00d7 trading day of unlinked receiving reads (verification_tier says which). Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store \u00d7 product \u00d7 day evidence and are never guessed onto overlapping shipments.",
           "consumes_tables": [
             {
               "table": "product",
@@ -41296,7 +42259,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable unique identifier for the candidate record.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_oos_candidate_id",
@@ -41305,7 +42268,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Product surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -41314,7 +42277,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -41323,7 +42286,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -41332,7 +42295,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -41341,16 +42304,16 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "EOD date of the reconciliation.",
               "enum_values": [],
               "fk": false,
               "name": "reconciliation_date",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "RFID count session surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_count_session_sk",
@@ -41359,7 +42322,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable RFID count session business key.",
               "enum_values": [],
               "fk": false,
               "name": "rfid_count_session_id",
@@ -41368,7 +42331,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Distinct serialized items eligible for the count.",
               "enum_values": [],
               "fk": false,
               "name": "eligible_tagged_units",
@@ -41377,7 +42340,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Distinct eligible items observed during the count session.",
               "enum_values": [],
               "fk": false,
               "name": "observed_units",
@@ -41386,7 +42349,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "End-of-day book inventory units at the reconciliation_date.",
               "enum_values": [],
               "fk": false,
               "name": "book_units_eod",
@@ -41395,7 +42358,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Absolute difference: |observed_units - book_units_eod|.",
               "enum_values": [],
               "fk": false,
               "name": "absolute_unit_variance",
@@ -41404,7 +42367,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Detection method: rfid.",
               "enum_values": [],
               "fk": false,
               "name": "detection_method",
@@ -41413,7 +42376,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Always phantom_stock: positive EOD book stock with zero qualified physical evidence.",
               "enum_values": [],
               "fk": false,
               "name": "candidate_reason",
@@ -41422,7 +42385,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Severity band by EOD book units with no physical evidence: high (10 or more), medium (3 or more), low otherwise. Illustrative demo bands.",
               "enum_values": [],
               "fk": false,
               "name": "candidate_severity",
@@ -41431,7 +42394,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Always TRUE: a phantom-stock candidate is by definition a suspected book-record data quality issue (SDI oos_event contract).",
               "enum_values": [],
               "fk": false,
               "name": "data_quality_flag",
@@ -41440,7 +42403,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the supporting evidence.",
               "enum_values": [],
               "fk": false,
               "name": "evidence_at_ts",
@@ -41449,7 +42412,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Source system of the candidate record.",
               "enum_values": [],
               "fk": false,
               "name": "record_source",
@@ -41458,7 +42421,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "When the candidate was loaded into the warehouse.",
               "enum_values": [],
               "fk": false,
               "name": "load_timestamp",
@@ -41495,7 +42458,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -41504,7 +42467,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Merchandising category.",
               "enum_values": [],
               "fk": false,
               "name": "category",
@@ -41513,7 +42476,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Brand name.",
               "enum_values": [],
               "fk": false,
               "name": "brand",
@@ -41522,7 +42485,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Total facings for this brand within the category.",
               "enum_values": [],
               "fk": false,
               "name": "brand_facing_count",
@@ -41531,7 +42494,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Total facings for the entire category.",
               "enum_values": [],
               "fk": false,
               "name": "category_facing_count",
@@ -41540,7 +42503,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Brand facings as a percentage of category total: brand_facing_count / category_facing_count.",
               "enum_values": [],
               "fk": false,
               "name": "share_of_shelf_pct",
@@ -41549,7 +42512,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -41582,7 +42545,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -41591,7 +42554,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -41600,7 +42563,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Shelf-position zone surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_sk",
@@ -41609,7 +42572,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable shelf-position zone business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -41618,7 +42581,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Product surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -41627,7 +42590,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -41636,7 +42599,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Sensor device surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_sk",
@@ -41645,7 +42608,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable device business key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_id",
@@ -41654,7 +42617,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the capture came from a mobile device (handheld or robot); FALSE for fixed shelf cameras.",
               "enum_values": [],
               "fk": false,
               "name": "is_mobile_platform",
@@ -41663,7 +42626,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "How the shelf position was attributed: fixed device placement, operator declaration, or mobile-platform localization.",
               "enum_values": [],
               "fk": false,
               "name": "zone_source",
@@ -41672,7 +42635,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Unique identifier from the vendor capture.",
               "enum_values": [],
               "fk": false,
               "name": "source_capture_id",
@@ -41681,7 +42644,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "UTC timestamp of the shelf observation.",
               "enum_values": [],
               "fk": false,
               "name": "observation_ts",
@@ -41690,7 +42653,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Business date of the observation.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -41699,7 +42662,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Latest captured shelf state: in_stock, low_stock, out_of_stock, misplaced, or unknown.",
               "enum_values": [],
               "fk": false,
               "name": "shelf_state",
@@ -41708,7 +42671,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Observed number of visible product facings.",
               "enum_values": [],
               "fk": false,
               "name": "observed_facing_count",
@@ -41717,7 +42680,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Estimated total units on shelf based on facings and depth observations.",
               "enum_values": [],
               "fk": false,
               "name": "estimated_unit_count",
@@ -41726,7 +42689,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Estimated total weight of products on shelf.",
               "enum_values": [],
               "fk": false,
               "name": "estimated_weight_grams",
@@ -41735,7 +42698,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Number of pick events observed since the prior observation at this position.",
               "enum_values": [],
               "fk": false,
               "name": "pick_count_since_prior",
@@ -41744,7 +42707,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Number of put/replenishment events observed since the prior observation at this position.",
               "enum_values": [],
               "fk": false,
               "name": "put_count_since_prior",
@@ -41753,7 +42716,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Minimum facing count threshold used for low-stock determination.",
               "enum_values": [],
               "fk": false,
               "name": "min_facing_threshold",
@@ -41762,7 +42725,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE if a gap or missing section was detected in the facing arrangement.",
               "enum_values": [],
               "fk": false,
               "name": "is_gap_detected",
@@ -41771,7 +42734,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE if a product other than expected was detected at this position.",
               "enum_values": [],
               "fk": false,
               "name": "is_misplaced_detected",
@@ -41780,7 +42743,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the displayed price did not match the expected price.",
               "enum_values": [],
               "fk": false,
               "name": "is_price_tag_mismatch_detected",
@@ -41789,7 +42752,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Validity of the measurement: valid, degraded, invalid, or imputed.",
               "enum_values": [],
               "fk": false,
               "name": "measurement_validity",
@@ -41798,7 +42761,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Platform-specific confidence score for the observation (0-100 or equivalent).",
               "enum_values": [],
               "fk": false,
               "name": "confidence_score",
@@ -41807,7 +42770,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Estimated percentage of the shelf position the device could observe.",
               "enum_values": [],
               "fk": false,
               "name": "coverage_ratio",
@@ -41816,7 +42779,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the observation is usable for compliance evaluation: measurement_validity <> invalid AND shelf_state <> unknown.",
               "enum_values": [],
               "fk": false,
               "name": "is_usable",
@@ -41825,7 +42788,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Durable id of the expected assignment in effect at observation time.",
               "enum_values": [],
               "fk": false,
               "name": "shelf_position_assignment_id",
@@ -41834,7 +42797,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Expected number of facings from the assignment active at observation time.",
               "enum_values": [],
               "fk": false,
               "name": "expected_facing_count",
@@ -41843,7 +42806,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Minimum facing count from the assignment active at observation time.",
               "enum_values": [],
               "fk": false,
               "name": "min_facing_count",
@@ -41852,7 +42815,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Source of the expected assignment: plano, bmv, or system.",
               "enum_values": [],
               "fk": false,
               "name": "assignment_source",
@@ -41861,7 +42824,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if the shelf_state is in_stock or low_stock (product present); NULL if not usable.",
               "enum_values": [],
               "fk": false,
               "name": "is_presence_compliant",
@@ -41870,7 +42833,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE if no misplacement was detected; NULL if not usable or misplacement state unknown.",
               "enum_values": [],
               "fk": false,
               "name": "is_position_compliant",
@@ -41879,7 +42842,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE if observed_facing_count >= expected_facing_count; NULL if not usable or facing data missing.",
               "enum_values": [],
               "fk": false,
               "name": "is_facing_compliant",
@@ -41888,7 +42851,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE if no price mismatch was detected; NULL if not usable or price data missing.",
               "enum_values": [],
               "fk": false,
               "name": "is_price_tag_compliant",
@@ -41897,16 +42860,16 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Platform-dependent freshness window: typically 120 minutes for fixed devices, 1440 minutes for mobile.",
               "enum_values": [],
               "fk": false,
               "name": "freshness_window_minutes",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Minutes since observation_ts was captured at the evaluation clock.",
               "enum_values": [],
               "fk": false,
               "name": "freshness_age_minutes",
@@ -41915,7 +42878,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE if freshness_age_minutes exceeds the freshness_window_minutes.",
               "enum_values": [],
               "fk": false,
               "name": "is_stale",
@@ -41924,7 +42887,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -41957,7 +42920,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -41966,7 +42929,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the shelf observation and EOD book snapshot.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -41975,7 +42938,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -41984,7 +42947,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Shelf positions observed for this product on the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "observed_positions",
@@ -41993,7 +42956,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Observed positions with a usable state (not unknown or invalid).",
               "enum_values": [],
               "fk": false,
               "name": "known_positions",
@@ -42002,7 +42965,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Known positions in out-of-stock state.",
               "enum_values": [],
               "fk": false,
               "name": "positions_oos",
@@ -42011,7 +42974,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Estimated total units observed on shelf from all known positions.",
               "enum_values": [],
               "fk": false,
               "name": "observed_units_on_shelf",
@@ -42020,7 +42983,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "End-of-day book inventory units from inventory systems.",
               "enum_values": [],
               "fk": false,
               "name": "book_units_eod",
@@ -42029,7 +42992,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Difference: observed_units_on_shelf - book_units_eod (positive = over book, negative = under book).",
               "enum_values": [],
               "fk": false,
               "name": "unit_variance",
@@ -42038,7 +43001,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "Absolute value of unit_variance.",
               "enum_values": [],
               "fk": false,
               "name": "absolute_unit_variance",
@@ -42047,7 +43010,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "",
+              "comment": "TRUE when book_units_eod > 0 AND observed_units_on_shelf = 0.",
               "enum_values": [],
               "fk": false,
               "name": "is_phantom_stock",
@@ -42056,7 +43019,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE when observed_units_on_shelf > book_units_eod.",
               "enum_values": [],
               "fk": false,
               "name": "is_over_book",
@@ -42065,7 +43028,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -42116,7 +43079,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal year for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_year",
@@ -42125,7 +43088,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal period for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_period",
@@ -42134,7 +43097,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal week number (1-53 or 1-52) within the fiscal year.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week",
@@ -42143,7 +43106,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal week identifier, embedded with fiscal year for cross-year grouping.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_id",
@@ -42152,7 +43115,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Monotonic index for fiscal weeks, used to order fiscal weeks across calendar years.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_index",
@@ -42161,7 +43124,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "ISO day of week for the trading date (1 = Monday, 7 = Sunday).",
               "enum_values": [],
               "fk": false,
               "name": "day_of_week",
@@ -42170,7 +43133,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE when the trading date is a recognised retail holiday.",
               "enum_values": [],
               "fk": false,
               "name": "is_holiday",
@@ -42287,7 +43250,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Absolute difference: footfall_count - footfall_count_py. Prior-year change in count.",
               "enum_values": [],
               "fk": false,
               "name": "footfall_delta_py",
@@ -42386,7 +43349,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "TRUE when footfall_count = 0 AND any interval within the day carried is_zero_observed = TRUE. Distinguishes a measured zero from an offline sensor.",
               "enum_values": [],
               "fk": false,
               "name": "is_zero_observed",
@@ -42739,7 +43702,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -42748,7 +43711,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Business date of the productivity observation.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -42757,7 +43720,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal year for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_year",
@@ -42766,7 +43729,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal week number within the fiscal year.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week",
@@ -42775,7 +43738,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal week identifier.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_id",
@@ -42784,7 +43747,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "Monotonic fiscal week index.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_index",
@@ -42793,7 +43756,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "ISO day of week for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "day_of_week",
@@ -42802,7 +43765,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE when the trading date is a recognised retail holiday.",
               "enum_values": [],
               "fk": false,
               "name": "is_holiday",
@@ -42811,7 +43774,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Measured store footfall for the day. NOT a sum over zones.",
               "enum_values": [],
               "fk": false,
               "name": "footfall_count",
@@ -42820,7 +43783,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Measured entries for the day.",
               "enum_values": [],
               "fk": false,
               "name": "entry_count",
@@ -42829,7 +43792,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Measured exits for the day. NULL when entry direction is not observed.",
               "enum_values": [],
               "fk": false,
               "name": "exit_count",
@@ -42838,7 +43801,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Footfall after staff exclusion.",
               "enum_values": [],
               "fk": false,
               "name": "visitor_count_adjusted",
@@ -42847,7 +43810,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Mean dwell duration in seconds.",
               "enum_values": [],
               "fk": false,
               "name": "avg_dwell_seconds",
@@ -42856,7 +43819,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Sum of all dwell durations for re-aggregation.",
               "enum_values": [],
               "fk": false,
               "name": "dwell_seconds_total",
@@ -42865,7 +43828,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of dwell observations for re-aggregation.",
               "enum_values": [],
               "fk": false,
               "name": "dwell_count",
@@ -42874,7 +43837,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Highest simultaneous occupancy for the day.",
               "enum_values": [],
               "fk": false,
               "name": "peak_occupancy",
@@ -42883,7 +43846,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Duration-weighted mean simultaneous occupancy.",
               "enum_values": [],
               "fk": false,
               "name": "avg_occupancy",
@@ -42892,7 +43855,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Total duration of valid traffic intervals.",
               "enum_values": [],
               "fk": false,
               "name": "interval_minutes_total",
@@ -42919,7 +43882,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Number of intervals aggregated for the day.",
               "enum_values": [],
               "fk": false,
               "name": "interval_count",
@@ -42928,7 +43891,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Footfall on the equivalent NRF fiscal week and weekday in the prior year.",
               "enum_values": [],
               "fk": false,
               "name": "footfall_count_py",
@@ -42937,7 +43900,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Fractional growth: (footfall_count - footfall_count_py) / footfall_count_py.",
               "enum_values": [],
               "fk": false,
               "name": "footfall_growth_py",
@@ -42955,7 +43918,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Gross sales revenue before discounts at the store-day.",
               "enum_values": [],
               "fk": false,
               "name": "gross_revenue",
@@ -42973,7 +43936,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "",
+              "comment": "Total discounts applied at the store-day.",
               "enum_values": [],
               "fk": false,
               "name": "discount_amount",
@@ -43045,7 +44008,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "What one traffic count represents: person, group, device or object.",
               "enum_values": [],
               "fk": false,
               "name": "counting_unit",
@@ -43054,7 +44017,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if staff were excluded from the traffic count.",
               "enum_values": [],
               "fk": false,
               "name": "staff_exclusion_enabled",
@@ -43063,7 +44026,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Mean share of expected traffic sensors that reported.",
               "enum_values": [],
               "fk": false,
               "name": "avg_coverage_ratio",
@@ -43072,7 +44035,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of intervals whose traffic measurement was valid.",
               "enum_values": [],
               "fk": false,
               "name": "valid_interval_share",
@@ -43081,7 +44044,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of intervals where all data had fully landed.",
               "enum_values": [],
               "fk": false,
               "name": "complete_interval_share",
@@ -43090,7 +44053,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "TRUE when footfall_count = 0 AND any interval carried is_zero_observed = TRUE.",
               "enum_values": [],
               "fk": false,
               "name": "is_zero_observed",
@@ -43099,7 +44062,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -43140,7 +44103,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable unique identifier for the unaccounted exit event.",
               "enum_values": [],
               "fk": false,
               "name": "unaccounted_exit_id",
@@ -43149,7 +44112,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Serialized item surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "tagged_item_sk",
@@ -43158,7 +44121,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable EPC Pure Identity URI (serialized item business key).",
               "enum_values": [],
               "fk": false,
               "name": "tagged_item_id",
@@ -43167,7 +44130,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Product surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "product_sk",
@@ -43176,7 +44139,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -43185,7 +44148,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -43194,7 +44157,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -43203,7 +44166,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Zone surrogate key where the exit was detected.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_sk",
@@ -43212,7 +44175,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable zone business key where the exit was detected.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -43221,7 +44184,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Device surrogate key that detected the exit.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_sk",
@@ -43230,7 +44193,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable device business key.",
               "enum_values": [],
               "fk": false,
               "name": "sensor_device_id",
@@ -43239,7 +44202,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "UTC timestamp of the exit event.",
               "enum_values": [],
               "fk": false,
               "name": "exit_event_ts",
@@ -43248,7 +44211,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Business date of the exit event.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -43257,7 +44220,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Confidence score for the exit direction detection.",
               "enum_values": [],
               "fk": false,
               "name": "direction_confidence",
@@ -43266,7 +44229,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Confidence score for the store-zone attribution.",
               "enum_values": [],
               "fk": false,
               "name": "attribution_confidence",
@@ -43275,7 +44238,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "GS1 CBV disposition URI (e.g. active, damaged, stolen).",
               "enum_values": [],
               "fk": false,
               "name": "disposition_uri",
@@ -43284,7 +44247,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "GS1 CBV business step URI describing the event context.",
               "enum_values": [],
               "fk": false,
               "name": "biz_step_uri",
@@ -43326,7 +44289,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Store surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_sk",
@@ -43335,7 +44298,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -43344,7 +44307,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Zone surrogate key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_sk",
@@ -43353,7 +44316,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Durable zone business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -43362,7 +44325,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Zone code from the current dimension version.",
               "enum_values": [],
               "fk": false,
               "name": "zone_code",
@@ -43371,7 +44334,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Human-readable zone name.",
               "enum_values": [],
               "fk": false,
               "name": "zone_name",
@@ -43380,7 +44343,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Depth or role in the spatial hierarchy.",
               "enum_values": [],
               "fk": false,
               "name": "zone_type",
@@ -43389,7 +44352,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE when the zone is customer-accessible selling space.",
               "enum_values": [],
               "fk": false,
               "name": "is_sales_floor",
@@ -43398,7 +44361,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Most recent trading_date on which this zone was covered by a count session.",
               "enum_values": [],
               "fk": false,
               "name": "last_counted_date",
@@ -43407,7 +44370,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "Calendar days between last_counted_date and fresh_as_of_ts.",
               "enum_values": [],
               "fk": false,
               "name": "days_since_last_count",
@@ -43422,10 +44385,10 @@
               "name": "target_cadence_days",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE when days_since_last_count > target_cadence_days.",
               "enum_values": [],
               "fk": false,
               "name": "is_overdue",
@@ -43440,7 +44403,7 @@
               "name": "count_lookback_days",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
               "comment": "Distinct RFID count sessions observed within count_lookback_days.",
@@ -43452,7 +44415,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Cumulative distinct items ever observed in this zone across all sessions.",
               "enum_values": [],
               "fk": false,
               "name": "lifetime_units_observed",
@@ -43461,7 +44424,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -43494,7 +44457,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -43503,7 +44466,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable zone business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_zone_id",
@@ -43512,7 +44475,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Durable product business key.",
               "enum_values": [],
               "fk": false,
               "name": "product_id",
@@ -43521,7 +44484,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Count of distinct serialized items currently attributed as present in the zone.",
               "enum_values": [],
               "fk": false,
               "name": "units_present",
@@ -43530,7 +44493,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the oldest read supporting current presence.",
               "enum_values": [],
               "fk": false,
               "name": "oldest_supporting_event_ts",
@@ -43539,7 +44502,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Timestamp of the newest read supporting current presence.",
               "enum_values": [],
               "fk": false,
               "name": "newest_supporting_event_ts",
@@ -43548,7 +44511,7 @@
               "type": "TIMESTAMP"
             },
             {
-              "comment": "",
+              "comment": "Minutes since the newest supporting event at the evaluation clock.",
               "enum_values": [],
               "fk": false,
               "name": "max_freshness_age_minutes",
@@ -43557,7 +44520,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -43594,7 +44557,7 @@
         {
           "columns": [
             {
-              "comment": "",
+              "comment": "Durable store business key.",
               "enum_values": [],
               "fk": false,
               "name": "store_id",
@@ -43612,13 +44575,13 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Surrogate key of the zone version effective at the latest interval of the trading_date.",
               "enum_values": [],
               "fk": false,
               "name": "latest_store_zone_sk",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BIGINT"
             },
             {
               "comment": "Zone code as emitted by the source system.",
@@ -43627,16 +44590,16 @@
               "name": "zone_code",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "Human-readable zone name from the version effective at the latest interval.",
               "enum_values": [],
               "fk": false,
               "name": "zone_name",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Depth in the spatial hierarchy: entrance, area, department, aisle, bay, shelf_position, queue, fitting_room.",
@@ -43645,7 +44608,7 @@
               "name": "zone_type",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Durable id of the containing zone.",
@@ -43654,7 +44617,7 @@
               "name": "parent_zone_id",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Materialised depth (0 = site), so consumers avoid a recursive CTE.",
@@ -43663,19 +44626,19 @@
               "name": "hierarchy_depth",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "TRUE when the zone is customer-accessible selling space.",
               "enum_values": [],
               "fk": false,
               "name": "is_sales_floor",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Business date of the zone traffic observation.",
               "enum_values": [],
               "fk": false,
               "name": "trading_date",
@@ -43684,7 +44647,7 @@
               "type": "DATE"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal year for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_year",
@@ -43693,7 +44656,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "NRF fiscal week identifier.",
               "enum_values": [],
               "fk": false,
               "name": "fiscal_week_id",
@@ -43702,7 +44665,7 @@
               "type": "INT"
             },
             {
-              "comment": "",
+              "comment": "ISO day of week for the trading date.",
               "enum_values": [],
               "fk": false,
               "name": "day_of_week",
@@ -43720,7 +44683,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Measured entries into the zone for the day.",
               "enum_values": [],
               "fk": false,
               "name": "entry_count",
@@ -43729,7 +44692,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Measured exits from the zone for the day. NULL when the zone sensors are non-directional.",
               "enum_values": [],
               "fk": false,
               "name": "exit_count",
@@ -43765,7 +44728,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Sum of dwell durations in the zone. Numerator for zone-level dwell re-aggregation.",
               "enum_values": [],
               "fk": false,
               "name": "dwell_seconds_total",
@@ -43774,7 +44737,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "Count of distinct dwell observations in the zone. Denominator for zone-level dwell re-aggregation.",
               "enum_values": [],
               "fk": false,
               "name": "dwell_count",
@@ -43783,7 +44746,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "",
+              "comment": "dwell_seconds_total / dwell_count for the zone-day.",
               "enum_values": [],
               "fk": false,
               "name": "avg_dwell_seconds",
@@ -43891,7 +44854,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "What one count represents: person, group, device or object.",
               "enum_values": [],
               "fk": false,
               "name": "counting_unit",
@@ -43900,7 +44863,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "TRUE if staff were excluded from the operational count behind this zone-day row.",
               "enum_values": [],
               "fk": false,
               "name": "staff_exclusion_enabled",
@@ -43909,7 +44872,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Mean share of canonical interval duration the zone sensors were online.",
               "enum_values": [],
               "fk": false,
               "name": "avg_uptime_ratio",
@@ -43918,7 +44881,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Mean share of expected sensors that reported for the zone.",
               "enum_values": [],
               "fk": false,
               "name": "avg_coverage_ratio",
@@ -43927,7 +44890,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "Share of intervals whose measurement was valid for the zone.",
               "enum_values": [],
               "fk": false,
               "name": "valid_interval_share",
@@ -43936,7 +44899,7 @@
               "type": "DOUBLE"
             },
             {
-              "comment": "",
+              "comment": "TRUE when footfall_count = 0 AND any interval carried is_zero_observed = TRUE.",
               "enum_values": [],
               "fk": false,
               "name": "is_zero_observed",
@@ -43945,7 +44908,7 @@
               "type": "BOOLEAN"
             },
             {
-              "comment": "",
+              "comment": "Source intervals behind the zone-day aggregation.",
               "enum_values": [],
               "fk": false,
               "name": "interval_count",
@@ -43999,7 +44962,7 @@
               "type": "STRING"
             },
             {
-              "comment": "",
+              "comment": "When the view was evaluated.",
               "enum_values": [],
               "fk": false,
               "name": "fresh_as_of_ts",
@@ -44219,7 +45182,7 @@
               "name": "zone_code",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Human-readable zone name.",
@@ -44228,7 +45191,7 @@
               "name": "zone_name",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Depth or role of the zone in the in-store spatial hierarchy.",
@@ -44237,7 +45200,7 @@
               "name": "zone_type",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Durable id of the containing zone.",
@@ -44246,7 +45209,7 @@
               "name": "parent_zone_id",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "STRING"
             },
             {
               "comment": "Materialised zone depth, where zero is the site.",
@@ -44255,7 +45218,7 @@
               "name": "hierarchy_depth",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "INT"
             },
             {
               "comment": "TRUE when the zone is customer-accessible selling space.",
@@ -44264,7 +45227,7 @@
               "name": "is_sales_floor",
               "pii": false,
               "pk": false,
-              "type": ""
+              "type": "BOOLEAN"
             },
             {
               "comment": "Business date whose effective disclosure policy governs this shared cell.",
@@ -44547,12 +45510,13 @@
             "transaction"
           ],
           "name": "Foot Traffic Analysis",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_store_traffic_daily_current",
             "gold_zone_traffic_current",
             "gold_store_traffic_daily_shared",
             "gold_zone_traffic_shared",
+            "gold_zone_traffic_interval_shared",
             "gold_traffic_sales_productivity_current",
             "gold_css_device_health"
           ]
@@ -44560,13 +45524,18 @@
         {
           "consumes": [
             "equipment",
+            "logistics",
             "product",
             "store"
           ],
           "name": "IoT Sensor Monitoring",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
-            "gold_css_automation_response"
+            "gold_css_automation_response",
+            "gold_css_environmental_compliance_daily",
+            "gold_css_excursion_episodes",
+            "gold_css_rule_effectiveness_daily",
+            "gold_css_device_health"
           ]
         },
         {
@@ -53992,7 +54961,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Labor/workforce sub-score, 0-100, higher = riskier. A transparent HEURISTIC INDEX built from coverage shortfall plus critical-interval escalators, not a calibrated probability. Feeds gold_store_operational_risk.labor_risk (ADR 0034).",
+              "comment": "Labor/workforce sub-score, 0-100, higher = riskier. A transparent HEURISTIC INDEX built from coverage shortfall plus critical-interval escalators, not a calibrated probability. Feeds gold_store_operational_risk.labor_risk (ADR 0043).",
               "enum_values": [],
               "fk": false,
               "name": "labor_risk",
