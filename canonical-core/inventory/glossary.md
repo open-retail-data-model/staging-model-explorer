@@ -1,5 +1,7 @@
 # Inventory Domain Glossary
 
+> Status: 🟢 Review complete (0.1-beta)
+
 Business terms and metrics used within the Inventory domain.
 
 | Term | Definition |

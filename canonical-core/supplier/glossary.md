@@ -1,6 +1,6 @@
 # Supplier Domain — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta)
+> Status: 🟢 Review complete (0.1-beta)
 
 | Term | Definition |
 |---|---|

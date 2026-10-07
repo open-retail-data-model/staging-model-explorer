@@ -1,5 +1,7 @@
 # Labor domain glossary
 
+> Status: 🔵 Nearing complete (0.1-beta)
+
 | Term | Definition |
 |---|---|
 | **Employee** | Pseudonymous in-store associate master. Identified by durable `employee_id` only — no personal names or contact PII in ORDM. |

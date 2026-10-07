@@ -1,6 +1,6 @@
 # Payment Domain — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-06-10
+> Status: 🟢 Review complete (0.1-beta)
 
 | Term | Definition |
 |---|---|

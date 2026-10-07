@@ -1,6 +1,6 @@
 # Equipment — Business Glossary
 
-> Status: 🟡 In progress (0.1-beta) · Last reviewed: 2026-07-15
+> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-07-15
 
 Business terms for the equipment domain. Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
 

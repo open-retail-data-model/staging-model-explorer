@@ -12783,7 +12783,7 @@
             "product"
           ],
           "name": "Behavioral Segmentation",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_customer_behavioral_attributes"
           ]
@@ -12794,7 +12794,7 @@
             "product"
           ],
           "name": "Product Affinity",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_product_affinity_pairwise",
             "gold_customer_product_affinity"
@@ -49259,7 +49259,9 @@
           "consumes": [],
           "name": "Media Measurement",
           "status": "done",
-          "tables": []
+          "tables": [
+            "gold_supplier_media_report"
+          ]
         },
         {
           "consumes": [
@@ -65635,10 +65637,14 @@
       ],
       "use_cases": [
         {
-          "consumes": [],
+          "consumes": [
+            "customer"
+          ],
           "name": "Customer 360",
-          "status": "in-progress",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_unified_customer_360_current"
+          ]
         },
         {
           "consumes": [],

@@ -1,5 +1,7 @@
 # Balancing Margin and Volume - Glossary
 
+> Status: 🟢 Review complete (0.1-beta)
+
 | Term | Definition |
 |---|---|
 | **Price Gap** | The difference in price between our product and a competitor's identical or equivalent product. |
