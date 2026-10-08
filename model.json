@@ -65448,7 +65448,7 @@
               "type": "BIGINT"
             },
             {
-              "comment": "Summary identity-resolution confidence in [0,1] over active links.",
+              "comment": "Identity-resolution confidence in [0,1]: the highest match_confidence across the current active identity links of the customer.",
               "enum_values": [],
               "fk": false,
               "name": "resolved_identity_confidence",
@@ -65647,10 +65647,14 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "customer"
+          ],
           "name": "Identity Resolution",
-          "status": "in-progress",
-          "tables": []
+          "status": "done",
+          "tables": [
+            "gold_unified_customer_360_current"
+          ]
         },
         {
           "consumes": [

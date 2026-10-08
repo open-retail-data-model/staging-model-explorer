@@ -1738,7 +1738,8 @@ schema:
   - name: resolved_identity_confidence
     logicalType: number
     physicalType: DECIMAL(5, 4)
-    description: Summary identity-resolution confidence in [0,1] over active links.
+    description: 'Identity-resolution confidence in [0,1]: the highest match_confidence across the current
+      active identity links of the customer.'
   - name: has_email_flag
     logicalType: boolean
     physicalType: BOOLEAN
