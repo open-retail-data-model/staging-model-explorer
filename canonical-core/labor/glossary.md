@@ -1,6 +1,21 @@
-# Labor domain glossary
+# Labor Domain — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta)
+> Status: 🔵 Nearing complete (0.2-beta)
+
+Follows the ORDM [data model standards](../../docs/data-model-standards.md).
+
+## Tables
+
+| Table | Type | Description |
+|---|---|---|
+| `employee` | Master (SCD2) | Pseudonymous associate with role, status, cost, and hour/rest constraints. |
+| `employee_skill` | Association | Skill / qualification eligibility. |
+| `employee_availability` | Transactional | Availability and time-off windows. |
+| `employee_store_eligibility` | Association | Optional multi-store eligibility. |
+| `labor_schedule` | Transactional | Planned shifts. |
+| `labor_actuals` | Transactional | Worked / timecard intervals. |
+
+## Key terms
 
 | Term | Definition |
 |---|---|

@@ -1,6 +1,6 @@
 # Commerce Media Networks — Business Glossary
 
-> Status: 🟢 Review complete (0.1-beta)
+> Status: 🟢 Review complete (0.2-beta)
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). The retail-media
 FACTS + metrics built on this package's co-located retail-media dimensions (advertiser, campaign, ad_group,
@@ -115,9 +115,8 @@ multi-model comparison lives in `attributed_outcome`.
 
 ## Deferred (documented)
 
-UC Metric Views (Databricks overlay); the supplier entitlement ledger + publish snapshots
-(data-sharing-with-suppliers package); Lakebase serving projection of pacing; the remaining channel-specific
-dims (screen_player/contract) as full dimensions — `store_zone` is no longer deferred, it is a full SCD2
-dimension in `connected-store-signals` (ADR 0033). The `keyword` (search-targeting) dimension is now
-included — `media_event.keyword_sk` + the degenerate `search_term_text` carry query-level reporting, and
-`attributed_outcome.keyword_sk` carries keyword-level ROAS.
+Lakebase serving projection of pacing; the remaining channel-specific dims (screen_player/contract) as full dimensions — `store_zone`
+is no longer deferred, it is a full SCD2 dimension in `connected-store-signals` (ADR 0033), and the supplier entitlement ledger and publish snapshots
+ship in `data-sharing-with-suppliers` (`reporting_entitlement`, `supplier_media_report_snapshot`). The `keyword`
+(search-targeting) dimension is now included — `media_event.keyword_sk` + the degenerate `search_term_text` carry
+query-level reporting, and `attributed_outcome.keyword_sk` carries keyword-level ROAS.

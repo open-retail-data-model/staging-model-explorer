@@ -1,6 +1,6 @@
 # Actionable Customer Understanding — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-24
+> Status: 🔵 Nearing complete (0.2-beta) · Last reviewed: 2026-08-24
 
 Business terms for Customer Lifetime Value, Behavioral Segmentation and Market Analysis. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
 

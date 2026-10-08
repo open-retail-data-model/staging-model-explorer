@@ -1,6 +1,17 @@
 # Marketing Domain — Business Glossary
 
-> Status: 🟢 Review complete (0.1-beta)
+> Status: 🟢 Review complete (0.2-beta)
+
+Follows the ORDM [data model standards](../../docs/data-model-standards.md).
+
+## Tables
+
+| Object | Type | Description |
+|---|---|---|
+| `promotion` | Master (SCD2) | Conformed trade-promotion dimension — mechanics, funding, planned lift/spend, and the dates/fiscal weeks it ran. A dimension of the POS `sales` fact. Includes the reserved `NO_PROMO` member so non-promoted sales attribute to a real surrogate. Promotion **performance** (ROI, lift, baseline) is computed in outcome packages. |
+| `audience` | Master (SCD2) | Conformed audience / segment-definition dimension — what a segment is, its axis, how authored/computed, and refresh latency. A definition catalog only: never member lists, PII, or live membership counts. Shared by retail-media ad delivery and customer-intelligence behavioral segmentation. |
+
+## Key terms
 
 | Term | Definition |
 |---|---|

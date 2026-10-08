@@ -1,8 +1,8 @@
 # Data Sharing with Suppliers — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-03
+> Status: 🔵 Nearing complete (0.2-beta) · Last reviewed: 2026-08-03
 
-Business terms for this package's four use cases — Category Growth, Media Measurement, Joint Demand Planning, and Data Monetization. Vendor-neutral; follows the ORDM [data model principles](../../docs/data-model-standards.md).
+Business terms for this package's four use cases — Category Growth, Media Measurement, Joint Demand Planning, and Data Monetization. Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
 
 ## Domain Brief — placement decision (Phase 0)
 

@@ -1,6 +1,6 @@
 # Calendar Domain — Business Glossary
 
-> Status: 🟢 Review complete (0.1-beta) · Last reviewed: 2026-07-14
+> Status: 🟢 Review complete (0.2-beta) · Last reviewed: 2026-07-14
 
 | Term | Definition |
 |---|---|

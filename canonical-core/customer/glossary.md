@@ -1,6 +1,6 @@
 # Customer Domain — Business Glossary
 
-> Status: 🟢 Review complete (0.1-beta) · Last reviewed: 2026-07-10
+> Status: 🟢 Review complete (0.2-beta) · Last reviewed: 2026-07-10
 
 Business terms for the ORDM canonical-core **Customer** domain (Unity Catalog schema). Definitions are vendor-neutral and follow the ORDM [data model principles](../../docs/data-model-standards.md).
 

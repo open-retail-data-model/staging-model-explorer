@@ -1,8 +1,16 @@
 # Inventory Domain Glossary
 
-> Status: 🟢 Review complete (0.1-beta)
+> Status: 🟢 Review complete (0.2-beta)
 
-Business terms and metrics used within the Inventory domain.
+Business terms and metrics used within the Inventory domain. Follows the ORDM [data model standards](../../docs/data-model-standards.md).
+
+## Tables
+
+| Object | Grain | Description |
+|---|---|---|
+| `inventory_position` | Daily snapshot per store × product | Daily inventory snapshot at store-product grain: on-hand (SOD/EOD), in-transit, on-order, received today, and stockout indicators. Scoped to `date_key`. Essential for demand elasticity modeling and distinguishing stockout from zero-demand. |
+
+## Key terms
 
 | Term | Definition |
 |---|---|

@@ -1,6 +1,6 @@
 # Interaction Domain — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-07-27
+> Status: 🔵 Nearing complete (0.2-beta) · Last reviewed: 2026-07-27
 
 The conformed omnichannel customer-interaction spine: one append-only fact for every observed direct customer touch, online and offline. Follows the ORDM [data model standards](../../docs/data-model-standards.md).
 

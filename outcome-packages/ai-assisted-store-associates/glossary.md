@@ -1,6 +1,6 @@
 # AI-Assisted Store Associates — Business Glossary
 
-> Status: 🔵 Nearing complete (0.1-beta) · Last reviewed: 2026-08-29
+> Status: 🔵 Nearing complete (0.2-beta) · Last reviewed: 2026-08-29
 
 Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md). This package covers two capabilities on one schema. The **Next Best Action (NBA)** engine for the store floor: it normalizes disparate real-time triggers into
 a single prioritized task queue routed to the right associate, then closes the loop by capturing the
@@ -29,6 +29,9 @@ The second capability, **Real-Time Data Access**, is the governed lookup contrac
 | `gold_associate_action_queue_current` | One row per open, non-expired action | The live prioritized queue an associate sees, ranked within associate by the time-decayed `current_priority_score`. "Open" and `current_state` are derived from `action_response_log` (no terminal response yet), not a stored status. |
 | `gold_action_outcome_funnel_daily` | One row per store × zone × associate × trading date × action_type | Generated / accepted / rejected / completed / expired counts (from the response log), acceptance & completion rates, avg response time, realized outcome value. The associate and zone grain serve per-associate effectiveness and the per-zone staffing signal. |
 | `mv_associate_action_performance` | store × zone × associate × trading date × action_type | UC Metric View over the daily funnel: acceptance, completion, responsiveness, realized value (ratio-of-sums), broken down by associate or zone. |
+| `mv_associate_inventory_availability` | store × product × stock_status | UC Metric View over associate-facing product availability by store and stock status. |
+| `mv_associate_lookup_audit_metrics` | store × capability × access_decision | UC Metric View over lookup allow/deny audit metrics and access patterns. |
+| `mv_associate_lookup_freshness` | feed × store | UC Metric View over data feed freshness and SLA status. |
 | `associate_context_event` | One source event (append-only) | Streaming-ready change events for inventory, price, promotion, order, operations. |
 | `associate_fulfillment_status` | One order (current) | Associate-safe BOPIS/curbside/fulfillment status. No customer PII. |
 | `associate_lookup_audit` | One lookup | Allow/deny audit with hashed entity keys and latency. |

@@ -1,6 +1,6 @@
 # Early Risk Detection — Business Glossary
 
-> Status: 🟢 Review complete (0.1-beta)
+> Status: 🟢 Review complete (0.2-beta)
 
 Business terms for the Early Risk Detection outcome package. Vendor-neutral; follows the ORDM [data model standards](../../docs/data-model-standards.md).
 
