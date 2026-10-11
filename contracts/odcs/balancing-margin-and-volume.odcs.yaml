@@ -1548,6 +1548,363 @@ schema:
     query: 'SELECT * FROM balancing_margin_and_volume.gold_promotional_features
 
       WHERE markdown_depth_pct < 0.0 OR markdown_depth_pct > 1.0'
+- name: gold_realized_margin
+  physicalName: balancing_margin_and_volume.gold_realized_margin
+  physicalType: view
+  description: 'Realized margin and revenue leakage at product x store x SALE day grain, across the two
+    separate channels ORDM models. Reads canonical core directly: * transaction.sales (POS; no payment
+    lifecycle), dated by the sale day * orders.customer_order_line (orders), dated by order_date * payment.payment
+    (order payments only), re-allocated here to order lines with the SAME weight, lifecycle dedup and
+    status predicates as gold_payment_actuals, but attributed to the original order''s lines and order_date
+    (sale cohort) instead of the payment event date. gold_payment_actuals remains the event-date (cash)
+    view; conservation checks tie the two.'
+  tags:
+  - gold
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the product (resolved by SCD2 product version at ingest).
+  - name: store_sk
+    logicalType: integer
+    physicalType: BIGINT
+    description: Surrogate key for the store.
+  - name: product_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable product business key.
+  - name: store_id
+    logicalType: string
+    physicalType: STRING
+    description: Durable store business key.
+  - name: date_key
+    logicalType: date
+    physicalType: DATE
+    description: 'Sale cohort date: POS transaction date or order date (not payment event date). Recent
+      cohorts are immature; reversals can land weeks after the sale.'
+  - name: currency_code
+    logicalType: string
+    physicalType: STRING
+    description: Reporting/base currency of all monetary columns (ISO 4217 alpha-3); single-currency by
+      construction.
+  - name: pos_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: SUM of net units from POS sales (sales.units), accounting for returns as negative units.
+  - name: pos_net_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of net revenue from POS transactions (sales.net_revenue).
+  - name: pos_cogs_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM(units * product.unit_cost) for POS sales by product version (SCD2 as-of the ingest
+      date).
+  - name: order_units
+    logicalType: number
+    physicalType: DECIMAL(12, 3)
+    description: SUM of units from customer order lines (net of internal payment allocations).
+  - name: order_booked_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of booked net amount from customer order lines (customer_order_line.net_amount).
+  - name: order_settled_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of order-line allocated amount from settled/captured payments (net-share allocation,
+      same predicates as gold_payment_actuals).
+  - name: order_unsettled_sales_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: order_booked_sales_lc - order_settled_sales_lc; booked revenue not yet received as payment
+      (authorized/declined/voided attempts excluded).
+  - name: order_refund_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of order-line allocated amount from merchant-initiated refunds; contra-revenue (not
+      recovered from COGS).
+  - name: order_chargeback_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of order-line allocated amount from bank-initiated chargebacks (payment disputes);
+      contra-revenue.
+  - name: order_adjustment_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM of order-line allocated amount from post-sale adjustments (goodwill, corrections);
+      contra-revenue (NULL order_id adjustments excluded).
+  - name: order_cogs_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: SUM(units * product.unit_cost) for order lines by product version (SCD2 as-of); no recovery
+      on refunded merchandise.
+  - name: booked_revenue_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: pos_net_sales_lc + order_booked_sales_lc; total booked revenue from both channels on
+      sale cohort date.
+  - name: realized_revenue_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: pos_net_sales_lc + order_settled_sales_lc - order_refund_lc - order_chargeback_lc - order_adjustment_lc;
+      cash-basis revenue (payment event amounts attributed to sale date).
+  - name: leakage_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: booked_revenue_lc - realized_revenue_lc; equals order_unsettled_sales_lc + order_refund_lc
+      + order_chargeback_lc + order_adjustment_lc (unreceived and reversed payment amounts).
+  - name: cogs_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: pos_cogs_lc + order_cogs_lc; total cost of goods sold (COGS not recovered on refunded
+      merchandise).
+  - name: booked_margin_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: booked_revenue_lc - cogs_lc; gross margin on booked revenue (pre-payment collection).
+  - name: realized_margin_lc
+    logicalType: number
+    physicalType: DECIMAL(18, 2)
+    description: realized_revenue_lc - cogs_lc; gross margin on realized (cash-basis) revenue after payment
+      reversals.
+  quality:
+  - name: bmv_realized_margin_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Ensure gold_realized_margin operates at the product x store x date grain
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      GROUP BY product_sk, store_sk, date_key
+
+      HAVING COUNT(*) > 1'
+  - name: bmv_realized_margin_booked_revenue_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify booked_revenue_lc = pos_net_sales_lc + order_booked_sales_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(booked_revenue_lc - (pos_net_sales_lc + order_booked_sales_lc)) > 0.02'
+  - name: bmv_realized_margin_realized_revenue_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify realized_revenue_lc = pos_net_sales_lc + order_settled_sales_lc - order_refund_lc
+      - order_chargeback_lc - order_adjustment_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(realized_revenue_lc - (pos_net_sales_lc + order_settled_sales_lc - order_refund_lc - order_chargeback_lc
+      - order_adjustment_lc)) > 0.02'
+  - name: bmv_realized_margin_leakage_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify leakage_lc = booked_revenue_lc - realized_revenue_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(leakage_lc - (booked_revenue_lc - realized_revenue_lc)) > 0.02'
+  - name: bmv_realized_margin_cogs_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify cogs_lc = pos_cogs_lc + order_cogs_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(cogs_lc - (pos_cogs_lc + order_cogs_lc)) > 0.02'
+  - name: bmv_realized_margin_booked_margin_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify booked_margin_lc = booked_revenue_lc - cogs_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(booked_margin_lc - (booked_revenue_lc - cogs_lc)) > 0.02'
+  - name: bmv_realized_margin_realized_margin_identity
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: Verify realized_margin_lc = realized_revenue_lc - cogs_lc within 0.02 tolerance
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE ABS(realized_margin_lc - (realized_revenue_lc - cogs_lc)) > 0.02'
+  - name: bmv_realized_margin_nonneg_order_amounts
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Allocated payment magnitudes are non-negative: payment amounts are non-negative by contract
+      and the allocation weight is clamped at 0, so a negative value here means the view regressed. (Booked
+      order sales and COGS follow core order-line values, which carry no non-negativity CHECK; they are
+      covered by the warn-severity check below.)'
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE order_settled_sales_lc < 0 OR order_refund_lc < 0 OR order_chargeback_lc < 0 OR order_adjustment_lc
+      < 0'
+  - name: bmv_realized_margin_nonneg_booked_and_cogs
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: 'Booked sales and COGS on either channel can legitimately be negative on otherwise-valid
+      core data: POS when an adopter loads returns as negative units, orders when a line carries a negative
+      net (deep discount or return line; customer_order_line.net_amount has no non-negativity CHECK).
+      Surfaced as a warning rather than failing the run, matching gold_payment_actuals, which clamps such
+      lines to zero allocation weight for the same reason.'
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE pos_cogs_lc < 0 OR pos_net_sales_lc < 0 OR order_booked_sales_lc < 0 OR order_cogs_lc < 0'
+  - name: bmv_realized_margin_unsettled_sanity
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: 'When order_unsettled_sales_lc is negative (settled > booked), flag for investigation.
+      The usual cause is an amount-basis mismatch: payment sale amounts that include tax or shipping while
+      customer_order_line.net_amount excludes them. Net those out upstream so both are on the same basis.'
+    query: 'SELECT product_sk, store_sk, date_key
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      WHERE order_unsettled_sales_lc < -0.05'
+  - name: bmv_realized_margin_single_currency
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: All rows use the single reporting/base currency; no NULL or mixed currencies allowed
+    query: "SELECT DISTINCT currency_code\nFROM balancing_margin_and_volume.gold_realized_margin\nWHERE\
+      \ currency_code <> (SELECT MAX(currency_code) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \   OR currency_code IS NULL"
+  - name: bmv_realized_margin_computed_not_all_null
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Guard NULL-KPI regression: when rows exist, computed measures must have at least one
+      non-NULL value'
+    query: 'SELECT 1
+
+      FROM balancing_margin_and_volume.gold_realized_margin
+
+      HAVING COUNT(*) > 0 AND (COUNT(realized_revenue_lc) = 0 OR COUNT(realized_margin_lc) = 0 OR COUNT(booked_revenue_lc)
+      = 0)'
+  - name: bmv_realized_margin_conservation_order_refund
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Lifetime SUM(order_refund_lc) in gold_realized_margin equals gold_payment_actuals refund_amount_lc
+      sum within max(1.00, 0.1%) tolerance. Both sides allocate the same events (payments whose order
+      has lines; NULL-order and zero-net events are excluded by both) with identical predicates: payment_type=''refund''
+      AND payment_status NOT IN (''authorized'', ''declined'', ''voided'').'
+    query: "SELECT 1 AS mismatch\nWHERE ABS(\n  (SELECT COALESCE(SUM(order_refund_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \  -\n  (SELECT COALESCE(SUM(refund_amount_lc), 0) FROM balancing_margin_and_volume.gold_payment_actuals)\n\
+      ) > GREATEST(1.00, 0.001 * ABS((SELECT COALESCE(SUM(order_refund_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)))"
+  - name: bmv_realized_margin_conservation_order_chargeback
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Lifetime SUM(order_chargeback_lc) in gold_realized_margin equals gold_payment_actuals
+      chargeback_amount_lc sum within max(1.00, 0.1%) tolerance. Both sides use identical allocation predicates:
+      payment_type=''chargeback'' AND payment_status NOT IN (''authorized'', ''declined'', ''voided'').'
+    query: "SELECT 1 AS mismatch\nWHERE ABS(\n  (SELECT COALESCE(SUM(order_chargeback_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \  -\n  (SELECT COALESCE(SUM(chargeback_amount_lc), 0) FROM balancing_margin_and_volume.gold_payment_actuals)\n\
+      ) > GREATEST(1.00, 0.001 * ABS((SELECT COALESCE(SUM(order_chargeback_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)))"
+  - name: bmv_realized_margin_conservation_order_adjustment
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Lifetime SUM(order_adjustment_lc) in gold_realized_margin equals gold_payment_actuals
+      adjustment_amount_lc sum within max(1.00, 0.1%) tolerance. Both sides use identical allocation predicates:
+      payment_type=''adjustment'' AND payment_status NOT IN (''authorized'', ''declined'', ''voided'').
+      Note: adjustments with NULL order_id cannot be allocated and are excluded from both views.'
+    query: "SELECT 1 AS mismatch\nWHERE ABS(\n  (SELECT COALESCE(SUM(order_adjustment_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \  -\n  (SELECT COALESCE(SUM(adjustment_amount_lc), 0) FROM balancing_margin_and_volume.gold_payment_actuals)\n\
+      ) > GREATEST(1.00, 0.001 * ABS((SELECT COALESCE(SUM(order_adjustment_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)))"
+  - name: bmv_realized_margin_conservation_pos_booked
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Booked-side conservation: lifetime POS net sales in gold_realized_margin equal the POS
+      sales fact. Catches a join that silently drops sales (e.g. a product or store key with no match).'
+    query: "SELECT 1 AS mismatch\nWHERE ABS(\n  (SELECT COALESCE(SUM(pos_net_sales_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \  -\n  (SELECT COALESCE(SUM(net_revenue), 0) FROM transaction.sales)\n) > GREATEST(1.00, 0.001\
+      \ * ABS((SELECT COALESCE(SUM(net_revenue), 0) FROM transaction.sales)))"
+  - name: bmv_realized_margin_conservation_order_booked
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Booked-side conservation: lifetime order booked sales equal the order-line fact.'
+    query: "SELECT 1 AS mismatch\nWHERE ABS(\n  (SELECT COALESCE(SUM(order_booked_sales_lc), 0) FROM balancing_margin_and_volume.gold_realized_margin)\n\
+      \  -\n  (SELECT COALESCE(SUM(net_amount), 0) FROM orders.customer_order_line)\n) > GREATEST(1.00,\
+      \ 0.001 * ABS((SELECT COALESCE(SUM(net_amount), 0) FROM orders.customer_order_line)))"
+  - name: bmv_realized_margin_unit_cost_coverage
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: Share of booked revenue on products with no unit_cost (missing product row or NULL product.unit_cost,
+      which the product checks tolerate). That revenue carries no COGS, so realized margin is overstated
+      by it. Fires when more than 1% of booked revenue is uncosted.
+    query: "SELECT uncosted_booked_lc, booked_lc\nFROM (\n  SELECT\n    SUM(CASE WHEN p.unit_cost IS NULL\
+      \ THEN g.booked_revenue_lc ELSE 0 END) AS uncosted_booked_lc,\n    SUM(g.booked_revenue_lc) AS booked_lc\n\
+      \  FROM balancing_margin_and_volume.gold_realized_margin g\n  LEFT JOIN product.product p ON g.product_sk\
+      \ = p.product_sk\n)\nWHERE booked_lc > 0 AND uncosted_booked_lc > 0.01 * booked_lc"
 - name: gold_sales_actuals
   physicalName: balancing_margin_and_volume.gold_sales_actuals
   physicalType: view
@@ -2654,6 +3011,224 @@ schema:
       - return_on_markdown_pct
       - promo_profit_roi
     description: Incremental Profit Return on Markdown (ROM)
+- name: mv_payment_actuals
+  physicalName: balancing_margin_and_volume.mv_payment_actuals
+  physicalType: view
+  description: Payment-side revenue leakage metrics at product x store x day grain. Exposes settled sales,
+    refunds, chargebacks, and adjustments with normalized rate measures (ratio-of-sums). Amounts dated
+    by payment event date (cash basis). Per-product amounts are order-revenue-share allocations.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - payment_date
+      - event_date
+    description: Daily grain; attribution date is payment event date (refunds/chargebacks dated when money
+      settles, not original sale date)
+  - name: category
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - merch_category
+      - department
+    description: Merchandising category
+  - name: store_format
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - format_type
+      - store_class
+    description: Store format or classification
+  - name: fiscal_year
+    logicalType: integer
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_year
+      - fy
+    description: NRF 4-5-4 fiscal year, conformed on fiscal_calendar. Group with fiscal_period or fiscal_season
+      so the same period in different years is not merged.
+  - name: fiscal_season
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_season
+      - merch_season
+      - half_year
+    description: Retail merchandising half-year season (spring = fiscal periods 1-6, fall = 7-12), conformed
+      on fiscal_calendar
+  - name: fiscal_period
+    logicalType: integer
+    customProperties:
+    - property: synonyms
+      value:
+      - fiscal_month
+      - retail_period
+    description: Fiscal period or month
+  - name: currency_code
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - base_currency
+      - reporting_currency
+    description: Reporting/base currency of all monetary measures (ISO 4217), single-currency by construction
+  - name: settled_sale_amount_lc
+    logicalType: number
+    businessName: Settled Sales (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - order_settled_sales
+      - settled_order_payments
+    description: Total realized sales revenue from settled/captured payment events (order-grain events
+      allocated to product x store x day via order line weight). This is the base denominator for all
+      leakage rate calculations. Dated by payment event.
+  - name: refund_amount_lc
+    logicalType: number
+    businessName: Refunds (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - cash_refunds
+      - refunds_by_payment_date
+    description: Total refund magnitude (allocated, excluding declined/voided refunds). Contra-revenue
+      representing voluntary customer returns processed as separate refund-typed payment events. Per-product
+      amounts allocated by order-revenue share. Dated by payment event.
+  - name: refund_rate
+    logicalType: number
+    businessName: Refund Rate (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - refund_pct
+      - cash_refund_rate
+    description: 'Refund magnitude as a percentage of settled sales (ratio-of-sums: total refunds / total
+      settled sales). No rolling or cohort logic baked in; filter date_key or fiscal_season at query time
+      for period-specific rates. Dated by payment event.'
+  - name: chargeback_amount_lc
+    logicalType: number
+    businessName: Chargebacks (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - cash_chargebacks
+      - chargebacks_by_payment_date
+      - involuntary_returns
+    description: Total chargeback magnitude (allocated, excluding declined/voided). Involuntary reversals
+      initiated by the customer's payment provider (fraud/dispute), kept separate from refunds for root-cause
+      analysis. Per-product amounts allocated by order-revenue share. Dated by payment event.
+  - name: chargeback_rate
+    logicalType: number
+    businessName: Chargeback Rate (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - dispute_rate
+      - chargeback_pct
+      - cash_chargeback_rate
+    description: Chargeback magnitude as a percentage of settled sales (ratio-of-sums). Signals payment
+      fraud or customer dispute risk; distinct from refund_rate for merchant risk assessment. Dated by
+      payment event.
+  - name: adjustment_amount_lc
+    logicalType: number
+    businessName: Adjustments (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - cash_adjustments
+      - adjustments_by_payment_date
+      - payment_adjustments
+    description: Total adjustment magnitude (allocated, excluding declined/voided). Post-sale goodwill
+      credits, corrections, or disputed-amount settlements; a non-negative magnitude (payment.amount is
+      >= 0 by contract) treated as contra-revenue, as in gold_payment_actuals. Per-product amounts allocated
+      by order-revenue share. Dated by payment event.
+  - name: adjustment_rate
+    logicalType: number
+    businessName: Adjustment Rate (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - adjustment_pct
+      - payment_adjustment_rate
+    description: Adjustment magnitude as a percentage of settled sales (ratio-of-sums). Reflects post-sale
+      discretionary credits (loyalty, goodwill, dispute settlement); isolated to measure operational fairness/discounting
+      policy. Dated by payment event.
+  - name: total_leakage_amount
+    logicalType: number
+    businessName: Payment Reversals (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - cash_leakage
+      - total_reversals
+    description: Refunds plus chargebacks plus adjustments, dated by the payment event. Excludes order
+      sales that were never captured or settled; mv_realized_margin leakage_lc includes them and is dated
+      by the sale.
+  - name: payment_leakage_rate
+    logicalType: number
+    businessName: Payment Reversal Rate (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - payment_reversal_pct
+      - reversal_share_of_settled
+    description: Aggregate leakage (all contra-revenue) as a percentage of settled sales (ratio-of-sums).
+      Holistic metric for revenue retention; complement is net realized revenue pct. Dated by payment
+      event.
+  - name: net_revenue_after_leakage
+    logicalType: number
+    businessName: Settled Sales After Reversals (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - net_payment_revenue
+      - cash_revenue_after_reversals
+    description: Settled sales less all contra-revenue (refunds, chargebacks, adjustments). True net revenue
+      from the payment perspective (not yet adjusted for cost to yield realized margin). Dated by payment
+      event.
+  - name: net_revenue_retention_pct
+    logicalType: number
+    businessName: Settled Sales Retained % (payment date)
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue_retention_rate
+      - net_revenue_pct
+      - non_leakage_rate
+    description: Percentage of settled sales retained after leakage (ratio-of-sums). Complement to payment_leakage_rate;
+      a clean measure of end-to-end payment health. Dated by payment event.
 - name: mv_price_actuals
   physicalName: balancing_margin_and_volume.mv_price_actuals
   physicalType: view
@@ -2806,6 +3381,243 @@ schema:
       - psychological_threshold_distance
       - charm_price_gap
     description: Proximity to psychological boundaries like .99
+- name: mv_realized_margin
+  physicalName: balancing_margin_and_volume.mv_realized_margin
+  physicalType: view
+  description: Realized margin and revenue leakage metrics.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/balancing-margin-and-volume/README.md
+    type: businessDefinition
+  - url: outcome-packages/balancing-margin-and-volume/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: product_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - article_id
+      - item_code
+      - sku_number
+    description: Universal article identifier
+  - name: store_id
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - location_code
+      - branch_id
+    description: Universal store identifier
+  - name: date_key
+    logicalType: date
+    customProperties:
+    - property: synonyms
+      value:
+      - sale_date
+      - order_date
+      - cohort_date
+    description: Daily grain; sale-cohort basis (POS dated by sale day, orders dated by order_date)
+  - name: category
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - merch_category
+      - department
+    description: Merchandising category
+  - name: store_format
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - format_type
+      - store_class
+    description: Store format or classification. Order-channel rows carry the store the order is attributed
+      to (ship-to or fulfilling store), so this dimension applies to both channels.
+  - name: fiscal_year
+    logicalType: integer
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_year
+      - fy
+    description: NRF 4-5-4 fiscal year, conformed on fiscal_calendar. Group with fiscal_period or fiscal_season
+      so the same period in different years is not merged.
+  - name: fiscal_season
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - retail_season
+      - merch_season
+      - half_year
+    description: Retail merchandising half-year season (spring = fiscal periods 1-6, fall = 7-12), conformed
+      on fiscal_calendar
+  - name: fiscal_period
+    logicalType: integer
+    customProperties:
+    - property: synonyms
+      value:
+      - fiscal_month
+      - retail_period
+    description: Fiscal period or month
+  - name: currency_code
+    logicalType: string
+    customProperties:
+    - property: synonyms
+      value:
+      - base_currency
+      - reporting_currency
+    description: Reporting/base currency of all monetary measures (ISO 4217), single-currency by construction
+  - name: booked_revenue_lc
+    logicalType: number
+    businessName: Booked Revenue (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - total_booked_sales
+      - booked_net_sales
+    description: Total revenue recognized at sale (POS net sales + order booked sales), gross of all reversals
+  - name: realized_revenue_lc
+    logicalType: number
+    businessName: Realized Revenue (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_realized_revenue
+      - sale_cohort_net_revenue
+    description: POS net sales plus order-channel SETTLED sales, less refunds, chargebacks and adjustments
+      attributed to the original order date (excludes order sales never captured or settled). Sale-cohort
+      basis.
+  - name: leakage_lc
+    logicalType: number
+    businessName: Revenue Leakage incl. Unsettled (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_leakage
+      - sale_cohort_revenue_shortfall
+    description: 'Booked revenue not realized: unsettled orders, refunds, chargebacks, adjustments combined'
+  - name: refund_lc
+    logicalType: number
+    businessName: Refunds (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_refunds
+      - refunds_by_sale_date
+    description: Refund magnitude attributed to sale-cohort date; voluntary customer returns
+  - name: chargeback_lc
+    logicalType: number
+    businessName: Chargebacks (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_chargebacks
+      - chargebacks_by_sale_date
+    description: Chargeback magnitude attributed to sale-cohort date; involuntary payment provider reversals
+  - name: adjustment_lc
+    logicalType: number
+    businessName: Adjustments (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_adjustments
+      - adjustments_by_sale_date
+    description: Adjustment magnitude attributed to sale-cohort date; post-sale credits and settlements
+  - name: unsettled_sales_lc
+    logicalType: number
+    businessName: Unsettled Sales
+    customProperties:
+    - property: synonyms
+      value:
+      - pending_settlement
+      - pending_capture
+      - in_flight_revenue
+    description: Order revenue booked but not yet settled or captured; operational leakage pending collection
+  - name: cogs_lc
+    logicalType: number
+    businessName: Cost of Goods Sold
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_margin_cogs
+      - cohort_cost_of_goods_sold
+    description: Total COGS (POS and order channels); product_sk version used at ingest time
+  - name: booked_margin_lc
+    logicalType: number
+    businessName: Booked Gross Profit
+    customProperties:
+    - property: synonyms
+      value:
+      - gross_profit_accrual
+      - margin_before_leakage
+    description: Booked revenue minus COGS; gross of all payment reversals
+  - name: realized_margin_lc
+    logicalType: number
+    businessName: Realized Gross Profit
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_gross_profit
+      - margin_after_leakage
+    description: Realized revenue minus COGS; net of all refunds, chargebacks, and adjustments; sale-cohort
+      basis
+  - name: booked_margin_pct
+    logicalType: number
+    businessName: Booked Margin %
+    customProperties:
+    - property: synonyms
+      value:
+      - booked_margin_rate
+      - gross_margin_pct_accrual
+    description: Booked gross margin rate (ratio-of-sums); gross of payment reversals
+  - name: realized_margin_pct
+    logicalType: number
+    businessName: Realized Margin %
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_margin_rate
+      - post_leakage_margin_pct
+    description: Realized gross margin rate (ratio-of-sums); net of all reversals; sale-cohort basis
+  - name: leakage_rate
+    logicalType: number
+    businessName: Leakage Rate of Booked Revenue (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - cohort_leakage_rate
+      - leakage_pct_of_booked
+    description: Revenue leakage as a percentage of total booked revenue across POS and order channels
+      (ratio-of-sums); combines unsettled, refund, chargeback, adjustment. Diluted by the POS share, which
+      carries no reversals; use order_channel_leakage_rate to compare leakage intensity. Sale-cohort basis.
+  - name: order_channel_leakage_rate
+    logicalType: number
+    businessName: Order Channel Leakage Rate (sale cohort)
+    customProperties:
+    - property: synonyms
+      value:
+      - order_leakage_rate
+      - cohort_order_leakage_pct
+    description: Revenue leakage as a percentage of ORDER-channel booked sales (ratio-of-sums). Leakage
+      occurs only on the order channel (POS sales carry no payment reversals in ORDM), so this is the
+      rate to compare across stores or categories; leakage_rate divides by total booked revenue including
+      POS and is diluted by the POS share. Sale-cohort basis.
+  - name: order_channel_share
+    logicalType: number
+    businessName: Order Channel Share
+    customProperties:
+    - property: synonyms
+      value:
+      - order_revenue_share
+      - ecommerce_revenue_share
+      - order_channel_pct
+    description: Proportion of booked revenue from orders (customer_order_line channel, excluding POS)
 - name: mv_rolling_features
   physicalName: balancing_margin_and_volume.mv_rolling_features
   physicalType: view

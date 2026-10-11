@@ -12,3 +12,9 @@
 | **Event-time vs processing-time** | `event_timestamp` is when the payment occurred (UTC); `load_timestamp` is when it landed in the canonical core. Keep the two distinct for late-arriving data. |
 
 Surrogate `payment_sk` is the join/FK target; `payment_id` is the durable business key. Keyed to the order (`order_id`) and the customer (`profile`). No aggregates live here (principle #4).
+
+---
+
+## Realized Margin & Leakage Terms
+
+For comprehensive glossary of realized-margin and revenue-leakage KPI definitions (booked revenue, realized revenue, revenue leakage, unsettled sales, realized margin, sale-cohort vs event-date attribution), see the [Balancing Margin & Volume glossary](../../outcome-packages/balancing-margin-and-volume/glossary.md). Those terms are outcome-package concepts; payment-domain terms live above.

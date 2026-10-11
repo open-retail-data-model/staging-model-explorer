@@ -20958,6 +20958,126 @@
           "name": "bmv_affinity_demand_transfer_range",
           "severity": "error",
           "table": "gold_affinity_features"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_grain_unique",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_booked_revenue_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_realized_revenue_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_leakage_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_cogs_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_booked_margin_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_realized_margin_identity",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_nonneg_order_amounts",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_nonneg_booked_and_cogs",
+          "severity": "warn",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_unsettled_sanity",
+          "severity": "warn",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_reversal_exceeds_settled_sale",
+          "severity": "warn",
+          "table": "payment"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_single_currency",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_computed_not_all_null",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_conservation_order_refund",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_conservation_order_chargeback",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_conservation_order_adjustment",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_conservation_pos_booked",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_conservation_order_booked",
+          "severity": "error",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_unit_cost_coverage",
+          "severity": "warn",
+          "table": "gold_realized_margin"
+        },
+        {
+          "column": null,
+          "name": "bmv_realized_margin_no_raw_pii",
+          "severity": "error",
+          "table": ""
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
@@ -23099,6 +23219,241 @@
         {
           "columns": [
             {
+              "comment": "Surrogate key for the product (resolved by SCD2 product version at ingest).",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Surrogate key for the store.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_sk",
+              "pii": false,
+              "pk": false,
+              "type": "BIGINT"
+            },
+            {
+              "comment": "Durable product business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "product_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Durable store business key.",
+              "enum_values": [],
+              "fk": false,
+              "name": "store_id",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "Sale cohort date: POS transaction date or order date (not payment event date). Recent cohorts are immature; reversals can land weeks after the sale.",
+              "enum_values": [],
+              "fk": false,
+              "name": "date_key",
+              "pii": false,
+              "pk": false,
+              "type": "DATE"
+            },
+            {
+              "comment": "Reporting/base currency of all monetary columns (ISO 4217 alpha-3); single-currency by construction.",
+              "enum_values": [],
+              "fk": false,
+              "name": "currency_code",
+              "pii": false,
+              "pk": false,
+              "type": "STRING"
+            },
+            {
+              "comment": "SUM of net units from POS sales (sales.units), accounting for returns as negative units.",
+              "enum_values": [],
+              "fk": false,
+              "name": "pos_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "SUM of net revenue from POS transactions (sales.net_revenue).",
+              "enum_values": [],
+              "fk": false,
+              "name": "pos_net_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM(units * product.unit_cost) for POS sales by product version (SCD2 as-of the ingest date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "pos_cogs_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM of units from customer order lines (net of internal payment allocations).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_units",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(12, 3)"
+            },
+            {
+              "comment": "SUM of booked net amount from customer order lines (customer_order_line.net_amount).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_booked_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM of order-line allocated amount from settled/captured payments (net-share allocation, same predicates as gold_payment_actuals).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_settled_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "order_booked_sales_lc - order_settled_sales_lc; booked revenue not yet received as payment (authorized/declined/voided attempts excluded).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_unsettled_sales_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM of order-line allocated amount from merchant-initiated refunds; contra-revenue (not recovered from COGS).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_refund_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM of order-line allocated amount from bank-initiated chargebacks (payment disputes); contra-revenue.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_chargeback_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM of order-line allocated amount from post-sale adjustments (goodwill, corrections); contra-revenue (NULL order_id adjustments excluded).",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_adjustment_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "SUM(units * product.unit_cost) for order lines by product version (SCD2 as-of); no recovery on refunded merchandise.",
+              "enum_values": [],
+              "fk": false,
+              "name": "order_cogs_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "pos_net_sales_lc + order_booked_sales_lc; total booked revenue from both channels on sale cohort date.",
+              "enum_values": [],
+              "fk": false,
+              "name": "booked_revenue_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "pos_net_sales_lc + order_settled_sales_lc - order_refund_lc - order_chargeback_lc - order_adjustment_lc; cash-basis revenue (payment event amounts attributed to sale date).",
+              "enum_values": [],
+              "fk": false,
+              "name": "realized_revenue_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "booked_revenue_lc - realized_revenue_lc; equals order_unsettled_sales_lc + order_refund_lc + order_chargeback_lc + order_adjustment_lc (unreceived and reversed payment amounts).",
+              "enum_values": [],
+              "fk": false,
+              "name": "leakage_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "pos_cogs_lc + order_cogs_lc; total cost of goods sold (COGS not recovered on refunded merchandise).",
+              "enum_values": [],
+              "fk": false,
+              "name": "cogs_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "booked_revenue_lc - cogs_lc; gross margin on booked revenue (pre-payment collection).",
+              "enum_values": [],
+              "fk": false,
+              "name": "booked_margin_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            },
+            {
+              "comment": "realized_revenue_lc - cogs_lc; gross margin on realized (cash-basis) revenue after payment reversals.",
+              "enum_values": [],
+              "fk": false,
+              "name": "realized_margin_lc",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(18, 2)"
+            }
+          ],
+          "comment": "Realized margin and revenue leakage at product x store x SALE day grain, across the two separate channels ORDM models. Reads canonical core directly: * transaction.sales (POS; no payment lifecycle), dated by the sale day * orders.customer_order_line (orders), dated by order_date * payment.payment (order payments only), re-allocated here to order lines with the SAME weight, lifecycle dedup and status predicates as gold_payment_actuals, but attributed to the original order's lines and order_date (sale cohort) instead of the payment event date. gold_payment_actuals remains the event-date (cash) view; conservation checks tie the two.",
+          "consumes_tables": [
+            {
+              "table": "customer_order_line",
+              "unit": "order"
+            },
+            {
+              "table": "payment",
+              "unit": "payment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "sales",
+              "unit": "transaction"
+            }
+          ],
+          "layer": "gold",
+          "materialized": true,
+          "name": "gold_realized_margin",
+          "role": "gold",
+          "scd2": false
+        },
+        {
+          "columns": [
+            {
               "comment": "Surrogate key for the product.",
               "enum_values": [],
               "fk": false,
@@ -23438,11 +23793,14 @@
         {
           "consumes": [
             "order",
-            "payment"
+            "payment",
+            "product",
+            "transaction"
           ],
           "name": "Realized Margin & Revenue Leakage",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
+            "gold_realized_margin",
             "gold_payment_actuals"
           ]
         }
