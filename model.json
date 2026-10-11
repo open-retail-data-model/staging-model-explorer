@@ -20934,6 +20934,30 @@
           "name": "bmv_assortment_computed_not_all_null",
           "severity": "error",
           "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_space_elasticity_valid",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_space_elasticity_estimated",
+          "severity": "warn",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_assortment_projection_sign",
+          "severity": "error",
+          "table": "gold_assortment_optimization"
+        },
+        {
+          "column": null,
+          "name": "bmv_affinity_demand_transfer_range",
+          "severity": "error",
+          "table": "gold_affinity_features"
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
@@ -21633,7 +21657,7 @@
               "type": "DECIMAL(8, 4)"
             },
             {
-              "comment": "",
+              "comment": "Share of this SKU demand assumed to move to its mapped substitutes if it is removed or out of stock: 1 - product of (1 - affinity_coefficient) over its substitutes, reading each affinity as the share of shoppers who accept that substitute. 0 when no substitute is mapped. Heuristic assumption; adopters can replace it with a fitted demand-transfer model.",
               "enum_values": [],
               "fk": false,
               "name": "substitute_demand_transfer_pct",
@@ -21729,7 +21753,7 @@
               "type": "DECIMAL(10, 2)"
             },
             {
-              "comment": "Probability of demand transfer from substitute products. DEFERRED (NULL at source; needs a demand-transfer model).",
+              "comment": "Share of this SKU demand assumed to move to its mapped substitutes if it is removed (0 to 1; 0 when no substitute is mapped). Heuristic over product_relationship affinities, from gold_affinity_features; an assumption, not estimated from observed substitution.",
               "enum_values": [],
               "fk": false,
               "name": "substitute_demand_transfer_pct",
@@ -21828,7 +21852,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Elasticity of volume to allocated space. DEFERRED (needs a fitted regression; no facing variation to regress).",
+              "comment": "Heuristic space elasticity: percent change in units per 1 percent change in facings, per space-planning category. Within-product cross-store log-log slope of non-promo velocity on facings, shrunk toward a 0.17 prior (Eisend 2014 meta-analytic average) by its standard error, clamped to 0..1. Observational, not causal. NULL when the SKU x store has no planogram allocation.",
               "enum_values": [],
               "fk": false,
               "name": "space_elasticity",
@@ -21837,7 +21861,25 @@
               "type": "DECIMAL(8, 4)"
             },
             {
-              "comment": "Projected volume change. DEFERRED (what-if optimizer output).",
+              "comment": "Standard error of space_elasticity after shrinkage toward the prior (0.10 when only the prior is used).",
+              "enum_values": [],
+              "fk": false,
+              "name": "space_elasticity_se",
+              "pii": false,
+              "pk": false,
+              "type": "DECIMAL(8, 4)"
+            },
+            {
+              "comment": "Number of product x store x planogram-allocation observations behind the category space_elasticity fit (0 = prior only).",
+              "enum_values": [],
+              "fk": false,
+              "name": "space_elasticity_n_obs",
+              "pii": false,
+              "pk": false,
+              "type": "INT"
+            },
+            {
+              "comment": "Scenario: change in this SKU own units per selling day at the baseline rate if the recommendation is applied. EXPAND adds one facing (baseline x (((facings + 1) / facings) ^ space_elasticity - 1)); DROP removes the SKU (minus baseline_velocity); KEEP is 0. Not a forecast.",
               "enum_values": [],
               "fk": false,
               "name": "projected_volume_lift",
@@ -21846,7 +21888,7 @@
               "type": "DECIMAL(12, 3)"
             },
             {
-              "comment": "Projected margin change. DEFERRED (downstream of projected_volume_lift).",
+              "comment": "Scenario: net gross-margin change per selling day in local currency if the recommendation is applied = projected_volume_lift x own unit margin - cannibalization_drag_lc. Unit margin is the 14-day margin over units on rate-bearing days.",
               "enum_values": [],
               "fk": false,
               "name": "projected_margin_lift_lc",
@@ -21855,7 +21897,7 @@
               "type": "DECIMAL(18, 2)"
             },
             {
-              "comment": "Expected cannibalization on other items. DEFERRED (needs the optimizer + substitute_demand_transfer_pct, itself NULL).",
+              "comment": "Scenario: gross margin per selling day in local currency that the action takes from mapped substitutes = projected_volume_lift x store-conditional demand transfer (1 - product of (1 - affinity) over the mapped substitutes sold in the store) x affinity-weighted substitute unit margin (0 when no mapped substitute sells in the store; own unit margin when substitutes sell there but their margin is unknown). Positive on EXPAND, negative (recapture) on DROP, 0 on KEEP.",
               "enum_values": [],
               "fk": false,
               "name": "cannibalization_drag_lc",
@@ -21864,7 +21906,7 @@
               "type": "DECIMAL(18, 2)"
             }
           ],
-          "comment": "Assortment optimization: features, a rule-based recommendation, and deferred model outputs.",
+          "comment": "Assortment optimization: features, a rule-based recommendation, and heuristic model outputs.",
           "consumes_tables": [
             {
               "table": "inventory_position",
@@ -23363,7 +23405,7 @@
             "transaction"
           ],
           "name": "Assortment Optimization",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_assortment_optimization",
             "gold_affinity_features",

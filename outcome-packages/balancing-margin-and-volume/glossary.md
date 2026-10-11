@@ -21,15 +21,15 @@
 | **Planogram** | A visual representation of a stores products or services, used to maximize sales and space. |
 | **Allocated Facings** | The number of physical items of a specific product visible at the front of a retail shelf. |
 | **Allocated Sqft** | The total square footage assigned to a specific product on a retail shelf. |
-| **Space Elasticity** | The sensitivity of sales volume to changes in the amount of shelf space allocated to a product. |
-| **Substitute Demand Transfer Pct** | The probability that demand transfers to a substitute product when an item is unavailable or dropped. |
+| **Space Elasticity** | The sensitivity of sales volume to changes in the amount of shelf space allocated to a product: the percent change in units for a 1% change in facings. ORDM estimates it per space-planning category from cross-store differences in facings for the same product, shrunk toward a 0.17 literature average; it is observational, not a causal effect. |
+| **Substitute Demand Transfer Pct** | The share of an item's demand assumed to move to its substitutes when it is unavailable or dropped. ORDM derives it from the substitute affinity coefficients (1 - product of (1 - affinity)); it is an assumption, not measured substitution. |
 | **Rolling Sales Velocity 14d** | The 14-day rolling average of daily units sold. |
 | **Baseline Velocity** | The expected volume sold in the absence of promotions. |
 | **Margin Contribution Pct** | An item's 14-day realized gross-margin rate: rolling gross-margin dollars divided by rolling net revenue on days that carry a gross-margin rate, over the same 14-day window (ratio-of-sums). Days lacking a margin rate are excluded from the denominator so the rate is not biased downward. |
 | **Assortment Recommendation** | Rule-based recommendation for an item's status in the assortment (KEEP, DROP, EXPAND), derived deterministically from sales velocity, margin health, and days-on-hand. |
-| **Projected Volume Lift** | The expected change in volume from a recommended assortment action. |
-| **Projected Margin Lift** | The expected change in margin from a recommended assortment action. |
-| **Cannibalization Drag** | The expected loss in sales on other items due to demand transfer or cannibalization. |
+| **Projected Volume Lift** | The change in an item's own units per selling day, at its baseline rate, if the recommended assortment action is applied: one more facing for EXPAND, the item's full baseline lost for DROP, none for KEEP. A scenario, not a forecast. |
+| **Projected Margin Lift** | The net change in gross margin per selling day from a recommended assortment action: the item's own margin change minus cannibalization drag on its substitutes. |
+| **Cannibalization Drag** | The gross margin per selling day an assortment action takes from substitute items through demand transfer. Positive when an EXPAND pulls demand from substitutes, negative when a DROP's demand is recaptured by them. |
 | **Settled Sale Amount** | Allocated magnitude of sale payments in a settled or captured state, spread to product × store × day. The denominator base for payment-side leakage rates. |
 | **Refund Amount** | Allocated magnitude of merchant-initiated refunds (contra-revenue), from the payment domain. Distinct from a chargeback. |
 | **Chargeback Amount** | Allocated magnitude of bank-initiated payment reversals (disputes). Kept distinct from refunds: involuntary, typically irrecoverable, and never touches the POS sales fact. |

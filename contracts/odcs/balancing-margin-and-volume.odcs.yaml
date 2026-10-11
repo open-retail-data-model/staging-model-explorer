@@ -645,6 +645,10 @@ schema:
   - name: substitute_demand_transfer_pct
     logicalType: number
     physicalType: DECIMAL(8, 4)
+    description: 'Share of this SKU demand assumed to move to its mapped substitutes if it is removed
+      or out of stock: 1 - product of (1 - affinity_coefficient) over its substitutes, reading each affinity
+      as the share of shoppers who accept that substitute. 0 when no substitute is mapped. Heuristic assumption;
+      adopters can replace it with a fitted demand-transfer model.'
   quality:
   - name: bmv_affinity_features_grain_unique
     type: sql
@@ -660,10 +664,21 @@ schema:
       GROUP BY product_sk, store_sk, date_key
 
       HAVING COUNT(*) > 1'
+  - name: bmv_affinity_demand_transfer_range
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'The demand-transfer share is a fraction: never NULL (0 when no substitute is mapped),
+      within [0, 1].'
+    query: "SELECT product_sk, store_sk, date_key, substitute_demand_transfer_pct\nFROM balancing_margin_and_volume.gold_affinity_features\n\
+      WHERE substitute_demand_transfer_pct IS NULL\n   OR substitute_demand_transfer_pct < 0 OR substitute_demand_transfer_pct\
+      \ > 1"
 - name: gold_assortment_optimization
   physicalName: balancing_margin_and_volume.gold_assortment_optimization
   physicalType: view
-  description: 'Assortment optimization: features, a rule-based recommendation, and deferred model outputs.'
+  description: 'Assortment optimization: features, a rule-based recommendation, and heuristic model outputs.'
   tags:
   - gold
   authoritativeDefinitions:
@@ -702,8 +717,9 @@ schema:
   - name: substitute_demand_transfer_pct
     logicalType: number
     physicalType: DECIMAL(8, 4)
-    description: Probability of demand transfer from substitute products. DEFERRED (NULL at source; needs
-      a demand-transfer model).
+    description: Share of this SKU demand assumed to move to its mapped substitutes if it is removed (0
+      to 1; 0 when no substitute is mapped). Heuristic over product_relationship affinities, from gold_affinity_features;
+      an assumption, not estimated from observed substitution.
   - name: rolling_sales_velocity_14d
     logicalType: number
     physicalType: DOUBLE
@@ -751,21 +767,40 @@ schema:
   - name: space_elasticity
     logicalType: number
     physicalType: DECIMAL(8, 4)
-    description: Elasticity of volume to allocated space. DEFERRED (needs a fitted regression; no facing
-      variation to regress).
+    description: 'Heuristic space elasticity: percent change in units per 1 percent change in facings,
+      per space-planning category. Within-product cross-store log-log slope of non-promo velocity on facings,
+      shrunk toward a 0.17 prior (Eisend 2014 meta-analytic average) by its standard error, clamped to
+      0..1. Observational, not causal. NULL when the SKU x store has no planogram allocation.'
+  - name: space_elasticity_se
+    logicalType: number
+    physicalType: DECIMAL(8, 4)
+    description: Standard error of space_elasticity after shrinkage toward the prior (0.10 when only the
+      prior is used).
+  - name: space_elasticity_n_obs
+    logicalType: integer
+    physicalType: INT
+    description: Number of product x store x planogram-allocation observations behind the category space_elasticity
+      fit (0 = prior only).
   - name: projected_volume_lift
     logicalType: number
     physicalType: DECIMAL(12, 3)
-    description: Projected volume change. DEFERRED (what-if optimizer output).
+    description: 'Scenario: change in this SKU own units per selling day at the baseline rate if the recommendation
+      is applied. EXPAND adds one facing (baseline x (((facings + 1) / facings) ^ space_elasticity - 1));
+      DROP removes the SKU (minus baseline_velocity); KEEP is 0. Not a forecast.'
   - name: projected_margin_lift_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
-    description: Projected margin change. DEFERRED (downstream of projected_volume_lift).
+    description: 'Scenario: net gross-margin change per selling day in local currency if the recommendation
+      is applied = projected_volume_lift x own unit margin - cannibalization_drag_lc. Unit margin is the
+      14-day margin over units on rate-bearing days.'
   - name: cannibalization_drag_lc
     logicalType: number
     physicalType: DECIMAL(18, 2)
-    description: Expected cannibalization on other items. DEFERRED (needs the optimizer + substitute_demand_transfer_pct,
-      itself NULL).
+    description: 'Scenario: gross margin per selling day in local currency that the action takes from
+      mapped substitutes = projected_volume_lift x store-conditional demand transfer (1 - product of (1
+      - affinity) over the mapped substitutes sold in the store) x affinity-weighted substitute unit margin
+      (0 when no mapped substitute sells in the store; own unit margin when substitutes sell there but
+      their margin is unknown). Positive on EXPAND, negative (recapture) on DROP, 0 on KEEP.'
   quality:
   - name: bmv_assortment_opt_grain_unique
     type: sql
@@ -813,11 +848,58 @@ schema:
       at least one non-NULL value (a 100%-NULL governed output is the anti-pattern this view was fixed
       to avoid). The COUNT(*) > 0 guard means a legitimately-empty deploy stage does NOT red the run (empty
       != all-NULL).'
+    query: "SELECT 1\nFROM balancing_margin_and_volume.gold_assortment_optimization\nHAVING COUNT(*) >\
+      \ 0 AND (COUNT(margin_contribution_pct) = 0 OR COUNT(baseline_velocity) = 0\n                  \
+      \       OR COUNT(projected_volume_lift) = 0)"
+  - name: bmv_assortment_space_elasticity_valid
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: The heuristic space elasticity is clamped to [0, 1], carries a positive standard error,
+      and is only set exactly on rows that have a planogram allocation with a category (no allocation
+      or no category -> NULL, while a category with no usable fit still gets the 0.17 prior).
+    query: "SELECT product_sk, store_sk, allocated_facings, space_elasticity, space_elasticity_se, space_elasticity_n_obs\n\
+      FROM balancing_margin_and_volume.gold_assortment_optimization\nWHERE (space_elasticity IS NOT NULL\
+      \ AND (space_elasticity < 0 OR space_elasticity > 1\n                                         OR\
+      \ space_elasticity_se IS NULL OR space_elasticity_se <= 0\n                                    \
+      \     OR space_elasticity_n_obs IS NULL OR space_elasticity_n_obs < 0))\n   OR (space_elasticity\
+      \ IS NOT NULL AND allocated_facings IS NULL)\n   OR (space_elasticity IS NULL AND allocated_facings\
+      \ IS NOT NULL\n       AND EXISTS (SELECT 1 FROM balancing_margin_and_volume.planogram pl\n     \
+      \              WHERE pl.product_sk = gold_assortment_optimization.product_sk\n                 \
+      \    AND pl.store_sk = gold_assortment_optimization.store_sk\n                     AND pl.space_planning_category\
+      \ IS NOT NULL\n                     AND gold_assortment_optimization.snapshot_date >= pl.effective_from_date\n\
+      \                     AND (pl.effective_to_date IS NULL OR gold_assortment_optimization.snapshot_date\
+      \ < pl.effective_to_date)))"
+  - name: bmv_assortment_space_elasticity_estimated
+    type: sql
+    dimension: accuracy
+    severity: warning
+    mustBe: 0
+    unit: rows
+    description: When the view has planogram-backed rows, at least one category's elasticity should come
+      from data (n_obs > 0) rather than the prior alone; all-prior means the planogram/sales overlap is
+      too thin to fit.
     query: 'SELECT 1
 
       FROM balancing_margin_and_volume.gold_assortment_optimization
 
-      HAVING COUNT(*) > 0 AND (COUNT(margin_contribution_pct) = 0 OR COUNT(baseline_velocity) = 0)'
+      HAVING COUNT(space_elasticity) > 0 AND MAX(space_elasticity_n_obs) = 0'
+  - name: bmv_assortment_projection_sign
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: 'Scenario projections follow the recommendation: KEEP projects no change; DROP removes
+      the SKU''s own units (lift <= 0); EXPAND adds units (lift >= 0). The drag''s sign also depends on
+      the substitutes'' unit margin, which can be negative, so only KEEP pins it (to 0).'
+    query: "SELECT product_sk, store_sk, recommendation, projected_volume_lift, cannibalization_drag_lc\n\
+      FROM balancing_margin_and_volume.gold_assortment_optimization\nWHERE (recommendation = 'KEEP'  \
+      \ AND (projected_volume_lift <> 0 OR cannibalization_drag_lc <> 0))\n   OR (recommendation = 'DROP'\
+      \   AND projected_volume_lift > 0)\n   OR (recommendation = 'EXPAND' AND projected_volume_lift <\
+      \ 0)"
 - name: gold_bucket_features
   physicalName: balancing_margin_and_volume.gold_bucket_features
   physicalType: view
@@ -1903,6 +1985,18 @@ schema:
       - sqft
       - allocated_space
     description: Average square footage allocated on planogram
+  - name: avg_space_elasticity
+    logicalType: number
+    businessName: Avg Space Elasticity
+    customProperties:
+    - property: synonyms
+      value:
+      - space_elasticity
+      - shelf_space_elasticity
+      - facing_elasticity
+    description: Average heuristic space elasticity (% change in units per 1% change in facings) over
+      SKU x store rows with a planogram allocation. Observational cross-store estimate per space-planning
+      category, shrunk toward a 0.17 literature prior; not a causal effect.
   - name: baseline_velocity_units_per_day
     logicalType: number
     businessName: Baseline Velocity (units/day)
@@ -1987,6 +2081,39 @@ schema:
       - assortment_size
     description: Number of unique SKUs (counts distinct product_ids across the filtered set of stores,
       as the underlying table is at product x store grain)
+  - name: total_projected_volume_lift
+    logicalType: number
+    businessName: Total Projected Volume Lift (units per selling day)
+    customProperties:
+    - property: synonyms
+      value:
+      - projected_units_lift
+      - volume_uplift
+    description: 'Change in units per selling day, at the baseline rate, if the recommendations are applied:
+      EXPAND adds one facing (space-elasticity response), DROP removes the SKU''s own baseline units,
+      KEEP adds 0. Heuristic scenario, not a forecast.'
+  - name: total_projected_margin_lift_lc
+    logicalType: number
+    businessName: Total Projected Margin Lift (per selling day)
+    customProperties:
+    - property: synonyms
+      value:
+      - projected_margin_uplift
+      - margin_delta
+    description: 'Net gross-margin change per selling day in local currency if the recommendations are
+      applied: own margin change minus cannibalization drag on mapped substitutes. Heuristic scenario,
+      not a forecast.'
+  - name: total_cannibalization_drag_lc
+    logicalType: number
+    businessName: Total Cannibalization Drag (per selling day)
+    customProperties:
+    - property: synonyms
+      value:
+      - cannibalization_impact
+      - substitute_margin_drag
+    description: 'Gross margin per selling day the actions take from mapped substitutes: positive when
+      EXPAND pulls demand from substitutes, negative when a DROP''s demand is recaptured by them. Heuristic
+      scenario.'
   - name: drop_candidate_sku_count
     logicalType: integer
     businessName: DROP-candidate SKU Count
