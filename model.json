@@ -12864,7 +12864,7 @@
             "transaction"
           ],
           "name": "Market Analysis",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_competitive_position",
             "gold_market_share"

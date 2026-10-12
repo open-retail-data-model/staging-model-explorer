@@ -1,6 +1,6 @@
 # Labor Domain — Business Glossary
 
-> Status: 🔵 Nearing complete (0.2-beta)
+> Status: 🟢 Review complete (0.2-beta) · Last reviewed: 2026-10-07
 
 Follows the ORDM [data model standards](../../docs/data-model-standards.md).
 
