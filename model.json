@@ -35,6 +35,11 @@
       {
         "kind": "consumes",
         "source": "actionable-customer-understanding",
+        "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "actionable-customer-understanding",
         "target": "transaction"
       },
       {
@@ -140,6 +145,11 @@
       {
         "kind": "consumes",
         "source": "commerce-media-networks",
+        "target": "equipment"
+      },
+      {
+        "kind": "consumes",
+        "source": "commerce-media-networks",
         "target": "marketing"
       },
       {
@@ -205,6 +215,16 @@
       {
         "kind": "consumes",
         "source": "data-sharing-with-suppliers",
+        "target": "customer"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "marketing"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
         "target": "order"
       },
       {
@@ -216,6 +236,11 @@
         "kind": "consumes",
         "source": "data-sharing-with-suppliers",
         "target": "product"
+      },
+      {
+        "kind": "consumes",
+        "source": "data-sharing-with-suppliers",
+        "target": "store"
       },
       {
         "kind": "consumes",
@@ -270,6 +295,11 @@
       {
         "kind": "consumes",
         "source": "predictive-operations",
+        "target": "calendar"
+      },
+      {
+        "kind": "consumes",
+        "source": "predictive-operations",
         "target": "equipment"
       },
       {
@@ -301,6 +331,11 @@
         "kind": "consumes",
         "source": "predictive-operations",
         "target": "store"
+      },
+      {
+        "kind": "consumes",
+        "source": "predictive-operations",
+        "target": "supplier"
       },
       {
         "kind": "consumes",
@@ -597,6 +632,7 @@
       "kind": "core",
       "name": "calendar",
       "relationships": [],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/calendar",
       "tables": [
         {
           "columns": [
@@ -1387,6 +1423,7 @@
           "parent_table": "profile"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/customer",
       "tables": [
         {
           "columns": [
@@ -3037,6 +3074,7 @@
           "parent_table": "equipment"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/equipment",
       "tables": [
         {
           "columns": [
@@ -3591,6 +3629,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/interaction",
       "tables": [
         {
           "columns": [
@@ -4024,6 +4063,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/inventory",
       "tables": [
         {
           "columns": [
@@ -4583,6 +4623,7 @@
           "parent_table": "labor_schedule"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/labor",
       "tables": [
         {
           "columns": [
@@ -5693,6 +5734,7 @@
           "parent_table": "shipment"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/logistics",
       "tables": [
         {
           "columns": [
@@ -6624,6 +6666,7 @@
       "kind": "core",
       "name": "marketing",
       "relationships": [],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/marketing",
       "tables": [
         {
           "columns": [
@@ -7164,6 +7207,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/order",
       "tables": [
         {
           "columns": [
@@ -7414,6 +7458,7 @@
           "parent_table": "profile"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/payment",
       "tables": [
         {
           "columns": [
@@ -7669,6 +7714,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/procurement",
       "tables": [
         {
           "columns": [
@@ -7999,6 +8045,7 @@
           "parent_table": "product"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/product",
       "tables": [
         {
           "columns": [
@@ -8437,6 +8484,7 @@
       "kind": "core",
       "name": "store",
       "relationships": [],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/store",
       "tables": [
         {
           "columns": [
@@ -8670,6 +8718,7 @@
       "kind": "core",
       "name": "supplier",
       "relationships": [],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/supplier",
       "tables": [
         {
           "columns": [
@@ -8934,6 +8983,7 @@
           "parent_table": "promotion"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/canonical-core/transaction",
       "tables": [
         {
           "columns": [
@@ -9575,6 +9625,7 @@
           "parent_table": "product"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/actionable-customer-understanding",
       "tables": [
         {
           "columns": [
@@ -11510,6 +11561,10 @@
             {
               "table": "sales",
               "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             }
           ],
           "layer": "gold",
@@ -12805,6 +12860,7 @@
             "calendar",
             "marketing",
             "product",
+            "store",
             "transaction"
           ],
           "name": "Market Analysis",
@@ -13885,6 +13941,7 @@
           "parent_table": "a2a_agent"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/agentic-commerce",
       "tables": [
         {
           "columns": [
@@ -17885,6 +17942,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/ai-assisted-store-associates",
       "tables": [
         {
           "columns": [
@@ -21152,6 +21210,7 @@
           "parent_table": "product"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/balancing-margin-and-volume",
       "tables": [
         {
           "columns": [
@@ -22200,6 +22259,10 @@
             {
               "table": "sales",
               "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             }
           ],
           "layer": "gold",
@@ -23202,12 +23265,20 @@
               "unit": "inventory"
             },
             {
+              "table": "product",
+              "unit": "product"
+            },
+            {
               "table": "promotion",
               "unit": "marketing"
             },
             {
               "table": "sales",
               "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             }
           ],
           "layer": "gold",
@@ -23737,6 +23808,7 @@
             "inventory",
             "marketing",
             "product",
+            "store",
             "transaction"
           ],
           "name": "Dynamic Price Optimization",
@@ -23775,6 +23847,7 @@
             "inventory",
             "marketing",
             "product",
+            "store",
             "transaction"
           ],
           "name": "Elasticity Modeling",
@@ -25707,6 +25780,7 @@
           "parent_table": "experiment"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/commerce-media-networks",
       "tables": [
         {
           "columns": [
@@ -30904,6 +30978,10 @@
             {
               "table": "product",
               "unit": "product"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
             }
           ],
           "layer": "gold",
@@ -31033,7 +31111,16 @@
             }
           ],
           "comment": "The latest pacing snapshot per campaign (\u00d7 ad_group \u00d7 placement) \u2014 the current operational pacing state for campaign-ops / alerting. No person-level data.",
-          "consumes_tables": [],
+          "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
           "layer": "gold",
           "materialized": false,
           "name": "gold_pacing_current",
@@ -31369,7 +31456,20 @@
             }
           ],
           "comment": "DEPRECATED. REMOVAL DATE: 2026-10-31 (the 90-day floor of docs/versioning-policy.md \u00a73, counted from 2026-07-28). A date, not a pointer to the policy: \u00a73.4 requires the header to name one, and \"see the policy\" sends a developer to a document that names no date either. Migrate shared consumers to ${css_schema}.gold_zone_traffic_shared and operational consumers to ${css_schema}.gold_zone_traffic_current.",
-          "consumes_tables": [],
+          "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            }
+          ],
           "layer": "gold",
           "materialized": false,
           "name": "store_zone_interval",
@@ -31379,28 +31479,60 @@
       ],
       "use_cases": [
         {
-          "consumes": [],
+          "consumes": [
+            "marketing",
+            "product",
+            "store",
+            "supplier"
+          ],
           "name": "Sponsored Products Placement",
           "status": "done",
-          "tables": []
+          "tables": [
+            "gold_campaign_performance",
+            "gold_pacing_current",
+            "gold_incrementality_readout",
+            "gold_supplier_campaign_report"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "marketing",
+            "product",
+            "store",
+            "supplier"
+          ],
           "name": "In-Store Digital Ads",
           "status": "done",
-          "tables": []
+          "tables": [
+            "gold_campaign_performance",
+            "gold_supplier_campaign_report"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "product",
+            "supplier"
+          ],
           "name": "Incrementality Testing",
           "status": "done",
-          "tables": []
+          "tables": [
+            "gold_incrementality_readout"
+          ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "marketing",
+            "product",
+            "store",
+            "supplier"
+          ],
           "name": "Cross-Platform Retail Management",
           "status": "done",
-          "tables": []
+          "tables": [
+            "gold_campaign_performance",
+            "gold_pacing_current",
+            "gold_supplier_campaign_report"
+          ]
         }
       ]
     },
@@ -33566,6 +33698,7 @@
           "parent_table": "store_zone"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/connected-store-signals",
       "tables": [
         {
           "columns": [
@@ -39130,6 +39263,10 @@
           "comment": "GRAIN: one row per RFID count session. full_store plans derive from active non-site zones at session start; partial sessions make no plan claim.",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -40916,6 +41053,10 @@
           "comment": "GRAIN: count session \u00d7 store \u00d7 product \u00d7 session trading date. Only full-store sessions closing in the reference EOD alignment window (20:00-02:59 local) receive the `aligned_eod` basis and inventory-accuracy label. Other sessions expose observed-to-book agreement only. `reconciliation_date` is the EOD inventory snapshot date. For sessions ending between 00:00 and 02:59 local it is the preceding local calendar date; it is deliberately distinct from the session's declared `trading_date`. RFID eligibility is a documented heuristic: an active commissioned item for the product was observed at the store during the preceding 90 days.",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "inventory_position",
               "unit": "inventory"
             },
@@ -41159,6 +41300,10 @@
           ],
           "comment": "GRAIN: store \u00d7 product \u00d7 reconciliation date \u00d7 reconciliation basis. Session-grain evidence remains in gold_inventory_accuracy_daily. This projection selects the latest reconciliation within each daily basis so repeated counts do not repeat the same EOD book quantity in additive metric-view measures.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "inventory_position",
               "unit": "inventory"
@@ -41567,6 +41712,10 @@
           "comment": "GRAIN: store \u00d7 product \u00d7 trading date. Count fields remain additive inputs for visibility-quality rates; average confidence, percentile lag, and freshness are explicitly non-additive diagnostics at this daily grain. RFID freshness uses ADR 0038's resolved item-presence evaluation clock so its freshness_age_minutes and fresh_as_of_ts agree with gold_item_current_state.",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -41789,6 +41938,10 @@
           "comment": "GRAIN: one row per observed out-of-stock EPISODE (store \u00d7 position \u00d7 product \u00d7 episode start): a maximal run of consecutive usable out_of_stock observations, closed by the next usable non-OOS observation (recovery) or ongoing (recovery NULL).",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "inventory_position",
               "unit": "inventory"
             },
@@ -41983,6 +42136,10 @@
           ],
           "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 category.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -42274,6 +42431,10 @@
           "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 product (SKU-level compliance detail).",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -42510,6 +42671,10 @@
           "comment": "GRAIN: one row per store \u00d7 trading_date \u00d7 displayed currency.",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -42637,6 +42802,10 @@
           ],
           "comment": "GRAIN: one row per linked shipment line, or one row per store \u00d7 product \u00d7 trading day of unlinked receiving reads (verification_tier says which). Linked rows are shipment-line evidence. Unlinked receiving reads remain honest store \u00d7 product \u00d7 day evidence and are never guessed onto overlapping shipments.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -42832,6 +43001,10 @@
           ],
           "comment": "GRAIN: one store \u00d7 product \u00d7 reconciliation date with latest aligned phantom-stock evidence. These are investigation candidates, not stockout episodes: no end date, duration, misplaced cause, or shrinkage cause is inferred. The SDI detection-method enum does not yet admit `rfid`, so this view remains read-only until that separately owned change is approved.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "inventory_position",
               "unit": "inventory"
@@ -43439,6 +43612,10 @@
           ],
           "comment": "GRAIN: one row per store \u00d7 product \u00d7 trading_date with both observed shelf evidence and a same-date inventory snapshot.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "inventory_position",
               "unit": "inventory"
@@ -44668,6 +44845,10 @@
           "comment": "GRAIN: one item exit event. No person, basket, transaction or video linkage.",
           "consumes_tables": [
             {
+              "table": "equipment",
+              "unit": "equipment"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -44835,6 +45016,10 @@
           ],
           "comment": "GRAIN: one current store zone. Cadence and recent-session lookback are adopter policy inputs; starter defaults are seven and 30 days, respectively. ADR 0038 intentionally keeps count-coverage calculations on wall clock; the historical-demo item-presence clock does not apply to this operational cadence.",
           "consumes_tables": [
+            {
+              "table": "equipment",
+              "unit": "equipment"
+            },
             {
               "table": "product",
               "unit": "product"
@@ -46686,6 +46871,7 @@
           "parent_table": "supplier"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/data-sharing-with-suppliers",
       "tables": [
         {
           "columns": [
@@ -48585,12 +48771,24 @@
               "unit": "product"
             },
             {
+              "table": "promotion",
+              "unit": "marketing"
+            },
+            {
               "table": "purchase_order_line",
               "unit": "procurement"
             },
             {
               "table": "sales",
               "unit": "transaction"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
             }
           ],
           "layer": "gold",
@@ -48812,8 +49010,20 @@
           "comment": "Data-monetization attention queue over gold_data_product_revenue: the licence \u00d7 period rows a commercial owner should act on, ranked by revenue at risk. An exception is raised when a licence was paid for and not used (the churn signal), when consumption ran materially beyond the contracted allowance (an upsell or an over-run to true up), when a term is about to lapse without renewal, or when the effective price per unit diverges materially from the published rate card. Reads only the entitled revenue view, so it exposes no row a partner could not already see.",
           "consumes_tables": [
             {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
               "table": "fiscal_calendar",
               "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             },
             {
               "table": "supplier",
@@ -49111,8 +49321,20 @@
           "comment": "The ENTITLED data-monetization P&L: per principal \u00d7 data product \u00d7 supplier scope \u00d7 fiscal period, the licensed commercial terms, the metered consumption, the revenue it billed, and the yield of that revenue against both the contract and the partner's retail-media spend. This is the row-filter source for partner-facing revenue reporting; pairs with gold_data_monetization_exceptions (the ranked attention queue).",
           "consumes_tables": [
             {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
               "table": "fiscal_calendar",
               "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             },
             {
               "table": "supplier",
@@ -49293,8 +49515,20 @@
           "comment": "CPFR exception queue over gold_joint_demand_plan: the plan rows that need collaborative attention, ranked by demand value at risk. An exception is raised when the two parties disagree beyond a tolerance, when a party has not submitted a plan for a scope the other party (or the consensus) did, or when the agreed consensus diverges materially from the statistical baseline. Reads only the entitled joint plan, so it exposes no row a partner could not already see.",
           "consumes_tables": [
             {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
               "table": "product",
               "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             },
             {
               "table": "supplier",
@@ -49475,8 +49709,20 @@
           "comment": "The ENTITLED joint demand plan (CPFR reconciliation): per supplier \u00d7 product \u00d7 fiscal week, the latest retailer submission, the latest supplier submission, and the latest published consensus, joined to demand_collaboration so every row carries the principal_id permitted to see it (supplier-wide or product-scoped). This is the row-filter source for partner sharing; pairs with consensus_forecast_snapshot (the immutable published freeze).",
           "consumes_tables": [
             {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
               "table": "product",
               "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             },
             {
               "table": "supplier",
@@ -49646,7 +49892,24 @@
             }
           ],
           "comment": "The ENTITLED supplier media report: the Commerce Media Networks campaign_day rolled to advertiser \u00d7 campaign, joined to reporting_entitlement so every row carries the principal_id permitted to see it (brand-wide or campaign-scoped). Threshold-suppressed and below-threshold rows are excluded. No person-level data. This is the row-filter source for supplier sharing; pairs with supplier_media_report_snapshot (the immutable published freeze).",
-          "consumes_tables": [],
+          "consumes_tables": [
+            {
+              "table": "audience",
+              "unit": "marketing"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
+            }
+          ],
           "layer": "gold",
           "materialized": false,
           "name": "gold_supplier_media_report",
@@ -49656,7 +49919,12 @@
       ],
       "use_cases": [
         {
-          "consumes": [],
+          "consumes": [
+            "marketing",
+            "product",
+            "store",
+            "supplier"
+          ],
           "name": "Media Measurement",
           "status": "done",
           "tables": [
@@ -49666,6 +49934,9 @@
         {
           "consumes": [
             "calendar",
+            "marketing",
+            "product",
+            "store",
             "supplier"
           ],
           "name": "Data Monetization",
@@ -49677,7 +49948,10 @@
         },
         {
           "consumes": [
+            "calendar",
+            "customer",
             "product",
+            "store",
             "supplier"
           ],
           "name": "Joint Demand Planning",
@@ -49690,9 +49964,12 @@
         {
           "consumes": [
             "calendar",
+            "marketing",
             "order",
             "procurement",
             "product",
+            "store",
+            "supplier",
             "transaction"
           ],
           "name": "Category Growth",
@@ -50094,6 +50371,7 @@
           "parent_table": "disruption_rule"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/early-risk-detection",
       "tables": [
         {
           "columns": [
@@ -51020,6 +51298,10 @@
               "unit": "logistics"
             },
             {
+              "table": "store",
+              "unit": "store"
+            },
+            {
               "table": "supplier",
               "unit": "supplier"
             }
@@ -51814,6 +52096,7 @@
             "logistics",
             "procurement",
             "product",
+            "store",
             "supplier",
             "transaction"
           ],
@@ -52661,6 +52944,7 @@
           "parent_table": "store"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/predictive-operations",
       "tables": [
         {
           "columns": [
@@ -55794,8 +56078,20 @@
               "unit": "equipment"
             },
             {
+              "table": "fiscal_calendar",
+              "unit": "calendar"
+            },
+            {
+              "table": "inventory_position",
+              "unit": "inventory"
+            },
+            {
               "table": "labor_schedule",
               "unit": "labor"
+            },
+            {
+              "table": "product",
+              "unit": "product"
             },
             {
               "table": "purchase_order_line",
@@ -55808,6 +56104,10 @@
             {
               "table": "store",
               "unit": "store"
+            },
+            {
+              "table": "supplier",
+              "unit": "supplier"
             }
           ],
           "layer": "gold",
@@ -56491,11 +56791,15 @@
       "use_cases": [
         {
           "consumes": [
+            "calendar",
             "equipment",
+            "inventory",
             "labor",
             "order",
             "procurement",
+            "product",
             "store",
+            "supplier",
             "transaction"
           ],
           "name": "Store Performance",
@@ -56764,6 +57068,7 @@
           "parent_table": "location_offer"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/promote-with-purpose",
       "tables": [
         {
           "columns": [
@@ -59249,6 +59554,7 @@
           "parent_table": "purchase_order_line"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/smarter-demand-and-inventory-decisions",
       "tables": [
         {
           "columns": [
@@ -62068,6 +62374,10 @@
           "comment": "Unresolved demand sensing signals and forecast divergence for short-horizon triage.",
           "consumes_tables": [
             {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
               "table": "product",
               "unit": "product"
             },
@@ -62160,8 +62470,20 @@
           "comment": "Statistical demand forecast enriched with the latest approved planner adjustment.",
           "consumes_tables": [
             {
+              "table": "account",
+              "unit": "customer"
+            },
+            {
               "table": "fiscal_calendar",
               "unit": "calendar"
+            },
+            {
+              "table": "product",
+              "unit": "product"
+            },
+            {
+              "table": "store",
+              "unit": "store"
             }
           ],
           "layer": "gold",
@@ -64570,6 +64892,7 @@
           "parent_table": "activation_job"
         }
       ],
+      "source_url": "https://github.com/open-retail-data-model/staging/tree/main/outcome-packages/unified-customer-view",
       "tables": [
         {
           "columns": [
@@ -66064,6 +66387,8 @@
           "name": "CDP",
           "status": "in-progress",
           "tables": [
+            "gold_person_do_not_target_current",
+            "gold_customer_activation_eligibility_current",
             "gold_activatable_audience_current"
           ]
         },

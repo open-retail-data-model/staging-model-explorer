@@ -6,11 +6,14 @@ An interactive, browser-based explorer for the **Open Retail Data Model (ORDM)**
 instance of the Industry Data Model. It lets you navigate the model visually:
 
 - **Canonical core** (silver) — the conformed foundational domains (customer, product, store,
-  order, transaction, payment, inventory, supplier, procurement, marketing, logistics, calendar).
+  order, transaction, payment, inventory, supplier, procurement, marketing, logistics, calendar,
+  interaction, labor, equipment).
 - **Outcome packages** (gold) — business-outcome data products built on top of the core, grouped
   by retail theme.
 - **Per-table detail** — columns with types, primary/foreign keys, PII flags, and enum values,
   plus which outcome packages consume which core domains.
+- **Links** — each package and domain panel links its glossary and ODCS data contract (served with
+  this site) and its source folder on GitHub (which needs access to the ORDM source repository).
 
 ## About this repository
 
