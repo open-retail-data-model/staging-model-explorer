@@ -1479,6 +1479,82 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+  quality:
+  - name: gold_funnel_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_grain_unique
+    query: 'SELECT store_id, store_zone_id, associate_id, trading_date, action_type, COUNT(*) AS n
+
+      FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily
+
+      GROUP BY store_id, store_zone_id, associate_id, trading_date, action_type
+
+      HAVING COUNT(*) > 1'
+  - name: gold_funnel_actions_positive
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_actions_positive
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily
+
+      WHERE actions_generated <= 0'
+  - name: gold_funnel_action_counts_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_action_counts_nonneg
+    query: "SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily\nWHERE actions_accepted\
+      \ < 0\n   OR actions_rejected < 0\n   OR actions_completed < 0\n   OR actions_expired < 0"
+  - name: gold_funnel_rate_bounds
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_rate_bounds
+    query: "SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily\nWHERE (acceptance_rate\
+      \ IS NOT NULL AND (acceptance_rate < 0 OR acceptance_rate > 1))\n   OR (completion_rate IS NOT NULL\
+      \ AND (completion_rate < 0 OR completion_rate > 1))"
+  - name: gold_funnel_action_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_action_type_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily
+
+      WHERE action_type NOT IN (''customer_assist'', ''restock_shelf'', ''bopis_fulfill'', ''safety_loss_prevention'',
+      ''maintenance_cleaning'', ''price_check'', ''queue_bust'', ''clienteling'')'
+  - name: gold_funnel_trading_date_present
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_funnel_trading_date_present
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily
+
+      WHERE trading_date IS NULL'
+  - name: gold_funnel_outcome_currency_pair
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: A non-zero realized value must carry its currency. The view sums outcome values with
+      COALESCE(..., 0), so a day with no monetary outcome is 0 with a NULL currency (allowed).
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_action_outcome_funnel_daily
+
+      WHERE realized_outcome_value <> 0 AND outcome_currency_code IS NULL'
 - name: gold_associate_action_queue_current
   physicalName: ai_assisted_store_associates.gold_associate_action_queue_current
   physicalType: view
@@ -1583,6 +1659,63 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+  quality:
+  - name: gold_queue_grain_unique
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_queue_grain_unique
+    query: 'SELECT suggested_action_id, COUNT(*) AS n
+
+      FROM ai_assisted_store_associates.gold_associate_action_queue_current
+
+      GROUP BY suggested_action_id
+
+      HAVING COUNT(*) > 1'
+  - name: gold_queue_rank_valid
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_queue_rank_valid
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_action_queue_current
+
+      WHERE queue_rank < 1'
+  - name: gold_queue_action_type_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_queue_action_type_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_action_queue_current
+
+      WHERE action_type NOT IN (''customer_assist'', ''restock_shelf'', ''bopis_fulfill'', ''safety_loss_prevention'',
+      ''maintenance_cleaning'', ''price_check'', ''queue_bust'', ''clienteling'')'
+  - name: gold_queue_current_state_domain
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_queue_current_state_domain
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_action_queue_current
+
+      WHERE current_state NOT IN (''pending'', ''accepted'', ''rejected'', ''deferred'', ''completed'',
+      ''expired'', ''reassigned'')'
+  - name: gold_queue_priority_nonneg
+    type: sql
+    dimension: accuracy
+    severity: error
+    mustBe: 0
+    unit: rows
+    description: gold_queue_priority_nonneg
+    query: 'SELECT * FROM ai_assisted_store_associates.gold_associate_action_queue_current
+
+      WHERE base_score < 0 OR priority_score < 0 OR current_priority_score < 0'
 - name: gold_associate_data_freshness
   physicalName: ai_assisted_store_associates.gold_associate_data_freshness
   physicalType: view

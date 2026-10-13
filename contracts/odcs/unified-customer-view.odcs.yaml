@@ -1839,3 +1839,469 @@ schema:
     query: 'SELECT COUNT(*) AS unified_customer_count
 
       FROM unified_customer_view.gold_unified_customer_360_current'
+- name: mv_cdp_activation_eligibility
+  physicalName: unified_customer_view.mv_cdp_activation_eligibility
+  physicalType: view
+  description: 'CDP activation-gate KPIs: share of customer x purpose x channel rows with consent granted,
+    eligible to activate, and suppressed, by purpose, channel, jurisdiction and blocking reason.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: purpose_code
+    logicalType: string
+    businessName: Activation Purpose
+    customProperties:
+    - property: synonyms
+      value:
+      - purpose
+      - consent_purpose
+    description: Consent purpose evaluated by the gate (for example marketing, personalization, retail_media,
+      data_sale).
+  - name: channel_code
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - medium
+    description: Contact channel the permission applies to; NULL for channel-agnostic purposes.
+  - name: jurisdiction_code
+    logicalType: string
+    businessName: Jurisdiction
+    customProperties:
+    - property: synonyms
+      value:
+      - jurisdiction
+      - privacy_region
+    description: ISO 3166 jurisdiction the consent is resolved as-of.
+  - name: blocking_reason_code
+    logicalType: string
+    businessName: Blocking Reason
+    customProperties:
+    - property: synonyms
+      value:
+      - block_reason
+      - ineligibility_reason
+    description: 'First failing rule when not eligible, suppression first: suppressed / withdrawn / consent_denied
+      / preference_opt_out / no_identifier. NULL when eligible.'
+  - name: gate_row_count
+    logicalType: integer
+    businessName: Gate Rows
+    customProperties:
+    - property: synonyms
+      value:
+      - permission_rows
+      - evaluated_rows
+    description: Count of customer x purpose x channel x jurisdiction rows the gate evaluated.
+  - name: consent_granted_rate_by_purpose
+    logicalType: number
+    businessName: Consent Granted Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - consent_rate
+      - consent_granted_rate
+    description: Share of purpose x channel rows with consent granted (glossary consent_granted_rate_by_purpose).
+  - name: eligible_rate
+    logicalType: number
+    businessName: Activation Eligible Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - activatable_rate
+      - eligibility_rate
+    description: 'Share of purpose x channel rows that are activation-eligible: consent granted AND preference
+      allows AND an identifier is present AND not suppressed (glossary eligible_rate).'
+  - name: suppression_rate
+    logicalType: number
+    businessName: Suppression Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - suppressed_rate
+      - do_not_contact_rate
+    description: Share of purpose x channel rows blocked by a do-not-contact suppression overlay, which
+      overrides granted consent (glossary suppression_rate).
+- name: mv_cdp_activation_jobs
+  physicalName: unified_customer_view.mv_cdp_activation_jobs
+  physicalType: view
+  description: 'CDP activation KPIs over audience-to-destination publish runs: requested, eligible, blocked
+    and exported members, export rate, all-cause block rate and member-weighted match rate.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: activation_destination_id
+    logicalType: string
+    businessName: Destination
+    customProperties:
+    - property: synonyms
+      value:
+      - destination
+      - endpoint
+    description: Activation destination the audience was published to.
+  - name: audience_id
+    logicalType: string
+    businessName: Audience
+    customProperties:
+    - property: synonyms
+      value:
+      - segment
+      - audience
+    description: Audience that was published.
+  - name: purpose_code
+    logicalType: string
+    businessName: Activation Purpose
+    customProperties:
+    - property: synonyms
+      value:
+      - purpose
+    description: Consent purpose the publish run was gated on.
+  - name: channel_code
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - medium
+    description: Contact channel of the publish run.
+  - name: jurisdiction_code
+    logicalType: string
+    businessName: Jurisdiction
+    customProperties:
+    - property: synonyms
+      value:
+      - jurisdiction
+      - privacy_region
+    description: ISO 3166 jurisdiction the run was scoped to; NULL when the adopter reports regime-agnostic
+      runs.
+  - name: job_status
+    logicalType: string
+    businessName: Job Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - run_status
+    description: Outcome status of the publish run.
+  - name: job_run_date
+    logicalType: date
+    businessName: Run Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - run_date
+    description: Date of the publish run.
+  - name: activation_run_count
+    logicalType: integer
+    businessName: Publish Runs
+    customProperties:
+    - property: synonyms
+      value:
+      - job_count
+      - runs
+    description: Count of audience-to-destination publish runs.
+  - name: requested_members
+    logicalType: integer
+    businessName: Requested Members
+    customProperties:
+    - property: synonyms
+      value:
+      - requested
+    description: Members requested for activation, before the eligibility gate.
+  - name: eligible_members
+    logicalType: integer
+    businessName: Eligible Members
+    customProperties:
+    - property: synonyms
+      value:
+      - eligible
+    description: Members that passed the net eligibility gate.
+  - name: blocked_members
+    logicalType: integer
+    businessName: Blocked Members
+    customProperties:
+    - property: synonyms
+      value:
+      - blocked
+    description: Members the gate removed for any reason (requested minus eligible).
+  - name: exported_members
+    logicalType: integer
+    businessName: Exported Members
+    customProperties:
+    - property: synonyms
+      value:
+      - exported
+      - synced_members
+    description: Members synced to the destination.
+  - name: activation_export_rate
+    logicalType: number
+    businessName: Activation Export Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - export_rate
+      - activation_efficiency
+    description: Share of gate-eligible members actually exported, ratio-of-sums (glossary activation_export_rate).
+  - name: activation_block_rate
+    logicalType: number
+    businessName: Activation Block Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - block_rate
+      - gate_block_rate
+    description: Share of requested members the eligibility gate removed for ANY reason (consent, preference,
+      reachability or suppression); an all-cause block rate, not suppression-specific (glossary activation_block_rate).
+  - name: activation_match_rate
+    logicalType: number
+    businessName: Activation Match Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - match_rate
+      - provider_match_rate
+    description: Member-weighted provider match rate across exports; the denominator counts only exports
+      with a known match_rate (glossary activation_match_rate).
+- name: mv_cdp_campaign_touch
+  physicalName: unified_customer_view.mv_cdp_campaign_touch
+  physicalType: view
+  description: 'CDP campaign KPIs: campaign interactions and distinct customers reached, by promotion,
+    channel, direction, touch type and delivery status.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: promo_id
+    logicalType: string
+    businessName: Promotion
+    customProperties:
+    - property: synonyms
+      value:
+      - campaign
+      - promotion
+    description: Promotion (campaign) the touch belongs to.
+  - name: channel_code
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - medium
+    description: Channel of the touch.
+  - name: touch_direction
+    logicalType: string
+    businessName: Direction
+    customProperties:
+    - property: synonyms
+      value:
+      - direction
+    description: Outbound (sent to the customer) or inbound (customer response).
+  - name: touch_type
+    logicalType: string
+    businessName: Touch Type
+    customProperties:
+    - property: synonyms
+      value:
+      - interaction_type
+      - event_type
+    description: Kind of interaction (for example send, open, click).
+  - name: delivery_status_code
+    logicalType: string
+    businessName: Delivery Status
+    customProperties:
+    - property: synonyms
+      value:
+      - delivery_status
+    description: Delivery outcome of the touch.
+  - name: touch_date
+    logicalType: date
+    businessName: Touch Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+    description: Date of the touch.
+  - name: campaign_touch_count
+    logicalType: integer
+    businessName: Campaign Touches
+    customProperties:
+    - property: synonyms
+      value:
+      - touches
+      - interactions
+    description: Count of campaign interactions (glossary campaign_touch_count).
+  - name: campaign_reach
+    logicalType: integer
+    businessName: Campaign Reach
+    customProperties:
+    - property: synonyms
+      value:
+      - reach
+      - customers_reached
+    description: Distinct customers touched (glossary campaign_reach); a customer touched several times
+      counts once.
+- name: mv_customer_360
+  physicalName: unified_customer_view.mv_customer_360
+  physicalType: view
+  description: 'Customer 360 and identity-resolution KPIs over the current unified customer view: customer
+    count, identity confidence and coverage, consent, contactability, household coverage, reachability
+    and profile completeness.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/unified-customer-view/README.md
+    type: businessDefinition
+  - url: outcome-packages/unified-customer-view/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: jurisdiction_primary_code
+    logicalType: string
+    businessName: Primary Jurisdiction
+    customProperties:
+    - property: synonyms
+      value:
+      - jurisdiction
+      - privacy_region
+      - region
+    description: The customer's governing privacy region (ISO 3166), from the primary address. Per-purpose
+      consent precision lives in the eligibility view.
+  - name: customer_status_code
+    logicalType: string
+    businessName: Customer Status
+    customProperties:
+    - property: synonyms
+      value:
+      - status
+      - lifecycle_status
+    description: Lifecycle status of the unified customer.
+  - name: active_customer_count
+    logicalType: integer
+    businessName: Active Customer Count
+    customProperties:
+    - property: synonyms
+      value:
+      - customer_count
+      - unified_customers
+    description: Count of current unified customers (glossary active_customer_count).
+  - name: avg_identity_confidence
+    logicalType: number
+    businessName: Avg Identity Confidence
+    customProperties:
+    - property: synonyms
+      value:
+      - identity_confidence
+      - match_confidence
+    description: 'Mean resolved-identity confidence in [0,1]: per customer, the highest match_confidence
+      across current active identity links (glossary avg_identity_confidence).'
+  - name: identity_coverage_rate
+    logicalType: number
+    businessName: Identity Coverage Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - identity_coverage
+      - resolved_share
+    description: Share of customers with at least one active resolved identifier (glossary identity_coverage_rate).
+  - name: consent_marketing_rate
+    logicalType: number
+    businessName: Marketing Consent Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - marketing_consent
+      - opt_in_rate
+    description: Share of customers with marketing consent granted, the 360 summary (granted anywhere).
+      Use mv_cdp_activation_eligibility for the per-purpose x channel x jurisdiction permission (glossary
+      consent_marketing_rate).
+  - name: consent_personalization_rate
+    logicalType: number
+    businessName: Personalization Consent Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - personalization_consent
+    description: Share of customers with personalization consent granted (same definition as consent_marketing_rate,
+      for the personalization purpose).
+  - name: consent_third_party_sharing_rate
+    logicalType: number
+    businessName: Third-Party Sharing Consent Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - sharing_consent
+      - third_party_consent
+    description: Share of customers with third-party sharing consent granted (same definition as consent_marketing_rate,
+      for the third-party sharing purpose).
+  - name: email_contactable_rate
+    logicalType: number
+    businessName: Email Contactable Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - email_reach
+      - emailable_rate
+    description: Share of customers contactable by email (glossary contactable_rate, email channel).
+  - name: sms_contactable_rate
+    logicalType: number
+    businessName: SMS Contactable Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - sms_reach
+      - textable_rate
+    description: Share of customers contactable by SMS (glossary contactable_rate, sms channel).
+  - name: household_coverage
+    logicalType: number
+    businessName: Household Coverage Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - household_coverage_rate
+      - householded_share
+    description: Share of customers assigned to a household (glossary household_coverage).
+  - name: avg_reachability_score
+    logicalType: number
+    businessName: Avg Reachability Score
+    customProperties:
+    - property: synonyms
+      value:
+      - reachability
+      - activation_readiness
+    description: 'Mean activation readiness: per customer, the fraction of channels (email/sms/postal)
+      with consent, preference and an identifier present (glossary avg_reachability_score).'
+  - name: avg_profile_completeness
+    logicalType: number
+    businessName: Avg Profile Completeness
+    customProperties:
+    - property: synonyms
+      value:
+      - profile_completeness
+      - data_completeness
+    description: Mean fraction of key profile attributes populated (name, dob, email, address) (glossary
+      avg_profile_completeness).

@@ -3258,6 +3258,166 @@ schema:
       value:
       - other_promotion_count
     description: Observed promotion placements in other vehicles.
+- name: mv_customer_lifetime_value
+  physicalName: actionable_customer_understanding.mv_customer_lifetime_value
+  physicalType: view
+  description: 'Customer lifetime value KPIs: historical and predicted CLV, spend per order, purchase
+    frequency and recency, and churn-risk share, by value tier and RFM cell.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/actionable-customer-understanding/README.md
+    type: businessDefinition
+  - url: outcome-packages/actionable-customer-understanding/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: value_tier
+    logicalType: string
+    businessName: Value Tier
+    customProperties:
+    - property: synonyms
+      value:
+      - tier
+      - customer_value_tier
+    description: 'historical_clv bucketed on stable fixed thresholds: PLATINUM >= 2500 / GOLD >= 1000
+      / SILVER >= 250 / BRONZE else.'
+  - name: rfm_score
+    logicalType: integer
+    businessName: RFM Cell
+    customProperties:
+    - property: synonyms
+      value:
+      - rfm
+      - rfm_cell
+    description: Combined RFM cell = 100*R + 10*F + M (111..555), each score from stable fixed thresholds.
+  - name: r_score
+    logicalType: integer
+    businessName: Recency Score
+    customProperties:
+    - property: synonyms
+      value:
+      - recency_score
+    description: Recency score 1-5 (5 = most recent).
+  - name: f_score
+    logicalType: integer
+    businessName: Frequency Score
+    customProperties:
+    - property: synonyms
+      value:
+      - frequency_score
+    description: Frequency score 1-5 (5 = most frequent).
+  - name: m_score
+    logicalType: integer
+    businessName: Monetary Score
+    customProperties:
+    - property: synonyms
+      value:
+      - monetary_score
+    description: Monetary score 1-5 (5 = highest spend).
+  - name: churn_risk_proxy
+    logicalType: boolean
+    businessName: Churn Risk
+    customProperties:
+    - property: synonyms
+      value:
+      - at_risk
+      - churn_flag
+    description: 'Heuristic flag: recency exceeds 2x the customer''s typical purchase cadence (tenure
+      / frequency).'
+  - name: customer_count
+    logicalType: integer
+    businessName: Customers
+    customProperties:
+    - property: synonyms
+      value:
+      - clv_customers
+      - customers_with_clv
+    description: Count of customers with a lifetime-value record.
+  - name: total_historical_clv
+    logicalType: number
+    businessName: Historical CLV (Total)
+    customProperties:
+    - property: synonyms
+      value:
+      - realized_clv
+      - lifetime_margin
+    description: Total realized gross margin to date, SUM(net_amount - units x unit_cost), reporting/base
+      currency; can be negative (a real loss).
+  - name: avg_historical_clv
+    logicalType: number
+    businessName: Historical CLV (Avg per Customer)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_clv
+      - clv_per_customer
+    description: Mean realized gross margin to date per customer, reporting/base currency.
+  - name: total_predicted_clv
+    logicalType: number
+    businessName: Predicted CLV (Total)
+    customProperties:
+    - property: synonyms
+      value:
+      - forward_clv
+      - expected_value
+    description: 'Total transparent forward estimate (not an ML model): avg_order_margin x frequency_per_period
+      x expected_active_periods, clamped >= 0 per customer, reporting/base currency.'
+  - name: avg_predicted_clv
+    logicalType: number
+    businessName: Predicted CLV (Avg per Customer)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_forward_clv
+    description: Mean predicted CLV per customer, reporting/base currency.
+  - name: total_spend
+    logicalType: number
+    businessName: Total Spend
+    customProperties:
+    - property: synonyms
+      value:
+      - lifetime_spend
+      - net_spend
+    description: Total net spend in the observation window, reporting/base currency.
+  - name: avg_order_value
+    logicalType: number
+    businessName: Avg Order Value
+    customProperties:
+    - property: synonyms
+      value:
+      - aov
+      - spend_per_order
+    description: Net spend per order across the selected customers = SUM(total_spend) / SUM(frequency),
+      a ratio-of-sums, reporting/base currency.
+  - name: avg_frequency
+    logicalType: number
+    businessName: Avg Purchase Frequency
+    customProperties:
+    - property: synonyms
+      value:
+      - orders_per_customer
+      - frequency
+    description: Mean distinct purchase occasions (orders) per customer in the observation window.
+  - name: avg_recency_periods
+    logicalType: number
+    businessName: Avg Recency (Fiscal Periods)
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_recency
+      - periods_since_last_order
+    description: Mean fiscal periods (NRF 4-5-4) since each customer's last order.
+  - name: churn_risk_rate
+    logicalType: number
+    businessName: Churn Risk Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - at_risk_share
+      - churn_risk_share
+    description: Share of customers flagged by the churn-risk heuristic.
 - name: mv_market_share
   physicalName: actionable_customer_understanding.mv_market_share
   physicalType: view

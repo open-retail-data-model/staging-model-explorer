@@ -3668,6 +3668,435 @@ schema:
     description: Mean of per-agent average minutes from session start to completion, on completed sessions
       — each agent weighs equally regardless of volume. Completion is the terminal lifecycle timestamp,
       which can trail the acceptance event.
+- name: mv_conversational_shopping_session
+  physicalName: agentic_commerce.mv_conversational_shopping_session
+  physicalType: view
+  description: 'Session-level KPIs for Conversational Shopping Assistant: assisted conversion, handoff
+    occurrence, and fallback rates by channel, intent category, and resolution type.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: started_date
+    logicalType: date
+    businessName: Session Start Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+      - session_date
+    description: Business date when the conversation session began.
+  - name: entry_channel
+    logicalType: string
+    businessName: Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - surface
+      - platform
+    description: 'Surface where the shopper accessed the conversational assistant: web, mobile_app, kiosk,
+      store_associate, voice, or api.'
+  - name: primary_intent_category
+    logicalType: string
+    businessName: Primary Intent Category
+    customProperties:
+    - property: synonyms
+      value:
+      - intent
+      - intent_category
+      - shopper_need
+    description: 'Shopper need classification from the first discovery intent in the session: product_search,
+      need_based, occasion, problem_solution, compatibility, style_fit, replenishment, comparison, or
+      unknown.'
+  - name: resolution_type
+    logicalType: string
+    businessName: Resolution Type
+    customProperties:
+    - property: synonyms
+      value:
+      - outcome
+      - resolution
+      - session_outcome
+    description: 'How the session ended: product_selected, add_to_cart, purchase, handoff, no_resolution,
+      or abandoned.'
+  - name: known_customer_flag
+    logicalType: boolean
+    businessName: Known Customer
+    customProperties:
+    - property: synonyms
+      value:
+      - authenticated
+      - identified
+      - resolved_customer
+    description: TRUE when the shopper resolved to a customer profile.
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    businessName: Personalization Eligible
+    customProperties:
+    - property: synonyms
+      value:
+      - personalized
+      - personalization_enabled
+    description: TRUE when personalized ranking was enabled during the session.
+  - name: conversation_session_count
+    logicalType: integer
+    businessName: Conversation Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - conversation_sessions
+      - assistant_sessions
+    description: Number of conversation sessions in the grain.
+  - name: known_customer_session_count
+    logicalType: integer
+    businessName: Known Customer Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - identified_sessions
+      - authenticated_sessions
+    description: Conversation sessions where the shopper resolved to a customer profile.
+  - name: personalization_eligible_session_count
+    logicalType: integer
+    businessName: Personalization Eligible Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - personalized_sessions
+    description: Conversation sessions eligible for personalized product ranking.
+  - name: selection_count
+    logicalType: integer
+    businessName: Selection Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - selected_sessions
+    description: Sessions where the shopper selected (clicked on) a discovery result.
+  - name: add_to_cart_count
+    logicalType: integer
+    businessName: Add-to-Cart Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - cart_sessions
+    description: Sessions where the shopper added a discovery result to cart.
+  - name: assisted_conversion_count
+    logicalType: integer
+    businessName: Assisted Conversion Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - converted_sessions
+      - purchase_sessions
+    description: Sessions with a discovery-attributed purchase engagement (narrower than resolution_type='purchase').
+  - name: handoff_count
+    logicalType: integer
+    businessName: Handoff Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - escalation_sessions
+      - agent_handoff_sessions
+    description: Sessions where a handoff to agent/human occurred (turn-derived handoff_flag OCCURRENCE,
+      not terminal outcome).
+  - name: fallback_count
+    logicalType: integer
+    businessName: Fallback Sessions
+    customProperties:
+    - property: synonyms
+      value:
+      - fallback_sessions
+    description: Sessions where the assistant used a fallback turn (not ideal path).
+  - name: session_selection_rate
+    logicalType: number
+    businessName: Session Selection Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - sessions_with_selection_rate
+    description: Fraction of sessions where the shopper selected a discovery result.
+  - name: session_add_to_cart_rate
+    logicalType: number
+    businessName: Session Add-to-Cart Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - session_cart_rate
+      - sessions_with_add_to_cart_rate
+    description: Fraction of sessions where the shopper added a discovery result to cart.
+  - name: assisted_conversion_rate
+    logicalType: number
+    businessName: Assisted Conversion Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - assisted_purchase_rate
+      - session_conversion_rate
+    description: Fraction of sessions with a discovery-attributed purchase. Narrower than resolution_type='purchase'
+      because it counts only sessions where a discovery result had a purchase engagement.
+  - name: handoff_rate
+    logicalType: number
+    businessName: Handoff Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - agent_handoff_rate
+      - assistant_handoff_rate
+    description: Fraction of sessions where a handoff occurred (turn-derived OCCURRENCE flag, not terminal
+      outcome). A session can hand off mid-flow yet resolve to purchase.
+  - name: fallback_rate
+    logicalType: number
+    businessName: Fallback Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - fallback_frequency
+    description: Fraction of sessions that included an assistant fallback turn (not ideal path).
+  - name: avg_turns
+    logicalType: number
+    businessName: Average Turns
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_turns_per_session
+      - mean_turns
+    description: Mean number of conversation turns per session.
+- name: mv_intent_discovery_intents
+  physicalName: agentic_commerce.mv_intent_discovery_intents
+  physicalType: view
+  description: 'Intent Product Discovery intent-grain KPIs: shopper intents captured, intents that returned
+    no results, zero-result rate and results returned per intent, by channel, intent category and date.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_channel
+    logicalType: string
+    businessName: Discovery Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+      - surface
+    description: Surface where the intent was captured (for example web, mobile_app, kiosk, store_associate,
+      voice, api).
+  - name: intent_category
+    logicalType: string
+    businessName: Intent Category
+    customProperties:
+    - property: synonyms
+      value:
+      - category
+      - intent_type
+    description: Classified category of the shopper intent.
+  - name: event_date
+    logicalType: date
+    businessName: Intent Date
+    customProperties:
+    - property: synonyms
+      value:
+      - date
+    description: Date the intent was captured.
+  - name: intent_count
+    logicalType: integer
+    businessName: Intents
+    customProperties:
+    - property: synonyms
+      value:
+      - searches
+      - intent_events
+    description: Count of discovery intent events.
+  - name: zero_result_intent_count
+    logicalType: integer
+    businessName: Zero-Result Intents
+    customProperties:
+    - property: synonyms
+      value:
+      - null_searches
+      - no_result_intents
+    description: Intent events that returned no result events.
+  - name: zero_result_rate
+    logicalType: number
+    businessName: Zero-Result Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - null_search_rate
+      - no_result_rate
+    description: Intent events that return no result events divided by total intent events (glossary Zero-Result
+      Rate).
+  - name: results_per_intent
+    logicalType: number
+    businessName: Results per Intent
+    customProperties:
+    - property: synonyms
+      value:
+      - avg_results_returned
+    description: Returned result events per intent event, a ratio-of-sums.
+- name: mv_intent_discovery_result_performance
+  physicalName: agentic_commerce.mv_intent_discovery_result_performance
+  physicalType: view
+  description: 'Intent Product Discovery result-level performance: engagement funnel (CTR, add-to-cart
+    rate, conversion rate) by channel, category, and personalization.'
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/agentic-commerce/README.md
+    type: businessDefinition
+  - url: outcome-packages/agentic-commerce/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: discovery_channel
+    logicalType: string
+    businessName: Discovery Channel
+    customProperties:
+    - property: synonyms
+      value:
+      - channel
+    description: Channel through which the discovery occurred (web, mobile, kiosk, voice, associate, api).
+  - name: intent_category
+    logicalType: string
+    businessName: Intent Category
+    customProperties:
+    - property: synonyms
+      value:
+      - need_category
+      - search_category
+      - intent_type
+    description: Normalized product category or need category from the shopper's intent.
+  - name: brand
+    logicalType: string
+    businessName: Brand
+    customProperties:
+    - property: synonyms
+      value:
+      - product_brand
+      - manufacturer_brand
+    description: Product brand.
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - merchandise_category
+    description: Product category.
+  - name: result_rank
+    logicalType: integer
+    businessName: Result Rank
+    customProperties:
+    - property: synonyms
+      value:
+      - rank
+      - position
+    description: Position of result in ranked list for this intent (1-based).
+  - name: is_available_flag
+    logicalType: boolean
+    businessName: Available
+    customProperties:
+    - property: synonyms
+      value:
+      - available
+      - in_stock
+    description: Whether product was available at store/time of discovery.
+  - name: personalization_eligible_flag
+    logicalType: boolean
+    businessName: Personalization Eligible
+    customProperties:
+    - property: synonyms
+      value:
+      - personalization_eligible
+    description: Whether personalization was eligible for this discovery.
+  - name: known_customer_flag
+    logicalType: boolean
+    businessName: Known Customer
+    customProperties:
+    - property: synonyms
+      value:
+      - logged_in
+      - identified
+    description: Whether shopper was a known/logged-in customer.
+  - name: result_count
+    logicalType: integer
+    businessName: Result Count
+    customProperties:
+    - property: synonyms
+      value:
+      - num_results
+      - results
+      - returned_results
+    description: Total returned results.
+  - name: viewed_count
+    logicalType: integer
+    businessName: Viewed Results
+    customProperties:
+    - property: synonyms
+      value:
+      - views
+      - viewed
+    description: Results with at least one view engagement.
+  - name: result_ctr
+    logicalType: number
+    businessName: Result CTR
+    customProperties:
+    - property: synonyms
+      value:
+      - ctr
+      - click_through_rate
+      - selection_rate
+    description: Selected results divided by returned results. A selected result has at least one select
+      engagement event.
+  - name: add_to_cart_rate
+    logicalType: number
+    businessName: Add-to-Cart Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - atc_rate
+      - cart_rate
+    description: Results with an add_to_cart engagement divided by returned results.
+  - name: discovery_conversion_rate
+    logicalType: number
+    businessName: Discovery Conversion Rate
+    customProperties:
+    - property: synonyms
+      value:
+      - discovery_purchase_rate
+      - result_conversion_rate
+    description: Results with a purchase engagement divided by returned results.
+  - name: purchased_units
+    logicalType: integer
+    businessName: Purchased Units
+    customProperties:
+    - property: synonyms
+      value:
+      - discovery_purchased_units
+    description: Total units purchased from results, attributed once per order line.
+  - name: purchase_net_amount
+    logicalType: number
+    businessName: Purchase Net Amount
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue
+      - sales
+    description: Total net amount from purchases attributed to results, reporting/base currency.
 - name: mv_negotiation_economics
   physicalName: agentic_commerce.mv_negotiation_economics
   physicalType: view

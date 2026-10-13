@@ -2827,6 +2827,158 @@ schema:
     logicalType: timestamp
     physicalType: TIMESTAMP
     description: View evaluation timestamp (UTC).
+- name: mv_category_growth
+  physicalName: data_sharing_with_suppliers.mv_category_growth
+  physicalType: view
+  description: Category revenue, units and margin, the growth decomposition (distribution / volume / price
+    / mix), period-over-period and year-over-year growth, and promotion contribution by category and fiscal
+    period.
+  tags:
+  - metric-view
+  authoritativeDefinitions:
+  - url: outcome-packages/data-sharing-with-suppliers/README.md
+    type: businessDefinition
+  - url: outcome-packages/data-sharing-with-suppliers/glossary.md
+    type: businessDefinition
+  - url: docs/data-model-standards.md
+    type: businessDefinition
+  properties:
+  - name: category
+    logicalType: string
+    businessName: Category
+    customProperties:
+    - property: synonyms
+      value:
+      - product_category
+      - dept
+    description: Product category.
+  - name: fiscal_year
+    logicalType: integer
+    businessName: Fiscal Year
+    customProperties:
+    - property: synonyms
+      value:
+      - year
+      - fy
+    description: NRF 4-5-4 fiscal year.
+  - name: fiscal_period
+    logicalType: integer
+    businessName: Fiscal Period
+    customProperties:
+    - property: synonyms
+      value:
+      - period
+      - retail_month
+    description: NRF fiscal period / retail month (1-12).
+  - name: category_revenue
+    logicalType: number
+    businessName: Category Revenue
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue
+      - sales
+    description: Total net revenue by category for the period, reporting/base currency.
+  - name: category_units
+    logicalType: integer
+    businessName: Category Units
+    customProperties:
+    - property: synonyms
+      value:
+      - units
+      - qty
+    description: Total units sold by category for the period.
+  - name: category_margin
+    logicalType: number
+    businessName: Category Margin
+    customProperties:
+    - property: synonyms
+      value:
+      - margin
+      - gross_margin
+    description: Total line margin by category for the period (revenue less unit cost), reporting/base
+      currency.
+  - name: delta_revenue
+    logicalType: number
+    businessName: Delta Revenue (PoP)
+    customProperties:
+    - property: synonyms
+      value:
+      - revenue_change
+      - period_delta
+    description: Period-over-period absolute change in category revenue = category_revenue - prior_period_revenue,
+      reporting/base currency.
+  - name: distribution_effect
+    logicalType: number
+    businessName: Distribution Effect
+    customProperties:
+    - property: synonyms
+      value:
+      - availability_effect
+    description: Revenue change from broader or narrower availability (change in distinct product x store
+      selling points), reporting/base currency.
+  - name: volume_effect
+    logicalType: number
+    businessName: Volume Effect
+    customProperties:
+    - property: synonyms
+      value:
+      - quantity_effect
+    description: Revenue change from selling more or fewer units per selling point (holding price and
+      mix constant), reporting/base currency.
+  - name: price_effect
+    logicalType: number
+    businessName: Price Effect
+    customProperties:
+    - property: synonyms
+      value:
+      - pricing_effect
+    description: Revenue change from like-for-like price changes within sub-categories, reporting/base
+      currency.
+  - name: mix_effect
+    logicalType: number
+    businessName: Mix Effect
+    customProperties:
+    - property: synonyms
+      value:
+      - assortment_effect
+      - subcategory_mix
+    description: Revenue change from shifting the sub-category mix toward higher- or lower-priced sub-categories
+      at constant sub-category prices, reporting/base currency.
+  - name: pop_growth_rate
+    logicalType: number
+    businessName: Growth % (Period-over-Period)
+    customProperties:
+    - property: synonyms
+      value:
+      - period_growth
+      - pop_growth
+    description: 'Period-over-period growth = SUM(category_revenue - prior_period_revenue) / SUM(prior_period_revenue),
+      over rows that have a prior period (delta_revenue and prior_period_revenue are both NULL otherwise).
+      Compares like fiscal periods (period_index - 1). Named _rate, not _pct: the gold view''s pop_growth_pct
+      is the same ratio x 100 for one category x period.'
+  - name: yoy_growth_rate
+    logicalType: number
+    businessName: Growth % (Year-over-Year)
+    customProperties:
+    - property: synonyms
+      value:
+      - annual_growth
+      - yoy_growth
+    description: 'Year-over-year growth = (SUM(category_revenue) - SUM(prior_year_revenue)) / SUM(prior_year_revenue),
+      both over rows that have a prior year, comparing like fiscal periods (period_index - 12). NULL when
+      no row has a prior year. Named _rate, not _pct: the gold view''s yoy_growth_pct is the same ratio
+      x 100 for one category x period.'
+  - name: promo_contribution
+    logicalType: number
+    businessName: Promo Contribution (Margin)
+    customProperties:
+    - property: synonyms
+      value:
+      - promotional_lift
+      - promo_margin
+    description: Incremental margin from promotions in this category for the period (from gold_promo_roi_by_category),
+      reporting/base currency. NULL if the promo view is absent.
 - name: mv_data_product_revenue
   physicalName: data_sharing_with_suppliers.mv_data_product_revenue
   physicalType: view

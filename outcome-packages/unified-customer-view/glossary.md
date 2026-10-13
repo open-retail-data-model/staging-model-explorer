@@ -35,8 +35,15 @@ on the thin customer core — no product/transaction/campaign data.
 ## Metrics (definitions)
 
 These KPIs are captured **engine-neutrally** — definition, grain, and expression — so any consumer can
-implement them (dbt metrics, Cube, a BI semantic layer, or Databricks UC Metric Views). A UC Metric View
-overlay is a deferred, optional Databricks-native materialization of the same definitions.
+implement them (dbt metrics, Cube, a BI semantic layer, or Databricks UC Metric Views). The package ships
+them as UC Metric Views in `metric-views/` (`mv_customer_360`, `mv_cdp_activation_eligibility`,
+`mv_cdp_activation_jobs`, `mv_cdp_campaign_touch`). `avg_household_size` is defined over distinct
+households, which the 360 view does not key, so it is not one of the metric-view measures; for the
+same reason `mv_customer_360` slices by customer status and jurisdiction but not by household or
+household type. `contactable_rate` ships per channel as `email_contactable_rate` and
+`sms_contactable_rate`; every other metric above ships under its own name. The views add
+supporting counts (rows, runs, members) and the personalization and third-party sharing consent
+rates, which follow the `consent_marketing_rate` definition.
 
 | Metric | Definition | Grain / dimensions | Expression (over the gold views) |
 |---|---|---|---|
@@ -68,7 +75,7 @@ overlay is a deferred, optional Databricks-native materialization of the same de
 
 ## Deferred (documented, not built)
 
-UC Metric Views (optional Databricks overlay of the metrics above); the suppression ledger; a
+The suppression ledger; a
 `fact_behavior_event` clickstream fact (raw event collection is out of scope per the CDP brief); and any
 360 field needing transaction/product/store data (LTV, purchase recency, affinity, preferred store).
 (Segment/audience membership and the activation surface are BUILT: `audience` is a silver master, ACU ships

@@ -9587,6 +9587,21 @@
         }
       ],
       "contract_path": "contracts/odcs/actionable-customer-understanding.odcs.yaml",
+      "external_use_cases": [
+        {
+          "consumes": [
+            "calendar",
+            "order",
+            "product"
+          ],
+          "name": "Customer Lifetime Value",
+          "status": "done",
+          "tables": [
+            "gold_customer_ltv"
+          ],
+          "unit": "unified-customer-view"
+        }
+      ],
       "glossary_path": "outcome-packages/actionable-customer-understanding/glossary.md",
       "kind": "outcome",
       "name": "actionable-customer-understanding",
@@ -12837,6 +12852,7 @@
             "order",
             "product"
           ],
+          "foreign_tables": [],
           "name": "Behavioral Segmentation",
           "status": "done",
           "tables": [
@@ -12848,6 +12864,7 @@
             "order",
             "product"
           ],
+          "foreign_tables": [],
           "name": "Product Affinity",
           "status": "done",
           "tables": [
@@ -12863,6 +12880,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Market Analysis",
           "status": "done",
           "tables": [
@@ -13650,6 +13668,7 @@
         }
       ],
       "contract_path": "contracts/odcs/agentic-commerce.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/agentic-commerce/glossary.md",
       "kind": "outcome",
       "name": "agentic-commerce",
@@ -17427,6 +17446,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Intent Product Discovery",
           "status": "done",
           "tables": [
@@ -17441,6 +17461,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Conversational Shopping Assistant",
           "status": "done",
           "tables": [
@@ -17454,6 +17475,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Agent-to-Agent Transactions",
           "status": "done",
           "tables": [
@@ -17813,9 +17835,82 @@
           "name": "gold_freshness_sla_breaches",
           "severity": "metric",
           "table": "gold_associate_data_freshness"
+        },
+        {
+          "column": null,
+          "name": "gold_queue_grain_unique",
+          "severity": "error",
+          "table": "gold_associate_action_queue_current"
+        },
+        {
+          "column": null,
+          "name": "gold_queue_rank_valid",
+          "severity": "error",
+          "table": "gold_associate_action_queue_current"
+        },
+        {
+          "column": null,
+          "name": "gold_queue_action_type_domain",
+          "severity": "error",
+          "table": "gold_associate_action_queue_current"
+        },
+        {
+          "column": null,
+          "name": "gold_queue_current_state_domain",
+          "severity": "error",
+          "table": "gold_associate_action_queue_current"
+        },
+        {
+          "column": null,
+          "name": "gold_queue_priority_nonneg",
+          "severity": "error",
+          "table": "gold_associate_action_queue_current"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_grain_unique",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_actions_positive",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_action_counts_nonneg",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_rate_bounds",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_action_type_domain",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_trading_date_present",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
+        },
+        {
+          "column": null,
+          "name": "gold_funnel_outcome_currency_pair",
+          "severity": "error",
+          "table": "gold_action_outcome_funnel_daily"
         }
       ],
       "contract_path": "contracts/odcs/ai-assisted-store-associates.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/ai-assisted-store-associates/glossary.md",
       "kind": "outcome",
       "name": "ai-assisted-store-associates",
@@ -20731,6 +20826,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Associates Best Next Actions",
           "status": "done",
           "tables": [
@@ -20745,6 +20841,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Real-Time Data Access",
           "status": "done",
           "tables": [
@@ -20761,6 +20858,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Digital Assistant Selling Tools",
           "status": "done",
           "tables": [
@@ -21139,6 +21237,7 @@
         }
       ],
       "contract_path": "contracts/odcs/balancing-margin-and-volume.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/balancing-margin-and-volume/glossary.md",
       "kind": "outcome",
       "name": "balancing-margin-and-volume",
@@ -23811,6 +23910,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Dynamic Price Optimization",
           "status": "done",
           "tables": [
@@ -23831,6 +23931,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Assortment Optimization",
           "status": "done",
           "tables": [
@@ -23850,6 +23951,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Elasticity Modeling",
           "status": "done",
           "tables": [
@@ -23870,6 +23972,7 @@
             "product",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Realized Margin & Revenue Leakage",
           "status": "done",
           "tables": [
@@ -25005,6 +25108,7 @@
         }
       ],
       "contract_path": "contracts/odcs/commerce-media-networks.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/commerce-media-networks/glossary.md",
       "kind": "outcome",
       "name": "commerce-media-networks",
@@ -31485,6 +31589,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Sponsored Products Placement",
           "status": "done",
           "tables": [
@@ -31501,6 +31606,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "In-Store Digital Ads",
           "status": "done",
           "tables": [
@@ -31513,6 +31619,7 @@
             "product",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Incrementality Testing",
           "status": "done",
           "tables": [
@@ -31526,6 +31633,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Cross-Platform Retail Management",
           "status": "done",
           "tables": [
@@ -33088,6 +33196,7 @@
         }
       ],
       "contract_path": "contracts/odcs/connected-store-signals.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/connected-store-signals/glossary.md",
       "kind": "outcome",
       "name": "connected-store-signals",
@@ -46094,6 +46203,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Foot Traffic Analysis",
           "status": "done",
           "tables": [
@@ -46113,6 +46223,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "IoT Sensor Monitoring",
           "status": "done",
           "tables": [
@@ -46131,6 +46242,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "RFID Tracking",
           "status": "done",
           "tables": [
@@ -46155,6 +46267,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Smart Shelf",
           "status": "done",
           "tables": [
@@ -46690,6 +46803,7 @@
         }
       ],
       "contract_path": "contracts/odcs/data-sharing-with-suppliers.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/data-sharing-with-suppliers/glossary.md",
       "kind": "outcome",
       "name": "data-sharing-with-suppliers",
@@ -49925,6 +50039,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Media Measurement",
           "status": "done",
           "tables": [
@@ -49939,6 +50054,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Data Monetization",
           "status": "done",
           "tables": [
@@ -49954,6 +50070,7 @@
             "store",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Joint Demand Planning",
           "status": "done",
           "tables": [
@@ -49972,6 +50089,7 @@
             "supplier",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Category Growth",
           "status": "done",
           "tables": [
@@ -50278,6 +50396,7 @@
         }
       ],
       "contract_path": "contracts/odcs/early-risk-detection.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/early-risk-detection/glossary.md",
       "kind": "outcome",
       "name": "early-risk-detection",
@@ -52100,6 +52219,7 @@
             "supplier",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Real Time Disruption Detection",
           "status": "done",
           "tables": [
@@ -52114,6 +52234,7 @@
             "procurement",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Supplier Score & Monitoring",
           "status": "done",
           "tables": [
@@ -52127,6 +52248,7 @@
             "product",
             "supplier"
           ],
+          "foreign_tables": [],
           "name": "Procurement Risk Detection",
           "status": "done",
           "tables": [
@@ -52829,6 +52951,7 @@
         }
       ],
       "contract_path": "contracts/odcs/predictive-operations.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/predictive-operations/glossary.md",
       "kind": "outcome",
       "name": "predictive-operations",
@@ -56802,6 +56925,7 @@
             "supplier",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Store Performance",
           "status": "done",
           "tables": [
@@ -56815,6 +56939,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Workforce Optimization",
           "status": "done",
           "tables": [
@@ -56832,6 +56957,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "In-Store Equipment Maintenance",
           "status": "done",
           "tables": [
@@ -57008,6 +57134,7 @@
         }
       ],
       "contract_path": "contracts/odcs/promote-with-purpose.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/promote-with-purpose/glossary.md",
       "kind": "outcome",
       "name": "promote-with-purpose",
@@ -58828,6 +58955,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Trade Promotion",
           "status": "done",
           "tables": [
@@ -58840,6 +58968,7 @@
             "calendar",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Location-Based Offers",
           "status": "done",
           "tables": [
@@ -58855,6 +58984,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Post-Promotion ROI Analysis",
           "status": "done",
           "tables": [
@@ -59241,6 +59371,7 @@
         }
       ],
       "contract_path": "contracts/odcs/smarter-demand-and-inventory-decisions.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/smarter-demand-and-inventory-decisions/glossary.md",
       "kind": "outcome",
       "name": "smarter-demand-and-inventory-decisions",
@@ -64286,6 +64417,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Demand & Order Forecasting",
           "status": "done",
           "tables": [
@@ -64306,6 +64438,7 @@
             "store",
             "transaction"
           ],
+          "foreign_tables": [],
           "name": "Inventory Optimization",
           "status": "done",
           "tables": [
@@ -64326,6 +64459,7 @@
             "product",
             "store"
           ],
+          "foreign_tables": [],
           "name": "Out-of-Stocks Optimization",
           "status": "done",
           "tables": [
@@ -64810,6 +64944,7 @@
         }
       ],
       "contract_path": "contracts/odcs/unified-customer-view.odcs.yaml",
+      "external_use_cases": [],
       "glossary_path": "outcome-packages/unified-customer-view/glossary.md",
       "kind": "outcome",
       "name": "unified-customer-view",
@@ -66363,6 +66498,7 @@
           "consumes": [
             "customer"
           ],
+          "foreign_tables": [],
           "name": "Customer 360",
           "status": "done",
           "tables": [
@@ -66373,6 +66509,7 @@
           "consumes": [
             "customer"
           ],
+          "foreign_tables": [],
           "name": "Identity Resolution",
           "status": "done",
           "tables": [
@@ -66384,8 +66521,9 @@
             "customer",
             "marketing"
           ],
+          "foreign_tables": [],
           "name": "CDP",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_person_do_not_target_current",
             "gold_customer_activation_eligibility_current",
@@ -66393,7 +66531,17 @@
           ]
         },
         {
-          "consumes": [],
+          "consumes": [
+            "calendar",
+            "order",
+            "product"
+          ],
+          "foreign_tables": [
+            {
+              "table": "gold_customer_ltv",
+              "unit": "actionable-customer-understanding"
+            }
+          ],
           "name": "Customer Lifetime Value",
           "status": "done",
           "tables": []
