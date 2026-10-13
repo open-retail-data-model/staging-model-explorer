@@ -82,4 +82,4 @@ The suppression ledger; a
 `segment_membership`, and `gold_activatable_audience_current` is the activation join. The **activation layer**
 is now BUILT too, ADR 0026: `activation_destination`, `activation_job`, and `campaign_touch` — shipped as
 schema + DQ contract, adopter-owned producers like `customer_profile_snapshot`.) See
-[`design/customer-identity/`](../../design/customer-identity/).
+[`docs/design/customer-identity/`](../../docs/design/customer-identity/).

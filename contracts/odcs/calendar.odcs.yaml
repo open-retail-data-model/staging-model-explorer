@@ -268,7 +268,7 @@ schema:
     description: 'NRF 4-5-4 allows 52 or 53 weeks per fiscal year. This flags any fiscal year with MORE
       than 53 weeks (a calendar bug). Partial leading/trailing years in a bounded synthetic span are expected
       and not flagged. NOTE: the synthetic generator models 52-week years only (no NRF 53rd leap week)
-      — see synthetic-data/generators/trade_promotion.py.'
+      — see runtime/synthetic-data/generators/trade_promotion.py.'
     query: 'SELECT fiscal_year, COUNT(DISTINCT fiscal_week) AS weeks_in_year
 
       FROM calendar.fiscal_calendar
