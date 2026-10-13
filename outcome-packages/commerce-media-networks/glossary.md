@@ -69,8 +69,8 @@ dimensions (promotion, audience per ADR 0022) and core product/store/profile and
   - **`placement.device_type`** — the **device platform** (OS/hardware) a placement targets (`desktop`, `mobile`,
     `tablet`, `ctv`). DOOH and in-store surfaces are NOT devices — they live on `delivery_channel`.
   - **`placement.ad_product_line`** — the retailer's **go-to-market ad-product packaging / inventory line**
-    (`sponsored_products`, `onsite_display`, `offsite_display`, `email`, `loyalty`), cf. Amazon Marketing Cloud's
-    `ad_product_type`: what was sold, not where it rendered.
+    (`sponsored_products`, `onsite_display`, `offsite_display`, `email`, `loyalty`), cf. common retail-media ad-product
+    taxonomies: what was sold, not where it rendered.
   - **`placement.placement_type`** — the **fine on-page ad surface / slot** (`search`, `product_listing`,
     `banner`, …), IAB's "Ad Placement": the granular surface, distinct from the coarse `delivery_channel`.
   - **Why `placement` does NOT FK to `delivery_channel` (intentional independence).** A fact carries both

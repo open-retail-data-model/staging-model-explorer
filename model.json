@@ -30262,7 +30262,7 @@
               "type": "STRING"
             },
             {
-              "comment": "Retailer go-to-market ad-product packaging / inventory line, cf. Amazon Marketing Cloud ad_product_type. Distinct from delivery_channel (where it rendered), media_platform (where bought), and device_type. Allowed values: sponsored_products, onsite_display, offsite_display, email, loyalty.",
+              "comment": "Retailer go-to-market ad-product packaging / inventory line, cf. common retail-media ad-product taxonomies. Distinct from delivery_channel (where it rendered), media_platform (where bought), and device_type. Allowed values: sponsored_products, onsite_display, offsite_display, email, loyalty.",
               "enum_values": [
                 "sponsored_products",
                 "onsite_display",
