@@ -15,8 +15,8 @@ The second capability, **Real-Time Data Access**, is the governed lookup contrac
 | Use case | Status | Notes |
 |---|---|---|
 | Real-Time Data Access | done | Governed associate lookup contract. |
-| Associates Best Next Actions | in-progress | Prioritized action queue (`gold_associate_action_queue_current`). |
-| Digital Assistant Selling Tools | in-progress | Response + outcome loop (`gold_action_outcome_funnel_daily`). |
+| Associates Best Next Actions | done | Prioritized action queue (`gold_associate_action_queue_current`). |
+| Digital Assistant Selling Tools | done | Response + outcome loop (`gold_action_outcome_funnel_daily`). |
 
 ## Tables & views
 

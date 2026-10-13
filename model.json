@@ -20732,7 +20732,7 @@
             "store"
           ],
           "name": "Associates Best Next Actions",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_associate_action_queue_current"
           ]
@@ -20762,7 +20762,7 @@
             "store"
           ],
           "name": "Digital Assistant Selling Tools",
-          "status": "in-progress",
+          "status": "done",
           "tables": [
             "gold_action_outcome_funnel_daily"
           ]
