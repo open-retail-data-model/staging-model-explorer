@@ -2,7 +2,7 @@
 
 > Status: 🟢 Review complete (0.5)
 
-Business terms and metrics used within the Inventory domain. Follows the ORDM [data model standards](../../docs/data-model-standards.md).
+Business terms and metrics used within the Inventory domain. Follows the ORDM [data model standards](https://github.com/open-retail-data-model/staging/blob/main/docs/data-model-standards.md).
 
 ## Tables
 

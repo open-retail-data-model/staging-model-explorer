@@ -2,7 +2,7 @@
 
 > Status: 🟢 Review complete (0.5) · Last reviewed: 2026-10-07
 
-Follows the ORDM [data model standards](../../docs/data-model-standards.md).
+Follows the ORDM [data model standards](https://github.com/open-retail-data-model/staging/blob/main/docs/data-model-standards.md).
 
 ## Tables
 
