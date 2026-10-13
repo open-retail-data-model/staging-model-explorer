@@ -1,6 +1,6 @@
 # Procurement Domain — Business Glossary
 
-> Status: 🟢 Review complete (0.2-beta)
+> Status: 🟢 Review complete (0.5)
 
 | Term | Definition |
 |---|---|
